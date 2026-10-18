@@ -1,0 +1,500 @@
+diff --git a/src/index.ts b/src/index.ts
+index c29b80c..430d77a 100644
+--- a/src/index.ts
++++ b/src/index.ts
+@@ -0,0 +1 @@
++export const ordinaryViewerProtocol = 1;
+diff --git a/src/parser/entities/entityParser.ts b/src/parser/entities/entityParser.ts
+index 80f63fe..5b785fd 100644
+--- a/src/parser/entities/entityParser.ts
++++ b/src/parser/entities/entityParser.ts
+@@ -0,0 +1 @@
++import { MissingEntityFrame, OnlineEntityState } from './onlineState.js';
+@@ -229,0 +231,4 @@ export class EntityParser {
++	public online: OnlineEntityState | null = null;
++	public onlineBaselineEntries = new Map<number, Uint8Array>();
++	public onOnlineRecovery?: (gap: { tick: number; deltaFrom: number | null; request?: boolean }) => void;
++	public onOnlineReceipt?: (receipt: { tick: number; baselineAck: number | null }) => void;
+@@ -424,0 +430,5 @@ export class EntityParser {
++		const saved = this.online?.baseline(entityId, classId);
++		if (saved && this.directEntities?.[entityId]) {
++			this.directEntities[entityId]!.properties = saved;
++			return;
++		}
+@@ -444 +454,21 @@ export class EntityParser {
+-		if (!validateSnapshot && this.directEntities && this.directPropInfoById === this.classInfo.propInfoById) {
++		if (this.online) {
++			if (msg.pending_full_frame) {
++				this.online.recover(this.tick);
++				this.onOnlineRecovery?.({ tick: this.tick, deltaFrom: null, request: false });
++				return false;
++			}
++			try {
++				if (!this.online.begin(msg, this.tick)) return false;
++			} catch (error) {
++				if (!(error instanceof MissingEntityFrame)) throw error;
++				this.online.recover(error.tick);
++				this.onOnlineRecovery?.({ tick: error.tick, deltaFrom: error.deltaFrom });
++				return false;
++			}
++		}
++		if (
++			!this.online &&
++			!validateSnapshot &&
++			this.directEntities &&
++			this.directPropInfoById === this.classInfo.propInfoById
++		) {
+@@ -478,0 +509 @@ export class EntityParser {
++				this.online?.leave(entityId);
+@@ -489,0 +521,5 @@ export class EntityParser {
++				this.online?.enter(
++					entityId,
++					this.entities[entityId]!,
++					this.directEntities?.[entityId]?.properties ?? {}
++				);
+@@ -490,0 +527 @@ export class EntityParser {
++				this.online?.update(entityId);
+@@ -496,0 +534,6 @@ export class EntityParser {
++				const alternate = this.online?.alternate(entityId);
++				if (alternate !== undefined) {
++					const value = this.onlineBaselineEntries.get(alternate);
++					if (!value) throw new Error('Missing alternate class baseline');
++					this.updateEntity(this.cachedBitBuffer.setTo(value), entityId);
++				}
+@@ -499,0 +543,52 @@ export class EntityParser {
++		if (this.online) {
++			const extra = msg.outofpvs_entity_updates;
++			if (extra && (extra.count ?? 0) > 0) {
++				if (!Number.isInteger(extra.count) || extra.count! > 16384 || !extra.data)
++					throw new Error('Invalid out-of-PVS updates');
++				const outside = new BitBuffer(extra.data);
++				let id = -1;
++				for (let i = 0; i < extra.count!; i++) {
++					id += 1 + outside.readUbitVar();
++					if (id >= 16384) throw new Error('Out-of-PVS entity index');
++					const create = outside.ReadUBits(1) === 1;
++					if (create) this.createEntity(outside, id, baseline);
++					this.updateEntity(outside, id);
++					if (create) this.online.enter(id, this.entities[id]!, this.directEntities?.[id]?.properties ?? {});
++					this.online.markOutOfPvs(id);
++				}
++			}
++			const dormant = msg.non_transmitted_entities;
++			if (dormant) {
++				const count = dormant.header_count ?? 0;
++				if (!Number.isInteger(count) || count < 0 || count > 16384 || (count && !dormant.data))
++					throw new Error('Invalid non-transmitted entities');
++				const headers = new BitBuffer(dormant.data ?? new Uint8Array());
++				let id = -1;
++				for (let i = 0; i < count; i++) {
++					id += 1 + headers.readUbitVar();
++					this.online.markDormant(id, headers.ReadUBits(1) === 1);
++				}
++				for (const key of Object.keys(this.entities)) {
++					const id = Number(key);
++					if (this.entities[id] === undefined || this.online.present(id)) continue;
++					this.entities[id] = undefined as any;
++					if (this.directEntities) this.directEntities[id] = undefined as any;
++					this.enqueueEvent('entitydeleted', id);
++				}
++			} else if (msg.legacy_is_delta) {
++				const count = reader.readUbitVar();
++				let id = -1;
++				if (count > 16384) throw new Error('Invalid legacy delete count');
++				for (let i = 0; i < count; i++) {
++					const delta = reader.readUbitVar();
++					if (!delta) throw new Error('Invalid legacy delete delta');
++					id += delta;
++					this.online.leave(id);
++					this.entities[id] = undefined as any;
++					if (this.directEntities) this.directEntities[id] = undefined as any;
++					this.enqueueEvent('entitydeleted', id);
++				}
++			}
++			const receipt = this.online.finish(msg.delta_from);
++			this.onOnlineReceipt?.(receipt);
++		}
+diff --git a/src/parser/entities/fullFrameSplit.ts b/src/parser/entities/fullFrameSplit.ts
+new file mode 100644
+index 0000000..bd71dc0
+--- /dev/null
++++ b/src/parser/entities/fullFrameSplit.ts
+@@ -0,0 +1,61 @@
++import { snappyUncompressedLength } from '../../compression/wasm.js';
++import { CSVCMsg_PacketEntities, type CSVCMsg_FullFrameSplit } from '../../ts-proto/netmessages.js';
++
++/** Ordered, bounded ordinary-viewer full snapshots. Valve 0x18004ca50 / 0x180137a50. */
++export class FullFrameAssembler {
++	private tick = -1;
++	private total = 0;
++	private bytes = 0;
++	private parts: Uint8Array[] = [];
++	reset() {
++		this.tick = -1;
++		this.total = 0;
++		this.bytes = 0;
++		this.parts = [];
++	}
++	consume(msg: CSVCMsg_FullFrameSplit, uncompress: (input: Uint8Array) => Uint8Array) {
++		const { tick, section, total, data } = msg;
++		if (
++			!Number.isInteger(tick) ||
++			tick! < 0 ||
++			!Number.isInteger(section) ||
++			section! < 0 ||
++			!Number.isInteger(total) ||
++			total! < 1 ||
++			total! > 4096 ||
++			section! >= total! ||
++			!data?.length
++		)
++			throw new Error('Invalid full-frame section');
++		if (tick !== this.tick) {
++			if (section !== 0) return null;
++			this.reset();
++			this.tick = tick!;
++			this.total = total!;
++		}
++		if (total !== this.total || section !== this.parts.length) {
++			this.reset();
++			return null;
++		}
++		if (this.bytes + data.length > 8 * 1024 ** 2) throw new Error('Compressed full-frame budget');
++		this.parts.push(Uint8Array.from(data));
++		this.bytes += data.length;
++		if (this.parts.length !== total) return null;
++		const joined = new Uint8Array(this.bytes);
++		let offset = 0;
++		for (const part of this.parts) {
++			joined.set(part, offset);
++			offset += part.length;
++		}
++		const sourceTick = this.tick;
++		this.reset();
++		const size = snappyUncompressedLength(joined);
++		if (size < 1 || size > 16 * 1024 ** 2) throw new Error('Full-frame output budget');
++		const decoded = uncompress(joined);
++		if (decoded.length !== size) throw new Error('Full-frame decompression length');
++		const packet = CSVCMsg_PacketEntities.decode(decoded);
++		if (packet.server_tick !== sourceTick || packet.legacy_is_delta === true)
++			throw new Error('Full-frame identity');
++		return { tick: sourceTick, packet };
++	}
++}
+diff --git a/src/parser/entities/onlineState.ts b/src/parser/entities/onlineState.ts
+new file mode 100644
+index 0000000..309f86e
+--- /dev/null
++++ b/src/parser/entities/onlineState.ts
+@@ -0,0 +1,158 @@
++/** Ordinary-viewer entity baselines; experimental, opt-in research path.
++ * State transitions independently derived from the fixed official engine.
++ */
++import type { CSVCMsg_PacketEntities } from '../../ts-proto/netmessages.js';
++
++type Frame = { members: Uint32Array; dormant: Uint32Array };
++type Baseline = { classId: number; properties: Record<string, unknown> };
++export class MissingEntityFrame extends Error {
++	readonly tick: number;
++	readonly deltaFrom: number;
++	constructor(tick: number, deltaFrom: number) {
++		super(`Missing entity frame ${deltaFrom} for ${tick}`);
++		this.tick = tick;
++		this.deltaFrom = deltaFrom;
++	}
++}
++export class OnlineEntityState {
++	private banks: [Map<number, Baseline>, Map<number, Baseline>] = [new Map(), new Map()];
++	private frames = new Map<number, Frame>();
++	private pending: {
++		tick: number;
++		bank: 0 | 1;
++		update: boolean;
++		delta: boolean;
++		members: Uint32Array;
++		dormant: Uint32Array;
++		outOfPvs: Uint32Array;
++		next: Map<number, Baseline> | null;
++		overrides: Map<number, number>;
++	} | null = null;
++	private latest = -1;
++	public waitingFull = false;
++	private minimumFullTick = 0;
++	get lastTick() {
++		return this.latest;
++	}
++	begin(msg: CSVCMsg_PacketEntities, tick: number) {
++		if (this.waitingFull && (msg.legacy_is_delta || tick < this.minimumFullTick)) return false;
++		if (this.pending) throw new Error('Unfinished entity packet');
++		if (!Number.isSafeInteger(tick) || tick < 0 || tick <= this.latest) throw new Error('Entity packet tick order');
++		if (msg.server_tick !== undefined && msg.server_tick !== tick) throw new Error('Entity packet tick mismatch');
++		const bank = msg.baseline ?? 0;
++		if (bank !== 0 && bank !== 1) throw new Error('Invalid entity baseline bank');
++		const delta = msg.legacy_is_delta === true;
++		const from = msg.delta_from ?? -1;
++		if (delta && (!Number.isInteger(from) || from < 0 || from >= tick))
++			throw new Error('Invalid entity delta reference');
++		const previous = delta ? this.frames.get(from) : undefined;
++		if (delta && !previous) throw new MissingEntityFrame(tick, from);
++		if (!delta) {
++			this.banks = [new Map(), new Map()];
++			this.frames.clear();
++		}
++		const overrides = new Map<number, number>();
++		for (const item of msg.alternate_baselines ?? []) {
++			const id = item.entity_index,
++				index = item.baseline_index;
++			if (
++				!Number.isInteger(id) ||
++				id! < 0 ||
++				id! >= 16384 ||
++				!Number.isInteger(index) ||
++				index! < 0 ||
++				index! >= 65536 ||
++				overrides.has(id!)
++			)
++				throw new Error('Invalid alternate baseline');
++			overrides.set(id!, index!);
++		}
++		this.waitingFull = false;
++		this.pending = {
++			tick,
++			bank,
++			update: msg.update_baseline === true,
++			delta,
++			members: previous?.members.slice() ?? new Uint32Array(512),
++			dormant: previous?.dormant.slice() ?? new Uint32Array(512),
++			outOfPvs: new Uint32Array(512),
++			next: msg.update_baseline === true ? new Map(this.banks[bank]) : null,
++			overrides
++		};
++		return true;
++	}
++	private transaction() {
++		if (!this.pending) throw new Error('No entity packet');
++		return this.pending;
++	}
++	private checkId(id: number) {
++		if (!Number.isInteger(id) || id < 0 || id >= 16384) throw new Error('Invalid entity index');
++	}
++	baseline(id: number, classId: number) {
++		this.checkId(id);
++		const p = this.transaction();
++		const base = p.delta ? this.banks[p.bank].get(id) : undefined;
++		return base?.classId === classId ? structuredClone(base.properties) : undefined;
++	}
++	alternate(id: number) {
++		this.checkId(id);
++		return this.transaction().overrides.get(id);
++	}
++	enter(id: number, classId: number, properties: Record<string, unknown>) {
++		this.checkId(id);
++		const p = this.transaction();
++		p.members[id >>> 5]! |= 1 << (id & 31);
++		if (p.update) p.next!.set(id, { classId, properties: structuredClone(properties) });
++	}
++	update(id: number) {
++		this.checkId(id);
++		this.transaction().members[id >>> 5]! |= 1 << (id & 31);
++	}
++	leave(id: number) {
++		this.checkId(id);
++		this.transaction().members[id >>> 5]! &= ~(1 << (id & 31));
++	}
++	markOutOfPvs(id: number) {
++		this.checkId(id);
++		const p = this.transaction();
++		p.outOfPvs[id >>> 5]! |= 1 << (id & 31);
++		p.members[id >>> 5]! &= ~(1 << (id & 31));
++	}
++	markDormant(id: number, value: boolean) {
++		this.checkId(id);
++		const p = this.transaction();
++		if (value) p.dormant[id >>> 5]! |= 1 << (id & 31);
++		else p.dormant[id >>> 5]! &= ~(1 << (id & 31));
++	}
++	present(id: number) {
++		this.checkId(id);
++		const p = this.transaction();
++		return Boolean((p.members[id >>> 5]! | p.dormant[id >>> 5]! | p.outOfPvs[id >>> 5]!) & (1 << (id & 31)));
++	}
++	finish(deltaFrom: number | undefined) {
++		const p = this.transaction();
++		if (p.update) this.banks[p.bank === 0 ? 1 : 0] = p.next!;
++		this.frames.set(p.tick, { members: p.members, dormant: p.dormant });
++		this.latest = p.tick;
++		// Retain the source frame and newer frames, as the official snapshot list does.
++		if (deltaFrom !== undefined)
++			for (const tick of this.frames.keys()) if (tick < deltaFrom) this.frames.delete(tick);
++		// Bounded receiver memory. A later reference outside this window requests a full update.
++		while (this.frames.size > 128) this.frames.delete(this.frames.keys().next().value!);
++		this.pending = null;
++		return { tick: p.tick, baselineAck: p.update ? p.bank : null };
++	}
++	recover(minimumTick = 0) {
++		this.reset();
++		this.minimumFullTick = minimumTick;
++		this.waitingFull = true;
++	}
++	reset() {
++		this.waitingFull = false;
++		this.minimumFullTick = 0;
++		this.pending = null;
++		this.banks = [new Map(), new Map()];
++		this.frames.clear();
++		this.latest = -1;
++	}
++}
+diff --git a/src/parser/entities/parseSession.ts b/src/parser/entities/parseSession.ts
+index 2aa047f..cf8fdc8 100644
+--- a/src/parser/entities/parseSession.ts
++++ b/src/parser/entities/parseSession.ts
+@@ -0,0 +1,2 @@
++import { FullFrameAssembler } from './fullFrameSplit.js';
++import { OnlineEntityState } from './onlineState.js';
+@@ -11,0 +14 @@ import {
++	CSVCMsg_FullFrameSplit,
+@@ -55,0 +59,4 @@ export type ParseSessionOptions = ParseSettings & {
++	/** Experimental ordinary-observer transport mode, disabled for normal demos. */
++	ordinaryViewer?: boolean;
++	onOnlineRecovery?: (gap: { tick: number; deltaFrom: number | null; request?: boolean }) => void;
++	onOnlineReceipt?: (receipt: { tick: number; baselineAck: number | null }) => void;
+@@ -82,0 +90,12 @@ export class ParseSession {
++	private fullFrames = new FullFrameAssembler();
++	private splitTicks = new WeakMap<CSVCMsg_PacketEntities, number>();
++	private splitBaselines: Uint8Array[] | null = null;
++	private packetBaselines = new WeakMap<CSVCMsg_PacketEntities, Uint8Array[]>();
++	private deferredEntities: {
++		packet: CSVCMsg_PacketEntities;
++		tick: number;
++		baselines: Uint8Array[];
++		alternates: Map<number, Uint8Array>;
++		bytes: number;
++	}[] = [];
++	private deferredEntityBytes = 0;
+@@ -97,0 +117,2 @@ export class ParseSession {
++	private onlineBaselineEntries = new Map<number, Uint8Array>();
++	private onlineBaselineNames = new Map<number, string>();
+@@ -187,0 +209 @@ export class ParseSession {
++			this.configureOnline();
+@@ -215,0 +238,71 @@ export class ParseSession {
++	private deferEntity(packet: CSVCMsg_PacketEntities, tick: number) {
++		const bytes =
++			(packet.entity_data?.byteLength ?? 0) +
++			(packet.serialized_entities?.byteLength ?? 0) +
++			(packet.non_transmitted_entities?.data?.byteLength ?? 0) +
++			(packet.outofpvs_entity_updates?.data?.byteLength ?? 0) +
++			(packet.dev_padding?.byteLength ?? 0);
++		if (this.deferredEntities.length >= 512 || this.deferredEntityBytes + bytes > 16 * 1024 ** 2)
++			throw new Error('Deferred entity budget');
++		const alternates = new Map<number, Uint8Array>();
++		for (const item of packet.alternate_baselines) {
++			const key = item.baseline_index;
++			if (key !== undefined) {
++				const value = this.onlineBaselineEntries.get(key);
++				if (value) alternates.set(key, value);
++			}
++		}
++		this.deferredEntities.push({
++			packet: structuredClone(packet),
++			tick,
++			baselines: this.baselines.slice(),
++			alternates,
++			bytes
++		});
++		this.deferredEntityBytes += bytes;
++	}
++	private drainDeferredEntities() {
++		const parser = this.entityParser;
++		if (!parser?.online || parser.online.waitingFull || !this.deferredEntities.length) return;
++		const pending = this.deferredEntities;
++		this.deferredEntities = [];
++		this.deferredEntityBytes = 0;
++		try {
++			for (const item of pending) {
++				if (item.tick <= parser.online.lastTick) continue;
++				if (parser.online.waitingFull) {
++					this.deferredEntities.push(item);
++					this.deferredEntityBytes += item.bytes;
++					continue;
++				}
++				parser.tick = item.tick;
++				parser.onlineBaselineEntries = item.alternates;
++				parser.parseEntityPacket(item.packet, item.baselines);
++			}
++		} finally {
++			parser.onlineBaselineEntries = this.onlineBaselineEntries;
++		}
++	}
++
++	private configureOnline() {
++		if (!this.settings?.ordinaryViewer || !this.entityParser) return;
++		this.entityParser.online = new OnlineEntityState();
++		this.entityParser.onlineBaselineEntries = this.onlineBaselineEntries;
++		this.entityParser.onOnlineReceipt = this.settings.onOnlineReceipt;
++		this.entityParser.onOnlineRecovery = this.settings.onOnlineRecovery;
++	}
++	private recordOnlineBaselines(
++		table: { name: string; data: { idx: number; key: string; value: Uint8Array | null | undefined }[] } | undefined
++	) {
++		if (!this.settings?.ordinaryViewer || table?.name !== 'instancebaseline') return;
++		for (const row of table.data) {
++			if (!Number.isInteger(row.idx) || row.idx < 0 || row.idx >= 65536) throw new Error('Baseline table index');
++			if (row.key) this.onlineBaselineNames.set(row.idx, row.key);
++			if (!row.value) continue;
++			const value = Uint8Array.from(row.value);
++			this.onlineBaselineEntries.set(row.idx, value);
++			const key = this.onlineBaselineNames.get(row.idx);
++			if (key && /^\d+$/.test(key)) this.baselines[Number(key)] = value;
++		}
++	}
++
+@@ -770,0 +864 @@ export class ParseSession {
++				this.configureOnline();
+@@ -1048,0 +1143,15 @@ export class ParseSession {
++				if (this.settings?.ordinaryViewer && cmd === SVC_Messages.svc_FullFrameSplit) {
++					const section = CSVCMsg_FullFrameSplit.decode(this.readPacketBytes(reader, size));
++					if (section.section === 0) this.splitBaselines = this.baselines.slice();
++					const complete = this.fullFrames.consume(section, bytes => this.parser._snappy.uncompress(bytes));
++					if (complete) {
++						if (!this.entityParser?.online) throw new Error('Full frame before class initialization');
++						if (complete.tick > this.entityParser.online.lastTick) {
++							this.splitTicks.set(complete.packet, complete.tick);
++							if (this.splitBaselines) this.packetBaselines.set(complete.packet, this.splitBaselines);
++							this.splitBaselines = null;
++							packetEntitiesQueue.push(complete.packet);
++						}
++					}
++					continue;
++				}
+@@ -1106,0 +1216 @@ export class ParseSession {
++						this.recordOnlineBaselines(tableCreatedData?.table);
+@@ -1121,0 +1232 @@ export class ParseSession {
++								this.recordOnlineBaselines(tableCData.table);
+@@ -1138,0 +1250,7 @@ export class ParseSession {
++						this.fullFrames.reset();
++						this.splitBaselines = null;
++						this.deferredEntities = [];
++						this.deferredEntityBytes = 0;
++						this.onlineBaselineEntries.clear();
++						this.onlineBaselineNames.clear();
++						this.entityParser?.online?.reset();
+@@ -1149,0 +1268,10 @@ export class ParseSession {
++				const entityTick = this.splitTicks.get(queueElement) ?? this.currentTick;
++				if (
++					this.entityParser?.online?.waitingFull &&
++					queueElement.legacy_is_delta &&
++					!queueElement.pending_full_frame
++				) {
++					this.deferEntity(queueElement, entityTick);
++					continue;
++				}
++				if (this.entityParser) this.entityParser.tick = entityTick;
+@@ -1152 +1280 @@ export class ParseSession {
+-					this.baselines,
++					this.packetBaselines.get(queueElement) ?? this.baselines,
+@@ -1154,0 +1283 @@ export class ParseSession {
++				this.drainDeferredEntities();
+@@ -1160 +1289 @@ export class ParseSession {
+-			for (const event of gameEventQueue) {
++			for (const event of this.entityParser?.online?.waitingFull ? [] : gameEventQueue) {

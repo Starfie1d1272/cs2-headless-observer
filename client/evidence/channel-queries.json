@@ -1,0 +1,153 @@
+{
+  "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "queries": [
+    {
+      "name": "procedure_pseudo_code",
+      "arguments": {
+        "procedure": "0x1800be6e0"
+      }
+    },
+    {
+      "name": "procedure_pseudo_code",
+      "arguments": {
+        "procedure": "0x1800c00b0"
+      }
+    },
+    {
+      "name": "procedure_pseudo_code",
+      "arguments": {
+        "procedure": "0x1800c10b0"
+      }
+    },
+    {
+      "name": "procedure_pseudo_code",
+      "arguments": {
+        "procedure": "0x1800fb100"
+      }
+    },
+    {
+      "name": "resolve_containing_procedure",
+      "arguments": {
+        "address": "0x1800bf518"
+      }
+    },
+    {
+      "name": "resolve_containing_procedure",
+      "arguments": {
+        "address": "0x1800c05f9"
+      }
+    },
+    {
+      "name": "resolve_containing_procedure",
+      "arguments": {
+        "address": "0x1800c16f5"
+      }
+    },
+    {
+      "name": "resolve_containing_procedure",
+      "arguments": {
+        "address": "0x1800fb16e"
+      }
+    },
+    {
+      "name": "search_strings",
+      "arguments": {
+        "pattern": "CNetChan::Transmit|CNetChan::ParseMessages|CNetChan::ProcessMessages|Decompress|LZSS|SNAPPY",
+        "mode": "regex",
+        "case_sensitive": false
+      }
+    },
+    {
+      "name": "xrefs",
+      "arguments": {
+        "address": "0x180237270"
+      }
+    },
+    {
+      "name": "xrefs",
+      "arguments": {
+        "address": "0x180237440"
+      }
+    },
+    {
+      "name": "xrefs",
+      "arguments": {
+        "address": "0x180237570"
+      }
+    },
+    {
+      "name": "xrefs",
+      "arguments": {
+        "address": "0x18023c7d0"
+      }
+    },
+    {
+      "name": "xrefs",
+      "arguments": {
+        "address": "0x18023c840"
+      }
+    },
+    {
+      "name": "procedure_pseudo_code",
+      "arguments": {
+        "procedure": "0x1800e28b0"
+      }
+    },
+    {
+      "name": "procedure_pseudo_code",
+      "arguments": {
+        "procedure": "0x1800c2230"
+      }
+    },
+    {
+      "name": "resolve_containing_procedure",
+      "arguments": {
+        "address": "0x1800c34c3"
+      }
+    },
+    {
+      "name": "resolve_containing_procedure",
+      "arguments": {
+        "address": "0x1800c25bb"
+      }
+    },
+    {
+      "name": "resolve_containing_procedure",
+      "arguments": {
+        "address": "0x1800c2feb"
+      }
+    },
+    {
+      "name": "search_strings",
+      "arguments": {
+        "pattern": "Unreasonable reliable|Unreasonable unreliable|Unreliable header too small|ReliableNetSize",
+        "mode": "regex",
+        "case_sensitive": true
+      }
+    },
+    {
+      "name": "xrefs",
+      "arguments": {
+        "address": "0x1802379a8"
+      }
+    },
+    {
+      "name": "xrefs",
+      "arguments": {
+        "address": "0x1802379d8"
+      }
+    },
+    {
+      "name": "xrefs",
+      "arguments": {
+        "address": "0x180237c18"
+      }
+    },
+    {
+      "name": "procedure_pseudo_code",
+      "arguments": {
+        "procedure": "0x1801bf5c0"
+      }
+    }
+  ]
+}

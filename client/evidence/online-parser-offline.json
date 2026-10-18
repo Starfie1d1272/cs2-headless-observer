@@ -1,0 +1,26 @@
+{
+  "code": 0,
+  "packets": 185932,
+  "omitted_demo_checkpoints": 49,
+  "checkpoints": 185932,
+  "events": {
+    "cursor": 2906,
+    "entity_receipt": 185922,
+    "round_start": 30,
+    "weapon_fire": 4402,
+    "player_death": 224,
+    "round_end": 30
+  },
+  "lastCheckpoint": {
+    "type": "checkpoint",
+    "sequence": 185932,
+    "schemaFields": 22889,
+    "stringTables": 12,
+    "serverInfo": true
+  },
+  "stderr": "",
+  "online": false,
+  "semanticSha256": "ed3a9bb727159935b770f93aa9f143d873c0c97193ae45fcfbf5da70f324fdb4",
+  "replayWallSeconds": 136.996,
+  "parserPeakRssKiB": 335360
+}

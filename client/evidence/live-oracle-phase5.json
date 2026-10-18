@@ -1,0 +1,109 @@
+{
+  "evidence": "REAL_DEMO_PACKET_BODIES_OFFLINE_NOT_GNS",
+  "fixture_sha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+  "packets": 185932,
+  "net_message_counts": {
+    "4": 185923,
+    "51": 1,
+    "44": 12,
+    "40": 1,
+    "6": 2,
+    "7": 3,
+    "42": 1,
+    "46": 1,
+    "205": 1,
+    "334": 1,
+    "8": 16,
+    "45": 58,
+    "55": 185922,
+    "207": 19836,
+    "76": 1857826,
+    "209": 537,
+    "208": 32372,
+    "204": 300,
+    "322": 502,
+    "369": 2772,
+    "145": 7605,
+    "452": 3801,
+    "400": 1999,
+    "201": 2354,
+    "453": 804,
+    "389": 94,
+    "336": 30,
+    "423": 84,
+    "124": 5,
+    "118": 8,
+    "347": 1,
+    "375": 1,
+    "352": 1,
+    "365": 10
+  },
+  "events": {
+    "weapon_fire": 4402,
+    "player_death": 224
+  },
+  "expected_from_independent_demoparser2": {
+    "weapon_fire": 4402,
+    "player_death": 224,
+    "round_start": 30,
+    "round_end": 30
+  },
+  "counts_match": false,
+  "comparison": {
+    "weapon_fire": {
+      "count": 4402,
+      "oracle_count": 4402,
+      "ticks_match": false,
+      "tick_weapon_match": false,
+      "net_tick_weapon_match": false,
+      "demo_frame_tick_weapon_match": true
+    },
+    "player_death": {
+      "count": 224,
+      "oracle_count": 224,
+      "ticks_match": false,
+      "tick_weapon_match": false,
+      "net_tick_weapon_match": false,
+      "demo_frame_tick_weapon_match": true
+    },
+    "round_start": {
+      "count": 0,
+      "oracle_count": 30,
+      "ticks_match": false
+    },
+    "round_end": {
+      "count": 0,
+      "oracle_count": 30,
+      "ticks_match": false
+    }
+  },
+  "supported_projection_match": true,
+  "event_minus_net_tick_histogram": {
+    "0": 4478,
+    "1": 148
+  },
+  "event_minus_demo_frame_tick_histogram": {
+    "1378": 4478,
+    "1379": 148
+  },
+  "net_minus_demo_frame_tick_histogram": {
+    "1378": 4626
+  },
+  "clock_note": "Demo oracle uses file frame ticks. Live event.server_tick and net_Tick remain separate; no offset is applied.",
+  "full_event_coverage": false,
+  "round_event_gap": "fixture round events are derived from game-rules entities; entity reconstruction is not implemented",
+  "weapon_fire_awp": 48,
+  "weapon_fire_taser": 0,
+  "tick_sources": {
+    "event.server_tick": 4626
+  },
+  "unresolved_events": 0,
+  "initialization_blockers": [
+    "client-send-table-crc",
+    "serializer-field-decoders",
+    "string-table-callbacks-and-baselines",
+    "session-manifest-and-spawn-groups",
+    "entity-full-snapshot"
+  ],
+  "online_success": "INCONCLUSIVE"
+}

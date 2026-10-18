@@ -1,0 +1,10 @@
+{
+  "scope": "SYNTHETIC_LIBLZ4_ORACLE_NOT_LIVE_TRAFFIC",
+  "library": "liblz4.so.1",
+  "version": "1.10.0",
+  "matched": 256,
+  "smaller_than_input": 169,
+  "reliable_and_unreliable_envelopes_verified": 510,
+  "lz4_format_commit": "70ed016500d1e098d334766b4097529308ec9781",
+  "lz4_format_sha256": "2fc5066fb6a5fc55a868993852087a3b050b9af8c3ed10bab70871ceb54e335b"
+}

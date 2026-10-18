@@ -1,0 +1,36 @@
+{
+  "sourceSha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+  "counts": {
+    "packets": 185922,
+    "is_delta": 185921,
+    "update_baseline": 0
+  },
+  "indices": {
+    "0": 185922
+  },
+  "samples": [],
+  "online": false,
+  "officialModuleSha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+  "procedures": {
+    "0x180047960": "9660a57df92c318067453521cacdedc9ac81eecf79dc0c810a8f8332c19ee676",
+    "0x180088740": "00005a5c221bfc66f5f9382649243cfea2acace962562a6177317d5426fa20eb",
+    "0x180054380": "60914d40cd792029795acf05eb62406d8d18cccc1315d602c2ffbd54468f73e5",
+    "0x180054a00": "e7cf13e4409670db3ed3b0fbce50e0b749d1a700012a6c56091d9f276d627f04",
+    "0x180044f10": "755b915e046b66975ee8172adf4200115d225df33c6a9a4c80b38b7e1afd93d9",
+    "0x1800464f0": "8a2a9c49bdca03caa1244bf67aa07205285ac7175478938dfefba53e2a2e2d34",
+    "0x180046a00": "aff97c3bb1072747021d8ae599e4b8e943abbeb3e568f5d396b051797e6de9b3",
+    "0x180046d50": "e134e61c84ce252f842a5807dad20c49574f9770dc150b17fc8f1e0e8f0af19f",
+    "0x18008b660": "b2c8605bb092e4f46c8ae1bdd6b297b36e7096f7e6a6f8e7a3cd67898d10e21f",
+    "0x180088620": "4272d57e6c91d028be8c2bd1b70324b364f0103dc6e476b69ff155d83fab8772",
+    "0x180097700": "46d99826eb02205e60eca04c436751c86db895d020f5db459e09b346794672aa",
+    "0x180088bf0": "e78153a119aea6414b112259b97ebaa87f40006dc7aa189ac156674737a91bae",
+    "0x180088f00": "6e521d21322ff4c92579a8dac3ca8906ece1de277ee29f4c1e803f3ceab8c3cb"
+  },
+  "findings": [
+    "Existing demo fixture does not exercise update_baseline or bank switching.",
+    "Official entity baseline selection checks selected bank class identity, otherwise decodes class baseline.",
+    "update_baseline clones selected bank to opposite, then merges entering entity updates into opposite bank.",
+    "Snapshot history observed as transmitted membership. Full property rollback is not established.",
+    "Alternate baseline uses class baseline string-table index override; decode and apply override before entity delta."
+  ]
+}

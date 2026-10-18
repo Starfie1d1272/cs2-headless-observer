@@ -1,0 +1,185 @@
+{
+  "scope": "OFFLINE_REAL_RECORDING_ARTIFICIAL_FILE_DELIVERY",
+  "fixture_sha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+  "checks": [
+    {
+      "case": "complete",
+      "exit": 0,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "b623038f-66bf-4f6e-b8f2-bde5e3633ab0",
+        "outcome": "complete",
+        "failureStage": null,
+        "counts": {
+          "cursor": 2906,
+          "round_start": 30,
+          "weapon_fire": 4402,
+          "player_death": 224,
+          "round_end": 30
+        },
+        "initialBytes": 329136562,
+        "bytesRead": 329136562,
+        "appendedEvents": 0,
+        "elapsedMs": 22975.342158,
+        "cpuMs": 19167.222,
+        "peakRssKiB": 222972,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "events-before-producer-complete",
+      "passed": true
+    },
+    {
+      "case": "growing",
+      "exit": 0,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "132374fa-1d4e-4ae8-87a5-85edf2010f99",
+        "outcome": "complete",
+        "failureStage": null,
+        "counts": {
+          "cursor": 2906,
+          "round_start": 30,
+          "weapon_fire": 4402,
+          "player_death": 224,
+          "round_end": 30
+        },
+        "initialBytes": 16777216,
+        "bytesRead": 329136562,
+        "appendedEvents": 4358,
+        "elapsedMs": 7834.152554,
+        "cpuMs": 7964.189,
+        "peakRssKiB": 215632,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "complete-growing-event-equivalence",
+      "rows": 7592,
+      "passed": true
+    },
+    {
+      "case": "stop",
+      "wrapper_exit": -15,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "85f0708e-3938-409f-8271-d0267dd22c93",
+        "outcome": "cancelled",
+        "failureStage": null,
+        "counts": {
+          "cursor": 14,
+          "round_start": 1
+        },
+        "initialBytes": 16777216,
+        "bytesRead": 1310720,
+        "appendedEvents": 0,
+        "elapsedMs": 147.08364899999998,
+        "cpuMs": 389.421,
+        "peakRssKiB": 95136,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "truncate",
+      "exit": 1,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "2850a058-5aa4-495c-99d8-27ddf3d24e62",
+        "outcome": "failed",
+        "failureStage": "decode-or-read-source",
+        "counts": {
+          "cursor": 16,
+          "round_start": 1
+        },
+        "initialBytes": 16777216,
+        "bytesRead": 1441792,
+        "appendedEvents": 0,
+        "elapsedMs": 149.316375,
+        "cpuMs": 381.71,
+        "peakRssKiB": 95956,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "empty",
+      "exit": 1,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "af2af123-00ca-4660-8416-3fddb396d26b",
+        "outcome": "failed",
+        "failureStage": "decode-or-read-source",
+        "counts": {},
+        "initialBytes": 0,
+        "bytesRead": 0,
+        "appendedEvents": 0,
+        "elapsedMs": 8.826093999999983,
+        "cpuMs": 13.814,
+        "peakRssKiB": 67812,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "invalid",
+      "exit": 1,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "addebcb7-7a0d-4e8c-a522-c5346e5bb09c",
+        "outcome": "failed",
+        "failureStage": "decode-or-read-source",
+        "counts": {},
+        "initialBytes": 1024,
+        "bytesRead": 1024,
+        "appendedEvents": 0,
+        "elapsedMs": 10.018869999999993,
+        "cpuMs": 17.533,
+        "peakRssKiB": 69884,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "demoparser2-weapon_fire",
+      "rows": 4402,
+      "ticks_and_weapons_equal": true
+    },
+    {
+      "case": "demoparser2-player_death",
+      "rows": 224,
+      "ticks_and_weapons_equal": true
+    },
+    {
+      "case": "demoparser2-round_start",
+      "rows": 30,
+      "ticks_and_weapons_equal": true
+    },
+    {
+      "case": "demoparser2-round_end",
+      "rows": 30,
+      "ticks_and_weapons_equal": true
+    }
+  ]
+}

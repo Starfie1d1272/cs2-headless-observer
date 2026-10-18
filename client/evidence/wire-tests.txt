@@ -1,0 +1,10 @@
+test_auth_payload_is_never_exported (test_wire.WireTest.test_auth_payload_is_never_exported) ... ok
+test_closed_2033_and_padding (test_wire.WireTest.test_closed_2033_and_padding) ... ok
+test_malformed_protobuf (test_wire.WireTest.test_malformed_protobuf) ... ok
+test_signon_two_is_only_connected (test_wire.WireTest.test_signon_two_is_only_connected) ... ok
+test_transport_success_is_not_viewer_success (test_wire.WireTest.test_transport_success_is_not_viewer_success) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+OK

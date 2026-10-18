@@ -1,0 +1,56 @@
+{
+  "scope": "LOCAL_READ_ONLY_EVIDENCE",
+  "began_utc": "2026-10-17T20:54:35.711540+00:00",
+  "binary_identity": [
+    {
+      "file": "engine2.dll",
+      "bytes": 6829720,
+      "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "coff_timestamp": 1792003411,
+      "machine": "0x8664",
+      "rsds_candidates": [
+        {
+          "guid": "fcc665e0-6e57-43ea-872e-19951a118605",
+          "age": 17
+        }
+      ],
+      "authenticode_verified": false,
+      "matches_cloud_engine": true
+    },
+    {
+      "file": "networksystem.dll",
+      "bytes": 2841752,
+      "sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "coff_timestamp": 1792003121,
+      "machine": "0x8664",
+      "rsds_candidates": [
+        {
+          "guid": "7593b982-a75f-4dd0-bb30-feb3373b655a",
+          "age": 9
+        }
+      ],
+      "authenticode_verified": false,
+      "matches_cloud_engine": null
+    },
+    {
+      "file": "cs2.exe",
+      "bytes": 2967704,
+      "sha256": "8614097aaa2761b0a7157c0045861713e769fb1e8235f50fc68f411294dd60cf",
+      "coff_timestamp": 1792003052,
+      "machine": "0x8664",
+      "rsds_candidates": [
+        {
+          "guid": "91f6ea07-cfe7-4557-aa46-926707d81a22",
+          "age": 4
+        }
+      ],
+      "authenticode_verified": false,
+      "matches_cloud_engine": null
+    }
+  ],
+  "steam_inf": {},
+  "demo_samples": [],
+  "ordinary_client_connected": "USER_OBSERVATION_REQUIRED",
+  "custom_viewer_handshake": "NOT_IMPLEMENTED",
+  "live_game_data": "INCONCLUSIVE"
+}

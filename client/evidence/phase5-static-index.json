@@ -1,0 +1,147 @@
+{
+  "status": "WIP_STATIC_ONLY",
+  "queries": [
+    {
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x180060ae0"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_c7e3ca9fb31871b9d99b7342d240abaaada487c37f09a99aae558f731485c111",
+      "raw_sha256": "08ff6384107436adbd667c789a77b4735e2b0061b5c84f11351e3fda5fbed5c2",
+      "private_file": "phase5-engine/baseline-hook-code.json"
+    },
+    {
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x180060b10"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_f260eda550834408d0acac561c02826ffda23bec95c4d9c5ac5c7d3441b8a281",
+      "raw_sha256": "91fe410da8a825265a4e9dddcb474190ba5912a4ea25ab23191ea899168fdd6a",
+      "private_file": "phase5-engine/baseline-hook-proc.json"
+    },
+    {
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x18053bb28"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_c1c86e07a707824c5a5fdc15598e000a1f67da2f8d65d68a65b022e2d8175e93",
+      "raw_sha256": "c9d86a0ab2c090e26ebe9810b8c1c8914690730977c19033c4d7b5f85a0a32fa",
+      "private_file": "phase5-engine/baseline-xrefs.json"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x180057620"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_cb2e1d0772e1bec9a236b346104975421809ac8948b13cf99f9425a078495739",
+      "raw_sha256": "4a98f8280f0cbb29404e2bda9cc6582d264fae7875e51d248f82f74d0dd45226",
+      "private_file": "phase5-engine/challenge-init-code.json"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x180057370"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_ed5762816934f49355c4808d09e48939e9efc60952270216fecf1eb8975b442d",
+      "raw_sha256": "5b5bbb1a7e14ea580bd30f9075bf4b323614d86e5acea9fae897a53015bdf51b",
+      "private_file": "phase5-engine/challenge-request-code.json"
+    },
+    {
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x180057559"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_0015596d4af17a44d6381f4fac1f62ef79e6d6fce020d281b24f4b4b29f76219",
+      "raw_sha256": "ebfc0455fa941cc3994b3e8b2989f8d2cc2c982663573c3bcbaae9aba2361ac8",
+      "private_file": "phase5-engine/challenge-request-proc.json"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x1800680e0"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_542be602da2585e3fc09bb19062f8a4dd503069ac323d46589b43a58a3fba6ca",
+      "raw_sha256": "08354a2fab31a2fb4bf9a99bdca334d1d1f451e526916050340feb598d8caa4e",
+      "private_file": "phase5-engine/classinfo-code.json"
+    },
+    {
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x180068139"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_1bfd6c96987f6998669944af38e0fc18b345a9331246d1920bee439fdf3bdeb5",
+      "raw_sha256": "b2f83363930b927ccb92da204ab40821d7deea6e8de34e50c58757efef026247",
+      "private_file": "phase5-engine/classinfo-proc.json"
+    },
+    {
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x18053e6b0"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_313953662a473f26e8a945982754430816b113687e2cc4ccfd672af1976ddb11",
+      "raw_sha256": "37cf525ea04c5fbd4b85ddb5d7745323277502ac5d79434324db2e7494202240",
+      "private_file": "phase5-engine/classinfo-xrefs.json"
+    },
+    {
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x18005397e"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_24794278a8b5ec5a01accc6ae0ee097779758bb830a7bdcc872d30d1467d3a8d",
+      "raw_sha256": "5dc7cb70682334574f9142e91974306233fdd9279f8c81026b23ccd3df0b62b9",
+      "private_file": "phase5-engine/connect-entry-proc.json"
+    },
+    {
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x180539d98"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_4aa7f1a4785c1befbc3677f371799e23e3ffcba4e82b75b8ec3e55345abb72e7",
+      "raw_sha256": "5ca3ee359c052bc47886b2deb646fc164d40cbe43121555d3da2408c52b28653",
+      "private_file": "phase5-engine/connecting-xrefs.json"
+    },
+    {
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x18053e7e0"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_698344efcf65be78f8c37408307222404515ea1109de647239acec96a7ee9f19",
+      "raw_sha256": "cf027dc58ea09be23bd09e7be9ba66a6ffea0f763e79c23217f603f279071647",
+      "private_file": "phase5-engine/crc-cache-xrefs.json"
+    },
+    {
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x180696a68"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_481432743b89d8ea958ab190b3636ca22d1f3fe480f479caa1237167888fc01e",
+      "raw_sha256": "941f3646e1ebe652b74638a081cd5886c8ac21c47d7949aca51c635632fc71d2",
+      "private_file": "phase5-engine/crc-interface-xrefs.json"
+    },
+    {
+      "operation": "search_strings",
+      "parameters": {
+        "pattern": "SendTableCRC|send_table_crc|CRC mismatch|class info|ClassInfo|FlattenedSerializer|instancebaseline",
+        "mode": "regex",
+        "case_sensitive": false
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_29a4695f0abef27225deed1bbd7033137cebee9a6a77dd8b28032a3488722988",
+      "raw_sha256": "9f8d7dfcf528723008c983897d79e1fd0113105ae943c89fc886b44b88c0c88e",
+      "private_file": "phase5-engine/init-strings.json"
+    }
+  ]
+}

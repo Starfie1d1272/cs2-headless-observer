@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-18",
+  "source": "Valve app 730 depot 2347771 manifest 8766757721818354077",
+  "module_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+  "tool": "Ghidra 12.1.4 batch analysis and DecompInterface",
+  "queries": [
+    {
+      "procedure": "0x18007edd0",
+      "decompiled_sha256": "11d63492807bd8d3658038193faaf15670ad4729b6816267edc447ce8a11d67b"
+    },
+    {
+      "procedure": "0x180060310",
+      "decompiled_sha256": "b265753d4445385a8829472d9e0d0e13fff3c5339f1a1a2ce205c04876f5d1f7"
+    },
+    {
+      "procedure": "0x180061460",
+      "decompiled_sha256": "7552f3c198773a19af0a5c46f459ba5b2c716fd732464d6721d07b6991d73b78"
+    },
+    {
+      "procedure": "0x18005ff20",
+      "decompiled_sha256": "4e51b55ef78600f5a449e8370c7b26f70ff022d7974b1ba6745fbef5ef8982cd"
+    },
+    {
+      "procedure": "0x1800c9390",
+      "decompiled_sha256": "638166847ca933234de1bcc991af88ef6b25c3e7dccd7d6afc72b52dcbd05a7f"
+    },
+    {
+      "procedure": "0x180120fa0",
+      "decompiled_sha256": "06669f1886dddb3e726ea5797d8c492af11eec7b0020a42b484181255ebd033f"
+    },
+    {
+      "procedure": "0x1800c4a30",
+      "decompiled_sha256": "37645481478a010575e3e28f063ba3a286ff875cd3268dcbe7d5b21ff375830c"
+    },
+    {
+      "procedure": "0x1800c5fb0",
+      "decompiled_sha256": "265f2754d5c75056b53006cd3ae802faca9172732941fa515026f7b9d71d5ff8"
+    },
+    {
+      "procedure": "0x180082da0",
+      "decompiled_sha256": "b3efdc761509f1644124b6454bcdf3b70df94776712dbdaa5d99ce9ce66a729e"
+    },
+    {
+      "procedure": "0x180083690",
+      "decompiled_sha256": "2f4c3ef62e9c86b4501f99cd7b55df99d5b5ff4da825d80b153971d6413c9696"
+    },
+    {
+      "procedure": "0x180080760",
+      "decompiled_sha256": "1d469e19f30cb10ea9ee5d10fae0fcf8c66ed705e232870c70a6a58399504066"
+    },
+    {
+      "procedure": "0x180080b60",
+      "decompiled_sha256": "1ae662d8ca220c8e8f6d6caff2c9feaf7e10d684767a2f0c9384efe97ff08013"
+    },
+    {
+      "procedure": "0x18005c180",
+      "decompiled_sha256": "511ab6820224704586b1e0f2b0acaa3df764628944b4d18366c4eea85f2e20f5"
+    },
+    {
+      "procedure": "0x1803f7d40",
+      "decompiled_sha256": "af14d0d6c1e8d9fca80990cfc412a995677a4a251c9662a7ea1d62654a229003"
+    }
+  ],
+  "verification": "27 Python tests passed; no live source connection",
+  "network_module_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "network_queries": [
+    {
+      "procedure": "0x1800bc610",
+      "decompiled_sha256": "8f3803e32fbd6e35f281c35d9387b0c1c023beb036bae5efc7b92cdba37c9231"
+    },
+    {
+      "procedure": "0x1800be510",
+      "decompiled_sha256": "60eac59c6f7e47e4b50d58b1a6907a6971263a983bc979336c88160007a8771d"
+    },
+    {
+      "procedure": "0x1800be6e0",
+      "decompiled_sha256": "a449dfecd9044e02b74639206d5d07dc8ef47d4523045175468f14afdc85ef27"
+    }
+  ],
+  "network_field_references_sha256": "11fb914411ee0342d4bd8bbfafa541511d5a200a23a2e1a134d16082a6b64bee"
+}

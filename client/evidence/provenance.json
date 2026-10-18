@@ -1,0 +1,225 @@
+{
+  "scope": "STATIC_LOCAL_ANALYSIS_NOT_NETWORK_VALIDATION",
+  "rea": {
+    "version": "6.5.0",
+    "license": "MIT",
+    "repo": "https://github.com/morluto/rea",
+    "commit": "f1edf0da0c6c897e68664a6ab2637f8f33368bf8",
+    "npm_integrity": "sha512-C6BG7LyrAdR74mSjertM6PrxJkcNZ2bfQNOJornPo9erDEp2tyPRVYPnV5Yodr+1RqewCQla68WulXlVnveD+A=="
+  },
+  "ghidra": {
+    "version": "12.1.4",
+    "license": "Apache-2.0",
+    "release": "https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.4_build",
+    "archive_sha256": "ddac49f903da9d5bac833e5cc79395098b9c33cfd3279be5f31bd00387d2d4db"
+  },
+  "jdk": {
+    "tag": "jdk-21.0.12.1+1",
+    "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_x64_linux_hotspot_21.0.12.1_1.tar.gz",
+    "sha256": "ce79869e1307ed8ee1e2baa86a412b1eb5b75d10a01006d788a6f968bcfaee94"
+  },
+  "depot_downloader": {
+    "version": "3.4.0",
+    "license": "GPL-2.0",
+    "release": "https://github.com/SteamRE/DepotDownloader/releases/tag/DepotDownloader_3.4.0",
+    "archive_sha256": "a999dec66b4850fc961bd50366696d23c2d0fad7b18790e6a5647b2f19097a53"
+  },
+  "valve_content": {
+    "app": 730,
+    "depot": 2347771,
+    "manifest": "8766757721818354077",
+    "anonymous_content_download_only": true,
+    "files": [
+      {
+        "name": "networksystem.dll",
+        "bytes": 2841752,
+        "sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec"
+      },
+      {
+        "name": "engine2.dll",
+        "bytes": 6829720,
+        "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21"
+      },
+      {
+        "name": "cs2.exe",
+        "bytes": 2967704,
+        "sha256": "8614097aaa2761b0a7157c0045861713e769fb1e8235f50fc68f411294dd60cf"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "file": "/workspace/gotv-research/rea/engine2-search.json",
+      "sha256": "6c4183fe73e6465e03666bf2c0cb4be6d72d2b3c8103af9391a2f1bc90898621",
+      "evidence_id": "ev_ba546e1677ceb5e2e591e10bd49269e0f6bab5b7baf2d945b273d326332ce4d2",
+      "operation": "search_strings",
+      "parameters": {
+        "pattern": "Sending C2S_CONNECT|Received S2C_CHALLENGE|Can't record|record <demoname>",
+        "mode": "regex",
+        "case_sensitive": false
+      },
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "subject": {
+        "name": "engine2.dll",
+        "digest": {
+          "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21"
+        },
+        "local_path": "/workspace/gotv-research/cs2/game/bin/win64/engine2.dll",
+        "format": "pe",
+        "architecture": "x86_64"
+      }
+    },
+    {
+      "file": "/workspace/gotv-research/rea/connect-code.json",
+      "sha256": "030e47a1f0380480c60b406981484e5dc30d7b7895fc098e7e12ed93cbf2cd07",
+      "evidence_id": "ev_47297752ce6667eb6cd57def286130b4027a32c1a64e1c07aef1aca05bb27543",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x180055a10"
+      },
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "subject": {
+        "name": "engine2.dll",
+        "digest": {
+          "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21"
+        },
+        "local_path": "/workspace/gotv-research/cs2/game/bin/win64/engine2.dll",
+        "format": "pe",
+        "architecture": "x86_64"
+      }
+    },
+    {
+      "file": "/workspace/gotv-research/rea/challenge-code.json",
+      "sha256": "73ad38a44991042abd29c048dfb1707db10107d52662bf464c120cde78a18b22",
+      "evidence_id": "ev_af63f59121b4323b3479839d82fc89c1f4d1071a0848f50afdf45412b18f887c",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x180057cb0"
+      },
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "subject": {
+        "name": "engine2.dll",
+        "digest": {
+          "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21"
+        },
+        "local_path": "/workspace/gotv-research/cs2/game/bin/win64/engine2.dll",
+        "format": "pe",
+        "architecture": "x86_64"
+      }
+    },
+    {
+      "file": "/workspace/gotv-research/rea/record-code.json",
+      "sha256": "3d2e3e315d131f8c14f78768e1271294d6f664c4fa6b52d60bc871ac9c7979e5",
+      "evidence_id": "ev_6a448ac1de1b96f15ed64fdd7b98371f3247f80e55028fd879a7238520a59714",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x180036950"
+      },
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "subject": {
+        "name": "engine2.dll",
+        "digest": {
+          "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21"
+        },
+        "local_path": "/workspace/gotv-research/cs2/game/bin/win64/engine2.dll",
+        "format": "pe",
+        "architecture": "x86_64"
+      }
+    },
+    {
+      "file": "/workspace/gotv-research/rea/record2-code.json",
+      "sha256": "4d85998fc266dc2920cb53164dc94ea84b4e85fce9f15d8c8b0742d6e772ea8c",
+      "evidence_id": "ev_d7d792d544e259ba07d36a131f40407fae02217b6209fb26a1790a7fbad26f35",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x180036d00"
+      },
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "subject": {
+        "name": "engine2.dll",
+        "digest": {
+          "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21"
+        },
+        "local_path": "/workspace/gotv-research/cs2/game/bin/win64/engine2.dll",
+        "format": "pe",
+        "architecture": "x86_64"
+      }
+    },
+    {
+      "file": "/workspace/gotv-research/rea/headless-search.json",
+      "sha256": "05350ce80ca632c36cc0c0ac5bbf9f588ae45ae2f7d9c8d2c2c2cf1233f20439",
+      "evidence_id": "ev_6126d56b89cc481b266550313828ee8a40ed0bcd3b5b81ce03465ae3a6c32a08",
+      "operation": "search_strings",
+      "parameters": {
+        "pattern": "headless|nullrhi|nographics|GetAuthSessionTicket",
+        "mode": "regex",
+        "case_sensitive": false
+      },
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "subject": {
+        "name": "engine2.dll",
+        "digest": {
+          "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21"
+        },
+        "local_path": "/workspace/gotv-research/cs2/game/bin/win64/engine2.dll",
+        "format": "pe",
+        "architecture": "x86_64"
+      }
+    },
+    {
+      "file": "/workspace/gotv-research/rea/ticket-code.json",
+      "sha256": "e728cc593f87c9f0c6df0ea81048c660899a2093a3775ac5f4df4e3436117ab5",
+      "evidence_id": "ev_6f0c13508798bbda01ef980404954d8da9af5768b409c5bbb44f1a2fb2c9ad66",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x18007e9a0"
+      },
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "subject": {
+        "name": "engine2.dll",
+        "digest": {
+          "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21"
+        },
+        "local_path": "/workspace/gotv-research/cs2/game/bin/win64/engine2.dll",
+        "format": "pe",
+        "architecture": "x86_64"
+      }
+    }
+  ],
+  "game_tracking_commit": "5ab573fa8afb5b8db98869d79ed79399fca6e747",
+  "gns_commit": "d534c19aa760df3fb75fd20db13ba1932b8a5463",
+  "environment": {
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+    "node": "v24.19.0",
+    "pnpm": "12.9.1",
+    "python": "3.12.14"
+  }
+}

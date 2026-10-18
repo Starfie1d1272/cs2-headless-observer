@@ -1,0 +1,90 @@
+{
+  "evidence": "RECORDED_SCHEMA_WITH_SYNTHETIC_SIGNON",
+  "online": false,
+  "checkpoint": {
+    "type": "checkpoint",
+    "sequence": 13,
+    "schemaFields": 22889,
+    "stringTables": 2,
+    "serverInfo": true
+  },
+  "acknowledgedEntityTick": 1382,
+  "fullUpdateRequests": 1,
+  "baselineAcks": 1,
+  "world_groups": 8,
+  "sent": [
+    {
+      "id": 7,
+      "state_or_handle": 2
+    },
+    {
+      "id": 20,
+      "state_or_handle": null
+    },
+    {
+      "id": 7,
+      "state_or_handle": 3
+    },
+    {
+      "id": 7,
+      "state_or_handle": 4
+    },
+    {
+      "id": 13,
+      "state_or_handle": 1
+    },
+    {
+      "id": 13,
+      "state_or_handle": 2
+    },
+    {
+      "id": 13,
+      "state_or_handle": 3
+    },
+    {
+      "id": 13,
+      "state_or_handle": 4
+    },
+    {
+      "id": 13,
+      "state_or_handle": 5
+    },
+    {
+      "id": 13,
+      "state_or_handle": 6
+    },
+    {
+      "id": 13,
+      "state_or_handle": 7
+    },
+    {
+      "id": 13,
+      "state_or_handle": 8
+    },
+    {
+      "id": 7,
+      "state_or_handle": 5
+    },
+    {
+      "id": 7,
+      "state_or_handle": 6
+    },
+    {
+      "id": 4,
+      "state_or_handle": null
+    },
+    {
+      "id": 4,
+      "state_or_handle": null
+    },
+    {
+      "id": 23,
+      "state_or_handle": null
+    },
+    {
+      "id": 4,
+      "state_or_handle": null
+    }
+  ],
+  "phase": "channel"
+}

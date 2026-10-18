@@ -1,0 +1,8 @@
+node_modules/
+.agent-tmp/
+__pycache__/
+*.pyc
+runs/
+*.dem
+*.dll
+*.exe

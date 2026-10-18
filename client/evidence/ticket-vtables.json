@@ -1,0 +1,20 @@
+[
+  {
+    "vtable": "0x180540bc8",
+    "slot_0x170": "0x180540d38",
+    "target": "0x18007e9a0",
+    "rtti_name": ".?AVCNetworkGameClient@@"
+  },
+  {
+    "vtable": "0x180547500",
+    "slot_0x170": "0x180547670",
+    "target": "0x18007e9a0",
+    "rtti_name": ".?AVCNetworkGameClientBase@@"
+  },
+  {
+    "vtable": "0x18055c808",
+    "slot_0x170": "0x18055c978",
+    "target": "0x18007e9a0",
+    "rtti_name": ".?AVCHLTVClientState@@"
+  }
+]

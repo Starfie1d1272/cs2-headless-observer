@@ -1,0 +1,6 @@
+test_64_bit_handles_bytes_and_cleanup_cross_native_boundary (test_sdk.SdkAbiTest.test_64_bit_handles_bytes_and_cleanup_cross_native_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.317s
+
+OK

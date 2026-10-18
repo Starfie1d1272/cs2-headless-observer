@@ -1,0 +1,221 @@
+{
+  "scope": "OFFLINE_REAL_RECORDING_ARTIFICIAL_FILE_DELIVERY",
+  "fixture_sha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+  "checks": [
+    {
+      "case": "complete",
+      "exit": 0,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "d8e768e4-8f34-4a2b-b159-ad083e10b9f9",
+        "outcome": "complete",
+        "failureStage": null,
+        "failure": null,
+        "finalizationFailures": [],
+        "eventsWriteFailed": false,
+        "counts": {
+          "cursor": 2906,
+          "round_start": 30,
+          "weapon_fire": 4402,
+          "player_death": 224,
+          "round_end": 30
+        },
+        "initialBytes": 329136562,
+        "bytesRead": 329136562,
+        "appendedEvents": 0,
+        "elapsedMs": 11962.627023000001,
+        "cpuMs": 10740.934,
+        "peakRssKiB": 203448,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "events-before-producer-complete",
+      "passed": true
+    },
+    {
+      "case": "growing",
+      "exit": 0,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "eff293bd-d448-4193-a92d-562713c7298d",
+        "outcome": "complete",
+        "failureStage": null,
+        "failure": null,
+        "finalizationFailures": [],
+        "eventsWriteFailed": false,
+        "counts": {
+          "cursor": 2906,
+          "round_start": 30,
+          "weapon_fire": 4402,
+          "player_death": 224,
+          "round_end": 30
+        },
+        "initialBytes": 16777216,
+        "bytesRead": 329136562,
+        "appendedEvents": 4358,
+        "elapsedMs": 17599.339856000002,
+        "cpuMs": 15350.938,
+        "peakRssKiB": 169936,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "complete-growing-event-equivalence",
+      "rows": 7592,
+      "passed": true
+    },
+    {
+      "case": "stop",
+      "wrapper_exit": -15,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "9b0a7f09-7bea-498d-9115-5258bbd3b400",
+        "outcome": "cancelled",
+        "failureStage": null,
+        "failure": null,
+        "finalizationFailures": [],
+        "eventsWriteFailed": false,
+        "counts": {
+          "cursor": 8,
+          "round_start": 1
+        },
+        "initialBytes": 16777216,
+        "bytesRead": 720896,
+        "appendedEvents": 0,
+        "elapsedMs": 338.91657699999996,
+        "cpuMs": 566.794,
+        "peakRssKiB": 90884,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "truncate",
+      "exit": 1,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "e972d36d-1cc7-4355-9203-1cd3271b61f2",
+        "outcome": "failed",
+        "failureStage": "read-source",
+        "failure": {
+          "category": "source-boundary",
+          "reason": "source-consumed-tail-rewritten",
+          "stage": "read-source"
+        },
+        "finalizationFailures": [
+          {
+            "category": "source-boundary",
+            "reason": "source-consumed-tail-rewritten",
+            "stage": "cancel-source"
+          }
+        ],
+        "eventsWriteFailed": false,
+        "counts": {
+          "cursor": 3,
+          "round_start": 1
+        },
+        "initialBytes": 16777216,
+        "bytesRead": 327680,
+        "appendedEvents": 0,
+        "elapsedMs": 871.0726379999999,
+        "cpuMs": 1219.717,
+        "peakRssKiB": 90436,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "empty",
+      "exit": 1,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "5af89233-169e-42c3-8c76-bafb56ee8c31",
+        "outcome": "failed",
+        "failureStage": "validate-header",
+        "failure": {
+          "category": "input-or-budget",
+          "reason": "incomplete-demo-header",
+          "stage": "validate-header"
+        },
+        "finalizationFailures": [],
+        "eventsWriteFailed": false,
+        "counts": {},
+        "initialBytes": 0,
+        "bytesRead": 0,
+        "appendedEvents": 0,
+        "elapsedMs": 10.041110000000003,
+        "cpuMs": 11.008,
+        "peakRssKiB": 65276,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "invalid",
+      "exit": 1,
+      "report": {
+        "schema": "mizar.viewer.decode-report.v1",
+        "streamInstance": "5e4069e2-9a4f-4b59-b2ea-141d25604783",
+        "outcome": "failed",
+        "failureStage": "validate-header",
+        "failure": {
+          "category": "input-or-budget",
+          "reason": "invalid-cs2-demo-magic",
+          "stage": "validate-header"
+        },
+        "finalizationFailures": [],
+        "eventsWriteFailed": false,
+        "counts": {},
+        "initialBytes": 1024,
+        "bytesRead": 1024,
+        "appendedEvents": 0,
+        "elapsedMs": 36.391301999999996,
+        "cpuMs": 36.783,
+        "peakRssKiB": 67892,
+        "configuredOffsetSeconds": 120,
+        "ordinaryViewerHandshake": "INCONCLUSIVE",
+        "liveContinuousReceipt": "INCONCLUSIVE",
+        "displayBinding": "unverified",
+        "windows": "NOT_RUN"
+      }
+    },
+    {
+      "case": "demoparser2-weapon_fire",
+      "rows": 4402,
+      "ticks_and_weapons_equal": true
+    },
+    {
+      "case": "demoparser2-player_death",
+      "rows": 224,
+      "ticks_and_weapons_equal": true
+    },
+    {
+      "case": "demoparser2-round_start",
+      "rows": 30,
+      "ticks_and_weapons_equal": true
+    },
+    {
+      "case": "demoparser2-round_end",
+      "rows": 30,
+      "ticks_and_weapons_equal": true
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+$ node scripts/architecture/check.mjs
+Architecture contract passed (0 violations).

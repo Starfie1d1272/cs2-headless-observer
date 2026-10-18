@@ -1,0 +1,399 @@
+{
+  "scope": "STATIC_ONLY_NO_GAME_BINARY_OR_PSEUDOCODE",
+  "records": [
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x180053550"
+        }
+      },
+      "raw_result_sha256": "cda6fd0fda23af1cb8fefa00fdf34d05c4171d75de6a16561041438902d1026d",
+      "evidence_id": "ev_5a508beb53e9f32e6552ea89015632244aec0514b828f635f5a34a40ac887459",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800578e0"
+        }
+      },
+      "raw_result_sha256": "75a610f543e5d3b4e31867d490b2ca597b973fc84bad9d7b51c7ab26ecaaec06",
+      "evidence_id": "ev_dd5fc8d00d1c1f59ab0ad25cc1ce4bd7440d2290662d8dee3f2dafdf20dbd180",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x180060310"
+        }
+      },
+      "raw_result_sha256": "a87decf04338f7de2dea534b9aef7f47a0ad3d5aa2bb74d22776124fa6e89229",
+      "evidence_id": "ev_ddeddbac28cd524ddfbe892b63da994606bd415333f554b05979bb29784822c9",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x180056540"
+        }
+      },
+      "raw_result_sha256": "b7e79e743f79f87284d6b51397375519b0bf7c20624406df7470c55594e852eb",
+      "evidence_id": "ev_94c94ca46b49bc028060ada1e278c8c70461e6a7a21a7b61b4bf4e95ae712e8b",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x18007e800"
+        }
+      },
+      "raw_result_sha256": "d2b73bbdf9c1dc9b65dea4309f06f4cf2315bf7f3915cf5e665f87cb067f0097",
+      "evidence_id": "ev_2ca7f799bc260b803818f9a507b1a9f83d71739ccf92c5868a3704a3b3729d8c",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x18006a280"
+        }
+      },
+      "raw_result_sha256": "8c91facd1bd11b7105e561b0065fee21a133b518503e3b0a0347ccc81ce5ad31",
+      "evidence_id": "ev_ab6c227ee9992feadc6ca4173697e9e67343ad499eef6323858207d84c07583b",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x180061460"
+        }
+      },
+      "raw_result_sha256": "89e280b037c7753819f3b6c0f15e9d6dd9aedf5fc62f500aa6585d58a84b864e",
+      "evidence_id": "ev_750a7634dc8e621fff10a45b1b0f8784375594cf5808f425f97c384985b85b27",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x18005ff20"
+        }
+      },
+      "raw_result_sha256": "02c19d9eac0fc906867e76ad374898a7e59c627582cce57bc484808f4cfb7122",
+      "evidence_id": "ev_3d9aadcaf070f2d26c99887088ec06409bba9103fa5d75862aa9bd4ed3a8af77",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x18005efa0"
+        }
+      },
+      "raw_result_sha256": "3b0d375f9433fec756df34cb248869ad2af7a16ec74c275d5b5210c2891ad54f",
+      "evidence_id": "ev_a03050e804f6e1c1858f5bdffb11b81e8043919bc6757f0340a19f49962b23a7",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x180084810"
+        }
+      },
+      "raw_result_sha256": "c2925456794c8038e4e54053257fb52130de06739072d43816b7003620713fb4",
+      "evidence_id": "ev_feb7be80f83c43a2f3fde56efda8178f0df7d0763750d19af169ae5d2a5056ee",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-43c5de25"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800a5430"
+        }
+      },
+      "raw_result_sha256": "9addcab342cd98e3157987b40b669745e5375957fd6a5e7660c834fd2f44b111",
+      "evidence_id": "ev_a46c9d9f6b82b4302c83e26a42b19065e6f382a6f1b9a54cc4c30c8b60b04e83",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-fc641be1"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x180247420"
+        }
+      },
+      "raw_result_sha256": "b20d28416506cad4b65b1aa1575595e9e88175f30bfa4d4279deb9f1a46c1785",
+      "evidence_id": "ev_256a0a0985614bca359b526b6bbcfa175a3c342385d668df78de98b0b17b7333",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-75356db0"
+    },
+    {
+      "module": "engine2",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x180003120"
+        }
+      },
+      "raw_result_sha256": "57f6065cd218c528f0586cd937f373767b62f1cec9bd5f21a4fe69ed71609707",
+      "evidence_id": "ev_04d99d358c49017408f49b5b503670c45125cb5452d904746ceff8bc7a0b7613",
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "engine2-d0125225"
+    },
+    {
+      "module": "networksystem",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800e23d0"
+        }
+      },
+      "raw_result_sha256": "e2d723a29d6a7ab23d5f7523199e4cf6c0df893e56b96d05e236254a50fad4e5",
+      "evidence_id": "ev_fb1d2e76a27513e341c2a30b3af9cf8dcdfb4bb789d3d42f6e63937a4efdf13d",
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "networksystem-b6a755ac"
+    },
+    {
+      "module": "networksystem",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800ddc30"
+        }
+      },
+      "raw_result_sha256": "def76cd0ec4061c1cd216ec2e2f665ff2d205e73bcdf72be745226142aa17f74",
+      "evidence_id": "ev_86893c8b78eed5048dbaadf92d6a0e84a1eb849e12ab92100b94bc38462262ac",
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "networksystem-ae237d28"
+    },
+    {
+      "module": "networksystem",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800e26d0"
+        }
+      },
+      "raw_result_sha256": "fa3615805e7b605bbe7b68646a775410260b646937f8f2c64d67528ab2570f26",
+      "evidence_id": "ev_69acaa3ac1a23622d49686693ac6bdd54cd9d5ddc81c9f4736aae478dea3d589",
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "networksystem-67f043a2"
+    },
+    {
+      "module": "networksystem",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1801c0760"
+        }
+      },
+      "raw_result_sha256": "06254393922d63113f950cd1c9d790b3d2822658d94209d691d7ceb6dcc61d15",
+      "evidence_id": "ev_42d76e8bdb90159311b7e3c8be7b437961544b34230fca4ae372b8266817933a",
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "networksystem-ae237d28"
+    },
+    {
+      "module": "networksystem",
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800e20d0"
+        }
+      },
+      "raw_result_sha256": "3aa223bda2311cd41d491b6df0e117cf82b62f6934b69dddc741363c7dea9d74",
+      "evidence_id": "ev_0f4d434db28166fe58132192bd1067b777555aef356a516108b4359b14c8ed57",
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "limitations_ref": "networksystem-ae237d28"
+    }
+  ],
+  "limitations_by_group": {
+    "engine2-75356db0": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+      "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+      "The target references PDB engine2.pdb (GUID fcc665e0-6e57-43ea-872e-19951a118605, age (hex) 11, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+    ],
+    "engine2-43c5de25": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+      "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+      "Ghidra Listing reports a terminal call at 0x18008531f to 0x18043f408 FUN_18043f408 (external=false, thunk=false, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return.",
+      "The target references PDB engine2.pdb (GUID fcc665e0-6e57-43ea-872e-19951a118605, age (hex) 11, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+    ],
+    "engine2-fc641be1": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+      "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+      "Ghidra Listing reports a terminal call at 0x1800a596e to 0x18043f408 FUN_18043f408 (external=false, thunk=false, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return.",
+      "The target references PDB engine2.pdb (GUID fcc665e0-6e57-43ea-872e-19951a118605, age (hex) 11, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+    ],
+    "engine2-d0125225": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+      "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+      "Ghidra Listing reports a terminal call at 0x1800032e1 to 0x180430f38 atexit (external=false, thunk=false, hasNoReturn=false); fallthrough is excluded by Ghidra's flow model. The reason for the terminal flow is not established by this observation.",
+      "The target references PDB engine2.pdb (GUID fcc665e0-6e57-43ea-872e-19951a118605, age (hex) 11, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+    ],
+    "networksystem-b6a755ac": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+      "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+      "Ghidra Listing reports a terminal call at 0x1800e26c1 to 0x1800e26d0 FUN_1800e26d0 (external=false, thunk=false, hasNoReturn=false); fallthrough is excluded by Ghidra's flow model. The reason for the terminal flow is not established by this observation.",
+      "The target references PDB networksystem.pdb (GUID 7593b982-a75f-4dd0-bb30-feb3373b655a, age (hex) 9, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+    ],
+    "networksystem-ae237d28": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+      "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+      "The target references PDB networksystem.pdb (GUID 7593b982-a75f-4dd0-bb30-feb3373b655a, age (hex) 9, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+    ],
+    "networksystem-67f043a2": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+      "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+      "Ghidra Listing reports a terminal call at 0x1800e28a8 to 0x1801e29c8 FUN_1801e29c8 (external=false, thunk=false, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return.",
+      "The target references PDB networksystem.pdb (GUID 7593b982-a75f-4dd0-bb30-feb3373b655a, age (hex) 9, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+    ]
+  }
+}

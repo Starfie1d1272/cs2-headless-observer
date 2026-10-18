@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.dem
+*.pcap
+*.pcapng
+*.bin
+*.dll
+*.exe
+*.jsonl
+private/
+*.o

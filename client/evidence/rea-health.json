@@ -1,0 +1,77 @@
+{
+  "healthy": true,
+  "environment_healthy": false,
+  "scope": {
+    "mode": "explicit",
+    "clients": [],
+    "providers": ["ghidra"],
+    "skill": false,
+    "target": "/workspace/gotv-research/cs2/game/bin/win64/engine2.dll"
+  },
+  "scope_checks": [
+    {
+      "name": "node",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "24.19.0",
+      "details": {
+        "runtime": "node",
+        "version": "24.19.0"
+      }
+    },
+    {
+      "name": "target",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "/workspace/gotv-research/cs2/game/bin/win64/engine2.dll"
+    },
+    {
+      "name": "ghidra",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "/workspace/gotv-research/tools/ghidra_12.1.4_PUBLIC"
+    },
+    {
+      "name": "ghidra-platform",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "linux"
+    },
+    {
+      "name": "ghidra-architecture",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "x64"
+    },
+    {
+      "name": "ghidra-installation",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "/workspace/gotv-research/tools/ghidra_12.1.4_PUBLIC/Ghidra/application.properties"
+    },
+    {
+      "name": "ghidra-version",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "12.1.4"
+    },
+    {
+      "name": "ghidra-headless",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "/workspace/gotv-research/tools/ghidra_12.1.4_PUBLIC/support/analyzeHeadless"
+    },
+    {
+      "name": "ghidra-native_decompiler",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "/workspace/gotv-research/tools/ghidra_12.1.4_PUBLIC/Ghidra/Features/Decompiler/os/linux_x86_64/decompile reports elf x86_64, which matches linux/x64"
+    },
+    {
+      "name": "ghidra-java",
+      "ok": true,
+      "classification": "healthy",
+      "detail": "21.0.12.1; 64-bit; JDK; /workspace/gotv-research/tools/jdk/jdk-21.0.12.1+1; accepted a 64-bit full JDK 21 or newer"
+    }
+  ]
+}

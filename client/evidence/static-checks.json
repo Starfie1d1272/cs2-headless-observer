@@ -1,0 +1,31 @@
+[
+  {
+    "name": "typecheck",
+    "command": "pnpm exec tsc -p apps/companion/research/ordinary-gotv/tsconfig.json",
+    "chunk_id": "ee9be5",
+    "wall_time_seconds": 0.324661598,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  {
+    "name": "eslint",
+    "command": "pnpm exec eslint apps/companion/research/ordinary-gotv/*.ts packages/telemetry-cstv/src/viewer-research.ts",
+    "chunk_id": "b246cc",
+    "wall_time_seconds": 0.000025173,
+    "session_id": 42339,
+    "original_token_count": 0,
+    "output": "",
+    "exit_code": 0
+  },
+  {
+    "name": "format",
+    "command": "pnpm exec prettier --check apps/companion/research/ordinary-gotv/*.md apps/companion/research/ordinary-gotv/*.ts apps/companion/research/ordinary-gotv/tsconfig.json packages/telemetry-cstv/src/viewer-research.ts packages/telemetry-cstv/package.json",
+    "chunk_id": "d4efe5",
+    "wall_time_seconds": 0.00003024,
+    "session_id": 85134,
+    "original_token_count": 11,
+    "output": "Checking formatting...\nAll matched files use Prettier code style!\n",
+    "exit_code": 0
+  }
+]

@@ -1,0 +1,262 @@
+{
+  "status": "WIP_STATIC_ONLY",
+  "queries": [
+    {
+      "module": "phase4-engine",
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x1800ac400"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_1f6309cb18a30f85fd376c5d89f01faa3153d51a03e10391a2118a17802f5ac6",
+      "raw_sha256": "60537e1fc2030320cf34c25f0fd30b604be008780e8daed530b11d1e8a6e2edd",
+      "private_file": "phase4-engine/challenge-send-callers.json"
+    },
+    {
+      "module": "phase4-engine",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x1800ac400"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_1451be438a03f1e4a4a07cda60682bd7e204f3641ba53cfb517e8c6dd4f2eb09",
+      "raw_sha256": "db2633850e9ae920260adda0db97d96e5c3c4623ec4712c0a40f87b25e5c2ebd",
+      "private_file": "phase4-engine/challenge-send-code.json"
+    },
+    {
+      "module": "phase4-engine",
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x1800ac7c8"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_1eb2650a1f9e8b08f410dfb3049a8c098240362a0c8f076f20ac6a24deb8d169",
+      "raw_sha256": "574a01db7bdbad0ff9a369fa14919e4c7b542932d5d6bd840c80f6b13988a0bc",
+      "private_file": "phase4-engine/challenge-send-proc.json"
+    },
+    {
+      "module": "phase4-engine",
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x18054a960"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_c31d719cf1f17743bde209017c7ce2763fdfd9311476557ca3d3387644636721",
+      "raw_sha256": "98ddae6c690a11a8d0ab2971d15d2ae3738ae6bbc7f49ccb05ec759f2dbc1e14",
+      "private_file": "phase4-engine/challenge-send-xrefs-correct.json"
+    },
+    {
+      "module": "phase4-engine",
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x18054a360"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_5ade6491e9c307b90d71bc8ae6e7d51f82c51058f4f9adcabb0ba1a14d516219",
+      "raw_sha256": "86ae924c6b888b6da0f99e9cde26d9827e2fbce91cfbdbe96e11576b0cc67be2",
+      "private_file": "phase4-engine/challenge-send-xrefs.json"
+    },
+    {
+      "module": "phase4-engine",
+      "operation": "search_strings",
+      "parameters": {
+        "pattern": "challenge",
+        "mode": "literal",
+        "case_sensitive": false
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_e2de77e5bef45db7ab788ebe34ba141825cb3f23ab67a8741ba752955f360fc2",
+      "raw_sha256": "9ce7e0bc5d3f70570b0cb0446b8c8d00ff6046c0d7786e6a3197b0b288b98db3",
+      "private_file": "phase4-engine/challenge-strings2.json"
+    },
+    {
+      "module": "phase4-engine",
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x1800a70c0"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_1e0c15895d58c546f78ee3e263c5da18d5ad6b7127ce53f65619447392f19607",
+      "raw_sha256": "9d1cef4128de8d74e0867eb2bb56b1774b1b0fcfd58a80b444508f07186e9d0d",
+      "private_file": "phase4-engine/challenge-trigger-callers.json"
+    },
+    {
+      "module": "phase4-engine",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x1800a70c0"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_97059769c48d22441034da6ec036fc7d0df058b330a7ccf8df11a9b01cc5c4ef",
+      "raw_sha256": "1679c4abde6e73460103af4f662009287c548e909e5f0ff9477d5196339d3f83",
+      "private_file": "phase4-engine/challenge-trigger-code.json"
+    },
+    {
+      "module": "phase4-engine",
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x1800a7264"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_382afaa41a5b09da15ed1c72e2ef2cc1b03d2f920e6e60d2f931c06814e5e0ce",
+      "raw_sha256": "ec3c6aa934cf2b7c669e677934267dfec95a977ae56463c9e84c396abec41136",
+      "private_file": "phase4-engine/challenge-trigger-proc.json"
+    },
+    {
+      "module": "phase4-engine",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x180060310"
+      },
+      "binary_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "evidence_id": "ev_ddeddbac28cd524ddfbe892b63da994606bd415333f554b05979bb29784822c9",
+      "raw_sha256": "ef8f492c5b84d39af731672578b8b8634b9615283b9e03ab262ee435196ffd6f",
+      "private_file": "phase4-engine/signon-transition.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x1800f2820"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_4c8697968a0be6171cd9708bdd6a7789e220719e5ad538368cfaafd2508f9df0",
+      "raw_sha256": "2a3427422ededf503e867c1038ae847164eb180906392c3109735e0c438cf1a9",
+      "private_file": "phase4-network/associate-code.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x1800bcd30"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_a38f87d6e32009a98f12bed1bd8bf3b37183c7a79ae87ccfce1e8eb024a7ed7d",
+      "raw_sha256": "008cb02a8af5aedbba4ed8873f5ca81afc6697061b61726674ac056b7f9a4985",
+      "private_file": "phase4-network/associate-handle.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x1800f2a87"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_bc68b0224e7cbd5a1a8457d99b8ed6a96ec8238a3f310012e2492deb6340a167",
+      "raw_sha256": "69503805959a6b18010e133e191cb9d5f63e7226cdd2d603cc2ae8b152f21653",
+      "private_file": "phase4-network/associate-proc.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x18023b3a0"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_5a8ecc86b36fd5ca6bb1e805cddca4ae0b2a23a89205341e78f23487ba1b6feb",
+      "raw_sha256": "a5cd28bfa5efdd14fa16b1c02d8c990c62c1e13b2aba6f82734cbc76a5451dd8",
+      "private_file": "phase4-network/associate-xrefs.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x1800be510"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_a1fd457d10546dc8f139ca85d7742d5c95341944c06d6b56f7447f2d202b5349",
+      "raw_sha256": "ec83f238bf17f2d4029643341dfdb05c34565ed085ca86f51c3e4e2ba41ea57f",
+      "private_file": "phase4-network/flush-code.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x1800be69f"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_0503fcf499db1cc4fa5caa87a115432cd40658efeda18ddda575fb26e19319e5",
+      "raw_sha256": "8b57ce2f15226974193b3afab4dbb1e172c4fa7d84883e8c4f79bfe0e9d2b51b",
+      "private_file": "phase4-network/flush-proc.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "search_strings",
+      "parameters": {
+        "pattern": "CNetChan::|NetChan|Connectionless",
+        "mode": "regex",
+        "case_sensitive": false
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_44f9fea1481b2a7e781887ca5691c5c3f58c280ce36a1e1cb611c20cc70d73a6",
+      "raw_sha256": "0676ab3c16e689a93cf92102cdda388f77380a5e62e7e77480cab4d431147e4b",
+      "private_file": "phase4-network/net-strings.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x1800bf650"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_90d00d1734f29d4b0631fa40de68061cd5838af1b7cdf4ca335e95cd0e63d27c",
+      "raw_sha256": "2e7167995518da8c26cafd5248401db39e5e089b4a0c25a9e788b13411711e5a",
+      "private_file": "phase4-network/schedule-code.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x1800bf6b6"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_5097ef82f3faffc1e2929a0c797e3dbc22d84a3d93af6fd1ca6355cb641655f4",
+      "raw_sha256": "568cf91613c70b88103940b79dc216bb18ff3ce5bb55d02e2f6ec7be8009f084",
+      "private_file": "phase4-network/schedule-proc.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "procedure_pseudo_code",
+      "parameters": {
+        "procedure": "0x1800bc610"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_456619e4182ab5a8a545e0befa510175a7806ec3188d38748906d63d8cbeec7c",
+      "raw_sha256": "ae6bd16ecae5a3c8e305b3f7fc28d3a1f93a3a803efb65523c923ae8a1f40828",
+      "private_file": "phase4-network/setup-code.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "resolve_containing_procedure",
+      "parameters": {
+        "address": "0x1800bccf0"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_d69ffb8730acf9b16c9f6f563bcde2cc39e44da32734a01d5df68ca5403a5c20",
+      "raw_sha256": "7372490a1a8078ead5a61a554fd18dd53b4e414b80d3d6e5a6c22566f5e875d4",
+      "private_file": "phase4-network/setup-proc.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x180236f28"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_b25a59f91f05c037e3eb325b846faab0b884fec5f548f743ab1e301f1bd6d4a1",
+      "raw_sha256": "47b184e62836330cbea9625441939dd0baecd7b409418717868b76507c364ded",
+      "private_file": "phase4-network/setup-xrefs.json"
+    },
+    {
+      "module": "phase4-network",
+      "operation": "xrefs",
+      "parameters": {
+        "address": "0x1800be6e0"
+      },
+      "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "evidence_id": "ev_42f99fce12c1950aa8dfcee7f9276829cacc2019b3b2222bb2175f574e0d3ee5",
+      "raw_sha256": "16ad222b9d6b1064258d5ea1c36848ffb2517ce2070faf843250e8bfd421b3ac",
+      "private_file": "phase4-network/transmit-callers.json"
+    }
+  ]
+}

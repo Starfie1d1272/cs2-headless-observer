@@ -1,0 +1,14 @@
+..F..
+======================================================================
+FAIL: test_malformed_protobuf (test_wire.WireTest.test_malformed_protobuf) (data=b'\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/Mizar/apps/companion/research/ordinary-gotv/test_wire.py", line 29, in test_malformed_protobuf
+    with self.subTest(data=data[:10]), self.assertRaises(ValueError):
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.015s
+
+FAILED (failures=1)

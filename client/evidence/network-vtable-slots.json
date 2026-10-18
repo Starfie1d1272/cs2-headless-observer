@@ -1,0 +1,17 @@
+[
+  {
+    "vtable": "0x180239a28",
+    "slot": "0x20",
+    "function": "0x1800e20d0"
+  },
+  {
+    "vtable": "0x180239a28",
+    "slot": "0x28",
+    "function": "0x1800e26d0"
+  },
+  {
+    "vtable": "0x180239a28",
+    "slot": "0x30",
+    "function": "0x1800e28b0"
+  }
+]

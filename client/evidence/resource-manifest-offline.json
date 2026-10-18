@@ -1,0 +1,68 @@
+{
+  "sourceDemoSha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+  "source": "existing public recorded fixture",
+  "groups": [
+    {
+      "handle": 1,
+      "world": "de_ancient",
+      "wireBytes": 797,
+      "wireSha256": "e5af6e1a4ecfb40c21e24422b09b2d8371b2735c6253c17e35a786c634da6937",
+      "resourceNames": 44
+    },
+    {
+      "handle": 2,
+      "world": "prefabs/misc/end_of_match",
+      "wireBytes": 10,
+      "wireSha256": "73a62e8941d781f8a40242bd2693b452e3f5084c8295d0b887713c82caad588c",
+      "resourceNames": 0
+    },
+    {
+      "handle": 3,
+      "world": "prefabs/misc/counterterrorist_team_intro",
+      "wireBytes": 10,
+      "wireSha256": "73a62e8941d781f8a40242bd2693b452e3f5084c8295d0b887713c82caad588c",
+      "resourceNames": 0
+    },
+    {
+      "handle": 4,
+      "world": "prefabs/misc/terrorist_team_intro",
+      "wireBytes": 10,
+      "wireSha256": "73a62e8941d781f8a40242bd2693b452e3f5084c8295d0b887713c82caad588c",
+      "resourceNames": 0
+    },
+    {
+      "handle": 5,
+      "world": "prefabs/misc/counterterrorist_team_intro_variant2",
+      "wireBytes": 10,
+      "wireSha256": "73a62e8941d781f8a40242bd2693b452e3f5084c8295d0b887713c82caad588c",
+      "resourceNames": 0
+    },
+    {
+      "handle": 6,
+      "world": "prefabs/misc/team_select",
+      "wireBytes": 10,
+      "wireSha256": "73a62e8941d781f8a40242bd2693b452e3f5084c8295d0b887713c82caad588c",
+      "resourceNames": 0
+    },
+    {
+      "handle": 7,
+      "world": "prefabs/misc/terrorist_team_intro_variant2",
+      "wireBytes": 10,
+      "wireSha256": "73a62e8941d781f8a40242bd2693b452e3f5084c8295d0b887713c82caad588c",
+      "resourceNames": 0
+    },
+    {
+      "handle": 8,
+      "world": "maps/prefabs/de_ancient/de_ancient_skybox",
+      "wireBytes": 108,
+      "wireSha256": "bd6cb73e6ca914adf73c8314ec416367ec8ac42f6f9d59d92f64bc1992177c00",
+      "resourceNames": 3
+    }
+  ],
+  "groupsTracked": 8,
+  "resourceNames": 47,
+  "malformedCompressionRejected": 2,
+  "nativeRuntime": "NOT_RUN",
+  "onlineReceipt": "NOT_RUN",
+  "readinessAcknowledgementsSent": 0
+}

@@ -1,0 +1,1 @@
+8 lifecycle cases passed; synthetic port, no Steam login/network.

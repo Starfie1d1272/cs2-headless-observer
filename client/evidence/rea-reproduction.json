@@ -1,0 +1,86 @@
+{
+  "binary_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "complete": true,
+  "queries": [
+    {
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800e23d0"
+        }
+      },
+      "raw_sha256": "3a07e126ae74a5ca15d3ce168ebe4989fc8f2830be6ea1e3454391d3e7e8b78d",
+      "evidence_id": "ev_fb1d2e76a27513e341c2a30b3af9cf8dcdfb4bb789d3d42f6e63937a4efdf13d",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "failed": false
+    },
+    {
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800ddc30"
+        }
+      },
+      "raw_sha256": "35ae4db35380938198a21ffeb07d3f9666895c2ed9bf6100cbb75bda2a671b22",
+      "evidence_id": "ev_86893c8b78eed5048dbaadf92d6a0e84a1eb849e12ab92100b94bc38462262ac",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "failed": false
+    },
+    {
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800e26d0"
+        }
+      },
+      "raw_sha256": "d20e111ec457a9fcfd90d2af2a50c272c91c9278d5d1c2e92331725ecb376f7d",
+      "evidence_id": "ev_69acaa3ac1a23622d49686693ac6bdd54cd9d5ddc81c9f4736aae478dea3d589",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "failed": false
+    },
+    {
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1801c0760"
+        }
+      },
+      "raw_sha256": "20dcd7e8e10b4c5be9c6fe658687c05e28c61487eae95c41af132fe8d6319ca9",
+      "evidence_id": "ev_42d76e8bdb90159311b7e3c8be7b437961544b34230fca4ae372b8266817933a",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "failed": false
+    },
+    {
+      "query": {
+        "name": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x1800e20d0"
+        }
+      },
+      "raw_sha256": "5a64480cd7fb73292a612ee3a9b6b711de1ecc4dd7a46ea6e69d6352f97e7a0f",
+      "evidence_id": "ev_0f4d434db28166fe58132192bd1067b777555aef356a516108b4359b14c8ed57",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "failed": false
+    }
+  ]
+}

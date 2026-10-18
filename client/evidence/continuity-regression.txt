@@ -1,0 +1,8 @@
+
+ RUN  v5.0.3 /workspace/Mizar
+
+
+ Test Files  2 passed (2)
+      Tests  4 passed (4)
+   Start at  20:54:01
+   Duration  502ms (transform 43%, import 36%, tests 8%, setup 6%, worker 6%)

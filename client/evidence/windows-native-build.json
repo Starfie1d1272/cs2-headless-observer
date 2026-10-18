@@ -1,0 +1,26 @@
+{
+  "target": "Windows x86_64",
+  "sdkSource": "ValveSoftware/Proton@bc896217ffcd67f892f952b010f898fe7bd0f0a1/lsteamclient/steamworks_sdk_165",
+  "compiler": "llvm-mingw-20261006-ucrt-ubuntu-22.04-x86_64",
+  "dllBytes": 529408,
+  "dllSha256": "1b46ed4d2e57c10ffe93c2321dc2317fe3bdab504323ee5654fc5c57c2a4001b",
+  "exports": [
+    "observer_abi_version",
+    "observer_auth",
+    "observer_boot_failure",
+    "observer_close",
+    "observer_create",
+    "observer_failure",
+    "observer_init_result",
+    "observer_pump",
+    "observer_receive",
+    "observer_remote_id",
+    "observer_request_ticket",
+    "observer_send",
+    "observer_state"
+  ],
+  "sdkCompile": "passed",
+  "nativeLink": "passed",
+  "windowsRuntime": "NOT_RUN",
+  "onlineReceipt": "NOT_RUN"
+}

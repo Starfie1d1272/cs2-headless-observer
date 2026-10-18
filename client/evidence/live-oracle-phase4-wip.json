@@ -1,0 +1,66 @@
+{
+  "evidence": "REAL_DEMO_PACKET_BODIES_OFFLINE_NOT_GNS",
+  "fixture_sha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+  "packets": 185932,
+  "net_message_counts": {
+    "4": 185923,
+    "51": 1,
+    "44": 12,
+    "40": 1,
+    "6": 2,
+    "7": 3,
+    "42": 1,
+    "46": 1,
+    "205": 1,
+    "334": 1,
+    "8": 16,
+    "45": 58,
+    "55": 185922,
+    "207": 19836,
+    "76": 1857826,
+    "209": 537,
+    "208": 32372,
+    "204": 300,
+    "322": 502,
+    "369": 2772,
+    "145": 7605,
+    "452": 3801,
+    "400": 1999,
+    "201": 2354,
+    "453": 804,
+    "389": 94,
+    "336": 30,
+    "423": 84,
+    "124": 5,
+    "118": 8,
+    "347": 1,
+    "375": 1,
+    "352": 1,
+    "365": 10
+  },
+  "events": {
+    "weapon_fire": 4402,
+    "player_death": 224
+  },
+  "expected_from_independent_demoparser2": {
+    "weapon_fire": 4402,
+    "player_death": 224,
+    "round_start": 30,
+    "round_end": 30
+  },
+  "counts_match": false,
+  "weapon_fire_awp": 0,
+  "weapon_fire_taser": 0,
+  "tick_sources": {
+    "event.server_tick": 4626
+  },
+  "unresolved_events": 0,
+  "initialization_blockers": [
+    "client-send-table-crc",
+    "serializer-field-decoders",
+    "string-table-callbacks-and-baselines",
+    "session-manifest-and-spawn-groups",
+    "entity-full-snapshot"
+  ],
+  "online_success": "INCONCLUSIVE"
+}

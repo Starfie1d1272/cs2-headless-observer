@@ -1,0 +1,34 @@
+{
+  "evidence": "RECORDED_PACKETS_OFFLINE",
+  "fixture_sha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+  "packets": 185932,
+  "omitted_demo_checkpoints": 49,
+  "reference": {
+    "status": {
+      "status": "complete"
+    },
+    "counts": {
+      "round_start": 30,
+      "weapon_fire": 4402,
+      "player_death": 224,
+      "round_end": 30
+    },
+    "semanticSha256": "ed3a9bb727159935b770f93aa9f143d873c0c97193ae45fcfbf5da70f324fdb4"
+  },
+  "packet_stream": {
+    "status": {
+      "status": "incomplete"
+    },
+    "counts": {
+      "round_start": 30,
+      "weapon_fire": 4402,
+      "player_death": 224,
+      "round_end": 30
+    },
+    "semanticSha256": "ed3a9bb727159935b770f93aa9f143d873c0c97193ae45fcfbf5da70f324fdb4"
+  },
+  "semantics_match": true,
+  "clock_mapping_verified": false,
+  "schema_source": "real Demo SendTables/ClassInfo; live full-table reception pending",
+  "online_verified": false
+}
