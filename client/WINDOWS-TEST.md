@@ -1,4 +1,14 @@
-# 下一次 Windows 普通观众测试
+# Windows 普通观众客户端测试
+
+## 便携客户端主流程
+
+使用本仓库构建的 Windows x64 测试包，解压后运行 `Start.cmd`。保持 Steam 已登录，依次填写 CS2 安装目录、当前游戏 host version、获授权的测试观战地址与普通观战密码。启动器读取 `steam.inf` 提供版本建议值；以当前官方客户端输出为准。密码在本机交互输入。
+
+客户端最多观察 300 秒，结果写入包旁 `runs/<UTC时间>/`。检查报告中的连接、sign-on、解析进度及真实事件；只完成握手或看到程序启动不算接收成功。测试包构建通过与 Windows 实机在线验证分别记录。
+
+下面保留官方客户端录制/日志的对照采集步骤，仅在需要比对时使用；便携客户端主流程直接接收网络数据，不要求先生成 Demo。
+
+## 官方客户端对照采集
 
 此步骤只由用户在本机、使用新提供且仍有效的普通观战授权执行。不要沿用旧源，不连接生产比赛，不重复 dedicated/relay 密码测试。云研究者没有操作用户电脑。所需最少输入是一个隔离测试时段、当前官方客户端、用户自己的 Steam 登录和普通观战地址/密码；登录、密码、票据始终留在本机。
 
@@ -31,7 +41,7 @@ $demoPath = 'C:\private\mizar_viewer_probe.dem'
 仓库根目录先按 README 安装/构建，然后在录制尚未结束时启动解码：
 
 ```powershell
-pnpm --filter @mizar/companion exec tsx research/ordinary-gotv/decode.ts --input $demoPath --output 'C:\private\viewer-run-01' --follow --seconds 90 --offset 120
+pnpm exec tsx client/decode.ts --input $demoPath --output 'C:\private\viewer-run-01' --follow --seconds 90 --offset 120
 ```
 
 用 `Get-Content 'C:\private\viewer-run-01\events.jsonl' -Wait` 确认**录制仍进行时**就有持续增加的序号和源 tick。最后在游戏控制台执行 `stop`，保留完成文件 SHA-256，另用新输出目录离线重读。对比事件 tick/数量；晚到和尾部完整性差异必须解释，不把不同采集区间机械判作丢包。
@@ -67,7 +77,7 @@ pnpm --filter @mizar/companion exec tsx research/ordinary-gotv/decode.ts --input
 新增的 `capture.py` 只读取用户指定的安装目录、可选现有日志/录像，不启动游戏，不连接服务器，不抓包，不读取登录资料。先按上文在一个新授权测试时段正常观战；可录制时再带上 `--demo`。需要 Python 3.11+。
 
 ```powershell
-python apps/companion/research/ordinary-gotv/capture.py --game-dir 'C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive' --output 'C:\private\viewer-capture-01' --demo 'C:\private\mizar_viewer_probe.dem' --seconds 90
+python client/capture.py --game-dir 'C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive' --output 'C:\private\viewer-capture-01' --demo 'C:\private\mizar_viewer_probe.dem' --seconds 90
 ```
 
 录制被拒绝就省略 `--demo`；有既存本机 console 日志可加 `--console-log 'C:\private\console.log'`，脚本只投影有限的状态/协议/错误字段，不复制原始行或票据/端点。当前只识别列出的英文日志形式，未匹配不代表事件不存在。日志解析不是通用脱敏器，原始日志始终留本机。
