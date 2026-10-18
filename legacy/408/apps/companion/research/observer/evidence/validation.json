@@ -1,0 +1,70 @@
+{
+  "result": "PASS",
+  "capturedAt": "2026-10-17T19:04:45.240637+00:00",
+  "baseCommit": "ebd18a110f2d6b5f3412f9b5d2fa4b1e4da2b1c0",
+  "scope": "Linux cloud; isolated research, no production wiring",
+  "commands": [
+    {
+      "command": "pnpm install --frozen-lockfile",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm --filter @mizar/companion... --fail-if-no-match run build",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm exec tsc -p apps/companion/research/observer/tsconfig.json",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm exec vitest run apps/companion/research/observer/observer.test.ts packages/core/test/projection.test.ts apps/companion/test/projection-coordinator.test.ts",
+      "result": "PASS",
+      "files": 3,
+      "tests": 19
+    },
+    {
+      "command": "pnpm exec eslint packages/telemetry-cstv/src/research.ts apps/companion/research/observer/*.ts",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm architecture:check",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm exec prettier --check <changed files>",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "sourceSha256": {
+    "packages/telemetry-cstv/src/research.ts": "cc337d015d4c38debcf09c1c211968f19a5f331f6b3253f326cf37e2d25f5cd0",
+    "packages/telemetry-cstv/package.json": "b1d1bbfa2c899d193f6538dad169092497a3dc41d1a88e0072e40db640983b74",
+    "apps/companion/research/observer/assist.ts": "919bc3a00b4f80c1038ea44ca8411e9c3af9354dba6639920cb0468de1e522bb",
+    "apps/companion/research/observer/cli.ts": "bf5f1a9d9961913a45f181850f6eaa46fcf06e998dc4b263fd8846227cc2136b",
+    "apps/companion/research/observer/follow.ts": "d8099858e0c194e696d4e22fcf84d44209d9a6c470edfccf266777001493d561",
+    "apps/companion/research/observer/observer.test.ts": "3932454394c580e4e463b92e494b449e03cb03c99e4b682904d802232bc6e0fa",
+    "apps/companion/research/observer/report.ts": "e6d692efacffcb4531cefd85477150d40ef2817b59721b74d31ccbe71d1ece12",
+    "apps/companion/research/observer/verify-cli.ts": "290a7973a7c7f8169ed14cab9128e6fb35f586a6fdfc600b5ff58e4943035ce6",
+    "apps/companion/research/observer/verify-demo.ts": "9823b7123c751134782f951d7d2cfd4d4650b7797061a1d73580eddac45c7c4a",
+    "apps/companion/research/observer/tsconfig.json": "4ae5087078fc95965f892a2b6ee57ac4b0e19164e62525b391b79df16c65b104",
+    "apps/companion/research/observer/dak-oracle.py": "5de950fd4b6f6dd8cd4fb102eec2ef8a385ca1d4cc670d9421844858a3e7be30"
+  },
+  "pnpmLockSha256": "b2273daea3636b1035db2d0aea2103bcb9d75bb9132228d9e2229a4029064ebf",
+  "reuse": {
+    "dakCommit": "c49e838d43b5740f48fd3c844d854ef3cdaa6dfc",
+    "cs2dfCommit": "aea485d8163e1b0caa729157cf2f137159a94ff0",
+    "cs2parserUpstreamCommit": "0c6c22e95251dfd6432d470ee3bbd3be2d61173d",
+    "gameTrackingCommit": "5ab573fa8afb5b8db98869d79ed79399fca6e747"
+  },
+  "libraryOriginalBytes": "unavailable: helper HTTP 401; identities recovered, original evidence not verified",
+  "pending": [
+    "native CS2 tv_relay authorization/sign-on",
+    "continuous native export before match end",
+    "actual Program display clock evidence",
+    "real lead/residual/drift",
+    "Windows CS2 OBS integration and long-run resources"
+  ]
+}

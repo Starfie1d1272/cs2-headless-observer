@@ -1,0 +1,42 @@
+{
+  "result": "PASS",
+  "fixture": {
+    "sha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+    "bytes": 329136562,
+    "upstream": "osztenkurden/cs2parser test-fixtures/v2/demo.dem"
+  },
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "parser": "cs2parser@2.7.2",
+  "oracle": "DAK extraction dependency demoparser2@0.42.0",
+  "offline": {
+    "kills": 224,
+    "identityComplete": 221,
+    "exactDakTupleParity": true,
+    "elapsedMs": 12533
+  },
+  "incremental": {
+    "kills": 224,
+    "firstKillBeforeProducerEOF": true,
+    "firstKillBytes": 16908159,
+    "fixtureBytes": 329136562,
+    "exactOfflineParity": true,
+    "elapsedMs": 14854
+  },
+  "simulatedTimeline": {
+    "imposedDelaySeconds": 12,
+    "alignedSamples": 10774,
+    "cueSamples": 4783,
+    "minLead": 12,
+    "maxLead": 12,
+    "staleWithdrawn": true
+  },
+  "rssBytes": 325357568,
+  "liveRelay": "INCONCLUSIVE: no CS2 runtime or authorized source",
+  "liveContinuousExport": "INCONCLUSIVE",
+  "realLeadAndDrift": "INCONCLUSIVE",
+  "windowsIntegration": "INCONCLUSIVE"
+}

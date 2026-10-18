@@ -1,0 +1,29 @@
+{
+  "name": "@mizar/telemetry-cstv",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./research": {
+      "types": "./dist/research.d.ts",
+      "import": "./dist/research.js"
+    },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --pretty false",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit --pretty false"
+  },
+  "dependencies": {
+    "@mizar/core": "workspace:*",
+    "cs2parser": "catalog:"
+  },
+  "devDependencies": {
+    "@typescript/native": "catalog:"
+  }
+}

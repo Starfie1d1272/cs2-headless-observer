@@ -1,0 +1,14 @@
+{
+  "result": "PASS",
+  "actualChildProcesses": 4,
+  "receiverReplacementGeneration": 2,
+  "secondGenerationKills": 224,
+  "catchupAndNewBytesSeparated": true,
+  "stoppedAfterCompleteExitCode": 0,
+  "interruptedGrowingParseExitCode": 0,
+  "malformedDemoNonzeroExit": true,
+  "staleCaptureNoCue": true,
+  "malformedAssistNonzeroExit": true,
+  "privateFinalWithdrawal": true,
+  "windows": "INCONCLUSIVE"
+}
