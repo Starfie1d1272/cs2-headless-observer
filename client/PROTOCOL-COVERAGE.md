@@ -58,4 +58,4 @@
 
 原生边界同步升级为 ABI 3：明确允许官方 flags=1 的不可靠反馈帧，旧 DLL 在加载时拒绝混用；新增远端断开原因码供报告读取。实际 ctypes/C ABI 验证覆盖 flags=1，固定 SDK 头文件编译通过。Windows x64 DLL 交叉链接通过，16 个导出齐全，导入只有 Steam API 与 Windows 系统库；无额外 libwinpthread 依赖。见 `evidence/windows-native-abi3-build.json`。尚未执行 Windows 运行或在线连接，未制作/分发新便携包。
 
-实体 Tick 来源已核实并修正：官方 `0x180086220` 在 PacketEntities 带 server_tick 时使用该值，否则取网络消息上下文；原解析器错误地要求其等于外围 Demo 包 Tick。新增真实 protobuf 字节用例（外围99、实体100）在修改前触发 mismatch，修改后明确确认100。仅调整 ordinaryViewer 路径，普通 Demo 解析保留原行为；干净固定源码应用补丁、类型检查和二进制实体用例均通过。正在对比完整真实录像的两套网络消息适配路径，检查事件语义回归。
+实体 Tick 来源已核实并修正：官方 `0x180086220` 在 PacketEntities 带 server_tick 时使用该值，否则取网络消息上下文；原解析器错误地要求其等于外围 Demo 包 Tick。新增真实 protobuf 字节用例（外围99、实体100）在修改前触发 mismatch，修改后明确确认100。仅调整 ordinaryViewer 路径，普通 Demo 解析保留原行为；干净固定源码应用补丁、类型检查和二进制实体用例均通过。完整真实录像已通过两套网络消息适配路径对照：185932 包、两边各185922实体回执，事件规范化摘要一致，包含4402开火、224击杀、30回合开始与30回合结束。结果与输入摘要见 `evidence/protocol-control-full-replay.json`；手动复现用 `verify_control_replay.py`，不加入日常 CI。
