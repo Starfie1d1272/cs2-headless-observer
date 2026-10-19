@@ -4,8 +4,25 @@ index c29b80c..dbb1174 100644
 +++ b/src/index.ts
 @@ -0,0 +1 @@
 +export const ordinaryViewerProtocol = 2;
+diff --git a/src/parser/entities/classInfo.ts b/src/parser/entities/classInfo.ts
+index 917f08d..c2b109f 100644
+--- a/src/parser/entities/classInfo.ts
++++ b/src/parser/entities/classInfo.ts
+@@ -177,0 +178 @@ export const parseClassInfo = (sendTables: CDemoSendTables, cDemoClassInfo: CDem
++		...(serializerMessage.coord_size_params ? { coordSizeParams: serializerMessage.coord_size_params } : {}),
+diff --git a/src/parser/entities/constructorFields.ts b/src/parser/entities/constructorFields.ts
+index f89613a..ea126c9 100644
+--- a/src/parser/entities/constructorFields.ts
++++ b/src/parser/entities/constructorFields.ts
+@@ -616,3 +616,3 @@ export const constructorFieldHelper = {
+-				if (flags & 1) reader.ReadUBits(20);
+-				if (flags & 2) reader.ReadUBits(20);
+-				if (flags & 4) reader.ReadUBits(20);
++				if (flags & 1) reader.readBitCoordPres();
++				if (flags & 2) reader.readBitCoordPres();
++				if (flags & 4) reader.readBitCoordPres();
 diff --git a/src/parser/entities/entityParser.ts b/src/parser/entities/entityParser.ts
-index 80f63fe..6119dfe 100644
+index 80f63fe..c6451ac 100644
 --- a/src/parser/entities/entityParser.ts
 +++ b/src/parser/entities/entityParser.ts
 @@ -0,0 +1 @@
@@ -15,13 +32,16 @@ index 80f63fe..6119dfe 100644
 +	public onlineBaselineEntries = new Map<number, Uint8Array>();
 +	public onOnlineRecovery?: (gap: { tick: number; deltaFrom: number | null; request?: boolean }) => void;
 +	public onOnlineReceipt?: (receipt: { tick: number; baselineAck: number | null; full: boolean }) => void;
-@@ -424,0 +430,5 @@ export class EntityParser {
+@@ -259,0 +265,2 @@ export class EntityParser {
++		this.cachedBitBuffer.setCoordinateEncoding(classInfo.coordSizeParams);
++		this.cachedBitBuffer2.setCoordinateEncoding(classInfo.coordSizeParams);
+@@ -424,0 +432,5 @@ export class EntityParser {
 +		const saved = this.online?.baseline(entityId, classId);
 +		if (saved && this.directEntities?.[entityId]) {
 +			this.directEntities[entityId]!.properties = saved;
 +			return;
 +		}
-@@ -444 +454,21 @@ export class EntityParser {
+@@ -444 +456,22 @@ export class EntityParser {
 -		if (!validateSnapshot && this.directEntities && this.directPropInfoById === this.classInfo.propInfoById) {
 +		if (this.online) {
 +			if (msg.pending_full_frame) {
@@ -40,34 +60,35 @@ index 80f63fe..6119dfe 100644
 +		}
 +		if (
 +			!this.online &&
++			!this.classInfo.coordSizeParams &&
 +			!validateSnapshot &&
 +			this.directEntities &&
 +			this.directPropInfoById === this.classInfo.propInfoById
 +		) {
-@@ -478,0 +509 @@ export class EntityParser {
+@@ -478,0 +512 @@ export class EntityParser {
 +				this.online?.leave(entityId);
-@@ -489,0 +521,5 @@ export class EntityParser {
+@@ -489,0 +524,5 @@ export class EntityParser {
 +				this.online?.enter(
 +					entityId,
 +					this.entities[entityId]!,
 +					this.directEntities?.[entityId]?.properties ?? {}
 +				);
-@@ -490,0 +527 @@ export class EntityParser {
+@@ -490,0 +530 @@ export class EntityParser {
 +				this.online?.update(entityId);
-@@ -496,0 +534,6 @@ export class EntityParser {
+@@ -496,0 +537,6 @@ export class EntityParser {
 +				const alternate = this.online?.alternate(entityId);
 +				if (alternate !== undefined) {
 +					const value = this.onlineBaselineEntries.get(alternate);
 +					if (!value) throw new Error('Missing alternate class baseline');
 +					this.updateEntity(this.cachedBitBuffer.setTo(value), entityId);
 +				}
-@@ -499,0 +543,52 @@ export class EntityParser {
+@@ -499,0 +546,52 @@ export class EntityParser {
 +		if (this.online) {
 +			const extra = msg.outofpvs_entity_updates;
 +			if (extra && (extra.count ?? 0) > 0) {
 +				if (!Number.isInteger(extra.count) || extra.count! > 16384 || !extra.data)
 +					throw new Error('Invalid out-of-PVS updates');
-+				const outside = new BitBuffer(extra.data);
++				const outside = new BitBuffer(extra.data).setCoordinateEncoding(this.classInfo.coordSizeParams);
 +				let id = -1;
 +				for (let i = 0; i < extra.count!; i++) {
 +					id += 1 + outside.readUbitVar();
@@ -270,6 +291,250 @@ index 2aa047f..96c2faf 100644
 @@ -1160 +1292 @@ export class ParseSession {
 -			for (const event of gameEventQueue) {
 +			for (const event of this.entityParser?.online?.waitingFull ? [] : gameEventQueue) {
+diff --git a/src/parser/ubitreader.ts b/src/parser/ubitreader.ts
+index 3172e33..5b01b8b 100644
+--- a/src/parser/ubitreader.ts
++++ b/src/parser/ubitreader.ts
+@@ -0,0 +1 @@
++import type { ProtoCoordSizeParams_t } from '../ts-proto/netmessages.js';
+@@ -8,2 +8,0 @@ MASK[32] = 0xffffffff;
+-const BIT_COORD_FRAC_SCALE = 1 / 32;
+-const BIT_COORD_PRES_SCALE = 360 / (1 << 20);
+@@ -21,0 +21,23 @@ export class BitBuffer {
++	private coordIntegerBits = 14;
++	private coordFractionBits = 5;
++	private normalBits = 11;
++	private angleBits = 20;
++
++	/** Encoding belongs to this stream; two observer instances may negotiate different profiles. */
++	setCoordinateEncoding(profile: ProtoCoordSizeParams_t | undefined) {
++		if (!profile) return this;
++		const values = [profile.coord_integer_bits, profile.coord_fractional_bits,
++			profile.coord_integer_bits_mp, profile.coord_fractional_bits_mp,
++			profile.normal_fractional_bits, profile.angle_bits];
++		if (values.some(value => !Number.isInteger(value) || value! < 1 || value! > 31))
++			throw new Error('Invalid coordinate encoding bit width');
++		if (Math.max(profile.coord_integer_bits!, profile.coord_integer_bits_mp!) + 3 +
++			Math.max(profile.coord_fractional_bits!, profile.coord_fractional_bits_mp!) > 32)
++			throw new Error('Coordinate encoding exceeds the game bit budget');
++		this.coordIntegerBits = profile.coord_integer_bits!;
++		this.coordFractionBits = profile.coord_fractional_bits!;
++		this.normalBits = profile.normal_fractional_bits!;
++		this.angleBits = profile.angle_bits!;
++		return this;
++	}
++
+@@ -471 +493 @@ export class BitBuffer {
+-			intVal = this.ReadUBits(14) + 1;
++			intVal = this.ReadUBits(this.coordIntegerBits) + 1;
+@@ -475 +497 @@ export class BitBuffer {
+-			fracVal = this.ReadUBits(5);
++			fracVal = this.ReadUBits(this.coordFractionBits);
+@@ -478 +500 @@ export class BitBuffer {
+-		const result = Math.fround(intVal + fracVal * BIT_COORD_FRAC_SCALE);
++		const result = Math.fround(intVal + fracVal / 2 ** this.coordFractionBits);
+@@ -485 +507 @@ export class BitBuffer {
+-		return this.ReadUBits(20) * BIT_COORD_PRES_SCALE - 180;
++		return Math.fround(Math.fround(this.ReadUBits(this.angleBits) * (360 / 2 ** this.angleBits)) - 180);
+@@ -496 +518 @@ export class BitBuffer {
+-		const length = this.ReadUBits(11);
++		const length = this.ReadUBits(this.normalBits);
+@@ -498 +520 @@ export class BitBuffer {
+-		const result = length * (1 / 2048 - 1);
++		const result = Math.fround(length * Math.fround(1 / (2 ** this.normalBits - 1)));
+diff --git a/src/proto/netmessages.proto b/src/proto/netmessages.proto
+index 8e886c1..db2ae19 100644
+--- a/src/proto/netmessages.proto
++++ b/src/proto/netmessages.proto
+@@ -502,0 +503,4 @@ message ProtoFlattenedSerializerField_t {
++	message proto_enum_info_t {
++		optional bool is_signed_enum = 1;
++	}
++
+@@ -519,0 +524 @@ message ProtoFlattenedSerializerField_t {
++	optional .ProtoFlattenedSerializerField_t.proto_enum_info_t var_enum_info = 13;
+@@ -527,0 +533,9 @@ message ProtoFlattenedSerializer_t {
++message ProtoCoordSizeParams_t {
++	optional int32 coord_integer_bits = 1;
++	optional int32 coord_fractional_bits = 2;
++	optional int32 coord_integer_bits_mp = 3;
++	optional int32 coord_fractional_bits_mp = 4;
++	optional int32 normal_fractional_bits = 5;
++	optional int32 angle_bits = 6;
++}
++
+@@ -533,0 +548 @@ message CSVCMsg_FlattenedSerializer {
++	optional .ProtoCoordSizeParams_t coord_size_params = 4;
+@@ -652,0 +668 @@ message CMsgServerUserCmd {
++	optional bool delta_processed = 7;
+diff --git a/src/ts-proto/netmessages.ts b/src/ts-proto/netmessages.ts
+index d517aae..c923ecb 100644
+--- a/src/ts-proto/netmessages.ts
++++ b/src/ts-proto/netmessages.ts
+@@ -653,0 +654,5 @@ export interface ProtoFlattenedSerializerField_t {
++  var_enum_info?: ProtoFlattenedSerializerField_t_proto_enum_info_t | undefined;
++}
++
++export interface ProtoFlattenedSerializerField_t_proto_enum_info_t {
++  is_signed_enum?: boolean | undefined;
+@@ -666,0 +672,9 @@ export interface ProtoFlattenedSerializer_t {
++export interface ProtoCoordSizeParams_t {
++  coord_integer_bits?: number | undefined;
++  coord_fractional_bits?: number | undefined;
++  coord_integer_bits_mp?: number | undefined;
++  coord_fractional_bits_mp?: number | undefined;
++  normal_fractional_bits?: number | undefined;
++  angle_bits?: number | undefined;
++}
++
+@@ -670,0 +685 @@ export interface CSVCMsg_FlattenedSerializer {
++  coord_size_params?: ProtoCoordSizeParams_t | undefined;
+@@ -795,0 +811 @@ export interface CMsgServerUserCmd {
++  delta_processed?: boolean | undefined;
+@@ -3874,0 +3891 @@ function createBaseProtoFlattenedSerializerField_t(): ProtoFlattenedSerializerFi
++    var_enum_info: undefined,
+@@ -3983,0 +4001,40 @@ export const ProtoFlattenedSerializerField_t: MessageFns<ProtoFlattenedSerialize
++        case 13: {
++          if (tag !== 106) {
++            break;
++          }
++
++          message.var_enum_info = ProtoFlattenedSerializerField_t_proto_enum_info_t.decode(reader, reader.uint32());
++          continue;
++        }
++      }
++      if ((tag & 7) === 4 || tag === 0) {
++        break;
++      }
++      reader.skip(tag & 7);
++    }
++    return message;
++  },
++};
++
++function createBaseProtoFlattenedSerializerField_t_proto_enum_info_t(): ProtoFlattenedSerializerField_t_proto_enum_info_t {
++  return { is_signed_enum: undefined };
++}
++
++export const ProtoFlattenedSerializerField_t_proto_enum_info_t: MessageFns<
++  ProtoFlattenedSerializerField_t_proto_enum_info_t
++> = {
++  decode(input: BinaryReader | Uint8Array, length?: number): ProtoFlattenedSerializerField_t_proto_enum_info_t {
++    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
++    const end = length === undefined ? reader.len : reader.pos + length;
++    const message = createBaseProtoFlattenedSerializerField_t_proto_enum_info_t();
++    while (reader.pos < end) {
++      const tag = reader.uint32();
++      switch (tag >>> 3) {
++        case 1: {
++          if (tag !== 8) {
++            break;
++          }
++
++          message.is_signed_enum = reader.bool();
++          continue;
++        }
+@@ -4089,0 +4147,77 @@ export const ProtoFlattenedSerializer_t: MessageFns<ProtoFlattenedSerializer_t>
++function createBaseProtoCoordSizeParams_t(): ProtoCoordSizeParams_t {
++  return {
++    coord_integer_bits: undefined,
++    coord_fractional_bits: undefined,
++    coord_integer_bits_mp: undefined,
++    coord_fractional_bits_mp: undefined,
++    normal_fractional_bits: undefined,
++    angle_bits: undefined,
++  };
++}
++
++export const ProtoCoordSizeParams_t: MessageFns<ProtoCoordSizeParams_t> = {
++  decode(input: BinaryReader | Uint8Array, length?: number): ProtoCoordSizeParams_t {
++    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
++    const end = length === undefined ? reader.len : reader.pos + length;
++    const message = createBaseProtoCoordSizeParams_t();
++    while (reader.pos < end) {
++      const tag = reader.uint32();
++      switch (tag >>> 3) {
++        case 1: {
++          if (tag !== 8) {
++            break;
++          }
++
++          message.coord_integer_bits = reader.int32();
++          continue;
++        }
++        case 2: {
++          if (tag !== 16) {
++            break;
++          }
++
++          message.coord_fractional_bits = reader.int32();
++          continue;
++        }
++        case 3: {
++          if (tag !== 24) {
++            break;
++          }
++
++          message.coord_integer_bits_mp = reader.int32();
++          continue;
++        }
++        case 4: {
++          if (tag !== 32) {
++            break;
++          }
++
++          message.coord_fractional_bits_mp = reader.int32();
++          continue;
++        }
++        case 5: {
++          if (tag !== 40) {
++            break;
++          }
++
++          message.normal_fractional_bits = reader.int32();
++          continue;
++        }
++        case 6: {
++          if (tag !== 48) {
++            break;
++          }
++
++          message.angle_bits = reader.int32();
++          continue;
++        }
++      }
++      if ((tag & 7) === 4 || tag === 0) {
++        break;
++      }
++      reader.skip(tag & 7);
++    }
++    return message;
++  },
++};
++
+@@ -4091 +4225 @@ function createBaseCSVCMsg_FlattenedSerializer(): CSVCMsg_FlattenedSerializer {
+-  return { serializers: [], symbols: [], fields: [] };
++  return { serializers: [], symbols: [], fields: [], coord_size_params: undefined };
+@@ -4125,0 +4260,8 @@ export const CSVCMsg_FlattenedSerializer: MessageFns<CSVCMsg_FlattenedSerializer
++        case 4: {
++          if (tag !== 34) {
++            break;
++          }
++
++          message.coord_size_params = ProtoCoordSizeParams_t.decode(reader, reader.uint32());
++          continue;
++        }
+@@ -5018,0 +5161 @@ function createBaseCMsgServerUserCmd(): CMsgServerUserCmd {
++    delta_processed: undefined,
+@@ -5077,0 +5221,8 @@ export const CMsgServerUserCmd: MessageFns<CMsgServerUserCmd> = {
++        case 7: {
++          if (tag !== 56) {
++            break;
++          }
++
++          message.delta_processed = reader.bool();
++          continue;
++        }
 diff --git a/src/parser/entities/fullFrameSplit.ts b/src/parser/entities/fullFrameSplit.ts
 new file mode 100644
 index 0000000..bd71dc0
@@ -501,10 +766,3 @@ index 0000000..38c16f4
 +		this.latest = -1;
 +	}
 +}
-diff --git a/src/parser/ubitreader.ts b/src/parser/ubitreader.ts
-index 3172e33..5b6000f 100644
---- a/src/parser/ubitreader.ts
-+++ b/src/parser/ubitreader.ts
-@@ -498 +498 @@ export class BitBuffer {
--		const result = length * (1 / 2048 - 1);
-+		const result = length / ((1 << 11) - 1);

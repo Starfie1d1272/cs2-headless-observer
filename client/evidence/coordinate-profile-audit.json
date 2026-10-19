@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-19",
+  "networksystem_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "engine_schema_validation": "0x180085330",
+  "normal_decoder": "0x1800d1930: profile normal bits at +0x20, scale at +0x28",
+  "coordinate_decoder": "0x1800d5fd0: profile integer/fraction bit widths and fraction scale",
+  "precise_angle_decoder": "0x1800d3d90: profile angle bits at +0x2c, 360/2^bits at +0x40",
+  "generator": {
+    "protoc": "34.0",
+    "ts_proto": "2.11.6",
+    "protoc_asset_sha256": "e9a91b6fcfe4177ec2cd35fc8f15c1e811fa0ecdef9372755cd6d3513d5faaab"
+  },
+  "verification": [
+    "literal protobuf schema fields",
+    "classInfo to both cached readers",
+    "independent stream legacy defaults",
+    "signed normal vectors",
+    "invalid/missing/out-of-budget bit widths rejected",
+    "full entity packet with 8-bit normal",
+    "negotiated-angle skipped-field alignment",
+    "clean patch replay and TypeScript build",
+    "real legacy Demo first full and feedback"
+  ],
+  "limitations": [
+    "real fixture carries no coord_size_params or enum metadata",
+    "negotiated profile behavior uses synthetic binary vectors plus fixed-game codec analysis",
+    "WASM uses fixed widths, so negotiated profiles take JS fallback",
+    "enum signedness, other angle codecs, integral coordinate codec, and live endpoint remain under audit"
+  ]
+}

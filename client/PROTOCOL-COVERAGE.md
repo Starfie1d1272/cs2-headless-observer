@@ -65,3 +65,7 @@
 固定 engine2 内嵌 netmessages.proto 描述与固定解析库比较，发现 10 个新增字段、没有变更或删除字段；见 `evidence/current-schema-comparison.json`。新增涉及坐标位宽配置、枚举有符号性以及 usercmd delta 处理标记。普通观战能接收 schema 不等于解析库已消费这些字段；坐标配置和枚举 decoder 仍需逐项核实，不把忽略新增 protobuf 字段视为兼容证明。
 
 已确认并修正一个独立的 normal 解码算术问题：固定引擎 `0x18009ca50` 的归一化比例为 `1 / (2^normal_bits - 1)`。旧解析器写成 `1 / 2048 - 1`，11 位正向 magnitude=1 实际解为 -0.99951171875，正确值应为 1/2047。修后八个正负端点/中间向量以及现有实体二进制回归通过，干净固定源码应用补丁与类型检查通过。见 `evidence/normal-decoder-audit.json`。完整录像 185932 包对照通过，两边事件顺序/摘要一致，各 185922 实体回执，见 `evidence/normal-decoder-full-replay.json`。此回归证明受测事件未退化，normal 数值正确性由独立向量证明；尚未据此发布或制作测试包。
+
+坐标配置已接入 protobuf → ClassInfo → 单实例 BitBuffer → 实体及跳过路径，包含整数/小数位宽、normal 与 precise angle 位宽及游戏相同的参数预算检查。已对照 networksystem 的三个实际解码函数：normal `0x1800d1930`、coord `0x1800d5fd0`、qangle_precise `0x1800d3d90`；precise-angle 跳过路径同步消费协商位宽。带配置的流避开只认识固定位宽的 WASM，普通观众本来就使用 JS 实体路径。独立字节向量、完整实体创建、两个实例的默认隔离及非法参数拒绝通过；干净补丁构建、实体回归和真实旧录像首次 FULL/反馈通过。证据见 `evidence/coordinate-profile-audit.json` 与 `evidence/coordinate-profile-first-full.json`，复现用 `verify_coordinate_profile.mjs`。现有真实录像没有新配置/枚举字段，不能作为这些新增协议字段的在线证据。
+
+下一批明确核对的编码分支：qangle_pitch_yaw（实际游戏读两轴）、带显式 bit_count 的角度、coord_integral 与 var_enum_info 的有符号分支。当前库这些分支的映射仍需对照；不得把默认通用 decoder 当成已完成兼容。
