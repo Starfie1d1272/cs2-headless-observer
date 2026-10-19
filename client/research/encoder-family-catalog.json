@@ -1,0 +1,162 @@
+[
+  {
+    "category": 0,
+    "name": "default",
+    "row": "0x1802746c0",
+    "decode": "0x180009de0",
+    "encode": "0x180009de0",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 1,
+    "name": "default",
+    "row": "0x180273ec0",
+    "decode": "0x1800d00a0",
+    "encode": "0x1800d0050",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 1,
+    "name": "fixed8",
+    "row": "0x180273f40",
+    "decode": "0x1800d01d0",
+    "encode": "0x1800d0160",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 1,
+    "name": "fixed32",
+    "row": "0x180273fc0",
+    "decode": "0x1800d04d0",
+    "encode": "0x1800d0460",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 1,
+    "name": "fixed64",
+    "row": "0x180274040",
+    "decode": "0x1800d0990",
+    "encode": "0x1800d0830",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 2,
+    "name": "default",
+    "row": "0x180273cc0",
+    "decode": "0x1800d0130",
+    "encode": "0x1800d00e0",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 2,
+    "name": "fixed8",
+    "row": "0x180273d40",
+    "decode": "0x1800d0380",
+    "encode": "0x1800d0220",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 2,
+    "name": "fixed32",
+    "row": "0x180273dc0",
+    "decode": "0x1800d0680",
+    "encode": "0x1800d0520",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 2,
+    "name": "fixed64",
+    "row": "0x180273e40",
+    "decode": "0x1800d0ce0",
+    "encode": "0x1800d0830",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 3,
+    "name": "default",
+    "row": "0x180274240",
+    "decode": "0x1800d1520",
+    "encode": "0x1800d1400",
+    "configInit": "0x1800d1250"
+  },
+  {
+    "category": 3,
+    "name": "qangle",
+    "row": "0x1802742c0",
+    "decode": "0x1800d2950",
+    "encode": "0x1800d1f60",
+    "configInit": "0x1800d1f00"
+  },
+  {
+    "category": 3,
+    "name": "normal",
+    "row": "0x180274340",
+    "decode": "0x1800d1930",
+    "encode": "0x1800d15b0",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 3,
+    "name": "coord",
+    "row": "0x1802743c0",
+    "decode": "0x1800d5fd0",
+    "encode": "0x1800d46d0",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 3,
+    "name": "coord_integral",
+    "row": "0x180274440",
+    "decode": "0x1800da4f0",
+    "encode": "0x1800d90b0",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 3,
+    "name": "qangle_pitch_yaw",
+    "row": "0x1802744c0",
+    "decode": "0x1800d4640",
+    "encode": "0x1800d4460",
+    "configInit": "0x1800d1f00"
+  },
+  {
+    "category": 3,
+    "name": "qangle_precise",
+    "row": "0x180274540",
+    "decode": "0x1800d3d90",
+    "encode": "0x1800d3900",
+    "configInit": "0x1800d1f00"
+  },
+  {
+    "category": 4,
+    "name": "default",
+    "row": "0x180274640",
+    "decode": "0x1800dccb0",
+    "encode": "0x1800dcb10",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 5,
+    "name": "default",
+    "row": "0x180274140",
+    "decode": "0x1800d11f0",
+    "encode": "0x1800d11a0",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 6,
+    "name": "default",
+    "row": "0x1802740c0",
+    "decode": "0x1800dcd80",
+    "encode": "0x1800dccf0",
+    "configInit": "0x180009df0"
+  },
+  {
+    "category": 7,
+    "name": "default",
+    "row": "0x1802741c0",
+    "decode": "0x1800d10e0",
+    "encode": "0x1800d1000",
+    "configInit": "0x180009df0"
+  }
+]

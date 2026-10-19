@@ -1,0 +1,296 @@
+[
+  {
+    "message_id": 4,
+    "callback": "18009c5a0",
+    "vtable_slot": "0x2c8",
+    "type": "CNETMsg_Tick",
+    "handler": "0x180069cd0"
+  },
+  {
+    "message_id": 5,
+    "callback": "18009c750",
+    "vtable_slot": "0x2d0",
+    "type": "CNETMsg_StringCmd",
+    "handler": "0x18006a270"
+  },
+  {
+    "message_id": 6,
+    "callback": "18009c5c4",
+    "vtable_slot": "0x2d8",
+    "type": "CNETMsg_SetConVar",
+    "handler": "0x1800825e0"
+  },
+  {
+    "message_id": 15,
+    "callback": "18009c780",
+    "vtable_slot": "0x2e0",
+    "type": "CNETMsg_DebugOverlay",
+    "handler": "0x180082790"
+  },
+  {
+    "message_id": 7,
+    "callback": "18009c5e8",
+    "vtable_slot": "0x2e8",
+    "type": "CNETMsg_SignonState",
+    "handler": "0x180082b60"
+  },
+  {
+    "message_id": 48,
+    "callback": "18009c654",
+    "vtable_slot": "0x328",
+    "type": "CSVCMsg_Print",
+    "handler": "0x180082bb0"
+  },
+  {
+    "message_id": 40,
+    "callback": "18009c4a4",
+    "vtable_slot": "0x330",
+    "type": "CSVCMsg_ServerInfo",
+    "handler": "0x18006a280"
+  },
+  {
+    "message_id": 42,
+    "callback": "18009c678",
+    "vtable_slot": "0x338",
+    "type": "CSVCMsg_ClassInfo",
+    "handler": "0x1800680e0"
+  },
+  {
+    "message_id": 41,
+    "callback": "18009c4b0",
+    "vtable_slot": "0x340",
+    "type": "CSVCMsg_FlattenedSerializerWrapper",
+    "handler": "0x180085330"
+  },
+  {
+    "message_id": 43,
+    "callback": "18009c6b4",
+    "vtable_slot": "0x358",
+    "type": "CSVCMsg_SetPause",
+    "handler": "0x180085d10"
+  },
+  {
+    "message_id": 44,
+    "callback": "18009c6c0",
+    "vtable_slot": "0x368",
+    "type": "CSVCMsg_CreateStringTable",
+    "handler": "0x180085e00"
+  },
+  {
+    "message_id": 51,
+    "callback": "18009c4e0",
+    "vtable_slot": "0x360",
+    "type": "CSVCMsg_ClearAllStringTables",
+    "handler": "0x180060ec0"
+  },
+  {
+    "message_id": 45,
+    "callback": "18009c4f8",
+    "vtable_slot": "0x370",
+    "type": "CSVCMsg_UpdateStringTable",
+    "handler": "0x1800860f0"
+  },
+  {
+    "message_id": 46,
+    "callback": "18009c63c",
+    "vtable_slot": "0x318",
+    "type": "CSVCMsg_VoiceInit",
+    "handler": "0x180021ba0"
+  },
+  {
+    "message_id": 47,
+    "callback": "18009c7ec",
+    "vtable_slot": "0x320",
+    "type": "CSVCMsg_VoiceData",
+    "handler": "0x180021ba0"
+  },
+  {
+    "message_id": 49,
+    "callback": "18009c714",
+    "vtable_slot": "0x3a8",
+    "type": "CSVCMsg_Sounds",
+    "handler": "0x180021ba0"
+  },
+  {
+    "message_id": 50,
+    "callback": "18009c6d8",
+    "vtable_slot": "0x378",
+    "type": "CSVCMsg_SetView",
+    "handler": "0x180021ba0"
+  },
+  {
+    "message_id": 55,
+    "callback": "18009c51c",
+    "vtable_slot": "0x380",
+    "type": "CSVCMsg_PacketEntities",
+    "handler": "0x18006a960"
+  },
+  {
+    "message_id": 56,
+    "callback": "18009c570",
+    "vtable_slot": "0x3b0",
+    "type": "CSVCMsg_Prefetch",
+    "handler": "0x180021ba0"
+  },
+  {
+    "message_id": 57,
+    "callback": "18009c6a8",
+    "vtable_slot": "0x348",
+    "type": "CSVCMsg_Menu",
+    "handler": "0x180021ba0"
+  },
+  {
+    "message_id": 58,
+    "callback": "18009c4bc",
+    "vtable_slot": "0x350",
+    "type": "CSVCMsg_GetCvarValue",
+    "handler": "0x180089160"
+  },
+  {
+    "message_id": 54,
+    "callback": "18009c6f0",
+    "vtable_slot": "0x388",
+    "type": "CSVCMsg_SplitScreen",
+    "handler": "0x1800899f0"
+  },
+  {
+    "message_id": 52,
+    "callback": "18009c540",
+    "vtable_slot": "0x390",
+    "type": "internal/unresolved",
+    "handler": "0x180089c80"
+  },
+  {
+    "message_id": 78,
+    "callback": "18009c708",
+    "vtable_slot": "0x398",
+    "type": "CSVCMsg_EncryptedData",
+    "handler": "0x180089df0"
+  },
+  {
+    "message_id": 71,
+    "callback": "18009c558",
+    "vtable_slot": "0x3a0",
+    "type": "CSVCMsg_RconServerDetails",
+    "handler": "0x180089e70"
+  },
+  {
+    "message_id": 59,
+    "callback": "18009c72c",
+    "vtable_slot": "0x3b8",
+    "type": "CSVCMsg_StopSound",
+    "handler": "0x180082b80"
+  },
+  {
+    "message_id": 8,
+    "callback": "18009c7a4",
+    "vtable_slot": "0x2f0",
+    "type": "CNETMsg_SpawnGroup_Load",
+    "handler": "0x180082da0"
+  },
+  {
+    "message_id": 9,
+    "callback": "18009c600",
+    "vtable_slot": "0x2f8",
+    "type": "CNETMsg_SpawnGroup_ManifestUpdate",
+    "handler": "0x180083690"
+  },
+  {
+    "message_id": 12,
+    "callback": "18009c7bc",
+    "vtable_slot": "0x300",
+    "type": "CNETMsg_SpawnGroup_Unload",
+    "handler": "0x180083d60"
+  },
+  {
+    "message_id": 11,
+    "callback": "18009c618",
+    "vtable_slot": "0x308",
+    "type": "CNETMsg_SpawnGroup_SetCreationTick",
+    "handler": "0x180083a30"
+  },
+  {
+    "message_id": 60,
+    "callback": "18009c7d4",
+    "vtable_slot": "0x310",
+    "type": "CSVCMsg_PeerList",
+    "handler": "0x1800845c0"
+  },
+  {
+    "message_id": 61,
+    "callback": "18009c594",
+    "vtable_slot": "0x3c0",
+    "type": "CSVCMsg_PacketReliable",
+    "handler": "0x18008b010"
+  },
+  {
+    "message_id": 70,
+    "callback": "18009c744",
+    "vtable_slot": "0x3c8",
+    "type": "CSVCMsg_FullFrameSplit",
+    "handler": "0x180021ba0"
+  },
+  {
+    "message_id": 62,
+    "callback": "18009c5b8",
+    "vtable_slot": "0x3d0",
+    "type": "CSVCMsg_HLTVStatus",
+    "handler": "0x180021ba0"
+  },
+  {
+    "message_id": 63,
+    "callback": "18009c774",
+    "vtable_slot": "0x3d8",
+    "type": "CSVCMsg_ServerSteamID",
+    "handler": "0x18008b0d0"
+  },
+  {
+    "message_id": 1073741824,
+    "callback": "18009c7b0",
+    "vtable_slot": "0x3f8",
+    "type": "NetMessagePacketStart",
+    "handler": "0x180068800"
+  },
+  {
+    "message_id": 1073741825,
+    "callback": "18009c60c",
+    "vtable_slot": "0x400",
+    "type": "NetMessagePacketEnd",
+    "handler": "0x180068820"
+  },
+  {
+    "message_id": 4294967295,
+    "callback": "18009c5dc",
+    "vtable_slot": "0x3e0",
+    "type": "internal/unresolved",
+    "handler": "0x180068690"
+  },
+  {
+    "message_id": 4294967295,
+    "callback": "18009c798",
+    "vtable_slot": "0x3e8",
+    "type": "internal/unresolved",
+    "handler": "0x180068750"
+  },
+  {
+    "message_id": 4294967295,
+    "callback": "18009c5f4",
+    "vtable_slot": "0x3f0",
+    "type": "internal/unresolved",
+    "handler": "0x180089c20"
+  },
+  {
+    "message_id": 74,
+    "callback": "18009c7c8",
+    "vtable_slot": "0x408",
+    "type": "CSVCMsg_HltvReplay",
+    "handler": "0x180060f00"
+  },
+  {
+    "message_id": 76,
+    "callback": "18009c630",
+    "vtable_slot": "0x410",
+    "type": "CSVCMsg_UserCommands",
+    "handler": "0x180089f70"
+  }
+]
