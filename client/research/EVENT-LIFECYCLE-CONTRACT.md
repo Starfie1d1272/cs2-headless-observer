@@ -4,6 +4,7 @@ Scope: authorized ordinary GOTV viewer, no rendering or interactive replay; two 
 
 ## Source facts
 - Fixed client9f9580 replaces game event descriptor IDs and marks subscription state dirty; after signon>3 the client builds message206 from the current event manager's IDs.
+- Clienta1eb50 explicitly clears16 uint32 words, sets each subscribed server event ID's bit, and serializes all16 words into206.eventarraybits. Its playerslot is obtained from the engine's local-slot lookup, not the Steam account ID or a string-table user ID. Use the assigned observer slot and a512-bit subscription domain for this fixed build; validate descriptor IDs before indexing rather than extending an inferred bitmap arbitrarily. This is the subscription container's observed bound, not a claim that protobuf int32 itself is limited to511.
 - Event207 receive9f8a90 and deferred drain9aee70 deserialize through the event manager and dispatch. Deferred rendering drain iterates backwards, so its traversal order is not a wire-order contract.
 - HLTV124d40/137450 captures messages into shared signon/reliable/unreliable frame buffers, and122500 forwards them to viewers. The inspected forwarding path does not classify207 by each viewer's individual subscription bitmap.
 - Network tick context can change per application message. Tick regression alone neither replaces schema nor establishes a new world. Snapshot receipt ACK belongs only to successfully committed PacketEntities.

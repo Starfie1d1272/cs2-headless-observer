@@ -1,0 +1,92 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "function": "networksystem0fb100",
+    "method": "isolated complete table-decompression wrapper; no OS imports/stubs/network",
+    "cases": 9,
+    "passed": 9
+  },
+  "cases": [
+    {
+      "kind": "snappy-literal",
+      "input_hex": "00",
+      "expected_hex": "",
+      "actual_hex": "",
+      "actual_size": 0,
+      "returned": 1,
+      "passed": true
+    },
+    {
+      "kind": "snappy-literal",
+      "input_hex": "010061",
+      "expected_hex": "61",
+      "actual_hex": "61",
+      "actual_size": 1,
+      "returned": 1,
+      "passed": true
+    },
+    {
+      "kind": "snappy-literal",
+      "input_hex": "0308616263",
+      "expected_hex": "616263",
+      "actual_hex": "616263",
+      "actual_size": 3,
+      "returned": 1,
+      "passed": true
+    },
+    {
+      "kind": "snappy-literal",
+      "input_hex": "207c000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "actual_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "actual_size": 32,
+      "returned": 1,
+      "passed": true
+    },
+    {
+      "kind": "snappy-copy",
+      "input_hex": "06086162630a0300",
+      "expected_hex": "616263616263",
+      "actual_hex": "616263616263",
+      "actual_size": 6,
+      "returned": 1,
+      "passed": true
+    },
+    {
+      "kind": "raw-fallback",
+      "input_hex": "6e6f7420736e61707079",
+      "expected_hex": "6e6f7420736e61707079",
+      "actual_hex": "6e6f7420736e61707079",
+      "actual_size": 10,
+      "returned": 1,
+      "passed": true
+    },
+    {
+      "kind": "raw-fallback",
+      "input_hex": "616263",
+      "expected_hex": "616263",
+      "actual_hex": "616263",
+      "actual_size": 3,
+      "returned": 1,
+      "passed": true
+    },
+    {
+      "kind": "raw-fallback",
+      "input_hex": "ffffffffff",
+      "expected_hex": "ffffffffff",
+      "actual_hex": "ffffffffff",
+      "actual_size": 5,
+      "returned": 1,
+      "passed": true
+    },
+    {
+      "kind": "raw-fallback",
+      "input_hex": "",
+      "expected_hex": "",
+      "actual_hex": "",
+      "actual_size": 0,
+      "returned": 1,
+      "passed": true
+    }
+  ]
+}
