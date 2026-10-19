@@ -31,6 +31,8 @@ Forward live receive does not enter CInstantReplay playback. Message70 full-fram
 - Dynamic arrays preserve existing in-range state and discard removed descendants; pointer absence/type replacement clears logical children, unchanged type preserves them. Persistent serialized metadata is old+delta keyed merge, distinct from logical descendants. Immutable schema must never carry an entity's active variant.
 - Keep raw wire values and accessor-normalized output separate. Required position/identity/event fields apply proven accessors; unused rendering-only fields need correct consumption, not simulation of their callbacks.
 
+The ordinary observer consumes the source gameevent207 records with their descriptor and receive ordinal. It must bypass the general Demo helper's synthetic round_start/round_end suppression and equipment reconstruction; source round events must not be replaced by inferred entity transitions. The adapter currently uses those synthetic helpers, so changing only tick-regression checks would leave a semantic mismatch.
+
 Event identity dispatch follows descriptor types: playercontroller9 is the event player-slot domain, strict_ehandle8 carries a native32-bit pawn handle with15 index bits and full serial matching. Keep it distinct from flattened field ehandle14/10 and string-table user IDs. Capture identity at the source ordinal; never use the old helper's0x7ff pawn mask or resolve a delayed old pawn to a new serial.
 
 ## Stringtables and world dependencies
