@@ -1,0 +1,2752 @@
+{
+  "summary": {
+    "module": ".agent-tmp/gotv-tools/cs2/game/csgo/bin/win64/client.dll",
+    "constructor_count": 83,
+    "identified_calls": 83,
+    "unresolved_calls": 0,
+    "unique_types": 14,
+    "method": "Static boxed flag writes and direct constructor calls; underlying names are candidates until store linkage is checked; no game execution"
+  },
+  "calls": [
+    {
+      "type": "GameTime_t",
+      "field": "m_flLightStyleStartTime",
+      "width_argument": 4,
+      "call": "0x1801cdfd2",
+      "constructor": "0x1801af6e0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1801af9bd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1801af99a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1801af9a7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1801af9c5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flStartAnisoTime",
+      "width_argument": 4,
+      "call": "0x18027b60a",
+      "constructor": "0x180262df0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1802630cd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1802630aa"
+        },
+        {
+          "name": "float32",
+          "address": "0x1802630b7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1802630d5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flStartScatterTime",
+      "width_argument": 4,
+      "call": "0x18027b702",
+      "constructor": "0x180263930",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180263c0d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180263bea"
+        },
+        {
+          "name": "float32",
+          "address": "0x180263bf7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180263c15",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flStartDrawDistanceTime",
+      "width_argument": 4,
+      "call": "0x18027b795",
+      "constructor": "0x180263390",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x18026366d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x18026364a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180263657"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180263675",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "AttachmentHandle_t[10]",
+      "field": "m_nAttachIndex",
+      "width_argument": 10,
+      "call": "0x18030a797",
+      "constructor": "0x1802d6810",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1802d6b8c",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint8",
+          "address": "0x1802d6b19"
+        },
+        {
+          "name": "uint8",
+          "address": "0x1802d6b85"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint8",
+          "base": "r14",
+          "call": "0x1802d6b9b",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flStartTime",
+      "width_argument": 4,
+      "call": "0x18030c1e1",
+      "constructor": "0x1802f2280",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1802f255d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1802f253a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1802f2547"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1802f2565",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "lerptime",
+      "width_argument": 4,
+      "call": "0x180313e42",
+      "constructor": "0x1802f1ce0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1802f1fbd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1802f1f9a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1802f1fa7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1802f1fc5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "WorldGroupId_t",
+      "field": "m_nWorldGroupID",
+      "width_argument": 4,
+      "call": "0x180317297",
+      "constructor": "0x1802f2820",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1802f2afd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint32",
+          "address": "0x1802f2ada"
+        },
+        {
+          "name": "uint32",
+          "address": "0x1802f2ae7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint32",
+          "base": "r14",
+          "call": "0x1802f2b05",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "AttachmentHandle_t",
+      "field": "m_nAttachment",
+      "width_argument": 1,
+      "call": "0x180338782",
+      "constructor": "0x180329ca0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x180329f7d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint8",
+          "address": "0x180329f5a"
+        },
+        {
+          "name": "uint8",
+          "address": "0x180329f67"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint8",
+          "base": "r14",
+          "call": "0x180329f85",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "ModelConfigHandle_t",
+      "field": "m_Handle",
+      "width_argument": 4,
+      "call": "0x18044b4d3",
+      "constructor": "0x180417110",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1804173ed",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint32",
+          "address": "0x1804173ca"
+        },
+        {
+          "name": "uint32",
+          "address": "0x1804173d7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint32",
+          "base": "r14",
+          "call": "0x1804173f5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "HSequence",
+      "field": "m_hSequence",
+      "width_argument": 4,
+      "call": "0x18044eb82",
+      "constructor": "0x180416b70",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x180416e4d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x180416e2a"
+        },
+        {
+          "name": "int32",
+          "address": "0x180416e37"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x180416e55",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flSeqStartTime",
+      "width_argument": 4,
+      "call": "0x18044edfd",
+      "constructor": "0x180416030",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x18041630d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1804162ea"
+        },
+        {
+          "name": "float32",
+          "address": "0x1804162f7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180416315",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "ResourceId_t",
+      "field": "m_primaryGraphId",
+      "width_argument": 8,
+      "call": "0x18044fc7c",
+      "constructor": "0x1804176b0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x18041798d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint64",
+          "address": "0x18041796a"
+        },
+        {
+          "name": "uint64",
+          "address": "0x180417977"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint64",
+          "base": "r14",
+          "call": "0x180417995",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "CNetworkUtlVectorBase< ResourceId_t, NetworkVar_m_vecExternalGraphIds , -1, int >",
+      "field": "m_vecExternalGraphIds",
+      "width_argument": 24,
+      "call": "0x18044fd8c",
+      "constructor": "0x1804268b0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x180426c10",
+          "base": "rsi"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint64",
+          "address": "0x180426b5e"
+        },
+        {
+          "name": "uint64",
+          "address": "0x180426c09"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint64",
+          "base": "rsi",
+          "call": "0x180426c1e",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "CNetworkUtlVectorBase< ResourceId_t, NetworkVar_m_vecExternalClipIds , -1, int >",
+      "field": "m_vecExternalClipIds",
+      "width_argument": 24,
+      "call": "0x18044fe80",
+      "constructor": "0x180426280",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1804265e0",
+          "base": "rsi"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint64",
+          "address": "0x18042652e"
+        },
+        {
+          "name": "uint64",
+          "address": "0x1804265d9"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint64",
+          "base": "rsi",
+          "call": "0x1804265ee",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flCreateTime",
+      "width_argument": 4,
+      "call": "0x180453838",
+      "constructor": "0x180414f50",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x18041522d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x18041520a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180415217"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180415235",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nNextThinkTick",
+      "width_argument": 4,
+      "call": "0x180453a83",
+      "constructor": "0x1804149b0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x180414c8d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x180414c6a"
+        },
+        {
+          "name": "int32",
+          "address": "0x180414c77"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x180414c95",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flNavIgnoreUntilTime",
+      "width_argument": 4,
+      "call": "0x18045499b",
+      "constructor": "0x180415a90",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180415d6d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180415d4a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180415d57"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180415d75",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flDeathTime",
+      "width_argument": 4,
+      "call": "0x180459680",
+      "constructor": "0x1804154f0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1804157cd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1804157aa"
+        },
+        {
+          "name": "float32",
+          "address": "0x1804157b7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1804157d5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flStartTime",
+      "width_argument": 4,
+      "call": "0x18045c022",
+      "constructor": "0x1804165d0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1804168ad",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x18041688a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180416897"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1804168b5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "AttachmentHandle_t",
+      "field": "m_iStartAttachment",
+      "width_argument": 1,
+      "call": "0x18049904a",
+      "constructor": "0x18047bfe0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x18047c2bd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint8",
+          "address": "0x18047c29a"
+        },
+        {
+          "name": "uint8",
+          "address": "0x18047c2a7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint8",
+          "base": "r14",
+          "call": "0x18047c2c5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "AttachmentHandle_t",
+      "field": "m_iEndAttachment",
+      "width_argument": 1,
+      "call": "0x1804992c8",
+      "constructor": "0x18047ba40",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x18047bd1d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint8",
+          "address": "0x18047bcfa"
+        },
+        {
+          "name": "uint8",
+          "address": "0x18047bd07"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint8",
+          "base": "r14",
+          "call": "0x18047bd25",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "HSequence",
+      "field": "m_hSequence",
+      "width_argument": 4,
+      "call": "0x1804e081e",
+      "constructor": "0x1804ce320",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1804ce5fd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1804ce5da"
+        },
+        {
+          "name": "int32",
+          "address": "0x1804ce5e7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1804ce605",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_timestamp",
+      "width_argument": 4,
+      "call": "0x1804e7cfd",
+      "constructor": "0x1804cdd80",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1804ce05d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1804ce03a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1804ce047"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1804ce065",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "WorldGroupId_t",
+      "field": "m_nWorldGroupId",
+      "width_argument": 4,
+      "call": "0x1804e80eb",
+      "constructor": "0x1804ce8c0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1804ceb9d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "uint32",
+          "address": "0x1804ceb7a"
+        },
+        {
+          "name": "uint32",
+          "address": "0x1804ceb87"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "uint32",
+          "base": "r14",
+          "call": "0x1804ceba5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flDetonateTime",
+      "width_argument": 4,
+      "call": "0x180728c01",
+      "constructor": "0x180714ba0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180714e7d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180714e5a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180714e67"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180714e85",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flDMBonusStartTime",
+      "width_argument": 4,
+      "call": "0x180760701",
+      "constructor": "0x180749950",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180749c2d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180749c0a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180749c17"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180749c35",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fWarmupPeriodEnd",
+      "width_argument": 4,
+      "call": "0x1807615e6",
+      "constructor": "0x1807482d0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807485ad",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x18074858a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180748597"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807485b5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fWarmupPeriodStart",
+      "width_argument": 4,
+      "call": "0x1807618f5",
+      "constructor": "0x180748870",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180748b4d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180748b2a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180748b37"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180748b55",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fRoundStartTime",
+      "width_argument": 4,
+      "call": "0x180762e14",
+      "constructor": "0x180747d30",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x18074800d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180747fea"
+        },
+        {
+          "name": "float32",
+          "address": "0x180747ff7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180748015",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flRestartRoundTime",
+      "width_argument": 4,
+      "call": "0x180762f0a",
+      "constructor": "0x180749ef0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x18074a1cd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x18074a1aa"
+        },
+        {
+          "name": "float32",
+          "address": "0x18074a1b7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x18074a1d5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flCMMItemDropRevealStartTime",
+      "width_argument": 4,
+      "call": "0x180764467",
+      "constructor": "0x1807493b0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x18074968d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x18074966a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180749677"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180749695",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flCMMItemDropRevealEndTime",
+      "width_argument": 4,
+      "call": "0x180764569",
+      "constructor": "0x180748e10",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807490ed",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807490ca"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807490d7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807490f5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t[32]",
+      "field": "m_flNextRespawnWave",
+      "width_argument": 128,
+      "call": "0x18076548f",
+      "constructor": "0x180735400",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x18073577c",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180735709"
+        },
+        {
+          "name": "float32",
+          "address": "0x180735775"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x18073578b",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "CPlayerSlot",
+      "field": "m_iRoundEndFunFactPlayerSlot",
+      "width_argument": 4,
+      "call": "0x18076673a",
+      "constructor": "0x180746770",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x180746a4d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x180746a2a"
+        },
+        {
+          "name": "int32",
+          "address": "0x180746a37"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x180746a55",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fThrowTime",
+      "width_argument": 4,
+      "call": "0x1807cf3e0",
+      "constructor": "0x1807bcca0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807bcf7d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807bcf5a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807bcf67"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807bcf85",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fDropTime",
+      "width_argument": 4,
+      "call": "0x1807cf5c2",
+      "constructor": "0x1807bc160",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807bc43d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807bc41a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807bc427"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807bc445",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fPinPullTime",
+      "width_argument": 4,
+      "call": "0x1807cf7e7",
+      "constructor": "0x1807bc700",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807bc9dd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807bc9ba"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807bc9c7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807bc9e5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nNextHoldTick",
+      "width_argument": 4,
+      "call": "0x1807cfc9d",
+      "constructor": "0x1807bbbc0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1807bbe9d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1807bbe7a"
+        },
+        {
+          "name": "int32",
+          "address": "0x1807bbe87"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1807bbea5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fArmedTime",
+      "width_argument": 4,
+      "call": "0x1808118ed",
+      "constructor": "0x1807ea780",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807eaa5d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807eaa3a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807eaa47"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807eaa65",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flWeaponGameplayAnimStateTimestamp",
+      "width_argument": 4,
+      "call": "0x180812ded",
+      "constructor": "0x1807ed480",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807ed75d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807ed73a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807ed747"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807ed765",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flInspectCancelCompleteTime",
+      "width_argument": 4,
+      "call": "0x18081322a",
+      "constructor": "0x1807ebe00",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807ec0dd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807ec0ba"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807ec0c7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807ec0e5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nPostponeFireReadyTicks",
+      "width_argument": 4,
+      "call": "0x180814028",
+      "constructor": "0x1807ea1e0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1807ea4bd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1807ea49a"
+        },
+        {
+          "name": "int32",
+          "address": "0x1807ea4a7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1807ea4c5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nDeployTick",
+      "width_argument": 4,
+      "call": "0x180814268",
+      "constructor": "0x1807e96a0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1807e997d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1807e995a"
+        },
+        {
+          "name": "int32",
+          "address": "0x1807e9967"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1807e9985",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flAttackHoldStartTime",
+      "width_argument": 4,
+      "call": "0x1808143aa",
+      "constructor": "0x1807eb2c0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807eb59d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807eb57a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807eb587"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807eb5a5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flDroppedAtTime",
+      "width_argument": 4,
+      "call": "0x18081442f",
+      "constructor": "0x1807eb860",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807ebb3d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807ebb1a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807ebb27"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807ebb45",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flTimeSilencerSwitchComplete",
+      "width_argument": 4,
+      "call": "0x18081479c",
+      "constructor": "0x1807ecee0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807ed1bd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807ed19a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807ed1a7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807ed1c5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flStealthHoldStartTime",
+      "width_argument": 4,
+      "call": "0x1808148b9",
+      "constructor": "0x1807ec940",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807ecc1d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807ecbfa"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807ecc07"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807ecc25",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_nextPrevOwnerUseTime",
+      "width_argument": 4,
+      "call": "0x180814fec",
+      "constructor": "0x1807eda20",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807edcfd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807edcda"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807edce7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807edd05",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nDropTick",
+      "width_argument": 4,
+      "call": "0x18081517d",
+      "constructor": "0x1807e9c40",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1807e9f1d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1807e9efa"
+        },
+        {
+          "name": "int32",
+          "address": "0x1807e9f07"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1807e9f25",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fLastShotTime",
+      "width_argument": 4,
+      "call": "0x1808153cf",
+      "constructor": "0x1807ead20",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807eaffd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807eafda"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807eafe7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807eb005",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flLastShakeTime",
+      "width_argument": 4,
+      "call": "0x18081553d",
+      "constructor": "0x1807ec3a0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1807ec67d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1807ec65a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1807ec667"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1807ec685",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fFireTime",
+      "width_argument": 4,
+      "call": "0x18082fd63",
+      "constructor": "0x18082a490",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x18082a76d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x18082a74a"
+        },
+        {
+          "name": "float32",
+          "address": "0x18082a757"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x18082a775",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flFOVTime",
+      "width_argument": 4,
+      "call": "0x18088d8ac",
+      "constructor": "0x180875a70",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180875d4d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180875d2a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180875d37"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180875d55",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flForceTeamTime",
+      "width_argument": 4,
+      "call": "0x18088f9e2",
+      "constructor": "0x180876010",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1808762ed",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1808762ca"
+        },
+        {
+          "name": "float32",
+          "address": "0x1808762d7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1808762f5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_predictableBaseTick",
+      "width_argument": 4,
+      "call": "0x180892a54",
+      "constructor": "0x180874f30",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x18087520d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1808751ea"
+        },
+        {
+          "name": "int32",
+          "address": "0x1808751f7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x180875215",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_unpredictableBaseTick",
+      "width_argument": 4,
+      "call": "0x18089395f",
+      "constructor": "0x1808754d0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1808757ad",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x18087578a"
+        },
+        {
+          "name": "int32",
+          "address": "0x180875797"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1808757b5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nLastActualJumpPressTick",
+      "width_argument": 4,
+      "call": "0x1808cfffa",
+      "constructor": "0x1808b30f0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1808b33cd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1808b33aa"
+        },
+        {
+          "name": "int32",
+          "address": "0x1808b33b7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1808b33d5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nLastUsableJumpPressTick",
+      "width_argument": 4,
+      "call": "0x1808d07a6",
+      "constructor": "0x1808b41d0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1808b44ad",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1808b448a"
+        },
+        {
+          "name": "int32",
+          "address": "0x1808b4497"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1808b44b5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nLastLandedTick",
+      "width_argument": 4,
+      "call": "0x1808d0e1e",
+      "constructor": "0x1808b3c30",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1808b3f0d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1808b3eea"
+        },
+        {
+          "name": "int32",
+          "address": "0x1808b3ef7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1808b3f15",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fStashGrenadeParameterWhen",
+      "width_argument": 4,
+      "call": "0x1808d3fde",
+      "constructor": "0x1808b4770",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1808b4a4d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1808b4a2a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1808b4a37"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1808b4a55",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nLastJumpTick",
+      "width_argument": 4,
+      "call": "0x1808d45b8",
+      "constructor": "0x1808b3690",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1808b396d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1808b394a"
+        },
+        {
+          "name": "int32",
+          "address": "0x1808b3957"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1808b3975",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "CEntityIndex[12]",
+      "field": "m_iHostageEntityIDs",
+      "width_argument": 48,
+      "call": "0x1808d5d29",
+      "constructor": "0x1808a8b90",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x1808a8f0c",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x1808a8e99"
+        },
+        {
+          "name": "int32",
+          "address": "0x1808a8f05"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x1808a8f1b",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flNextAttack",
+      "width_argument": 4,
+      "call": "0x180909bf4",
+      "constructor": "0x1808f6f80",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x1808f725d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x1808f723a"
+        },
+        {
+          "name": "float32",
+          "address": "0x1808f7247"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x1808f7265",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nNextPrimaryAttackTick",
+      "width_argument": 4,
+      "call": "0x1809490af",
+      "constructor": "0x18091d2b0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x18091d56f",
+          "base": "rsi"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x18091d54d"
+        },
+        {
+          "name": "int32",
+          "address": "0x18091d55a"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "rsi",
+          "call": "0x18091d576",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nNextSecondaryAttackTick",
+      "width_argument": 4,
+      "call": "0x1809498cf",
+      "constructor": "0x18091d880",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x18091db3f",
+          "base": "rsi"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x18091db1d"
+        },
+        {
+          "name": "int32",
+          "address": "0x18091db2a"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "rsi",
+          "call": "0x18091db46",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flStartTime",
+      "width_argument": 4,
+      "call": "0x180a4bed4",
+      "constructor": "0x180a2ff90",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180a3026d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180a3024a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180a30257"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180a30275",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nCsViewPunchAngleTick",
+      "width_argument": 4,
+      "call": "0x180a6a193",
+      "constructor": "0x180a5d5c0",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x180a5d89d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x180a5d87a"
+        },
+        {
+          "name": "int32",
+          "address": "0x180a5d887"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x180a5d8a5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flStartTime",
+      "width_argument": 4,
+      "call": "0x180b40c84",
+      "constructor": "0x180b2e220",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180b2e4fd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180b2e4da"
+        },
+        {
+          "name": "float32",
+          "address": "0x180b2e4e7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180b2e505",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flHealthShotBoostExpirationTime",
+      "width_argument": 4,
+      "call": "0x180c80e0f",
+      "constructor": "0x180c48f90",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180c4926d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180c4924a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180c49257"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180c49275",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flTimeOfLastInjury",
+      "width_argument": 4,
+      "call": "0x180c817ae",
+      "constructor": "0x180c4a070",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180c4a34d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180c4a32a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180c4a337"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180c4a355",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flNextSprayDecalTime",
+      "width_argument": 4,
+      "call": "0x180c818d9",
+      "constructor": "0x180c49530",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180c4980d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180c497ea"
+        },
+        {
+          "name": "float32",
+          "address": "0x180c497f7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180c49815",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fSwitchedHandednessTime",
+      "width_argument": 4,
+      "call": "0x180c82798",
+      "constructor": "0x180c47910",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180c47bed",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180c47bca"
+        },
+        {
+          "name": "float32",
+          "address": "0x180c47bd7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180c47bf5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flEmitSoundTime",
+      "width_argument": 4,
+      "call": "0x180c83405",
+      "constructor": "0x180c48450",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180c4872d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180c4870a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180c48717"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180c48735",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "CEntityIndex",
+      "field": "m_nLastKillerIndex",
+      "width_argument": 4,
+      "call": "0x180c83dde",
+      "constructor": "0x180c46880",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x180c46b5d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x180c46b3a"
+        },
+        {
+          "name": "int32",
+          "address": "0x180c46b47"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x180c46b65",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_fImmuneToGunGameDamageTime",
+      "width_argument": 4,
+      "call": "0x180c83ee0",
+      "constructor": "0x180c47370",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180c4764d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180c4762a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180c47637"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180c47655",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flRescueStartTime",
+      "width_argument": 4,
+      "call": "0x180c87746",
+      "constructor": "0x180c49ad0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180c49dad",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180c49d8a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180c49d97"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180c49db5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flGrabSuccessTime",
+      "width_argument": 4,
+      "call": "0x180c87a0b",
+      "constructor": "0x180c489f0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180c48ccd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180c48caa"
+        },
+        {
+          "name": "float32",
+          "address": "0x180c48cb7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180c48cd5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flDropStartTime",
+      "width_argument": 4,
+      "call": "0x180c87ca3",
+      "constructor": "0x180c47eb0",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180c4818d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180c4816a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180c48177"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180c48195",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTick_t",
+      "field": "m_nTransitionStartTick",
+      "width_argument": 4,
+      "call": "0x180cb7829",
+      "constructor": "0x180ca8740",
+      "boxed_flags": [
+        {
+          "flag": "0x14b",
+          "address": "0x180ca8a1d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "int32",
+          "address": "0x180ca89fa"
+        },
+        {
+          "name": "int32",
+          "address": "0x180ca8a07"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "int32",
+          "base": "r14",
+          "call": "0x180ca8a25",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flC4Blow",
+      "width_argument": 4,
+      "call": "0x180cf648f",
+      "constructor": "0x180ccd460",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180ccd73d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180ccd71a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180ccd727"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180ccd745",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flDefuseCountDown",
+      "width_argument": 4,
+      "call": "0x180cf731a",
+      "constructor": "0x180ccda00",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180ccdcdd",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180ccdcba"
+        },
+        {
+          "name": "float32",
+          "address": "0x180ccdcc7"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180ccdce5",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    },
+    {
+      "type": "GameTime_t",
+      "field": "m_flLightStyleStartTime",
+      "width_argument": 4,
+      "call": "0x180d8329a",
+      "constructor": "0x180d74e90",
+      "boxed_flags": [
+        {
+          "flag": "0x14c",
+          "address": "0x180d7516d",
+          "base": "r14"
+        }
+      ],
+      "underlying_candidates": [
+        {
+          "name": "float32",
+          "address": "0x180d7514a"
+        },
+        {
+          "name": "float32",
+          "address": "0x180d75157"
+        }
+      ],
+      "underlying_stores": [
+        {
+          "name": "float32",
+          "base": "r14",
+          "call": "0x180d75175",
+          "offset": "0x130",
+          "assignment_iat": "0x181aad7f0"
+        }
+      ]
+    }
+  ],
+  "unresolved": []
+}

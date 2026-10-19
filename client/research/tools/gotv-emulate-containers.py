@@ -1,8 +1,10 @@
 from pathlib import Path
-import struct,json,collections,time
+import struct,json,collections,time,hashlib
 from unicorn import Uc,UC_ARCH_X86,UC_MODE_64,UcError
 from unicorn.x86_const import UC_X86_REG_RCX,UC_X86_REG_RDX,UC_X86_REG_RSP,UC_X86_REG_RIP,UC_X86_REG_EFLAGS,UC_X86_REG_R8,UC_X86_REG_R9
-b=Path('.agent-tmp/gotv-tools/cs2/game/bin/win64/networksystem.dll').read_bytes();pe=struct.unpack_from('<I',b,60)[0];opt=pe+24;base=struct.unpack_from('<Q',b,opt+24)[0];size=struct.unpack_from('<I',b,opt+56)[0];sec=opt+struct.unpack_from('<H',b,pe+20)[0]
+b=Path('.agent-tmp/gotv-tools/cs2/game/bin/win64/networksystem.dll').read_bytes()
+assert hashlib.sha256(b).hexdigest()=='be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec', 'fixed-module-sha-mismatch'
+pe=struct.unpack_from('<I',b,60)[0];opt=pe+24;base=struct.unpack_from('<Q',b,opt+24)[0];size=struct.unpack_from('<I',b,opt+56)[0];sec=opt+struct.unpack_from('<H',b,pe+20)[0]
 u=Uc(UC_ARCH_X86,UC_MODE_64);u.mem_map(base,(size+4095)&~4095);u.mem_write(base,b[:struct.unpack_from('<I',b,opt+60)[0]])
 for i in range(struct.unpack_from('<H',b,pe+6)[0]):
  vs,va,sz,raw=struct.unpack_from('<IIII',b,sec+40*i+8)

@@ -1,0 +1,2687 @@
+{
+  "manifest": "8766757721818354077",
+  "profile": {
+    "AttachmentHandle_t": "uint8",
+    "CEntityIndex": "int32",
+    "CPlayerSlot": "int32",
+    "GameTick_t": "int32",
+    "GameTime_t": "float32",
+    "HSequence": "int32",
+    "ModelConfigHandle_t": "uint32",
+    "ResourceId_t": "uint64",
+    "WorldGroupId_t": "uint32"
+  },
+  "summary": {
+    "client_calls": 83,
+    "server_calls": 83,
+    "base_types": 9,
+    "mismatches": 0,
+    "scope": "signature-matched generated boxed constructors with IsAtomic, IsTypeSafe and CUtlString::Set to the same object +0x130; whole-game unrelated objects excluded"
+  },
+  "assignment_imports": {
+    "client": "tier0!CUtlString::Set at181aad7f0",
+    "server": "tier0!CUtlString::Set at1817643c8"
+  },
+  "evidence": {
+    "client": [
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1801af6e0",
+        "call": "0x1801cdfd2",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1801af9c5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180262df0",
+        "call": "0x18027b60a",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1802630d5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180263930",
+        "call": "0x18027b702",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180263c15",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180263390",
+        "call": "0x18027b795",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180263675",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "AttachmentHandle_t",
+        "shape": "AttachmentHandle_t[10]",
+        "underlying": "uint8",
+        "constructor": "0x1802d6810",
+        "call": "0x18030a797",
+        "stores": [
+          {
+            "name": "uint8",
+            "base": "r14",
+            "call": "0x1802d6b9b",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1802f2280",
+        "call": "0x18030c1e1",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1802f2565",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1802f1ce0",
+        "call": "0x180313e42",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1802f1fc5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "WorldGroupId_t",
+        "shape": "WorldGroupId_t",
+        "underlying": "uint32",
+        "constructor": "0x1802f2820",
+        "call": "0x180317297",
+        "stores": [
+          {
+            "name": "uint32",
+            "base": "r14",
+            "call": "0x1802f2b05",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "AttachmentHandle_t",
+        "shape": "AttachmentHandle_t",
+        "underlying": "uint8",
+        "constructor": "0x180329ca0",
+        "call": "0x180338782",
+        "stores": [
+          {
+            "name": "uint8",
+            "base": "r14",
+            "call": "0x180329f85",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "ModelConfigHandle_t",
+        "shape": "ModelConfigHandle_t",
+        "underlying": "uint32",
+        "constructor": "0x180417110",
+        "call": "0x18044b4d3",
+        "stores": [
+          {
+            "name": "uint32",
+            "base": "r14",
+            "call": "0x1804173f5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "HSequence",
+        "shape": "HSequence",
+        "underlying": "int32",
+        "constructor": "0x180416b70",
+        "call": "0x18044eb82",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180416e55",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180416030",
+        "call": "0x18044edfd",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180416315",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "ResourceId_t",
+        "shape": "ResourceId_t",
+        "underlying": "uint64",
+        "constructor": "0x1804176b0",
+        "call": "0x18044fc7c",
+        "stores": [
+          {
+            "name": "uint64",
+            "base": "r14",
+            "call": "0x180417995",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "ResourceId_t",
+        "shape": "CNetworkUtlVectorBase< ResourceId_t, NetworkVar_m_vecExternalGraphIds , -1, int >",
+        "underlying": "uint64",
+        "constructor": "0x1804268b0",
+        "call": "0x18044fd8c",
+        "stores": [
+          {
+            "name": "uint64",
+            "base": "rsi",
+            "call": "0x180426c1e",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "ResourceId_t",
+        "shape": "CNetworkUtlVectorBase< ResourceId_t, NetworkVar_m_vecExternalClipIds , -1, int >",
+        "underlying": "uint64",
+        "constructor": "0x180426280",
+        "call": "0x18044fe80",
+        "stores": [
+          {
+            "name": "uint64",
+            "base": "rsi",
+            "call": "0x1804265ee",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180414f50",
+        "call": "0x180453838",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180415235",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1804149b0",
+        "call": "0x180453a83",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180414c95",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180415a90",
+        "call": "0x18045499b",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180415d75",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1804154f0",
+        "call": "0x180459680",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1804157d5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1804165d0",
+        "call": "0x18045c022",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1804168b5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "AttachmentHandle_t",
+        "shape": "AttachmentHandle_t",
+        "underlying": "uint8",
+        "constructor": "0x18047bfe0",
+        "call": "0x18049904a",
+        "stores": [
+          {
+            "name": "uint8",
+            "base": "r14",
+            "call": "0x18047c2c5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "AttachmentHandle_t",
+        "shape": "AttachmentHandle_t",
+        "underlying": "uint8",
+        "constructor": "0x18047ba40",
+        "call": "0x1804992c8",
+        "stores": [
+          {
+            "name": "uint8",
+            "base": "r14",
+            "call": "0x18047bd25",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "HSequence",
+        "shape": "HSequence",
+        "underlying": "int32",
+        "constructor": "0x1804ce320",
+        "call": "0x1804e081e",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1804ce605",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1804cdd80",
+        "call": "0x1804e7cfd",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1804ce065",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "WorldGroupId_t",
+        "shape": "WorldGroupId_t",
+        "underlying": "uint32",
+        "constructor": "0x1804ce8c0",
+        "call": "0x1804e80eb",
+        "stores": [
+          {
+            "name": "uint32",
+            "base": "r14",
+            "call": "0x1804ceba5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180714ba0",
+        "call": "0x180728c01",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180714e85",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180749950",
+        "call": "0x180760701",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180749c35",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807482d0",
+        "call": "0x1807615e6",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807485b5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180748870",
+        "call": "0x1807618f5",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180748b55",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180747d30",
+        "call": "0x180762e14",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180748015",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180749ef0",
+        "call": "0x180762f0a",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x18074a1d5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807493b0",
+        "call": "0x180764467",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180749695",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180748e10",
+        "call": "0x180764569",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807490f5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t[32]",
+        "underlying": "float32",
+        "constructor": "0x180735400",
+        "call": "0x18076548f",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x18073578b",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "CPlayerSlot",
+        "shape": "CPlayerSlot",
+        "underlying": "int32",
+        "constructor": "0x180746770",
+        "call": "0x18076673a",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180746a55",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807bcca0",
+        "call": "0x1807cf3e0",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807bcf85",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807bc160",
+        "call": "0x1807cf5c2",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807bc445",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807bc700",
+        "call": "0x1807cf7e7",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807bc9e5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1807bbbc0",
+        "call": "0x1807cfc9d",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1807bbea5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807ea780",
+        "call": "0x1808118ed",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807eaa65",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807ed480",
+        "call": "0x180812ded",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807ed765",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807ebe00",
+        "call": "0x18081322a",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807ec0e5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1807ea1e0",
+        "call": "0x180814028",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1807ea4c5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1807e96a0",
+        "call": "0x180814268",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1807e9985",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807eb2c0",
+        "call": "0x1808143aa",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807eb5a5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807eb860",
+        "call": "0x18081442f",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807ebb45",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807ecee0",
+        "call": "0x18081479c",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807ed1c5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807ec940",
+        "call": "0x1808148b9",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807ecc25",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807eda20",
+        "call": "0x180814fec",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807edd05",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1807e9c40",
+        "call": "0x18081517d",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1807e9f25",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807ead20",
+        "call": "0x1808153cf",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807eb005",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1807ec3a0",
+        "call": "0x18081553d",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1807ec685",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x18082a490",
+        "call": "0x18082fd63",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x18082a775",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180875a70",
+        "call": "0x18088d8ac",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180875d55",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180876010",
+        "call": "0x18088f9e2",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808762f5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180874f30",
+        "call": "0x180892a54",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180875215",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1808754d0",
+        "call": "0x18089395f",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1808757b5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1808b30f0",
+        "call": "0x1808cfffa",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1808b33d5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1808b41d0",
+        "call": "0x1808d07a6",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1808b44b5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1808b3c30",
+        "call": "0x1808d0e1e",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1808b3f15",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808b4770",
+        "call": "0x1808d3fde",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808b4a55",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1808b3690",
+        "call": "0x1808d45b8",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1808b3975",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "CEntityIndex",
+        "shape": "CEntityIndex[12]",
+        "underlying": "int32",
+        "constructor": "0x1808a8b90",
+        "call": "0x1808d5d29",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1808a8f1b",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808f6f80",
+        "call": "0x180909bf4",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808f7265",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x18091d2b0",
+        "call": "0x1809490af",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "rsi",
+            "call": "0x18091d576",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x18091d880",
+        "call": "0x1809498cf",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "rsi",
+            "call": "0x18091db46",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180a2ff90",
+        "call": "0x180a4bed4",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180a30275",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180a5d5c0",
+        "call": "0x180a6a193",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180a5d8a5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180b2e220",
+        "call": "0x180b40c84",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180b2e505",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c48f90",
+        "call": "0x180c80e0f",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c49275",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c4a070",
+        "call": "0x180c817ae",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c4a355",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c49530",
+        "call": "0x180c818d9",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c49815",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c47910",
+        "call": "0x180c82798",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c47bf5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c48450",
+        "call": "0x180c83405",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c48735",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "CEntityIndex",
+        "shape": "CEntityIndex",
+        "underlying": "int32",
+        "constructor": "0x180c46880",
+        "call": "0x180c83dde",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180c46b65",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c47370",
+        "call": "0x180c83ee0",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c47655",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c49ad0",
+        "call": "0x180c87746",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c49db5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c489f0",
+        "call": "0x180c87a0b",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c48cd5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c47eb0",
+        "call": "0x180c87ca3",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c48195",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180ca8740",
+        "call": "0x180cb7829",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180ca8a25",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180ccd460",
+        "call": "0x180cf648f",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180ccd745",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180ccda00",
+        "call": "0x180cf731a",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180ccdce5",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180d74e90",
+        "call": "0x180d8329a",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180d75175",
+            "offset": "0x130",
+            "assignment_iat": "0x181aad7f0"
+          }
+        ]
+      }
+    ],
+    "server": [
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x18016f810",
+        "call": "0x18018d157",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x18016faf5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180200000",
+        "call": "0x180242bf1",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1802002e5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180200b40",
+        "call": "0x180242f64",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180200e25",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1802005a0",
+        "call": "0x18024308f",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180200885",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1801ff4c0",
+        "call": "0x1802438e9",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1801ff7a5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "CEntityIndex",
+        "shape": "CEntityIndex",
+        "underlying": "int32",
+        "constructor": "0x1801fe430",
+        "call": "0x180243dae",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1801fe715",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1801ffa60",
+        "call": "0x180244401",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1801ffd45",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1801fef20",
+        "call": "0x180245029",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1801ff205",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180289c60",
+        "call": "0x18029da6d",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180289f45",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180351380",
+        "call": "0x18035864f",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180351665",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180350de0",
+        "call": "0x180358708",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1803510c5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180350840",
+        "call": "0x18035878d",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180350b25",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1803754a0",
+        "call": "0x18038386a",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180375785",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x18041aff0",
+        "call": "0x18043280a",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x18041b2d5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x18041bb30",
+        "call": "0x1804328fe",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x18041be15",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x18041b590",
+        "call": "0x180432991",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x18041b875",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "AttachmentHandle_t",
+        "shape": "AttachmentHandle_t[10]",
+        "underlying": "uint8",
+        "constructor": "0x1804a6cb0",
+        "call": "0x1804d8513",
+        "stores": [
+          {
+            "name": "uint8",
+            "base": "r14",
+            "call": "0x1804a703b",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1804c3300",
+        "call": "0x1804dc1d1",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1804c35e5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1804c2d60",
+        "call": "0x1804e4fed",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1804c3045",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "WorldGroupId_t",
+        "shape": "WorldGroupId_t",
+        "underlying": "uint32",
+        "constructor": "0x1804c38a0",
+        "call": "0x1804e89b7",
+        "stores": [
+          {
+            "name": "uint32",
+            "base": "r14",
+            "call": "0x1804c3b85",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "AttachmentHandle_t",
+        "shape": "AttachmentHandle_t",
+        "underlying": "uint8",
+        "constructor": "0x180501440",
+        "call": "0x1805106cc",
+        "stores": [
+          {
+            "name": "uint8",
+            "base": "r14",
+            "call": "0x180501725",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "ModelConfigHandle_t",
+        "shape": "ModelConfigHandle_t",
+        "underlying": "uint32",
+        "constructor": "0x1805e8750",
+        "call": "0x180614f93",
+        "stores": [
+          {
+            "name": "uint32",
+            "base": "r14",
+            "call": "0x1805e8a35",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "HSequence",
+        "shape": "HSequence",
+        "underlying": "int32",
+        "constructor": "0x1805e81b0",
+        "call": "0x180618642",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1805e8495",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1805e7c10",
+        "call": "0x1806188bd",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1805e7ef5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "ResourceId_t",
+        "shape": "ResourceId_t",
+        "underlying": "uint64",
+        "constructor": "0x1805e8cf0",
+        "call": "0x18061973c",
+        "stores": [
+          {
+            "name": "uint64",
+            "base": "r14",
+            "call": "0x1805e8fd5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "ResourceId_t",
+        "shape": "CNetworkUtlVectorBase< ResourceId_t, NetworkVar_m_vecExternalGraphIds , -1, int >",
+        "underlying": "uint64",
+        "constructor": "0x1805d80a0",
+        "call": "0x18061984c",
+        "stores": [
+          {
+            "name": "uint64",
+            "base": "rsi",
+            "call": "0x1805d840e",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "ResourceId_t",
+        "shape": "CNetworkUtlVectorBase< ResourceId_t, NetworkVar_m_vecExternalClipIds , -1, int >",
+        "underlying": "uint64",
+        "constructor": "0x1805d7a70",
+        "call": "0x180619940",
+        "stores": [
+          {
+            "name": "uint64",
+            "base": "rsi",
+            "call": "0x1805d7dde",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1805e6b30",
+        "call": "0x18061c76c",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1805e6e15",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1805e6590",
+        "call": "0x18061caa9",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1805e6875",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1805e7670",
+        "call": "0x18061d7e1",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1805e7955",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1805e70d0",
+        "call": "0x18062208e",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1805e73b5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180649a60",
+        "call": "0x180660c1f",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180649d45",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "HSequence",
+        "shape": "HSequence",
+        "underlying": "int32",
+        "constructor": "0x1806c8240",
+        "call": "0x1806d3dee",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1806c8525",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "AttachmentHandle_t",
+        "shape": "AttachmentHandle_t",
+        "underlying": "uint8",
+        "constructor": "0x1806c6700",
+        "call": "0x1806d6c05",
+        "stores": [
+          {
+            "name": "uint8",
+            "base": "r14",
+            "call": "0x1806c69e5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "AttachmentHandle_t",
+        "shape": "AttachmentHandle_t",
+        "underlying": "uint8",
+        "constructor": "0x1806c6160",
+        "call": "0x1806d6c69",
+        "stores": [
+          {
+            "name": "uint8",
+            "base": "r14",
+            "call": "0x1806c6445",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1806c7ca0",
+        "call": "0x1806d8e1d",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1806c7f85",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "WorldGroupId_t",
+        "shape": "WorldGroupId_t",
+        "underlying": "uint32",
+        "constructor": "0x1806c87e0",
+        "call": "0x1806d920b",
+        "stores": [
+          {
+            "name": "uint32",
+            "base": "r14",
+            "call": "0x1806c8ac5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808aea20",
+        "call": "0x1808c0d5f",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808aed05",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808ed8b0",
+        "call": "0x18092b581",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808edb95",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808ec230",
+        "call": "0x18092c466",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808ec515",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808ec7d0",
+        "call": "0x18092c775",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808ecab5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808ebc90",
+        "call": "0x18092dc90",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808ebf75",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808ede50",
+        "call": "0x18092dd86",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808ee135",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808ed310",
+        "call": "0x18092f2e3",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808ed5f5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1808ecd70",
+        "call": "0x18092f3e5",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808ed055",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t[32]",
+        "underlying": "float32",
+        "constructor": "0x1808d8d70",
+        "call": "0x18093030b",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1808d90fb",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "CPlayerSlot",
+        "shape": "CPlayerSlot",
+        "underlying": "int32",
+        "constructor": "0x1808ea6d0",
+        "call": "0x1809315b6",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1808ea9b5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809a1ec0",
+        "call": "0x1809ba4e2",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809a21a5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809a1380",
+        "call": "0x1809ba923",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809a1665",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809a1920",
+        "call": "0x1809bab48",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809a1c05",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1809a0de0",
+        "call": "0x1809bafff",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1809a10c5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809daa70",
+        "call": "0x1809ff021",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809dad55",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809de2b0",
+        "call": "0x180a0044d",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809de595",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809dcc30",
+        "call": "0x180a00888",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809dcf15",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1809da4d0",
+        "call": "0x180a01690",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1809da7b5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1809d9990",
+        "call": "0x180a018d0",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1809d9c75",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809db5b0",
+        "call": "0x180a01a12",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809db895",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809dc690",
+        "call": "0x180a01a97",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809dc975",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809ddd10",
+        "call": "0x180a01e04",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809ddff5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809dd770",
+        "call": "0x180a01f21",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809dda55",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809de850",
+        "call": "0x180a02654",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809deb35",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x1809d9f30",
+        "call": "0x180a027e5",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x1809da215",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809db010",
+        "call": "0x180a02a37",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809db2f5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809dd1d0",
+        "call": "0x180a02ba5",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809dd4b5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809dbb50",
+        "call": "0x180a03f34",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809dbe35",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x1809dc0f0",
+        "call": "0x180a05896",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x1809dc3d5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180a21db0",
+        "call": "0x180a26499",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180a22095",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180a5c3a0",
+        "call": "0x180a77d6c",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180a5c685",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180a5c940",
+        "call": "0x180a79ea2",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180a5cc25",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180a5b860",
+        "call": "0x180a7cf14",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180a5bb45",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180a5be00",
+        "call": "0x180a7de1f",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180a5c0e5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180aa45b0",
+        "call": "0x180ac1d8a",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180aa4895",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180aa5690",
+        "call": "0x180ac2536",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180aa5975",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180aa50f0",
+        "call": "0x180ac2bae",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180aa53d5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "CEntityIndex",
+        "shape": "CEntityIndex[12]",
+        "underlying": "int32",
+        "constructor": "0x180a9a050",
+        "call": "0x180ac4277",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180a9a3db",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180aa5c30",
+        "call": "0x180ac77fe",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180aa5f15",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180aa4b50",
+        "call": "0x180ac7dd8",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180aa4e35",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180aefc40",
+        "call": "0x180b081f4",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180aeff25",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180b2c5d0",
+        "call": "0x180b513a5",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180b2c8b5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180b2cb70",
+        "call": "0x180b51bc5",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180b2ce55",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180c3dcc0",
+        "call": "0x180c500c8",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180c3dfa5",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTick_t",
+        "shape": "GameTick_t",
+        "underlying": "int32",
+        "constructor": "0x180c61890",
+        "call": "0x180c6bf93",
+        "stores": [
+          {
+            "name": "int32",
+            "base": "r14",
+            "call": "0x180c61b75",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      },
+      {
+        "name": "GameTime_t",
+        "shape": "GameTime_t",
+        "underlying": "float32",
+        "constructor": "0x180d2a880",
+        "call": "0x180d443dc",
+        "stores": [
+          {
+            "name": "float32",
+            "base": "r14",
+            "call": "0x180d2ab65",
+            "offset": "0x130",
+            "assignment_iat": "0x1817643c8"
+          }
+        ]
+      }
+    ]
+  }
+}
