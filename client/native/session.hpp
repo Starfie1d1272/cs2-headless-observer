@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 namespace mizar::observer {
-enum class State { idle, authenticating, connecting, connected, ticket_pending, ready, closed };
+enum class State { idle, authenticating, connecting, connected, ticket_pending, ready, closed, ready_no_ticket };
 enum class Failure { none, context, authentication, connect, untrusted_peer, ticket, timeout, disconnected, consumer, cancelled };
 enum class Availability { waiting, current, failed };
 
@@ -43,7 +43,7 @@ class Session {
     port_.init_authentication();
   }
   void tick(std::uint64_t now_ms) {
-    if (state_ == State::idle || state_ == State::closed || state_ == State::ready) return;
+    if (state_ == State::idle || state_ == State::closed || state_ == State::ready || state_ == State::ready_no_ticket) return;
     if (now_ms >= deadline_) { close(Failure::timeout); return; }
     if (state_ != State::authenticating) return;
     const auto availability = port_.authentication();
@@ -57,6 +57,12 @@ class Session {
     if (state_ != State::connecting || handle != connection_) return;
     if (!authenticated_and_encrypted) { close(Failure::untrusted_peer); return; }
     state_ = State::connected;
+  }
+  // Server-negotiated protocol 2 only; GNS trust and local Steam context remain required.
+  void accept_server_auth2() {
+    if (state_ != State::connected) throw std::logic_error("auth2-phase-invalid");
+    if (!port_.context_ready() || !port_.own_steam_id()) { close(Failure::context); return; }
+    state_ = State::ready_no_ticket;
   }
   // Protocol caller invokes only after validating the actual Source 2 challenge.
   void request_ticket() {
@@ -105,3 +111,4 @@ class Session {
   std::array<std::uint8_t, 2048> bytes_{};
 };
 } // namespace mizar::observer
+

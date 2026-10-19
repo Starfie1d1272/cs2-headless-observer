@@ -14,6 +14,10 @@ class Port:
         self.state, self.incoming, self.sent, self.closed = 3, [], [], 0
         self.ticket_requested = False
     def remote_id(self): return 456
+    def local_id(self): return 76561198000000123
+    def accept_server_auth2(self):
+        assert self.state == 3
+        self.state = 7
     def pump(self, now): pass
     def receive(self): return self.incoming.pop(0) if self.incoming else None
     def send(self, data, flags): self.sent.append((data, flags))
@@ -164,6 +168,36 @@ class DriverTest(unittest.TestCase):
         size = len(port.sent)
         driver._send_processed_tick(840)
         self.assertEqual(len(port.sent), size)
+        driver.close()
+
+    def test_server_auth2_connects_without_ticket_using_authenticated_transport(self):
+        for peer in (0, 456):
+            port = Port()
+            password = bytearray(b'unit-only')
+            driver = ObserverDriver(port, host_version=14191, password=password, emit=lambda _: None)
+            driver.step(1)
+            port.incoming.append((b'\xff\xff\xff\xffA' + struct.pack('<IIHQB', 7, 2, 7, peer, 0) + b'connect0x00000000\0', False))
+            driver.step(2)
+            self.assertFalse(port.ticket_requested)
+            self.assertEqual((driver.phase, port.state), ('connection', 7))
+            self.assertEqual(password, bytes(len(password)))
+            data = port.sent[-1][0]
+            size, pos = varint(data, 5)
+            self.assertEqual(len(data) - pos, size)
+            decoded = fields(data[pos:])
+            self.assertEqual(scalar(decoded, 2), 2)
+            self.assertNotIn(8, decoded)
+            self.assertEqual(driver._account_id, port.local_id() & 0xffffffff)
+            port.incoming.append((b'\xff\xff\xff\xffB\0' + b'0' * 10, False))
+            driver.step(3)
+            self.assertEqual(driver.phase, 'channel')
+            driver.close()
+        port = Port()
+        driver = ObserverDriver(port, host_version=14191, password=bytearray(), emit=lambda _: None)
+        driver.step(1)
+        port.incoming.append((b'\xff\xff\xff\xffA' + struct.pack('<IIHQB', 7, 2, 0, 999, 0) + b'connect0x00000000\0', False))
+        with self.assertRaisesRegex(DriverError, 'challenge-peer-mismatch'): driver.step(2)
+        self.assertEqual(port.state, 3)
         driver.close()
 
     def test_wrong_peer_context_and_timeouts_do_not_request_ticket(self):

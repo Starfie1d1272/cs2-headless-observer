@@ -34,7 +34,7 @@ class HandshakeTest(unittest.TestCase):
         value = parse_challenge_body(data)
         self.assertEqual((value.number, value.secure, value.context), (123, True, b'unit-context'))
         self.assertNotIn('unit-context', repr(value))
-        for bad in [data[:-1], data + b'\0', data[:8] + b'\x01\0' + data[10:], data[:4] + b'\x02\0\0\0' + data[8:]]:
+        for bad in [data[:-1], data + b'\0', data[:8] + b'\x01\0' + data[10:], data[:4] + b'\x04\0\0\0' + data[8:]]:
             with self.assertRaises(ValueError):
                 parse_challenge_body(bad)
 
@@ -49,6 +49,18 @@ class HandshakeTest(unittest.TestCase):
         self.assertEqual(scalar(decoded, 6, 2), bytes(96))
         self.assertEqual(scalar(decoded, 9, 2), b'unit-context')
         self.assertFalse(payload.startswith(b'\xff\xff\xff\xff'))
+
+    def test_server_auth2_omits_ticket_and_preserves_negotiated_protocol(self):
+        value = parse_challenge_body(struct.pack('<IIHQB', 123, 2, 7, 0, 1) + b'unit-context\0')
+        self.assertEqual((value.auth_protocol, value.server_steam_id, value.secure), (2, 0, False))
+        kwargs = dict(host_version=1234, challenge=value, player_name='probe',
+                      encrypted_password=bytes(96), reservation_cookie=0, low_violence=False)
+        decoded = fields(connect_payload(auth_steam=b'', **kwargs))
+        self.assertEqual(scalar(decoded, 2), 2)
+        self.assertNotIn(8, decoded)
+        self.assertEqual(scalar(decoded, 6, 2), bytes(96))
+        with self.assertRaisesRegex(ValueError, 'auth-payload-size-or-protocol'):
+            connect_payload(auth_steam=b'should-not-send', **kwargs)
 
     def test_inner_framing_and_bit_alignment(self):
         # Literal wire expectations from the recovered byte/bit layout, not a real capture.
@@ -93,3 +105,4 @@ class HandshakeTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
+

@@ -27,6 +27,11 @@ class NativePort:
         except BaseException:
             if self.directory: self.directory.close()
             raise
+        self.lib.observer_abi_version.argtypes = []
+        self.lib.observer_abi_version.restype = c.c_int
+        if self.lib.observer_abi_version() != 2:
+            if self.directory: self.directory.close()
+            raise ProbeError('native-abi-version')
         byte = c.POINTER(c.c_ubyte)
         signatures = {
             'abi_version': ([], c.c_int),
@@ -35,6 +40,8 @@ class NativePort:
             'state': ([c.c_void_p], c.c_int), 'failure': ([c.c_void_p], c.c_int),
             'pump': ([c.c_void_p, c.c_uint64], None),
             'remote_id': ([c.c_void_p], c.c_uint64),
+            'local_id': ([c.c_void_p], c.c_uint64),
+            'accept_server_auth2': ([c.c_void_p], c.c_int),
             'request_ticket': ([c.c_void_p], c.c_int),
             'auth': ([c.c_void_p, c.POINTER(c.c_uint32)], byte),
             'send': ([c.c_void_p, byte, c.c_uint32, c.c_int], c.c_int),
@@ -44,8 +51,6 @@ class NativePort:
         for name, (args, result) in signatures.items():
             function = getattr(self.lib, 'observer_' + name)
             function.argtypes, function.restype = args, result
-        if self.lib.observer_abi_version() != 1:
-            raise ProbeError('native-abi-version')
         self.buffer = (c.c_ubyte * MAX_BYTES)()
         self.handle = self.lib.observer_create(endpoint.encode('ascii'), now_ms)
         if not self.handle:
@@ -65,6 +70,13 @@ class NativePort:
 
     def remote_id(self):
         return self.lib.observer_remote_id(self.handle)
+
+    def local_id(self):
+        return self.lib.observer_local_id(self.handle)
+
+    def accept_server_auth2(self):
+        if self.lib.observer_accept_server_auth2(self.handle) != 1:
+            raise ProbeError('native-auth2-phase-invalid')
 
     def request_ticket(self):
         if self.lib.observer_request_ticket(self.handle) != 1:
@@ -108,3 +120,4 @@ class NativePort:
             self.handle = None
             c.memset(self.buffer, 0, len(self.buffer))
             if self.directory: self.directory.close(); self.directory = None
+

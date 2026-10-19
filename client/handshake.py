@@ -47,7 +47,7 @@ class Challenge:
 
 
 def parse_challenge_body(body):
-    """Body AFTER inner type 0x41, not UDP or GNS ciphertext. Current auth=3 only.
+    """Body AFTER inner type 0x41, not UDP or GNS ciphertext. Server-selected auth=2 or auth=3.
 
     The bounded trailing NUL-string interpretation remains static-derived; real
     ordinary-viewer traffic has not yet confirmed this exact accepted subset.
@@ -55,16 +55,16 @@ def parse_challenge_body(body):
     if len(body) < 20 or len(body) > 2400:
         raise ProbeError('challenge-size')
     challenge, auth, key_size, server, secure = struct.unpack_from('<IIHQB', body)
-    if auth != 3:
+    if auth not in (2, 3):
         raise ProbeError('unsupported-auth-protocol')
-    if key_size != 0:
+    if auth == 3 and key_size != 0:
         raise ProbeError('invalid-steam-key-size')
     if secure not in (0, 1):
         raise ProbeError('invalid-secure-flag')
     context = body[19:]
     if not context.endswith(b'\0') or b'\0' in context[:-1]:
         raise ProbeError('challenge-context-boundary')
-    return Challenge(challenge, server, bool(secure), context[:-1])
+    return Challenge(challenge, server, bool(secure) if auth == 3 else False, context[:-1], auth)
 
 
 class TicketLease:
@@ -120,7 +120,9 @@ def connect_payload(*, host_version, challenge: Challenge, auth_steam: bytes,
     implemented in password.transform_password for the documented bytes subset.
     This does not clear or repurpose relay flags.
     """
-    if challenge.auth_protocol != 3 or not 8 < len(auth_steam) <= 2048:
+    if (challenge.auth_protocol not in (2, 3)
+        or (challenge.auth_protocol == 3 and not 8 < len(auth_steam) <= 2048)
+        or (challenge.auth_protocol == 2 and auth_steam)):
         raise ProbeError('auth-payload-size-or-protocol')
     name = player_name.encode('utf8')
     if not name or len(name) > 127 or b'\0' in name:
@@ -129,12 +131,15 @@ def connect_payload(*, host_version, challenge: Challenge, auth_steam: bytes,
         raise ProbeError('encrypted-password-size')
     if type(low_violence) is not bool:
         raise ProbeError('low-violence-type')
-    payload = number(1, host_version) + number(2, 3) + number(3, challenge.number)
+    payload = number(1, host_version) + number(2, challenge.auth_protocol) + number(3, challenge.number)
     payload += b'\x21' + struct.pack('<Q', uint(reservation_cookie, 64))
     payload += number(5, int(low_violence))
     if encrypted_password is not None:
         payload += blob(6, encrypted_password)
-    payload += blob(7, blob(1, name)) + blob(8, auth_steam) + blob(9, challenge.context)
+    payload += blob(7, blob(1, name))
+    if challenge.auth_protocol == 3:
+        payload += blob(8, auth_steam)
+    payload += blob(9, challenge.context)
     if len(payload) > 2400:
         raise ProbeError('connect-size-limit')
     return payload
@@ -270,3 +275,4 @@ def signon_message_bits(state, spawn_count):
     bit_count = 6 + 8 * len(data)
     packed = (int.from_bytes(data, 'little') << 6) | 7
     return packed.to_bytes((bit_count + 7) // 8, 'little'), bit_count
+

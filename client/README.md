@@ -1,6 +1,6 @@
 # 普通观众 GOTV 研究原型
 
-本分支提供 Windows 便携式普通观众研究客户端：SDK 连接、握手、无画面初始化、增量事件解析与诊断输出已串联。离线录像、合成传输和 Windows 构建均有证据；完美在线互操作留待集中实测。程序报告分别记录协议状态、解析进度和验证来源。
+本分支提供 Windows 便携式普通观众研究客户端：SDK 连接、握手、无画面初始化、增量事件解析与诊断输出已串联。离线录像和合成传输已有验证；当前原生 ABI 2 需要重建 Windows 测试包，完美在线互操作留待集中实测。程序报告分别记录协议状态、解析进度和验证来源。
 
 独立私有研究仓库；不接入生产 HUD 或自动编排。`follow.ts` 复用了 #408 的增长文件读取实现，解码器通过 `viewer-research.ts` 暴露标量事件。新增的纯内存握手组件与逐地址证据见 [HANDSHAKE-EVIDENCE.md](HANDSHAKE-EVIDENCE.md)。协议设计见 [DESIGN.md](DESIGN.md)，用户本机步骤见 [WINDOWS-TEST.md](WINDOWS-TEST.md)，原始结果和取证来源见 [EVIDENCE.md](EVIDENCE.md)。
 
@@ -68,3 +68,6 @@ pnpm test:events
 研究包在固定 `cs2parser` 2.7.2 源码上应用 `cs2parser-online.patch`，只启用独立的 `ordinaryViewer` 路径；生产依赖锁定不变。处理双实体基线、备用类基线、PVS 更新、非传输实体集合与缺帧恢复。回执在解析完成且本地检查点确认后发送；缺少依赖帧时暂停派生事件、请求完整状态，再恢复输出。
 
 `build_parser.mjs <固定提交的干净源码目录> <输出文件>` 应用补丁并构建。便携包携带修改源码与 MPL-2.0 许可证。`verify_online_entities.mjs <补丁后源码目录>` 通过 `node --import tsx` 执行，覆盖实际二进制实体消息中的基线切换、实体重入、PVS 和恢复顺序。
+
+当前支持服务器选择的 auth=2 / auth=3，来源、SDK 门禁与验证范围见 [认证分支对照](AUTH-PROTOCOL-EVIDENCE.md)。
+

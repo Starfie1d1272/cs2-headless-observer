@@ -118,7 +118,8 @@ class ObserverDriver:
     def _send_connect(self, auth):
         try:
             # SDK Session prefixes its own authenticated Steam64, not the peer's.
-            self._account_id = int.from_bytes(auth[:8], 'little') & 0xffffffff
+            if self._challenge.auth_protocol == 3:
+                self._account_id = int.from_bytes(auth[:8], 'little') & 0xffffffff
             if not self._account_id:
                 raise DriverError('local-account-id-missing')
             payload = connect_payload(host_version=self.host_version, challenge=self._challenge,
@@ -137,18 +138,33 @@ class ObserverDriver:
             if 20 <= len(body) <= 2400:
                 _, auth, key_size, peer, secure = struct.unpack_from('<IIHQB', body)
                 self.challenge_metadata = {'auth_protocol': auth, 'key_size': key_size,
-                    'secure_flag': secure, 'server_identity_matches': peer == self.port.remote_id(),
+                    'secure_flag': secure, 'server_identity_matches': (peer == self.port.remote_id()) if peer else None,
+                    'server_identity_source': 'challenge_and_gns' if peer else 'gns',
                     'context_bytes': len(body) - 19,
                     'context_sha256': hashlib.sha256(body[19:]).hexdigest()}
             challenge = parse_challenge_body(body)
-            if challenge.server_steam_id != self.port.remote_id() or not challenge.server_steam_id:
+            peer = self.port.remote_id()
+            if (not peer or challenge.server_steam_id not in (0, peer)
+                or (challenge.auth_protocol == 3 and not challenge.server_steam_id)):
                 raise DriverError('challenge-peer-mismatch')
             if challenge.context != b'connect0x00000000':
                 raise DriverError('challenge-context-mismatch')
             self._challenge = challenge
-            self.port.request_ticket()
-            self.phase, self.deadline = 'ticket', now_ms + 30000
-            self.stages.append({'stage': self.phase, 'elapsed_ms': now_ms - self.start_ms})
+            if challenge.auth_protocol == 2:
+                # Follow only the protocol selected by the authenticated peer.
+                # Never downgrade a Steam-auth challenge or fabricate auth bytes.
+                own = self.port.local_id()
+                if type(own) is not int or not 0 < own <= 0xffffffffffffffff:
+                    raise DriverError('local-account-id-missing')
+                self._account_id = own & 0xffffffff
+                self.port.accept_server_auth2()
+                self._send_connect(b'')
+                self.phase, self.deadline = 'connection', now_ms + 15000
+                self.stages.append({'stage': 'server-auth2-connect', 'elapsed_ms': now_ms - self.start_ms})
+            else:
+                self.port.request_ticket()
+                self.phase, self.deadline = 'ticket', now_ms + 30000
+                self.stages.append({'stage': self.phase, 'elapsed_ms': now_ms - self.start_ms})
             return
         if self.phase == 'connection':
             if reliable:
