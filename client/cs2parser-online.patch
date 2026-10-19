@@ -1,11 +1,11 @@
 diff --git a/src/index.ts b/src/index.ts
-index c29b80c..430d77a 100644
+index c29b80c..dbb1174 100644
 --- a/src/index.ts
 +++ b/src/index.ts
 @@ -0,0 +1 @@
 +export const ordinaryViewerProtocol = 2;
 diff --git a/src/parser/entities/entityParser.ts b/src/parser/entities/entityParser.ts
-index 80f63fe..5b785fd 100644
+index 80f63fe..6119dfe 100644
 --- a/src/parser/entities/entityParser.ts
 +++ b/src/parser/entities/entityParser.ts
 @@ -0,0 +1 @@
@@ -114,6 +114,162 @@ index 80f63fe..5b785fd 100644
 +			const receipt = this.online.finish(msg.delta_from);
 +			this.onOnlineReceipt?.(receipt);
 +		}
+diff --git a/src/parser/entities/parseSession.ts b/src/parser/entities/parseSession.ts
+index 2aa047f..96c2faf 100644
+--- a/src/parser/entities/parseSession.ts
++++ b/src/parser/entities/parseSession.ts
+@@ -0,0 +1,2 @@
++import { FullFrameAssembler } from './fullFrameSplit.js';
++import { OnlineEntityState } from './onlineState.js';
+@@ -11,0 +14 @@ import {
++	CSVCMsg_FullFrameSplit,
+@@ -55,0 +59,4 @@ export type ParseSessionOptions = ParseSettings & {
++	/** Experimental ordinary-observer transport mode, disabled for normal demos. */
++	ordinaryViewer?: boolean;
++	onOnlineRecovery?: (gap: { tick: number; deltaFrom: number | null; request?: boolean }) => void;
++	onOnlineReceipt?: (receipt: { tick: number; baselineAck: number | null; full: boolean }) => void;
+@@ -82,0 +90,12 @@ export class ParseSession {
++	private fullFrames = new FullFrameAssembler();
++	private splitTicks = new WeakMap<CSVCMsg_PacketEntities, number>();
++	private splitBaselines: Uint8Array[] | null = null;
++	private packetBaselines = new WeakMap<CSVCMsg_PacketEntities, Uint8Array[]>();
++	private deferredEntities: {
++		packet: CSVCMsg_PacketEntities;
++		tick: number;
++		baselines: Uint8Array[];
++		alternates: Map<number, Uint8Array>;
++		bytes: number;
++	}[] = [];
++	private deferredEntityBytes = 0;
+@@ -97,0 +117,2 @@ export class ParseSession {
++	private onlineBaselineEntries = new Map<number, Uint8Array>();
++	private onlineBaselineNames = new Map<number, string>();
+@@ -187,0 +209 @@ export class ParseSession {
++			this.configureOnline();
+@@ -215,0 +238,71 @@ export class ParseSession {
++	private deferEntity(packet: CSVCMsg_PacketEntities, tick: number) {
++		const bytes =
++			(packet.entity_data?.byteLength ?? 0) +
++			(packet.serialized_entities?.byteLength ?? 0) +
++			(packet.non_transmitted_entities?.data?.byteLength ?? 0) +
++			(packet.outofpvs_entity_updates?.data?.byteLength ?? 0) +
++			(packet.dev_padding?.byteLength ?? 0);
++		if (this.deferredEntities.length >= 512 || this.deferredEntityBytes + bytes > 16 * 1024 ** 2)
++			throw new Error('Deferred entity budget');
++		const alternates = new Map<number, Uint8Array>();
++		for (const item of packet.alternate_baselines) {
++			const key = item.baseline_index;
++			if (key !== undefined) {
++				const value = this.onlineBaselineEntries.get(key);
++				if (value) alternates.set(key, value);
++			}
++		}
++		this.deferredEntities.push({
++			packet: structuredClone(packet),
++			tick,
++			baselines: this.baselines.slice(),
++			alternates,
++			bytes
++		});
++		this.deferredEntityBytes += bytes;
++	}
++	private drainDeferredEntities() {
++		const parser = this.entityParser;
++		if (!parser?.online || parser.online.waitingFull || !this.deferredEntities.length) return;
++		const pending = this.deferredEntities;
++		this.deferredEntities = [];
++		this.deferredEntityBytes = 0;
++		try {
++			for (const item of pending) {
++				if (item.tick <= parser.online.lastTick) continue;
++				if (parser.online.waitingFull) {
++					this.deferredEntities.push(item);
++					this.deferredEntityBytes += item.bytes;
++					continue;
++				}
++				parser.tick = item.tick;
++				parser.onlineBaselineEntries = item.alternates;
++				parser.parseEntityPacket(item.packet, item.baselines);
++			}
++		} finally {
++			parser.onlineBaselineEntries = this.onlineBaselineEntries;
++		}
++	}
++
++	private configureOnline() {
++		if (!this.settings?.ordinaryViewer || !this.entityParser) return;
++		this.entityParser.online = new OnlineEntityState();
++		this.entityParser.onlineBaselineEntries = this.onlineBaselineEntries;
++		this.entityParser.onOnlineReceipt = this.settings.onOnlineReceipt;
++		this.entityParser.onOnlineRecovery = this.settings.onOnlineRecovery;
++	}
++	private recordOnlineBaselines(
++		table: { name: string; data: { idx: number; key: string; value: Uint8Array | null | undefined }[] } | undefined
++	) {
++		if (!this.settings?.ordinaryViewer || table?.name !== 'instancebaseline') return;
++		for (const row of table.data) {
++			if (!Number.isInteger(row.idx) || row.idx < 0 || row.idx >= 65536) throw new Error('Baseline table index');
++			if (row.key) this.onlineBaselineNames.set(row.idx, row.key);
++			if (!row.value) continue;
++			const value = Uint8Array.from(row.value);
++			this.onlineBaselineEntries.set(row.idx, value);
++			const key = this.onlineBaselineNames.get(row.idx);
++			if (key && /^\d+$/.test(key)) this.baselines[Number(key)] = value;
++		}
++	}
++
+@@ -770,0 +864 @@ export class ParseSession {
++				this.configureOnline();
+@@ -1048,0 +1143,15 @@ export class ParseSession {
++				if (this.settings?.ordinaryViewer && cmd === SVC_Messages.svc_FullFrameSplit) {
++					const section = CSVCMsg_FullFrameSplit.decode(this.readPacketBytes(reader, size));
++					if (section.section === 0) this.splitBaselines = this.baselines.slice();
++					const complete = this.fullFrames.consume(section, bytes => this.parser._snappy.uncompress(bytes));
++					if (complete) {
++						if (!this.entityParser?.online) throw new Error('Full frame before class initialization');
++						if (complete.tick > this.entityParser.online.lastTick) {
++							this.splitTicks.set(complete.packet, complete.tick);
++							if (this.splitBaselines) this.packetBaselines.set(complete.packet, this.splitBaselines);
++							this.splitBaselines = null;
++							packetEntitiesQueue.push(complete.packet);
++						}
++					}
++					continue;
++				}
+@@ -1106,0 +1216 @@ export class ParseSession {
++						this.recordOnlineBaselines(tableCreatedData?.table);
+@@ -1121,0 +1232 @@ export class ParseSession {
++								this.recordOnlineBaselines(tableCData.table);
+@@ -1138,0 +1250,7 @@ export class ParseSession {
++						this.fullFrames.reset();
++						this.splitBaselines = null;
++						this.deferredEntities = [];
++						this.deferredEntityBytes = 0;
++						this.onlineBaselineEntries.clear();
++						this.onlineBaselineNames.clear();
++						this.entityParser?.online?.reset();
+@@ -1149,0 +1268,13 @@ export class ParseSession {
++				// Official 086220 prefers the explicit entity tick over the surrounding
++				// net-message context. The ordinary Demo path retains its wrapper clock.
++				const entityTick = this.splitTicks.get(queueElement) ??
++					(this.settings?.ordinaryViewer ? queueElement.server_tick : undefined) ?? this.currentTick;
++				if (
++					this.entityParser?.online?.waitingFull &&
++					queueElement.legacy_is_delta &&
++					!queueElement.pending_full_frame
++				) {
++					this.deferEntity(queueElement, entityTick);
++					continue;
++				}
++				if (this.entityParser) this.entityParser.tick = entityTick;
+@@ -1152 +1283 @@ export class ParseSession {
+-					this.baselines,
++					this.packetBaselines.get(queueElement) ?? this.baselines,
+@@ -1154,0 +1286 @@ export class ParseSession {
++				this.drainDeferredEntities();
+@@ -1160 +1292 @@ export class ParseSession {
+-			for (const event of gameEventQueue) {
++			for (const event of this.entityParser?.online?.waitingFull ? [] : gameEventQueue) {
 diff --git a/src/parser/entities/fullFrameSplit.ts b/src/parser/entities/fullFrameSplit.ts
 new file mode 100644
 index 0000000..bd71dc0
@@ -183,7 +339,7 @@ index 0000000..bd71dc0
 +}
 diff --git a/src/parser/entities/onlineState.ts b/src/parser/entities/onlineState.ts
 new file mode 100644
-index 0000000..309f86e
+index 0000000..38c16f4
 --- /dev/null
 +++ b/src/parser/entities/onlineState.ts
 @@ -0,0 +1,158 @@
@@ -345,157 +501,3 @@ index 0000000..309f86e
 +		this.latest = -1;
 +	}
 +}
-diff --git a/src/parser/entities/parseSession.ts b/src/parser/entities/parseSession.ts
-index 2aa047f..cf8fdc8 100644
---- a/src/parser/entities/parseSession.ts
-+++ b/src/parser/entities/parseSession.ts
-@@ -0,0 +1,2 @@
-+import { FullFrameAssembler } from './fullFrameSplit.js';
-+import { OnlineEntityState } from './onlineState.js';
-@@ -11,0 +14 @@ import {
-+	CSVCMsg_FullFrameSplit,
-@@ -55,0 +59,4 @@ export type ParseSessionOptions = ParseSettings & {
-+	/** Experimental ordinary-observer transport mode, disabled for normal demos. */
-+	ordinaryViewer?: boolean;
-+	onOnlineRecovery?: (gap: { tick: number; deltaFrom: number | null; request?: boolean }) => void;
-+	onOnlineReceipt?: (receipt: { tick: number; baselineAck: number | null; full: boolean }) => void;
-@@ -82,0 +90,12 @@ export class ParseSession {
-+	private fullFrames = new FullFrameAssembler();
-+	private splitTicks = new WeakMap<CSVCMsg_PacketEntities, number>();
-+	private splitBaselines: Uint8Array[] | null = null;
-+	private packetBaselines = new WeakMap<CSVCMsg_PacketEntities, Uint8Array[]>();
-+	private deferredEntities: {
-+		packet: CSVCMsg_PacketEntities;
-+		tick: number;
-+		baselines: Uint8Array[];
-+		alternates: Map<number, Uint8Array>;
-+		bytes: number;
-+	}[] = [];
-+	private deferredEntityBytes = 0;
-@@ -97,0 +117,2 @@ export class ParseSession {
-+	private onlineBaselineEntries = new Map<number, Uint8Array>();
-+	private onlineBaselineNames = new Map<number, string>();
-@@ -187,0 +209 @@ export class ParseSession {
-+			this.configureOnline();
-@@ -215,0 +238,71 @@ export class ParseSession {
-+	private deferEntity(packet: CSVCMsg_PacketEntities, tick: number) {
-+		const bytes =
-+			(packet.entity_data?.byteLength ?? 0) +
-+			(packet.serialized_entities?.byteLength ?? 0) +
-+			(packet.non_transmitted_entities?.data?.byteLength ?? 0) +
-+			(packet.outofpvs_entity_updates?.data?.byteLength ?? 0) +
-+			(packet.dev_padding?.byteLength ?? 0);
-+		if (this.deferredEntities.length >= 512 || this.deferredEntityBytes + bytes > 16 * 1024 ** 2)
-+			throw new Error('Deferred entity budget');
-+		const alternates = new Map<number, Uint8Array>();
-+		for (const item of packet.alternate_baselines) {
-+			const key = item.baseline_index;
-+			if (key !== undefined) {
-+				const value = this.onlineBaselineEntries.get(key);
-+				if (value) alternates.set(key, value);
-+			}
-+		}
-+		this.deferredEntities.push({
-+			packet: structuredClone(packet),
-+			tick,
-+			baselines: this.baselines.slice(),
-+			alternates,
-+			bytes
-+		});
-+		this.deferredEntityBytes += bytes;
-+	}
-+	private drainDeferredEntities() {
-+		const parser = this.entityParser;
-+		if (!parser?.online || parser.online.waitingFull || !this.deferredEntities.length) return;
-+		const pending = this.deferredEntities;
-+		this.deferredEntities = [];
-+		this.deferredEntityBytes = 0;
-+		try {
-+			for (const item of pending) {
-+				if (item.tick <= parser.online.lastTick) continue;
-+				if (parser.online.waitingFull) {
-+					this.deferredEntities.push(item);
-+					this.deferredEntityBytes += item.bytes;
-+					continue;
-+				}
-+				parser.tick = item.tick;
-+				parser.onlineBaselineEntries = item.alternates;
-+				parser.parseEntityPacket(item.packet, item.baselines);
-+			}
-+		} finally {
-+			parser.onlineBaselineEntries = this.onlineBaselineEntries;
-+		}
-+	}
-+
-+	private configureOnline() {
-+		if (!this.settings?.ordinaryViewer || !this.entityParser) return;
-+		this.entityParser.online = new OnlineEntityState();
-+		this.entityParser.onlineBaselineEntries = this.onlineBaselineEntries;
-+		this.entityParser.onOnlineReceipt = this.settings.onOnlineReceipt;
-+		this.entityParser.onOnlineRecovery = this.settings.onOnlineRecovery;
-+	}
-+	private recordOnlineBaselines(
-+		table: { name: string; data: { idx: number; key: string; value: Uint8Array | null | undefined }[] } | undefined
-+	) {
-+		if (!this.settings?.ordinaryViewer || table?.name !== 'instancebaseline') return;
-+		for (const row of table.data) {
-+			if (!Number.isInteger(row.idx) || row.idx < 0 || row.idx >= 65536) throw new Error('Baseline table index');
-+			if (row.key) this.onlineBaselineNames.set(row.idx, row.key);
-+			if (!row.value) continue;
-+			const value = Uint8Array.from(row.value);
-+			this.onlineBaselineEntries.set(row.idx, value);
-+			const key = this.onlineBaselineNames.get(row.idx);
-+			if (key && /^\d+$/.test(key)) this.baselines[Number(key)] = value;
-+		}
-+	}
-+
-@@ -770,0 +864 @@ export class ParseSession {
-+				this.configureOnline();
-@@ -1048,0 +1143,15 @@ export class ParseSession {
-+				if (this.settings?.ordinaryViewer && cmd === SVC_Messages.svc_FullFrameSplit) {
-+					const section = CSVCMsg_FullFrameSplit.decode(this.readPacketBytes(reader, size));
-+					if (section.section === 0) this.splitBaselines = this.baselines.slice();
-+					const complete = this.fullFrames.consume(section, bytes => this.parser._snappy.uncompress(bytes));
-+					if (complete) {
-+						if (!this.entityParser?.online) throw new Error('Full frame before class initialization');
-+						if (complete.tick > this.entityParser.online.lastTick) {
-+							this.splitTicks.set(complete.packet, complete.tick);
-+							if (this.splitBaselines) this.packetBaselines.set(complete.packet, this.splitBaselines);
-+							this.splitBaselines = null;
-+							packetEntitiesQueue.push(complete.packet);
-+						}
-+					}
-+					continue;
-+				}
-@@ -1106,0 +1216 @@ export class ParseSession {
-+						this.recordOnlineBaselines(tableCreatedData?.table);
-@@ -1121,0 +1232 @@ export class ParseSession {
-+								this.recordOnlineBaselines(tableCData.table);
-@@ -1138,0 +1250,7 @@ export class ParseSession {
-+						this.fullFrames.reset();
-+						this.splitBaselines = null;
-+						this.deferredEntities = [];
-+						this.deferredEntityBytes = 0;
-+						this.onlineBaselineEntries.clear();
-+						this.onlineBaselineNames.clear();
-+						this.entityParser?.online?.reset();
-@@ -1149,0 +1268,10 @@ export class ParseSession {
-+				const entityTick = this.splitTicks.get(queueElement) ?? this.currentTick;
-+				if (
-+					this.entityParser?.online?.waitingFull &&
-+					queueElement.legacy_is_delta &&
-+					!queueElement.pending_full_frame
-+				) {
-+					this.deferEntity(queueElement, entityTick);
-+					continue;
-+				}
-+				if (this.entityParser) this.entityParser.tick = entityTick;
-@@ -1152 +1280 @@ export class ParseSession {
--					this.baselines,
-+					this.packetBaselines.get(queueElement) ?? this.baselines,
-@@ -1154,0 +1283 @@ export class ParseSession {
-+				this.drainDeferredEntities();
-@@ -1160 +1289 @@ export class ParseSession {
--			for (const event of gameEventQueue) {
-+			for (const event of this.entityParser?.online?.waitingFull ? [] : gameEventQueue) {
-

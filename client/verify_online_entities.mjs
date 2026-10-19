@@ -211,3 +211,19 @@ console.log(
   'Pending full-frame placeholder is not acknowledged as decoded; stale full snapshot is ignored',
 );
 
+
+// Official 086220 uses PacketEntities.server_tick when present, otherwise the
+// network message's tick context. A Demo wrapper tick is not an equality rule.
+const { ParseSession } = await load('src/parser/entities/parseSession.ts');
+const { DemoReader } = await load('src/parser/index.ts');
+const { EntityMode } = await load('src/parser/entities/types.ts');
+const session = new ParseSession(new Uint8Array(16), EntityMode.ALL, () => {}, new DemoReader(), { ordinaryViewer: true });
+session.entityParser = p;
+session.currentTick = 99;
+const entityBits = create(0x40000000);
+const authoritative = Uint8Array.of(0x10, 1, 0x3a, entityBits.length, ...entityBits, 0x60, 100);
+assert.ok(authoritative.length < 128);
+const envelope = bits([23, 6], [3, 4], [authoritative.length, 8], ...Array.from(authoritative, x => [x, 8]));
+session.parsePacket({ data: envelope });
+assert.equal(receipts.at(-1).tick, 100);
+console.log('PacketEntities authoritative server tick supersedes a different surrounding packet tick');

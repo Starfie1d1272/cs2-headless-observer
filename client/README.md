@@ -1,6 +1,6 @@
 # 普通观众 GOTV 研究原型
 
-本分支提供 Windows 便携式普通观众研究客户端：SDK 连接、握手、无画面初始化、增量事件解析与诊断输出已串联。离线录像和合成传输已有验证；原生桥为 ABI 2，解析进程协议为 2；便携包需同时携带当前驱动与解析进程，完美在线互操作留待集中实测。程序报告分别记录协议状态、解析进度和验证来源。
+本分支提供 Windows 便携式普通观众研究客户端：SDK 连接、握手、无画面初始化、增量事件解析与诊断输出已串联。离线录像和合成传输已有验证；原生桥为 ABI 3，解析进程协议为 2；便携包需同时携带当前驱动与解析进程，完美在线互操作留待集中实测。程序报告分别记录协议状态、解析进度和验证来源。
 
 独立私有研究仓库；不接入生产 HUD 或自动编排。`follow.ts` 复用了 #408 的增长文件读取实现，解码器通过 `viewer-research.ts` 暴露标量事件。新增的纯内存握手组件与逐地址证据见 [HANDSHAKE-EVIDENCE.md](HANDSHAKE-EVIDENCE.md)。协议设计见 [DESIGN.md](DESIGN.md)，用户本机步骤见 [WINDOWS-TEST.md](WINDOWS-TEST.md)，原始结果和取证来源见 [EVIDENCE.md](EVIDENCE.md)。
 
@@ -71,3 +71,5 @@ pnpm test:events
 
 当前支持服务器选择的 auth=2 / auth=3，来源、SDK 门禁与验证范围见 [认证分支对照](AUTH-PROTOCOL-EVIDENCE.md)。
 
+
+当前完整协议审查与待补分支见 [覆盖清单](PROTOCOL-COVERAGE.md)。本轮完成统一验证后再提供集中测试版本。

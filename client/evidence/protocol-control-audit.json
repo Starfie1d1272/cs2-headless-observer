@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "0a870745cf4e1bbabdc8239ce800f311c83754f9",
+  "method": "Ghidra 12.1.4 read-only decompilation plus PE constant reads",
+  "engine2_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+  "networksystem_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "procedures": [
+    {
+      "entry": "0x180057370",
+      "decompiled_sha256": "30ff0a5a09d2e40ae1a1506f406e26c99e190c9b2e86735769fdb137e193573d"
+    },
+    {
+      "entry": "0x180057620",
+      "decompiled_sha256": "dd237100dca252eb95adc12ea690ea785963245153be1d9392210845a4ab46d7"
+    },
+    {
+      "entry": "0x180003360",
+      "decompiled_sha256": "c9cc169414d1a8da5068c6ab4f06fdf5f899da0cf2761e6fea8b9224ab385966"
+    },
+    {
+      "entry": "0x180003420",
+      "decompiled_sha256": "ed3de0ebed88c5d8c904fb6b656496d135f7b148208af5e26f4566c478fc48d1"
+    },
+    {
+      "entry": "0x1800be510",
+      "decompiled_sha256": "60eac59c6f7e47e4b50d58b1a6907a6971263a983bc979336c88160007a8771d"
+    },
+    {
+      "entry": "0x1800be6e0",
+      "decompiled_sha256": "a449dfecd9044e02b74639206d5d07dc8ef47d4523045175468f14afdc85ef27"
+    },
+    {
+      "entry": "0x1800c2230",
+      "decompiled_sha256": "9e71ab913de964776a7978db232223ffbb7732bb6e3e57016e2aca52d1ceae09"
+    },
+    {
+      "entry": "0x1800bc610",
+      "decompiled_sha256": "8f3803e32fbd6e35f281c35d9387b0c1c023beb036bae5efc7b92cdba37c9231"
+    },
+    {
+      "entry": "0x1800f6830",
+      "decompiled_sha256": "34c06acbaa63af19a60c5012181f3ae2f075423c186450f01d7e6be3a8074621"
+    },
+    {
+      "entry": "0x18007edd0",
+      "decompiled_sha256": "11d63492807bd8d3658038193faaf15670ad4729b6816267edc447ce8a11d67b"
+    },
+    {
+      "entry": "0x1800c3780",
+      "decompiled_sha256": "0a42c5115a055f79382cb9d391391e1d5fc65908a6d69bffef5a112a231ecdd1"
+    }
+  ],
+  "findings": {
+    "challenge_retry_seconds": 0.5,
+    "challenge_retry_clamp_seconds": [
+      0.1,
+      2.0
+    ],
+    "initial_outgoing_sequence": 1,
+    "initial_incoming_sequence": 0,
+    "ordinary_client_send_mask": 4,
+    "ordinary_client_receive_mask": 2,
+    "reliable_tick_auto_set_requires_mask": 2,
+    "transmit_emits_unreliable_envelope": true,
+    "unreliable_history_unknown": 65533,
+    "unreliable_history_late": 65534,
+    "unreliable_history_dropped": 65535
+  },
+  "validation": {
+    "new_handshake_cases_before_fix": "2 failures, 1 error",
+    "python_tests_after_fix": 37,
+    "online": false,
+    "windows_runtime": false,
+    "real_demo_first_full_after_control_changes": {
+      "packets": 11,
+      "schemaFields": 22889,
+      "stringTables": 12,
+      "tick": 1380,
+      "remoteState": 5,
+      "localState": 6,
+      "fullSent": true
+    }
+  }
+}

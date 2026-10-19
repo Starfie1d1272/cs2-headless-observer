@@ -230,3 +230,44 @@ class UnreliableOrder:
         gap = 0 if self.last is None else frame.sequence - self.last - 1
         self.last = frame.sequence
         return {'accepted': True, 'gap': gap}
+
+
+
+class UnreliableFeedback:
+    """Source 2 receive acknowledgements, separate from SDK reliable-stream ACKs.
+
+    networksystem 0be6e0 / 0c2230: sequence starts at 1, received starts at 0.
+    Three history values describe received, late and missing frames. Latency is
+    deliberately 'unmeasured' (0xfffd), never an invented timing measurement.
+    """
+    UNKNOWN, LATE, DROPPED = 0xfffd, 0xfffe, 0xffff
+
+    def __init__(self):
+        self.sequence, self.received = 1, 0
+        self.history = {}
+
+    def observe(self, frame):
+        if frame.reliable:
+            return
+        sequence = frame.sequence
+        if type(sequence) is not int or not 0 <= sequence <= 0x7fffffff:
+            raise ProbeError('unsupported-sequence-domain')
+        if sequence <= self.received:
+            if self.history.get(sequence) == self.DROPPED:
+                self.history[sequence] = self.LATE
+            return
+        previous = self.received
+        self.received = sequence
+        self.history = {
+            n: (self.UNKNOWN if n == sequence or n <= 0 else
+                self.DROPPED if n > previous else self.history.get(n, self.UNKNOWN))
+            for n in range(sequence, sequence - 3, -1)
+        }
+
+    def frame(self, body=b''):
+        if self.sequence > 0x7fffffff:
+            raise ProbeError('outgoing-sequence-restart-required')
+        packet = unreliable_frame(body, self.sequence, self.received,
+            tuple(self.history.get(n, self.UNKNOWN) for n in range(self.received, self.received - 3, -1)))
+        self.sequence += 1
+        return packet

@@ -15,7 +15,7 @@ from pathlib import Path
 import struct
 import sys
 import time
-from channel import decode_frame, messages, UnreliableOrder, encode_message, reliable_frame
+from channel import decode_frame, messages, UnreliableOrder, UnreliableFeedback, encode_message, reliable_frame
 from handshake import (SignonSequence, connect_inner_message, connect_payload,
                        initial_challenge_request, parse_challenge_body, parse_connection_inner, uint, number)
 from live import LiveDecoder, client_info
@@ -40,8 +40,11 @@ class ObserverDriver:
         if not host_version or not isinstance(password, bytearray) or len(password) > 95 or 0 in password:
             raise DriverError('configuration-boundary')
         self.port, self.host_version = port, host_version
-        self._password = password  # Ownership transferred; wiped on connect/close.
+        self._password = password  # Owned only through connection/retries; wiped on acceptance/close.
         self._challenge = None
+        self._last_challenge_request_ms = None
+        self._challenge_contexts = set()
+        self._challenge_requests = 0
         self.challenge_metadata = None
         self._account_id = None
         self._new_sent = False
@@ -61,6 +64,9 @@ class ObserverDriver:
         self._last_receipt_ms = now_ms
         self.decoder, self.signon = LiveDecoder((lambda _: None) if parser else emit), SignonSequence()
         self.order = UnreliableOrder(initial=0)
+        self.feedback = UnreliableFeedback()
+        self._last_feedback_ms = now_ms
+        self._feedback_sent = 0
         self.capture = capture
         self.phase, self.reason = 'transport', None
         self.start_ms, self.last_ms, self.deadline = now_ms, now_ms, now_ms + 30000
@@ -90,7 +96,7 @@ class ObserverDriver:
         if self.phase == 'transport' and self.port.state == 3:
             if not self.port.remote_id():
                 raise DriverError('trusted-peer-missing')
-            self.port.send(initial_challenge_request(), 5)
+            self._request_challenge(now_ms)
             self.phase, self.deadline = 'challenge', now_ms + 15000
             self.stages.append({'stage': self.phase, 'elapsed_ms': now_ms - self.start_ms})
         if self.phase == 'ticket' and self.port.state == 5:
@@ -115,24 +121,46 @@ class ObserverDriver:
             self.parser.poll(self.emit)
             self._advance_initialization(now_ms)
             self._send_processed_tick(now_ms)
+        if self.phase == 'channel' and now_ms - self._last_feedback_ms >= 100:
+            encoded = b''
+            if self._full_sent and not self._recovery_pending and self._processed_entity_tick is not None:
+                encoded, _ = encode_message(4, number(1, self._processed_entity_tick))
+            self._send_channel_feedback(encoded, now_ms)
+            if encoded:
+                self._ack_tick = self._processed_entity_tick
+        if (self.phase in ('challenge', 'ticket', 'connection')
+            and self._last_challenge_request_ms is not None
+            and now_ms - self._last_challenge_request_ms >= 500):
+            self._request_challenge(now_ms)
+
+    def _send_channel_feedback(self, encoded, now_ms):
+        self.port.send(self.feedback.frame(encoded), 1)
+        self._feedback_sent += 1
+        self._last_feedback_ms = now_ms
+        self._last_receipt_ms = now_ms
+
+    def _request_challenge(self, now_ms):
+        request = initial_challenge_request(self._challenge.number if self._challenge else 0)
+        self.port.send(request, 5)
+        self._challenge_contexts.add(request[5:-1])
+        self._challenge_requests += 1
+        self._last_challenge_request_ms = now_ms
 
     def _send_connect(self, auth):
-        try:
-            # SDK Session prefixes its own authenticated Steam64, not the peer's.
-            if self._challenge.auth_protocol == 3:
-                self._account_id = int.from_bytes(auth[:8], 'little') & 0xffffffff
-            if not self._account_id:
-                raise DriverError('local-account-id-missing')
-            payload = connect_payload(host_version=self.host_version, challenge=self._challenge,
-                auth_steam=auth, player_name='Mizar observer',
-                encrypted_password=transform_password(bytes(self._password), self._challenge.number),
-                reservation_cookie=0, low_violence=False)
-            self.port.send(connect_inner_message(payload), 5)
-        finally:
-            self._password[:] = bytes(len(self._password))
+        # SDK Session prefixes its own authenticated Steam64, not the peer's.
+        if self._challenge.auth_protocol == 3:
+            self._account_id = int.from_bytes(auth[:8], 'little') & 0xffffffff
+        if not self._account_id:
+            raise DriverError('local-account-id-missing')
+        payload = connect_payload(host_version=self.host_version, challenge=self._challenge,
+            auth_steam=auth, player_name='Mizar observer',
+            encrypted_password=transform_password(bytes(self._password), self._challenge.number),
+            reservation_cookie=0, low_violence=False)
+        self.port.send(connect_inner_message(payload), 5)
 
     def receive(self, data, reliable, now_ms):
-        if self.phase == 'challenge':
+        if (self.phase in ('challenge', 'ticket', 'connection')
+            and (self.phase == 'challenge' or data.startswith(b'\xff\xff\xff\xffA'))):
             if reliable or not data.startswith(b'\xff\xff\xff\xffA'):
                 raise DriverError('unexpected-challenge-message')
             body = data[5:]
@@ -148,9 +176,21 @@ class ObserverDriver:
             if (not peer or challenge.server_steam_id not in (0, peer)
                 or (challenge.auth_protocol == 3 and not challenge.server_steam_id)):
                 raise DriverError('challenge-peer-mismatch')
-            if challenge.context != b'connect0x00000000':
+            if challenge.context not in self._challenge_contexts:
                 raise DriverError('challenge-context-mismatch')
+            previous = self._challenge
+            if previous and (challenge.auth_protocol != previous.auth_protocol or challenge.secure != previous.secure):
+                raise DriverError('challenge-auth-changed')
             self._challenge = challenge
+            if previous:
+                # Reuse the same SDK lease for the same authenticated peer. Never
+                # duplicate a pending ticket or reset the absolute phase timeout.
+                if self.phase == 'connection':
+                    if challenge.auth_protocol == 2:
+                        self._send_connect(b'')
+                    else:
+                        self.port.with_auth(self._send_connect)
+                return
             if challenge.auth_protocol == 2:
                 # Follow only the protocol selected by the authenticated peer.
                 # Never downgrade a Steam-auth challenge or fabricate auth bytes.
@@ -171,6 +211,7 @@ class ObserverDriver:
             if reliable:
                 raise DriverError('unexpected-connection-reliability')
             response = parse_connection_inner(data)
+            self._password[:] = bytes(len(self._password))
             if response['addon_name_bytes']:
                 self.phase, self.reason = 'blocked', 'addon-initialization-required'
                 return
@@ -186,6 +227,8 @@ class ObserverDriver:
             return
         if self.phase != 'channel':
             raise DriverError('unexpected-protocol-phase')
+        if not reliable and data.startswith((b'\xff\xff\xff\xffA', b'\xff\xff\xff\xffB')):
+            return  # Late handshake response on this already-authenticated connection.
         frame = decode_frame(data, gns_reliable=reliable)
         # Never save handshake/tickets/passwords. Only validated channel envelopes
         # reach capture, before order filtering, so duplicates can be reproduced.
@@ -196,6 +239,7 @@ class ObserverDriver:
         if self.first_channel_ms is None:
             self.first_channel_ms = now_ms
         self.last_channel_ms, self.deadline = now_ms, now_ms + 15000
+        self.feedback.observe(frame)
         if not reliable and not self.order.accept(frame)['accepted']:
             return
         decoded, _ = messages(frame.body)
@@ -326,7 +370,7 @@ class ObserverDriver:
         # Only acknowledge entity packets consumed by the actual parser. Never
         # echo a raw network tick while the entity parser is still behind.
         encoded, _ = encode_message(4, number(1, self._processed_entity_tick))
-        self.port.send(reliable_frame(encoded, 0), 8)
+        self._send_channel_feedback(encoded, now_ms)
         self._ack_tick = self._processed_entity_tick
         self._last_receipt_ms = now_ms
 
@@ -335,7 +379,10 @@ class ObserverDriver:
         return {'phase': self.phase, 'reason': self.reason, 'received_messages': self.received,
                 'host_version': self.host_version, 'native_state': self.port.state,
                 'native_failure': getattr(self.port, 'failure', None),
-                'challenge_metadata': self.challenge_metadata,
+                'remote_end_reason': getattr(self.port, 'remote_end_reason', None),
+                'challenge_metadata': self.challenge_metadata, 'challenge_requests': self._challenge_requests,
+                'outgoing_channel_feedback_frames': self._feedback_sent,
+                'last_received_channel_sequence': self.feedback.received,
                 'channel_frames': self.channel_frames, 'channel_bytes': self.channel_bytes,
                 'channel_receive_span_ms': span, 'received_signon_state': self.signon.received_state,
                 'effective_signon_state': self.signon.state,
@@ -356,6 +403,7 @@ class ObserverDriver:
         self._password[:] = bytes(len(self._password))
         self._challenge = None
         self._account_id = None
+        self._challenge_contexts.clear()
         self.port.close()
 
 
