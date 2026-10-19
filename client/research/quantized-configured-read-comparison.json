@@ -1,0 +1,7 @@
+{
+  "cases": 5400,
+  "matched": 5400,
+  "failures": [],
+  "model_sha256": "ac05098c3aa54bd749c870d4c623035ced080d75eae48fc96370927fc902b336",
+  "scope": "isolated scalar decode model against saved fixed-binary output; not runtime integration"
+}
