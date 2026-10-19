@@ -39,9 +39,9 @@ Accessor addresses are catalogued locally against fixed modules. The primitive t
 
 The old sample has268 serializers with versions0–5, three repeated names across versions, and3 polymorphic entries. Current prototype keys serializer map byname and omits nested version/custom field12/polymorphic metadata at construction. Treat this as a unified schema-model gap; do not apply isolated field patches or claim existing event values are all wrong without a reference-specific comparison.
 
-## Remaining before implementation
+## Field-path and container decoding
 
-Native fake-field reads now confirm pointer presence1bit then (if present/polymorphic) UBitVar 1-based candidate selector, and varuint array length (12 isolated cases). Forty field-path operations match the prototype on1,780 valid-domain examples. Still close versioned forward references, multi-type state replacement, invalid-path handling and full-stream field-path reset. Preserve exact bit alignment even for unprojected fields. Data size, recursion and allocation limits must be explicit local bounds, with a typed failure rather than a guessed skip.
+Native fake-field reads confirm pointer presence1bit then (if present/polymorphic) UBitVar 1-based candidate selector, and varuint array length (12 isolated cases). Forty field-path operations match the prototype on1,780 valid-domain examples. Versioned lookup, forward-reference design, state replacement and invalid-path transaction failure are documented in the following sections. Preserve exact bit alignment even for unprojected fields. Data size, recursion and allocation limits must be explicit local bounds, with a typed failure rather than a guessed skip.
 
 ## Quantizer construction correction
 
@@ -122,3 +122,8 @@ Native quantizerdd340 fills those upper bits from the rounded power-of-two repre
 The necessary tier0 dependency was retrieved from the same official depot/manifest: SHA990ea56bf1626d299ba54b64b423f2e409bd592bb737c7a5edf7972ad5c7143e,3979928bytes. Its exported initial g_nConfigMaxCoord/g_flConfigMaxCoord are16384 at39c400/39c40c. GetQuantizedFloatEncoderByReg15c380 indexes the registered encoder pointer array with the field's ushort registration ID and has a fatal invalid-index branch. The observer should use its validated received field configuration directly, not fabricate registry IDs or invoke game imports. Exported globals could be changed by another module; this fixed default is a profile fact, not a guarantee about arbitrary games/plugins.
 
 Do not replace absent origin fields by zero and publish a made-up coordinate. Require the relevant committed cell/fraction fields and identity; preserve raw values otherwise. Label reconstructed data as network origin unless parent transforms are also evidenced and applied. Event-only kill/weapon output does not require reproducing the render scene graph.
+
+## Integral coordinate aggregates: mixed encodings
+Fixed networksystem0da4f0 accepts dimensions1,3,6,8. Dimensions1/3 read integral coordinates: compact/full width selector, presence, then sign and magnitude-minus-one when present. Dimensions6/8 use that encoding only for the first three components. The second triple has a three-bit component-presence mask, followed by ordinary fractional coordinate payloads for the present components, using the full integer/fraction profile. Do not apply integral decoding to all six values.
+
+Evidence: integral-coordinate-aggregate-emulation.json and tools/gotv-emulate-integral-coordinate-aggregate.py exercise1,024 fixed-binary cases over dimensions6/8, two coordinate profiles, compact/full first-triple widths, zero/nonzero first triples, all second-triple masks, integer/fraction combinations and signs. All values and exact bit counts match. Dimension6 completes the native function; dimension8 stops at matrix-conversion entry1b65e0 and checks its two input triples. This proves wire consumption and raw values, not the rendered matrix. The earlier96 integral cases cover dimensions1/3 only; they did not establish this aggregate rule.

@@ -28,3 +28,5 @@ The comparison checkout is osztenkurden/cs2parser commit deced963b86d3ec26b28a22
 - ubitreader.ts:bb314d2f45692f90cdc23c48a5a555d79c88497b0e201a30465b2ddace877bbb
 
 After removing temporary helper imports, the locally rerun native evidence remained: field paths1780/1780, empty string-table data4/4, normal/precise geometry352/352, coordinates144/144, integral coordinates96/96, matrix coordinate input/consumption384/384, angle bitcounts90/90 and metadata lookup5/5. Matrix verification stops before rendering conversion; no live, DLL-loader or Windows game claim is implied. Generated-type classifier and Python syntax checks also completed. The older quantizer comparison scripts intentionally report mismatches with the frozen parser; those findings are not a passing current implementation test.
+
+Integral aggregate cross-check: run tools/gotv-emulate-integral-coordinate-aggregate.py from the documented workspace root. The fixed networksystem hash is enforced by the shared aggregate loader. Expected result:1024/1024; dimension8 stops before matrix conversion.
