@@ -24,6 +24,7 @@ class SteamBridge final : private Port {
     return transport_ready() && sockets_.GetConnectionInfo(session_.connection(), &info) && trusted(info)
       ? SteamAPI_SteamNetworkingIdentity_GetSteamID64(&info.m_identityRemote) : 0;
   }
+  std::uint64_t local_steam_id() { return remote_steam_id() && context_ready() ? own_steam_id() : 0; }
   // Single-threaded host calls at >10 Hz. Do not mix with ManualDispatch.
   void pump(std::uint64_t monotonic_ms) {
     // Expire before dispatch: an already queued success must not revive a timeout.
@@ -60,7 +61,7 @@ class SteamBridge final : private Port {
  private:
   bool transport_ready() const {
     const auto s = session_.state();
-    return s == State::connected || s == State::ticket_pending || s == State::ready;
+    return s == State::connected || s == State::ticket_pending || s == State::ready || s == State::ready_no_ticket;
   }
   bool context_ready() override { return utils_.GetAppID() == 730 && user_.BLoggedOn(); }
   void init_authentication() override { sockets_.InitAuthentication(); }
@@ -115,3 +116,4 @@ class SteamBridge final : private Port {
   CCallback<SteamBridge, SteamNetConnectionStatusChangedCallback_t> connection_callback_;
 };
 } // namespace mizar::observer
+

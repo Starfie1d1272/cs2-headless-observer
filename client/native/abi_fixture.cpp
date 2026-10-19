@@ -11,7 +11,7 @@ void* const token = reinterpret_cast<void*>(std::uintptr_t{0x1234567887654321});
 bool closed = false;
 constexpr std::uint8_t auth[] = "SYNTHETIC-NOT-A-TICKET";
 }
-API int observer_abi_version() { return 1; }
+API int observer_abi_version() { return 2; }
 API int observer_boot_failure() { return 0; }
 API int observer_init_result() { return 0; }
 API void* observer_create(const char* endpoint, std::uint64_t now) {
@@ -22,6 +22,8 @@ API int observer_state(void* handle) { return handle == token && !closed ? 5 : 6
 API int observer_failure(void*) { return 0; }
 API void observer_pump(void*, std::uint64_t) {}
 API std::uint64_t observer_remote_id(void* handle) { return handle == token ? 76561198000000001ull : 0; }
+API std::uint64_t observer_local_id(void* handle) { return handle == token && !closed ? 76561198000000042ull : 0; }
+API int observer_accept_server_auth2(void* handle) { return handle == token && !closed; }
 API int observer_request_ticket(void* handle) { return handle == token; }
 API const std::uint8_t* observer_auth(void* handle, std::uint32_t* size) {
   *size = handle == token ? sizeof(auth) - 1 : 0; return auth;
@@ -34,3 +36,4 @@ API int observer_receive(void* handle, std::uint8_t* output, std::uint32_t capac
   std::memcpy(output, "a\0b", 3); *reliable = 1; return 3;
 }
 API void observer_close(void* handle) { if (handle == token) closed = true; }
+

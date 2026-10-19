@@ -19,6 +19,8 @@ class SdkAbiTest(unittest.TestCase):
             self.assertEqual(port.remote_id(), 76561198000000001)
             self.assertEqual(port.state, 5)
             self.assertEqual(port.failure, 0)
+            self.assertEqual(port.local_id(), 76561198000000042)
+            port.accept_server_auth2()
             port.pump(43)
             port.request_ticket()
             self.assertEqual(port.with_auth(lambda data: len(data)), len(b'SYNTHETIC-NOT-A-TICKET'))
@@ -33,3 +35,4 @@ class SdkAbiTest(unittest.TestCase):
 
 
 if __name__ == '__main__': unittest.main(verbosity=2)
+

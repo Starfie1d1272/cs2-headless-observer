@@ -54,13 +54,21 @@ OBS_API int observer_state(void* handle) noexcept {
 OBS_API int observer_failure(void* handle) noexcept {
   return valid(handle) ? static_cast<int>(bridge->session().failure()) : static_cast<int>(Failure::context);
 }
-OBS_API int observer_abi_version() noexcept { return 1; }
+OBS_API int observer_abi_version() noexcept { return 2; }
 OBS_API void observer_pump(void* handle, std::uint64_t now_ms) noexcept {
   if (!valid(handle)) return;
   try { bridge->pump(now_ms); } catch (...) { bridge->session().close(Failure::consumer); }
 }
 OBS_API std::uint64_t observer_remote_id(void* handle) noexcept {
   return valid(handle) ? bridge->remote_steam_id() : 0;
+}
+OBS_API std::uint64_t observer_local_id(void* handle) noexcept {
+  return valid(handle) ? bridge->local_steam_id() : 0;
+}
+OBS_API int observer_accept_server_auth2(void* handle) noexcept {
+  if (!valid(handle) || !bridge->remote_steam_id()) return 0;
+  try { bridge->session().accept_server_auth2(); return bridge->session().state() == State::ready_no_ticket; }
+  catch (...) { bridge->session().close(Failure::consumer); return 0; }
 }
 OBS_API int observer_request_ticket(void* handle) noexcept {
   if (!valid(handle)) return 0;
@@ -94,3 +102,4 @@ OBS_API int observer_receive(void* handle, std::uint8_t* output, std::uint32_t c
   } catch (...) { return -1; }
 }
 OBS_API void observer_close(void* handle) noexcept { if (valid(handle)) shutdown(); }
+

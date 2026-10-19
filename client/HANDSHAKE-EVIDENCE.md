@@ -1,3 +1,5 @@
+> 2026-10-19 已补齐服务器 auth=2 分支，当前实现与 ABI 2 说明见 [认证分支对照](AUTH-PROTOCOL-EVIDENCE.md)。下文保留此前 auth=3 阶段的取证记录。
+
 # 第二轮：普通客户端握手的可实现边界
 
 本轮继续推进最终的轻量无画面客户端，**没有把官方可渲染客户端 record → Demo 解析当作最终实现**。新增 `handshake.py` 是连接报文/票据生命周期/sign-on 的可独立测试部分，仍无 socket、Steam SDK 提供方、GNS 认证加密和完整 netchannel，不能接入完美。本轮没有用户登录、真实票据或真实普通观众流量。
@@ -90,3 +92,4 @@ python apps/companion/research/ordinary-gotv/rea_session.py \
 engine2 换成对应文件与 `engine2-queries.json`。二进制不同就拒绝重放；重新下载的新版本不得冒充本轮精确目标。
 
 本轮已使用此脚本实际重放 networksystem 的 5 个静态查询，全部成功；[实际运行索引](evidence/rea-reproduction.json) 保留每次结果 hash 和 evidence_id。该运行未启动游戏、未发送网络握手。
+

@@ -84,5 +84,23 @@ int main() {
     { Session session(port); connect(session); session.request_ticket(); }
     assert(port.cancels == 1 && port.closes == 1);
   }
-  std::cout << "8 lifecycle cases passed; synthetic port, no Steam login/network.\n";
+  {
+    FakePort port; Session session(port); connect(session);
+    session.accept_server_auth2();
+    assert(session.state() == State::ready_no_ticket && port.requests == 0);
+    not_ready(session); // Server-selected no-ticket mode cannot expose ticket memory.
+    session.tick(90000); assert(session.state() == State::ready_no_ticket);
+    session.ticket_callback(17, 1); not_ready(session);
+    session.close(); assert(port.cancels == 0 && port.closes == 1);
+  }
+  {
+    FakePort port; Session session(port); session.start(0); session.tick(0);
+    bool rejected = false;
+    try { session.accept_server_auth2(); } catch (const std::logic_error&) { rejected = true; }
+    assert(rejected && session.state() == State::connecting);
+    session.connected(11, true); port.context = false;
+    session.accept_server_auth2(); assert(session.failure() == Failure::context);
+  }
+  std::cout << "10 lifecycle cases passed; synthetic port, no Steam login/network.\n";
 }
+
