@@ -21,3 +21,8 @@ Instancebaseline needs indexed key retention so keyless updates can resolve the 
 This document identifies requirements for unified implementation; it does not claim those changes are implemented or tested live.
 
 Native SetUserData empty-request behavior was independently run in isolated emulation for prior sizes0/1/16/128, using external-backed storage flags to avoid allocator operations. All four returned the expected changed flag, zero size and modification tick. No imported function was stubbed or executed. Evidence: stringtable-clear-emulation.json.
+
+## Key bytes and update index validation
+Native history addressing is(nextSlot - historyCount +32 + referencedPosition) mod32, confirming chronological references even after wrap. Prefix lengths count bytes; history uses strncpy into32-byte slots. Keep raw key bytes through prefix reconstruction and history truncation, then decode for projection; JavaScript substring counts UTF-16 characters and cannot substitute for this wire operation. Existing-entry updates ignore a replacement supplied key and resolve the original table key before history insertion.
+
+For index<count the native path calls SetStringUserData andGetString. For index>=count it calls AddString without passing that wire index. A strict observer may reject a new-index gap or duplicate-key/index inconsistency rather than invent sparse table state; this is an explicit malformed-input policy, not a claim that native AddString accepts a requested sparse index. Existing-key updates can still skip indices through the delta encoding. Fixed-size capacity/bit-count and aggregate storage budgets must be checked before allocation.

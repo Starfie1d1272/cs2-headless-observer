@@ -1,0 +1,235 @@
+{
+  "app": 730,
+  "depot": 2347770,
+  "manifest": "2520908610273941189",
+  "manifest_utc": "2026-10-15T17:23:21Z",
+  "binary_manifest": "8766757721818354077",
+  "resource_manifest_is_separately_pinned": true,
+  "format_reference": {
+    "repository": "ValveResourceFormat/ValvePak",
+    "commit": "ba422ecfae2f76bfaa36b517191fc4bebda3478b",
+    "path": "ValvePak/ValvePak/Package.Read.cs"
+  },
+  "resources": [
+    {
+      "mount": "core",
+      "path": "scripts/replay_compatability_settings.txt",
+      "sha256": "f8be268c134e8ce00cc32d7a7cb1c43ece17a9374ae295a89d1bbc4617f5b1ff",
+      "bytes": 4742,
+      "crc_verified": true,
+      "sections": {
+        "m_RenamedSerializers": [
+          {
+            "m_OldName": "CBasePlayer",
+            "m_NewName": "CBasePlayerPawn"
+          },
+          {
+            "m_OldName": "CBaseAnimating",
+            "m_NewName": "CBaseAnimatingActivity"
+          }
+        ],
+        "m_RenamedFields": [
+          {
+            "m_OldName": "m_nameStringableIndex",
+            "m_NewName": "m_nameStringTableIndex"
+          }
+        ],
+        "m_RenamedTypes": [
+          {
+            "m_OldName": "CHandle< CBasePlayer >",
+            "m_NewName": "CHandle< C_BasePlayerPawn >"
+          },
+          {
+            "m_OldName": "int32",
+            "m_NewName": "item_definition_index_t"
+          },
+          {
+            "m_OldName": "CUtlVector< CHandle< CBasePlayer > >",
+            "m_NewName": "C_NetworkUtlVectorBase< CHandle< CBasePlayerController > >"
+          },
+          {
+            "m_OldName": "int16",
+            "m_NewName": "AttachmentHandle_t"
+          },
+          {
+            "m_OldName": "int32",
+            "m_NewName": "AttachmentHandle_t"
+          },
+          {
+            "m_OldName": "uint32",
+            "m_NewName": "int32"
+          },
+          {
+            "m_OldName": "float32",
+            "m_NewName": "GameTime_t"
+          },
+          {
+            "m_OldName": "int32",
+            "m_NewName": "GameTick_t"
+          },
+          {
+            "m_OldName": "CBasePlayer",
+            "m_NewName": "CBasePlayerController"
+          },
+          {
+            "m_OldName": "CUtlStringToken",
+            "m_NewName": "WorldGroupId_t"
+          },
+          {
+            "m_OldName": "CBaseAnimating",
+            "m_NewName": "CBaseAnimatingActivity"
+          },
+          {
+            "m_OldName": "int32",
+            "m_NewName": "PlayerID_t"
+          },
+          {
+            "m_OldName": "uint16",
+            "m_NewName": "attrib_definition_index_t"
+          },
+          {
+            "m_OldName": "Vector",
+            "m_NewName": "VectorWS"
+          }
+        ],
+        "m_FieldTypeAliases": [
+          {
+            "m_OldName": "CHandle<",
+            "m_NewName": "uint32",
+            "m_bMatchStartOfTypeOnly": true
+          },
+          {
+            "m_OldName": "CUtlStringToken",
+            "m_NewName": "uint32"
+          },
+          {
+            "m_OldName": "gender_t",
+            "m_NewName": "uint8"
+          },
+          {
+            "m_OldName": "BloodType",
+            "m_NewName": "int32"
+          },
+          {
+            "m_OldName": "PrecipitationType_t",
+            "m_NewName": "int32"
+          },
+          {
+            "m_OldName": "CNetworkedQuantizedFloat",
+            "m_NewName": "float32"
+          },
+          {
+            "m_OldName": "CGameSceneNodeHandle",
+            "m_NewName": "uint64"
+          },
+          {
+            "m_OldName": "HSequence",
+            "m_NewName": "int32"
+          },
+          {
+            "m_OldName": "PoseController_FModType_t",
+            "m_NewName": "uint32"
+          },
+          {
+            "m_OldName": "ShatterPanelMode",
+            "m_NewName": "uint8"
+          },
+          {
+            "m_OldName": "DecalMode_t",
+            "m_NewName": "DecalRtEncoding_t"
+          },
+          {
+            "m_OldName": "BeamClipStyle_t",
+            "m_NewName": "int32"
+          }
+        ],
+        "m_PointerFieldTypes": [
+          {
+            "m_Name": "CBodyComponent"
+          },
+          {
+            "m_Name": "CBodyComponentPoint"
+          },
+          {
+            "m_Name": "CBodyComponentBaseAnimating"
+          },
+          {
+            "m_Name": "C_BodyComponentBaseAnimating"
+          },
+          {
+            "m_Name": "CBodyComponentBaseAnimatingOverlay"
+          },
+          {
+            "m_Name": "C_BodyComponentBaseAnimatingOverlay"
+          },
+          {
+            "m_Name": "CBodyComponentBaseModelEntity"
+          },
+          {
+            "m_Name": "CPhysicsComponent"
+          },
+          {
+            "m_Name": "CRenderComponent"
+          }
+        ],
+        "m_UserDefinedSerializerLookup": [
+          {
+            "m_FieldName": "m_flSimulationTime",
+            "m_SerializerName": "simulationTimeSerializer"
+          }
+        ]
+      }
+    },
+    {
+      "mount": "csgo",
+      "path": "scripts/replay_compatability_settings.txt",
+      "sha256": "94a456dee09b19862be0a89ca4331bff2405137ccfdb9e072822114416d06578",
+      "bytes": 976,
+      "crc_verified": true,
+      "sections": {
+        "m_RenamedSerializers": [
+          {
+            "m_OldName": "CCSGameModeRules_Scripted",
+            "m_NewName": "CCSGameModeRules_Noop"
+          }
+        ],
+        "m_RenamedTypes": [
+          {
+            "m_OldName": "PlayerAnimEvent_t",
+            "m_NewName": "WeaponGameplayAnimState"
+          }
+        ],
+        "m_FieldTypeAliases": [
+          {
+            "m_OldName": "EGrenadeThrowState",
+            "m_NewName": "uint32"
+          },
+          {
+            "m_OldName": "CEntityIndex",
+            "m_NewName": "int32"
+          },
+          {
+            "m_OldName": "CSWeaponState_t",
+            "m_NewName": "uint32"
+          },
+          {
+            "m_OldName": "WorldGroupId_t",
+            "m_NewName": "uint32"
+          },
+          {
+            "m_OldName": "PlayerAnimEvent_t",
+            "m_NewName": "WeaponGameplayAnimState"
+          },
+          {
+            "m_OldName": "WeaponAttackType_t",
+            "m_NewName": "int32"
+          },
+          {
+            "m_OldName": "DecalRtEncoding_t",
+            "m_NewName": "uint8"
+          }
+        ]
+      }
+    }
+  ]
+}
