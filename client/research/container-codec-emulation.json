@@ -1,0 +1,154 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "method": "isolated fake-field native container readers, debug disabled; no allocation or OS callbacks",
+    "cases": 12,
+    "passed": 12
+  },
+  "cases": [
+    {
+      "kind": "pointer",
+      "polymorphic": false,
+      "present": false,
+      "selector_or_length": 0,
+      "input_hex": "00",
+      "expected_bits": 1,
+      "actual_bits": 1,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "pointer",
+      "polymorphic": false,
+      "present": true,
+      "selector_or_length": 0,
+      "input_hex": "01",
+      "expected_bits": 1,
+      "actual_bits": 1,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "pointer",
+      "polymorphic": true,
+      "present": false,
+      "selector_or_length": 0,
+      "input_hex": "00",
+      "expected_bits": 1,
+      "actual_bits": 1,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "pointer",
+      "polymorphic": true,
+      "present": true,
+      "selector_or_length": 1,
+      "input_hex": "03",
+      "expected_bits": 7,
+      "actual_bits": 7,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "pointer",
+      "polymorphic": true,
+      "present": true,
+      "selector_or_length": 2,
+      "input_hex": "05",
+      "expected_bits": 7,
+      "actual_bits": 7,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "pointer",
+      "polymorphic": true,
+      "present": true,
+      "selector_or_length": 3,
+      "input_hex": "07",
+      "expected_bits": 7,
+      "actual_bits": 7,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "array",
+      "polymorphic": false,
+      "present": false,
+      "selector_or_length": 0,
+      "input_hex": "00",
+      "expected_bits": 8,
+      "actual_bits": 8,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "array",
+      "polymorphic": false,
+      "present": false,
+      "selector_or_length": 1,
+      "input_hex": "01",
+      "expected_bits": 8,
+      "actual_bits": 8,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "array",
+      "polymorphic": false,
+      "present": false,
+      "selector_or_length": 127,
+      "input_hex": "7f",
+      "expected_bits": 8,
+      "actual_bits": 8,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "array",
+      "polymorphic": false,
+      "present": false,
+      "selector_or_length": 128,
+      "input_hex": "8001",
+      "expected_bits": 16,
+      "actual_bits": 16,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "array",
+      "polymorphic": false,
+      "present": false,
+      "selector_or_length": 16384,
+      "input_hex": "808001",
+      "expected_bits": 24,
+      "actual_bits": 24,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    },
+    {
+      "kind": "array",
+      "polymorphic": false,
+      "present": false,
+      "selector_or_length": 16385,
+      "input_hex": "818001",
+      "expected_bits": 24,
+      "actual_bits": 24,
+      "overflow": 0,
+      "selected_expected": true,
+      "passed": true
+    }
+  ]
+}

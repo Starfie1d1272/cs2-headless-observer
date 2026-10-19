@@ -1,0 +1,362 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "method": "isolated default float-family, configured quant8, string and binary native decoders; preallocated buffer, no OS allocator",
+    "cases": 32,
+    "passed": 32
+  },
+  "cases": [
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 1,
+      "input_hex": "00000000",
+      "expected_hex": "00000000",
+      "expected_bits": 32,
+      "actual_hex": "00000000",
+      "actual_bits": 32,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 1,
+      "input_hex": "000020c0",
+      "expected_hex": "000020c0",
+      "expected_bits": 32,
+      "actual_hex": "000020c0",
+      "actual_bits": 32,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 1,
+      "input_hex": "00008047",
+      "expected_hex": "00008047",
+      "expected_bits": 32,
+      "actual_hex": "00008047",
+      "actual_bits": 32,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 2,
+      "input_hex": "0000000000000000",
+      "expected_hex": "0000000000000000",
+      "expected_bits": 64,
+      "actual_hex": "0000000000000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 2,
+      "input_hex": "000020c00000c0bf",
+      "expected_hex": "000020c00000c0bf",
+      "expected_bits": 64,
+      "actual_hex": "000020c00000c0bf",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 2,
+      "input_hex": "0000804700000047",
+      "expected_hex": "0000804700000047",
+      "expected_bits": 64,
+      "actual_hex": "0000804700000047",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 3,
+      "input_hex": "000000000000000000000000",
+      "expected_hex": "000000000000000000000000",
+      "expected_bits": 96,
+      "actual_hex": "000000000000000000000000",
+      "actual_bits": 96,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 3,
+      "input_hex": "000020c00000c0bf000000bf",
+      "expected_hex": "000020c00000c0bf000000bf",
+      "expected_bits": 96,
+      "actual_hex": "000020c00000c0bf000000bf",
+      "actual_bits": 96,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 3,
+      "input_hex": "0000804700000047abaaaa46",
+      "expected_hex": "0000804700000047abaaaa46",
+      "expected_bits": 96,
+      "actual_hex": "0000804700000047abaaaa46",
+      "actual_bits": 96,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 4,
+      "input_hex": "00000000000000000000000000000000",
+      "expected_hex": "00000000000000000000000000000000",
+      "expected_bits": 128,
+      "actual_hex": "00000000000000000000000000000000",
+      "actual_bits": 128,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 4,
+      "input_hex": "000020c00000c0bf000000bf0000003f",
+      "expected_hex": "000020c00000c0bf000000bf0000003f",
+      "expected_bits": 128,
+      "actual_hex": "000020c00000c0bf000000bf0000003f",
+      "actual_bits": 128,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 4,
+      "input_hex": "0000804700000047abaaaa4600008046",
+      "expected_hex": "0000804700000047abaaaa4600008046",
+      "expected_bits": 128,
+      "actual_hex": "0000804700000047abaaaa4600008046",
+      "actual_bits": 128,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 6,
+      "input_hex": "000000000000000000000000000000000000000000000000",
+      "expected_hex": "000000000000000000000000000000000000000000000000",
+      "expected_bits": 192,
+      "actual_hex": "000000000000000000000000000000000000000000000000",
+      "actual_bits": 192,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 6,
+      "input_hex": "000020c00000c0bf000000bf0000003f0000c03f00002040",
+      "expected_hex": "000020c00000c0bf000000bf0000003f0000c03f00002040",
+      "expected_bits": 192,
+      "actual_hex": "000020c00000c0bf000000bf0000003f0000c03f00002040",
+      "actual_bits": 192,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 6,
+      "input_hex": "0000804700000047abaaaa4600008046cdcc4c46abaa2a46",
+      "expected_hex": "0000804700000047abaaaa4600008046cdcc4c46abaa2a46",
+      "expected_bits": 192,
+      "actual_hex": "0000804700000047abaaaa4600008046cdcc4c46abaa2a46",
+      "actual_bits": 192,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 8,
+      "input_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_bits": 256,
+      "actual_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "actual_bits": 256,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 8,
+      "input_hex": "000020c00000c0bf000000bf0000003f0000c03f000020400000604000009040",
+      "expected_hex": "000020c00000c0bf000000bf0000003f0000c03f000020400000604000009040",
+      "expected_bits": 256,
+      "actual_hex": "000020c00000c0bf000000bf0000003f0000c03f000020400000604000009040",
+      "actual_bits": 256,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_raw",
+      "dimensions_or_length": 8,
+      "input_hex": "0000804700000047abaaaa4600008046cdcc4c46abaa2a462549124600000046",
+      "expected_hex": "0000804700000047abaaaa4600008046cdcc4c46abaa2a462549124600000046",
+      "expected_bits": 256,
+      "actual_hex": "0000804700000047abaaaa4600008046cdcc4c46abaa2a462549124600000046",
+      "actual_bits": 256,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_quant8",
+      "dimensions_or_length": 1,
+      "input_hex": "00",
+      "expected_hex": "00000000",
+      "expected_bits": 8,
+      "actual_hex": "00000000",
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_quant8",
+      "dimensions_or_length": 1,
+      "input_hex": "01",
+      "expected_hex": "8180803b",
+      "expected_bits": 8,
+      "actual_hex": "8180803b",
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_quant8",
+      "dimensions_or_length": 1,
+      "input_hex": "7f",
+      "expected_hex": "fffefe3e",
+      "expected_bits": 8,
+      "actual_hex": "fffefe3e",
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_quant8",
+      "dimensions_or_length": 1,
+      "input_hex": "80",
+      "expected_hex": "8180003f",
+      "expected_bits": 8,
+      "actual_hex": "8180003f",
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_quant8",
+      "dimensions_or_length": 1,
+      "input_hex": "fe",
+      "expected_hex": "fffe7e3f",
+      "expected_bits": 8,
+      "actual_hex": "fffe7e3f",
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "float_quant8",
+      "dimensions_or_length": 1,
+      "input_hex": "ff",
+      "expected_hex": "0000803f",
+      "expected_bits": 8,
+      "actual_hex": "0000803f",
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "string",
+      "dimensions_or_length": 1,
+      "input_hex": "00",
+      "expected_hex": "00",
+      "expected_bits": 8,
+      "actual_hex": "00",
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "string",
+      "dimensions_or_length": 1,
+      "input_hex": "6100",
+      "expected_hex": "6100",
+      "expected_bits": 16,
+      "actual_hex": "6100",
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "string",
+      "dimensions_or_length": 1,
+      "input_hex": "68656c6c6f00",
+      "expected_hex": "68656c6c6f00",
+      "expected_bits": 48,
+      "actual_hex": "68656c6c6f00",
+      "actual_bits": 48,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "string",
+      "dimensions_or_length": 1,
+      "input_hex": "e4b8ade6968700",
+      "expected_hex": "e4b8ade6968700",
+      "expected_bits": 56,
+      "actual_hex": "e4b8ade6968700",
+      "actual_bits": 56,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "binary",
+      "dimensions_or_length": 0,
+      "input_hex": "00",
+      "expected_hex": "",
+      "expected_bits": 8,
+      "actual_hex": "",
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "binary",
+      "dimensions_or_length": 1,
+      "input_hex": "0100",
+      "expected_hex": "00",
+      "expected_bits": 16,
+      "actual_hex": "00",
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "binary",
+      "dimensions_or_length": 3,
+      "input_hex": "03616263",
+      "expected_hex": "616263",
+      "expected_bits": 32,
+      "actual_hex": "616263",
+      "actual_bits": 32,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "binary",
+      "dimensions_or_length": 128,
+      "input_hex": "8001000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f",
+      "expected_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f",
+      "expected_bits": 1040,
+      "actual_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f",
+      "actual_bits": 1040,
+      "overflow": 0,
+      "passed": true
+    }
+  ]
+}
