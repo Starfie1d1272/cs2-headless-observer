@@ -148,6 +148,22 @@ class DriverTest(unittest.TestCase):
         driver._send_processed_tick(800)
         self.assertEqual(driver.report()['last_acknowledged_entity_tick'], 112)
         self.assertEqual(driver.report()['full_update_requests'], 1)
+        # Two distinct gaps can be repaired/observed inside the 100 ms tick-ACK
+        # window. The old -1 acknowledgement must not suppress the new request.
+        for sequence, receipt, now in [
+            (7, {'type': 'recovery', 'tick': 114, 'deltaFrom': 113}, 810),
+            (8, {'type': 'receipt', 'tick': 120, 'baselineAck': None}, 820),
+            (9, {'type': 'recovery', 'tick': 122, 'deltaFrom': 121}, 830),
+        ]:
+            driver.parser.controls = [{**receipt, 'sequence': sequence}]
+            driver.parser.checkpoint = {'sequence': sequence}
+            driver._send_processed_tick(now)
+        self.assertEqual(driver.report()['full_update_requests'], 3)
+        decoded, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=True).body)
+        self.assertEqual(scalar(fields(decoded[0].body), 1), 0xffffffff)
+        size = len(port.sent)
+        driver._send_processed_tick(840)
+        self.assertEqual(len(port.sent), size)
         driver.close()
 
     def test_wrong_peer_context_and_timeouts_do_not_request_ticket(self):
@@ -177,3 +193,4 @@ class DriverTest(unittest.TestCase):
 
 
 if __name__ == '__main__': unittest.main(verbosity=2)
+

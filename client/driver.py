@@ -52,6 +52,7 @@ class ObserverDriver:
         self._full_sent = False
         self._recovery_pending = False
         self._request_full_update = False
+        self._full_update_outstanding = False
         self._recovery_requests = 0
         self._baseline_ack_count = 0
         self._processed_entity_tick = None
@@ -274,14 +275,16 @@ class ObserverDriver:
                 baseline_acks.clear()
             else:
                 self._recovery_pending = False
+                self._full_update_outstanding = False
                 self._processed_entity_tick = receipt['tick']
                 if receipt['baselineAck'] is not None:
                     baseline_acks.append((receipt['tick'], receipt['baselineAck']))
         if self._recovery_pending:
-            if self._request_full_update and self._ack_tick != 0xffffffff:
+            if self._request_full_update and not self._full_update_outstanding:
                 encoded, _ = encode_message(4, number(1, 0xffffffff))
                 self.port.send(reliable_frame(encoded, 0), 8)
                 self._ack_tick = 0xffffffff
+                self._full_update_outstanding = True
                 self._recovery_requests += 1
             return
         for tick, bank in baseline_acks:
@@ -427,3 +430,4 @@ def main():
 
 if __name__ == '__main__':
     raise SystemExit(main())
+
