@@ -161,6 +161,8 @@ class SignonSequence:
     """
     def __init__(self):
         self.state = 2
+        self.received_state = 2
+        self.full_from_entities = False
         self.spawn_count = None
         self.closed = False
         self.initialization_blocked = False
@@ -180,13 +182,17 @@ class SignonSequence:
         if state is None or state not in range(2, 8) or count is None:
             raise ProbeError('missing-or-unsupported-signon')
         uint(count)
+        if self.spawn_count is not None and count not in (self.spawn_count, 0xffffffff):
+            raise ProbeError('spawn-count-mismatch')
+        if state == self.state == 6 and self.full_from_entities:
+            self.received_state = state
+            return {'received_state': state, 'online_success': 'INCONCLUSIVE'}
         if state < self.state or (state >= 3 and state == self.state):
             raise ProbeError('nonadvancing-signon')
         if state > self.state + 1:
             raise ProbeError('skipped-signon-initialization')
-        if self.spawn_count is not None and count not in (self.spawn_count, 0xffffffff):
-            raise ProbeError('spawn-count-mismatch')
         self.state = state
+        self.received_state = state
         if state in (3, 5):
             self.initialization_blocked = True
         if state == 7:
@@ -206,6 +212,15 @@ class SignonSequence:
         if self.closed or self.state != 5 or self.spawn_count is None:
             raise ProbeError('spawn-initialization-order')
         self.initialization_blocked = False
+
+    def finish_full_snapshot(self):
+        # Official 0x180086220 advances SPAWN to FULL after successful decoding
+        # of a non-delta entity snapshot; the server need not send state 6 first.
+        if (self.closed or self.state != 5 or self.spawn_count is None
+            or self.initialization_blocked):
+            raise ProbeError('full-snapshot-initialization-order')
+        self.state = 6
+        self.full_from_entities = True
 
     def acknowledgement(self):
         if self.closed:

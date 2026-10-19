@@ -49,6 +49,7 @@ class ObserverDriver:
         self._parser_sequence = 0
         self._prespawn_sent = False
         self._spawn_sent = False
+        self._full_snapshot_processed = False
         self._full_sent = False
         self._recovery_pending = False
         self._request_full_update = False
@@ -263,22 +264,25 @@ class ObserverDriver:
             self.port.send(reliable_frame(encoded, 0), 8)
             self._spawn_sent = True
             self.stages.append({'stage': 'sent-spawn', 'elapsed_ms': now_ms - self.start_ms})
-        if self.signon.state == 6 and not self._full_sent:
+        self._acknowledge_full(now_ms)
+        if self.signon.state == 7:
+            self.phase, self.reason = 'blocked', 'changelevel-new-instance-required'
+
+    def _acknowledge_full(self, now_ms):
+        if self.signon.state == 6 and not self._full_sent and self._full_snapshot_processed:
             if not self._spawn_sent:
                 raise DriverError('full-before-spawn-acknowledgement')
             message_id, payload = self.signon.acknowledgement()
             encoded, _ = encode_message(message_id, payload)
             self.port.send(reliable_frame(encoded, 0), 8)
             self._full_sent = True
-            self.stages.append({'stage': 'received-full', 'elapsed_ms': now_ms - self.start_ms})
-        if self.signon.state == 7:
-            self.phase, self.reason = 'blocked', 'changelevel-new-instance-required'
+            self.stages.append({'stage': 'sent-full', 'source': 'processed-full-snapshot', 'elapsed_ms': now_ms - self.start_ms})
 
     def _send_processed_tick(self, now_ms):
         checkpoint = self.parser.checkpoint if self.parser else None
         if checkpoint is None:
             return
-        if not self._full_sent:
+        if not self._full_sent and not self._spawn_sent:
             return
         baseline_acks = []
         for receipt in self.parser.pop_receipts():
@@ -290,11 +294,19 @@ class ObserverDriver:
                 self._processed_entity_tick = None
                 baseline_acks.clear()
             else:
+                if receipt.get('full') is True:
+                    self._full_snapshot_processed = True
                 self._recovery_pending = False
                 self._full_update_outstanding = False
                 self._processed_entity_tick = receipt['tick']
                 if receipt['baselineAck'] is not None:
                     baseline_acks.append((receipt['tick'], receipt['baselineAck']))
+        if self._full_snapshot_processed and not self._full_sent:
+            if self.signon.state == 5:
+                self.signon.finish_full_snapshot()
+            self._acknowledge_full(now_ms)
+        if not self._full_sent:
+            return
         if self._recovery_pending:
             if self._request_full_update and not self._full_update_outstanding:
                 encoded, _ = encode_message(4, number(1, 0xffffffff))
@@ -325,7 +337,9 @@ class ObserverDriver:
                 'native_failure': getattr(self.port, 'failure', None),
                 'challenge_metadata': self.challenge_metadata,
                 'channel_frames': self.channel_frames, 'channel_bytes': self.channel_bytes,
-                'channel_receive_span_ms': span, 'received_signon_state': self.signon.state,
+                'channel_receive_span_ms': span, 'received_signon_state': self.signon.received_state,
+                'effective_signon_state': self.signon.state,
+                'full_snapshot_processed': self._full_snapshot_processed,
                 'stages': self.stages,
                 'parser_checkpoint': self.parser.checkpoint if self.parser else None,
                 'parser_failure': getattr(self.parser, 'failure_details', None),

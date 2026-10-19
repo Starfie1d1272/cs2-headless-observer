@@ -27,7 +27,7 @@ if (
 const patch = resolve(here, 'cs2parser-online.patch');
 execFileSync('git', ['-C', source, 'apply', '--check', '--unidiff-zero', patch]);
 execFileSync('git', ['-C', source, 'apply', '--unidiff-zero', patch]);
-if (!readFileSync(resolve(source, 'src/index.ts'), 'utf8').includes('ordinaryViewerProtocol = 1')) {
+if (!readFileSync(resolve(source, 'src/index.ts'), 'utf8').includes('ordinaryViewerProtocol = 2')) {
   throw new Error('Online parser capability is missing');
 }
 const telemetry = createRequire(resolve(repo, 'package.json'));
@@ -80,3 +80,4 @@ await esbuild.build({
   },
   nodePaths: [protobufModules],
 });
+

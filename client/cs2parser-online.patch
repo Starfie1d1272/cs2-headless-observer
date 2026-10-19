@@ -3,7 +3,7 @@ index c29b80c..430d77a 100644
 --- a/src/index.ts
 +++ b/src/index.ts
 @@ -0,0 +1 @@
-+export const ordinaryViewerProtocol = 1;
++export const ordinaryViewerProtocol = 2;
 diff --git a/src/parser/entities/entityParser.ts b/src/parser/entities/entityParser.ts
 index 80f63fe..5b785fd 100644
 --- a/src/parser/entities/entityParser.ts
@@ -14,7 +14,7 @@ index 80f63fe..5b785fd 100644
 +	public online: OnlineEntityState | null = null;
 +	public onlineBaselineEntries = new Map<number, Uint8Array>();
 +	public onOnlineRecovery?: (gap: { tick: number; deltaFrom: number | null; request?: boolean }) => void;
-+	public onOnlineReceipt?: (receipt: { tick: number; baselineAck: number | null }) => void;
++	public onOnlineReceipt?: (receipt: { tick: number; baselineAck: number | null; full: boolean }) => void;
 @@ -424,0 +430,5 @@ export class EntityParser {
 +		const saved = this.online?.baseline(entityId, classId);
 +		if (saved && this.directEntities?.[entityId]) {
@@ -329,7 +329,7 @@ index 0000000..309f86e
 +		// Bounded receiver memory. A later reference outside this window requests a full update.
 +		while (this.frames.size > 128) this.frames.delete(this.frames.keys().next().value!);
 +		this.pending = null;
-+		return { tick: p.tick, baselineAck: p.update ? p.bank : null };
++		return { tick: p.tick, baselineAck: p.update ? p.bank : null, full: !p.delta };
 +	}
 +	recover(minimumTick = 0) {
 +		this.reset();
@@ -358,7 +358,7 @@ index 2aa047f..cf8fdc8 100644
 +	/** Experimental ordinary-observer transport mode, disabled for normal demos. */
 +	ordinaryViewer?: boolean;
 +	onOnlineRecovery?: (gap: { tick: number; deltaFrom: number | null; request?: boolean }) => void;
-+	onOnlineReceipt?: (receipt: { tick: number; baselineAck: number | null }) => void;
++	onOnlineReceipt?: (receipt: { tick: number; baselineAck: number | null; full: boolean }) => void;
 @@ -82,0 +90,12 @@ export class ParseSession {
 +	private fullFrames = new FullFrameAssembler();
 +	private splitTicks = new WeakMap<CSVCMsg_PacketEntities, number>();
@@ -498,3 +498,4 @@ index 2aa047f..cf8fdc8 100644
 @@ -1160 +1289 @@ export class ParseSession {
 -			for (const event of gameEventQueue) {
 +			for (const event of this.entityParser?.online?.waitingFull ? [] : gameEventQueue) {
+
