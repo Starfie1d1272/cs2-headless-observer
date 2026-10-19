@@ -19,6 +19,12 @@ const bits = (...parts) => {
     for (let i = 0; i < n; i++, p++) out[p >>> 3] |= ((v >>> i) & 1) << (p & 7);
   return out;
 };
+// Fixed engine coordinate scale is 1 / (2^normal_bits - 1), not 1/2^bits - 1.
+const { BitBuffer } = await load('src/parser/ubitreader.ts');
+for (const sign of [0, 1]) for (const magnitude of [0, 1, 1024, 2047]) {
+  const reader = new BitBuffer(bits([sign, 1], [magnitude, 11]));
+  assert.ok(Math.abs(reader.decodeNormal() - (sign ? -1 : 1) * magnitude / 2047) < 1e-7);
+}
 const fields = [
   new Field(FieldTypeEnum.Value, { name: 'value', decoder: Decoders.NoscaleDecoder, prop_id: 0 }),
 ];

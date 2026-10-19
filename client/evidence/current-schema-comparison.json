@@ -1,0 +1,102 @@
+{
+  "source": "fixed official engine2.dll embedded netmessages.proto FileDescriptorProto",
+  "offset": "0x564a20",
+  "descriptorBytes": 12090,
+  "added": [
+    {
+      "message": "ProtoFlattenedSerializerField_t",
+      "number": 13,
+      "name": "var_enum_info",
+      "type": 11,
+      "typeName": ".ProtoFlattenedSerializerField_t.proto_enum_info_t",
+      "label": 1,
+      "default": ""
+    },
+    {
+      "message": "ProtoFlattenedSerializerField_t.proto_enum_info_t",
+      "number": 1,
+      "name": "is_signed_enum",
+      "type": 8,
+      "typeName": "",
+      "label": 1,
+      "default": ""
+    },
+    {
+      "message": "ProtoCoordSizeParams_t",
+      "number": 1,
+      "name": "coord_integer_bits",
+      "type": 5,
+      "typeName": "",
+      "label": 1,
+      "default": ""
+    },
+    {
+      "message": "ProtoCoordSizeParams_t",
+      "number": 2,
+      "name": "coord_fractional_bits",
+      "type": 5,
+      "typeName": "",
+      "label": 1,
+      "default": ""
+    },
+    {
+      "message": "ProtoCoordSizeParams_t",
+      "number": 3,
+      "name": "coord_integer_bits_mp",
+      "type": 5,
+      "typeName": "",
+      "label": 1,
+      "default": ""
+    },
+    {
+      "message": "ProtoCoordSizeParams_t",
+      "number": 4,
+      "name": "coord_fractional_bits_mp",
+      "type": 5,
+      "typeName": "",
+      "label": 1,
+      "default": ""
+    },
+    {
+      "message": "ProtoCoordSizeParams_t",
+      "number": 5,
+      "name": "normal_fractional_bits",
+      "type": 5,
+      "typeName": "",
+      "label": 1,
+      "default": ""
+    },
+    {
+      "message": "ProtoCoordSizeParams_t",
+      "number": 6,
+      "name": "angle_bits",
+      "type": 5,
+      "typeName": "",
+      "label": 1,
+      "default": ""
+    },
+    {
+      "message": "CSVCMsg_FlattenedSerializer",
+      "number": 4,
+      "name": "coord_size_params",
+      "type": 11,
+      "typeName": ".ProtoCoordSizeParams_t",
+      "label": 1,
+      "default": ""
+    },
+    {
+      "message": "CMsgServerUserCmd",
+      "number": 7,
+      "name": "delta_processed",
+      "type": 8,
+      "typeName": "",
+      "label": 1,
+      "default": ""
+    }
+  ],
+  "changed": [],
+  "absentInCurrent": [],
+  "engine_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+  "parser_commit": "deced963b86d3ec26b28a225824130fdf9fe3167",
+  "implementation_status": "New field support remains under investigation; this is a schema comparison, not online compatibility acceptance."
+}

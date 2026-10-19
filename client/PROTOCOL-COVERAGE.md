@@ -59,3 +59,9 @@
 原生边界同步升级为 ABI 3：明确允许官方 flags=1 的不可靠反馈帧，旧 DLL 在加载时拒绝混用；新增远端断开原因码供报告读取。实际 ctypes/C ABI 验证覆盖 flags=1，固定 SDK 头文件编译通过。Windows x64 DLL 交叉链接通过，16 个导出齐全，导入只有 Steam API 与 Windows 系统库；无额外 libwinpthread 依赖。见 `evidence/windows-native-abi3-build.json`。尚未执行 Windows 运行或在线连接，未制作/分发新便携包。
 
 实体 Tick 来源已核实并修正：官方 `0x180086220` 在 PacketEntities 带 server_tick 时使用该值，否则取网络消息上下文；原解析器错误地要求其等于外围 Demo 包 Tick。新增真实 protobuf 字节用例（外围99、实体100）在修改前触发 mismatch，修改后明确确认100。仅调整 ordinaryViewer 路径，普通 Demo 解析保留原行为；干净固定源码应用补丁、类型检查和二进制实体用例均通过。完整真实录像已通过两套网络消息适配路径对照：185932 包、两边各185922实体回执，事件规范化摘要一致，包含4402开火、224击杀、30回合开始与30回合结束。结果与输入摘要见 `evidence/protocol-control-full-replay.json`；手动复现用 `verify_control_replay.py`，不加入日常 CI。
+
+## 当前构建 schema 与数值解码复核
+
+固定 engine2 内嵌 netmessages.proto 描述与固定解析库比较，发现 10 个新增字段、没有变更或删除字段；见 `evidence/current-schema-comparison.json`。新增涉及坐标位宽配置、枚举有符号性以及 usercmd delta 处理标记。普通观战能接收 schema 不等于解析库已消费这些字段；坐标配置和枚举 decoder 仍需逐项核实，不把忽略新增 protobuf 字段视为兼容证明。
+
+已确认并修正一个独立的 normal 解码算术问题：固定引擎 `0x18009ca50` 的归一化比例为 `1 / (2^normal_bits - 1)`。旧解析器写成 `1 / 2048 - 1`，11 位正向 magnitude=1 实际解为 -0.99951171875，正确值应为 1/2047。修后八个正负端点/中间向量以及现有实体二进制回归通过，干净固定源码应用补丁与类型检查通过。见 `evidence/normal-decoder-audit.json`。完整录像 185932 包对照通过，两边事件顺序/摘要一致，各 185922 实体回执，见 `evidence/normal-decoder-full-replay.json`。此回归证明受测事件未退化，normal 数值正确性由独立向量证明；尚未据此发布或制作测试包。

@@ -501,3 +501,10 @@ index 0000000..38c16f4
 +		this.latest = -1;
 +	}
 +}
+diff --git a/src/parser/ubitreader.ts b/src/parser/ubitreader.ts
+index 3172e33..5b6000f 100644
+--- a/src/parser/ubitreader.ts
++++ b/src/parser/ubitreader.ts
+@@ -498 +498 @@ export class BitBuffer {
+-		const result = length * (1 / 2048 - 1);
++		const result = length / ((1 << 11) - 1);
