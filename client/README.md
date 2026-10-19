@@ -14,7 +14,7 @@
 
 ## 云端运行
 
-需要仓库指定的 Node/pnpm、Python 3.11+。从仓库根目录运行；云环境先 `source /workspace/.onboarding/activate.sh`。
+需要仓库指定的 Node/pnpm、Python 3.11+。从仓库根目录运行；云环境存在 `/workspace/.onboarding/activate.sh` 时先加载该脚本。
 
 ```bash
 pnpm install --frozen-lockfile
@@ -51,14 +51,13 @@ python client/wire.py c2s-connect \
 python -m unittest discover -s client -p 'test_*.py' -v
 python client/verify.py \
   --fixture /absolute/path/demo.dem --output /absolute/path/new-verification
-pnpm exec tsc -p client/tsconfig.json
-pnpm exec eslint client/*.ts packages/telemetry-cstv/src/viewer-research.ts
-pnpm architecture:check
+pnpm typecheck
+pnpm test:events
 ```
 
 `verify.py` 是 Linux 云端验证器：真实公开录像被人为分段写入，先保留后续数据，确认第一批事件已输出，再继续写入；比较完整/增量结果，检查停止、截断、空文件和非法文件。**这只是文件持续读取，不是完美持续收数。** `test_wire.py` 的包全部合成，专门验证脱敏、格式边界及避免误判，不能充当任何服务器的流量。
 
-可选独立 oracle：在隔离 Python 环境安装 `demoparser2==0.42.0`，按 [EVIDENCE.md](EVIDENCE.md) 导出四种事件，再给 `verify.py` 加 `--oracle-dir`。此依赖不加入 Mizar。
+可选独立 oracle：在隔离 Python 环境安装 `demoparser2==0.42.0`，按 [EVIDENCE.md](EVIDENCE.md) 导出四种事件，再给 `verify.py` 加 `--oracle-dir`。此依赖仅用于独立对照，不作为客户端运行依赖。
 
 ## Windows CI 测试包
 
