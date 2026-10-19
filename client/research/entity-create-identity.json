@@ -1,0 +1,57 @@
+{
+  "manifest": "8766757721818354077",
+  "source_module_sha256": "659940c1db362ed981d1df10637cec8c2a3d99409b77fc3b73e435e4649e36b0",
+  "verified_slots": [
+    {
+      "vtable": "0x181c630f0",
+      "slot": "0xe8",
+      "target": "0x180b6f120"
+    },
+    {
+      "vtable": "0x181c630f0",
+      "slot": "0xf0",
+      "target": "0x180b65dc0"
+    },
+    {
+      "vtable": "0x181c30e48",
+      "slot": "0x8",
+      "target": "0x1809e6500"
+    },
+    {
+      "vtable": "0x181c30e48",
+      "slot": "0x18",
+      "target": "0x1809d41f0"
+    }
+  ],
+  "verified_serial_shift_stores": [
+    {
+      "address": "0x1815afa0e",
+      "bytes": "41c1e50f"
+    },
+    {
+      "address": "0x1815afa15",
+      "bytes": "894710"
+    },
+    {
+      "address": "0x1815afadd",
+      "bytes": "41c1e50f"
+    },
+    {
+      "address": "0x1815afae4",
+      "bytes": "895f10"
+    }
+  ],
+  "call_path": [
+    "engine0464f0 receives entity-create index and17-bit serial",
+    "Source2Client slotf0 -> clientb65dc0",
+    "CEntity2NetworkClasses slot18 -> client9d41f0",
+    "client15b1af0 ->15aff20 ->15af680"
+  ],
+  "observations": [
+    "15aff20 validates explicit network index<0x4000 and serial<=0x1ffff (with separate-1 sentinel)",
+    "15af680 stores index in low15 bits and the supplied serial shifted15 in identity+10",
+    "event type8 carries native handle; full serial comparison is valid within the matching world/receive identity",
+    "SDK GetRefEHandle subtracts EF_IS_INVALID_EHANDLE during invalidated identity lifetime; this is not permission to subtract1 from every received serial"
+  ],
+  "scope": "static cross-module create ownership and exact instruction checks; no live or complete entity-factory execution"
+}
