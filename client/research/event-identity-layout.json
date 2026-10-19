@@ -1,0 +1,106 @@
+{
+  "client_methods": [
+    {
+      "slot": "0x68",
+      "method": "GetEntity",
+      "target": "0x1809e46d0"
+    },
+    {
+      "slot": "0x70",
+      "method": "GetEntityIndex",
+      "target": "0x1809e4680"
+    },
+    {
+      "slot": "0x78",
+      "method": "GetPlayerSlot",
+      "target": "0x1809e8a50"
+    }
+  ],
+  "manifest": "8766757721818354077",
+  "types": [
+    {
+      "type": 0,
+      "name": "local"
+    },
+    {
+      "type": 1,
+      "name": "string"
+    },
+    {
+      "type": 2,
+      "name": "float"
+    },
+    {
+      "type": 3,
+      "name": "long"
+    },
+    {
+      "type": 4,
+      "name": "short"
+    },
+    {
+      "type": 5,
+      "name": "byte"
+    },
+    {
+      "type": 6,
+      "name": "bool"
+    },
+    {
+      "type": 7,
+      "name": "uint64"
+    },
+    {
+      "type": 8,
+      "name": "strict_ehandle"
+    },
+    {
+      "type": 9,
+      "name": "playercontroller"
+    }
+  ],
+  "methods": [
+    {
+      "slot": "0x60",
+      "method": "GetEHandle",
+      "target": "0x180bf9c60"
+    },
+    {
+      "slot": "0x68",
+      "method": "GetEntity",
+      "target": "0x180bf9cf0"
+    },
+    {
+      "slot": "0x70",
+      "method": "GetEntityIndex",
+      "target": "0x180bf9ca0"
+    },
+    {
+      "slot": "0x78",
+      "method": "GetPlayerSlot",
+      "target": "0x180bfb630"
+    },
+    {
+      "slot": "0xd8",
+      "method": "SetEntity(handle)",
+      "target": "0x180c1f6d0"
+    },
+    {
+      "slot": "0xe0",
+      "method": "SetPlayer(slot)",
+      "target": "0x180c22080"
+    },
+    {
+      "slot": "0xe8",
+      "method": "SetPlayer(entity)",
+      "target": "0x180c21e10"
+    },
+    {
+      "slot": "0xf0",
+      "method": "SetPlayerRaw",
+      "target": "0x180c22130"
+    }
+  ],
+  "serialize_event": "0x180c1dd90",
+  "method": "fixed-hash read-only constants/vtable verification; no online execution"
+}

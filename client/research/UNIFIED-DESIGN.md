@@ -31,6 +31,8 @@ Forward live receive does not enter CInstantReplay playback. Message70 full-fram
 - Dynamic arrays preserve existing in-range state and discard removed descendants; pointer absence/type replacement clears logical children, unchanged type preserves them. Persistent serialized metadata is old+delta keyed merge, distinct from logical descendants. Immutable schema must never carry an entity's active variant.
 - Keep raw wire values and accessor-normalized output separate. Required position/identity/event fields apply proven accessors; unused rendering-only fields need correct consumption, not simulation of their callbacks.
 
+Event identity dispatch follows descriptor types: playercontroller9 is the event player-slot domain, strict_ehandle8 carries a native32-bit pawn handle with15 index bits and full serial matching. Keep it distinct from flattened field ehandle14/10 and string-table user IDs. Capture identity at the source ordinal; never use the old helper's0x7ff pawn mask or resolve a delayed old pawn to a new serial.
+
 ## Stringtables and world dependencies
 Retain indexed keys and exact byte/bit lengths. Every entry updates the32-entry key history with its resolved actual key, including keyless updates; native history strings are bounded. Fixed userdata reads SizeBits, not SizeBytes. Omitted/empty userdata clears old data. Whole-table and per-entry compression have separate budgets. Clear table generation invalidates cached userinfo/baseline views; alternate indexed baselines stay indexed rather than flattened into a class-only map.
 
