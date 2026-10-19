@@ -10,7 +10,7 @@ Target: a lightweight authorized ordinary viewer that exposes current snapshot s
 
 ## Independent state owners
 1. Transport generation: SDK connection, outgoing/incoming sequence, reliable framing contexts, callback lifecycle. Only a new actual channel initializes sequence1/0.
-2. World generation: server count, class/schema graphs, stringtables, spawn groups, entity frame history, descriptor IDs and parser receipt fence. Retained-channel reconnect/changelevel clears this world without inventing new Steam authentication.
+2. World generation: server count, class/schema graphs, stringtables, spawn groups, entity frame history, descriptor IDs and parser receipt fence. Retained-channel reconnect/changelevel clears this world without inventing new Steam authentication. Fixed-build ClearAllStringTables also invokes engine Clear through vtable480→06bd20→0610c0; coordinate its reset across the driver and parser instead of clearing only table dictionaries.
 3. Entity snapshot transaction: referenced baseline, index/serial/class identity, immutable field data and entity-local container/polymorphic metadata. Commit only after bounded decode succeeds. Keep frame membership separate from current entity properties; copy-on-write only affected entities for rollback, rather than cloning the whole world each tick.
 4. Event projection: original source tick/ordinal, descriptor generation and identity evidence. Wire-order output and bounded waiting follow EVENT-LIFECYCLE-CONTRACT.md.
 5. Consumer role: ahead/delayed designation and configured120s separation. This is not measured latency; no cross-instance mutable state or leakage of ahead data into delayed output.
@@ -47,7 +47,3 @@ All limits are identified as local resilience policy unless native wire bounds a
 - Two simultaneous independent sources and measured CPU/RSS. Any live failure retains exact diagnosis; static tests do not imply99/100 percent live success.
 
 Before implementation, reconcile this design against all maintained contracts and actual prototype owners, then make a cohesive change set. Do not treat this document itself as an implementation or live-acceptance milestone.
-
-## Inbound control reconciliation
-
-INBOUND-CONTROL-CONTRACT.md records the remaining engine receiver classifications. Preserve the actual GetCvarValue58→RespondCvarValue25 reply using a truthful bounded local registry, independently of entity/event decoding. Known unsupported presentation envelopes do not become snapshot receipts. Fixed-build ID74 replay metadata is separate from both the old parser's Broadcast_Command name and the configured120-second two-source offset. Internal callback sentinels are excluded from the wire registry. Type resolution also consumes the separately pinned replay-compat resource profile and demonstrated boxed/enum registration profiles from SERIALIZER-CONTRACT.md; no generic unsigned fallback is authoritative.

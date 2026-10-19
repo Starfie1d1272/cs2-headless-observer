@@ -19,12 +19,12 @@ Fixed manifest: 8766757721818354077. This records verified control flow and prop
 | New event descriptor list | client9f9580 invalidates previous IDs and sets subscription dirty | Replace event schema generation; rebuild206 subscriptions from received IDs |
 | CHANGELEVEL / reconnect | 060310 /07e800 distinguish states, counts and callbacks | Clear connection/world/schema/queued-event ownership at explicit boundary, not every clock change |
 
-## Still to close
+## Cross-contract reconciliation
 
 - Outgoing ACK cadence and pre-FULL scheduling are resolved in TRANSPORT-CONTRACT.md; retain 061960 connection-problem resync handling.
 - Full-frame attachment/cleanup behavior is resolved below; reconcile queued replacement consumption and reliable ordering. Allocation/lifetime caps remain explicit observer bounds, not guessed native wire limits.
-- Identity reuse and world unload are established below and in WORLD-LIFECYCLE-CONTRACT.md; reconcile final parser transaction fences with these explicit source/world boundaries.
-- Full event queue replay/rewind policy and explicit downstream discontinuity markers.
+- Identity reuse and world unload are established below and in WORLD-LIFECYCLE-CONTRACT.md. GENERATION-TRANSACTION-CONTRACT.md defines the observer's cross-process fences and explicitly includes ClearAllStringTables as an engine Clear boundary.
+- EVENT-LIFECYCLE-CONTRACT.md and GENERATION-TRANSACTION-CONTRACT.md define forward-event ordering and downstream discontinuities; interactive rewind remains outside the requested ordinary forward observer.
 
 ## Deliberate observer constraints
 
