@@ -1,0 +1,9 @@
+{
+  "manifest": "8766757721818354077",
+  "module": "tier0.dll",
+  "default_max_coord": 16384,
+  "integer_address": "0x18039c400",
+  "float_address": "0x18039c40c",
+  "quantizer_registry_lookup": "0x18015c380",
+  "method": "fixed-hash initial data; no claim about uninspected modules mutating exported globals"
+}

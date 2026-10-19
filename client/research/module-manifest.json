@@ -1,0 +1,29 @@
+{
+  "source": "Valve app730 depot2347771 manifest8766757721818354077",
+  "files": {
+    "engine2": {
+      "sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+      "bytes": 6829720
+    },
+    "networksystem": {
+      "sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "bytes": 2841752
+    },
+    "client": {
+      "sha256": "659940c1db362ed981d1df10637cec8c2a3d99409b77fc3b73e435e4649e36b0",
+      "bytes": 39205528
+    },
+    "server": {
+      "sha256": "09e8c04c5f44040155d04fa79a3f43491d542a386f45807ed77785729e5925a9",
+      "bytes": 34628248
+    },
+    "schemasystem": {
+      "sha256": "d2a9b5164cb68953e77d0ef424c1263d2cc452a75e935316bc8b4c4500e63648",
+      "bytes": 445592
+    },
+    "tier0": {
+      "sha256": "990ea56bf1626d299ba54b64b423f2e409bd592bb737c7a5edf7972ad5c7143e",
+      "bytes": 3979928
+    }
+  }
+}

@@ -1,0 +1,1964 @@
+{
+  "cases": 178,
+  "matched": 178,
+  "results": [
+    {
+      "input": {
+        "bits": 1,
+        "flags": 0,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 0,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 0,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 0,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 1,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 1,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 1,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 1,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 2,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 2,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 2,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 2,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 4,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 4,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 4,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 4,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 8,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 8,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 8,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 1,
+        "flags": 8,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 0,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 0,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 0,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 0,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 1,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 1,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 1,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 1,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 2,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 2,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 2,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 2,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 4,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 4,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 4,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 4,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 8,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 8,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 8,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 2,
+        "flags": 8,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 0,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 0,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 0,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 0,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 1,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 1,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 1,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 1,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 2,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 2,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 2,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 2,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 4,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 4,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 4,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 4,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 8,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 8,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 2,
+      "originCellShift": 2,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 8,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 7,
+        "flags": 8,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 0,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 0,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 0,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 0,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 1,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 1,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 1,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 1,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 2,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 2,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 2,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 2,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 4,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 4,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 4,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 4,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 8,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 8,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 2,
+      "originCellShift": 2,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 8,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 8,
+        "flags": 8,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 0,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 0,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 0,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 0,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 1,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 1,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 1,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 1,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 2,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 2,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 2,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 2,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 4,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 4,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 4,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 4,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 8,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 8,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 2,
+      "originCellShift": 2,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 8,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 10,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 16,
+        "flags": 8,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 0,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 0,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 0,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 0,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 1,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 1,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 1,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 1,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 2,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 2,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 2,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 2,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 4,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 4,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 4,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 4,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 8,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 8,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 2,
+      "originCellShift": 2,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 8,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 10,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 24,
+        "flags": 8,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 16,
+      "originCellShift": 16,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 0,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 0,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 0,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 0,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 1,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 1,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 1,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 1,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 2,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 2,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 2,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 2,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 4,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 4,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 4,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 4,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 8,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 8,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 2,
+      "originCellShift": 2,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 8,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 10,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 30,
+        "flags": 8,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 16,
+      "originCellShift": 16,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 0,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 0,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 0,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 0,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 1,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 1,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 1,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 1,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 2,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 2,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 2,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 2,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 4,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 4,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 1,
+      "originCellShift": 1,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 4,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 4,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 15,
+      "originCellShift": 15,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 8,
+        "low": 0,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 8,
+        "low": -1,
+        "high": 1
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 8,
+        "low": 0,
+        "high": 1000
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 31,
+        "flags": 8,
+        "low": -16384,
+        "high": 16384
+      },
+      "rangeWidth": 0,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 0,
+        "low": 0,
+        "high": 128
+      },
+      "rangeWidth": 7,
+      "originCellShift": 7,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 0,
+        "low": 0,
+        "high": 256
+      },
+      "rangeWidth": 8,
+      "originCellShift": 8,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 0,
+        "low": 0,
+        "high": 512
+      },
+      "rangeWidth": 9,
+      "originCellShift": 9,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 0,
+        "low": 0,
+        "high": 1024
+      },
+      "rangeWidth": 10,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 0,
+        "low": 0,
+        "high": 2048
+      },
+      "rangeWidth": 11,
+      "originCellShift": 11,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 0,
+        "low": 0,
+        "high": 4096
+      },
+      "rangeWidth": 12,
+      "originCellShift": 12,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 1,
+        "low": 0,
+        "high": 128
+      },
+      "rangeWidth": 7,
+      "originCellShift": 7,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 1,
+        "low": 0,
+        "high": 256
+      },
+      "rangeWidth": 8,
+      "originCellShift": 8,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 1,
+        "low": 0,
+        "high": 512
+      },
+      "rangeWidth": 9,
+      "originCellShift": 9,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 1,
+        "low": 0,
+        "high": 1024
+      },
+      "rangeWidth": 10,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 1,
+        "low": 0,
+        "high": 2048
+      },
+      "rangeWidth": 11,
+      "originCellShift": 11,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 1,
+        "low": 0,
+        "high": 4096
+      },
+      "rangeWidth": 12,
+      "originCellShift": 12,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 2,
+        "low": 0,
+        "high": 128
+      },
+      "rangeWidth": 7,
+      "originCellShift": 7,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 2,
+        "low": 0,
+        "high": 256
+      },
+      "rangeWidth": 8,
+      "originCellShift": 8,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 2,
+        "low": 0,
+        "high": 512
+      },
+      "rangeWidth": 9,
+      "originCellShift": 9,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 2,
+        "low": 0,
+        "high": 1024
+      },
+      "rangeWidth": 10,
+      "originCellShift": 10,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 2,
+        "low": 0,
+        "high": 2048
+      },
+      "rangeWidth": 11,
+      "originCellShift": 11,
+      "matched": true
+    },
+    {
+      "input": {
+        "bits": 15,
+        "flags": 2,
+        "low": 0,
+        "high": 4096
+      },
+      "rangeWidth": 12,
+      "originCellShift": 12,
+      "matched": true
+    }
+  ]
+}
