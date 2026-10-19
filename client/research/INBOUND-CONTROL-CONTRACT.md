@@ -29,4 +29,6 @@ The ordinary engine handlers for46/47/49/50/56/57/62/70 resolve to021ba0, a succ
 
 Internal packet-start/end IDs1073741824/1073741825 and unresolved registration sentinels4294967295 are not wire IDs to add to the protocol registry. Their callbacks delimit native processing; the receiver must preserve its own explicit packet/message boundaries.
 
+The packet callbacks have now been resolved beyond their names: engine068800/068820 call slots88/90 on object61ebc0, whose RTTI isCDemoRecorder and vtable5374c0. Start028970 sets recorder flag+5d7; end028980 clears it and conditionally flushes the active Demo file. These are recording boundaries, not a hidden entity-commit barrier or an extra wire ACK. The observer's parser checkpoint remains an explicit local transaction mechanism rather than an emulation of this recorder callback.
+
 This inventory supplements, rather than replaces, transport, world, serializer, stringtable, entity and event contracts. Protocol constants must be resolved from the fixed binary registry before reusing older parser definitions. The observations above do not establish live server acceptance or complete game reconstruction.
