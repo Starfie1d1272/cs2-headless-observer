@@ -17,6 +17,8 @@ This is the observer's execution design derived from the maintained native contr
 
 The frozen prototype applies several changes only in one owner: driver blocks changelevel, parser clears tables independently, and bridge records have no world identity. Its event outlet and stream wrapper also reject any clock regression. Those behaviors are incompatible with the combined contracts even when an old single-map recording parses successfully.
 
+Reliable-marker ownership is an additional axis: preserve PacketReliable.tick deduplication across a world-only Clear, and initialize it only when the corresponding client owner is recreated. A retained transport can outlive that owner during explicit changelevel; transport sequence counters still survive. See TRANSPORT-CONTRACT.md for the native transfer/destruction/restoration chain.
+
 ## Ordered local envelope
 
 Every submitted unit carries source instance, channel generation, world generation, monotonically increasing submission sequence and original receive/message ordinal. Each message retains its current source tick and reliable-filter context. A packet with Tick(A), event, Tick(B), entity cannot be relabeled entirely asB. Preserve packet boundaries separately from per-message context; changing Demo wrapper ticks must not reorder controls, descriptors or table updates around events.

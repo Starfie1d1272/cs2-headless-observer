@@ -1,0 +1,77 @@
+[
+  {
+    "function": "0x5b37e",
+    "address": "0x5b3d0",
+    "instruction": "mov ebp, dword ptr [r15 + 0x2c1428]"
+  },
+  {
+    "function": "0x5b37e",
+    "address": "0x5b3df",
+    "instruction": "mov dword ptr [r15 + 0x2c1428], eax"
+  },
+  {
+    "function": "0x7a460",
+    "address": "0x7a94a",
+    "instruction": "mov qword ptr [rsi + 0x2c1420], r15"
+  },
+  {
+    "function": "0x7a460",
+    "address": "0x7a951",
+    "instruction": "mov dword ptr [rsi + 0x2c1428], 0x80000000"
+  },
+  {
+    "function": "0x7a460",
+    "address": "0x7a962",
+    "instruction": "mov qword ptr [rsi + 0x2c1430], 1"
+  },
+  {
+    "function": "0x7aea0",
+    "address": "0x7af2b",
+    "instruction": "mov rdx, qword ptr [rdi + 0x2c1420]"
+  },
+  {
+    "function": "0x7aea0",
+    "address": "0x7af98",
+    "instruction": "cmp dword ptr [rdi + 0x2c1430], r12d"
+  },
+  {
+    "function": "0x7aea0",
+    "address": "0x7afc8",
+    "instruction": "cmp ebx, dword ptr [rdi + 0x2c1430]"
+  },
+  {
+    "function": "0x82030",
+    "address": "0x82036",
+    "instruction": "mov dword ptr [rcx + 0x2c1428], 0x80000000"
+  },
+  {
+    "function": "0x84a6b",
+    "address": "0x84a8a",
+    "instruction": "mov dword ptr [rdi + 0x2c1430], ebx"
+  },
+  {
+    "function": "0x8b010",
+    "address": "0x8b047",
+    "instruction": "mov eax, dword ptr [r9 + 0x2c1434]"
+  },
+  {
+    "function": "0x8b010",
+    "address": "0x8b0b7",
+    "instruction": "mov dword ptr [r9 + 0x2c1434], eax"
+  },
+  {
+    "function": "0x1d3120",
+    "address": "0x1d330c",
+    "instruction": "mov qword ptr [rcx + 0x2c1420], r10"
+  },
+  {
+    "function": "0x1d51e0",
+    "address": "0x1d51f6",
+    "instruction": "mov dword ptr [rdi + 0x2c1428], 0x80000000"
+  },
+  {
+    "function": "0x1d6e00",
+    "address": "0x1d6e23",
+    "instruction": "mov r9d, dword ptr [rcx + 0x2c1430]"
+  }
+]
