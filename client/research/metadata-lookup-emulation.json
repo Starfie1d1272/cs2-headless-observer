@@ -1,0 +1,116 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "method": "isolated fixed networksystem metadata lookup; null optional external helper; no stubbed imports or OS execution",
+    "cases": 5,
+    "passed": 5
+  },
+  "cases": [
+    {
+      "transient": [],
+      "persistent": [
+        [
+          11,
+          2,
+          1
+        ]
+      ],
+      "key": 11,
+      "expected": [
+        2,
+        1
+      ],
+      "actual": [
+        2,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "transient": [
+        [
+          11,
+          3,
+          1
+        ]
+      ],
+      "persistent": [
+        [
+          11,
+          2,
+          1
+        ]
+      ],
+      "key": 11,
+      "expected": [
+        3,
+        1
+      ],
+      "actual": [
+        3,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "transient": [
+        [
+          12,
+          7,
+          0
+        ]
+      ],
+      "persistent": [
+        [
+          11,
+          2,
+          1
+        ]
+      ],
+      "key": 11,
+      "expected": [
+        2,
+        1
+      ],
+      "actual": [
+        2,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "transient": [
+        [
+          11,
+          0,
+          0
+        ]
+      ],
+      "persistent": [
+        [
+          11,
+          2,
+          1
+        ]
+      ],
+      "key": 11,
+      "expected": [
+        0,
+        0
+      ],
+      "actual": [
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "transient": [],
+      "persistent": [],
+      "key": 11,
+      "expected": null,
+      "actual": null,
+      "passed": true
+    }
+  ]
+}

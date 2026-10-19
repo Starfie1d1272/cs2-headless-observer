@@ -1,0 +1,74 @@
+# Field construction contract, research draft
+
+Fixed module build14191/10924; manifest8766757721818354077. No client implementation changes in this research phase.
+
+## Construction order supported by native evidence
+
+0779c0 recognizes vector-container prefixes and element type, fixed array suffix, aliases (bounded native resolution loop), explicit enum signedness, nested serializer references, primitive category, custom var_serializer override, then encoder and quantization configuration. 079ff0 resolves nested references using name plus version; 077240 includes polymorphic candidate references. This order must be represented explicitly rather than collapsed into field-name exceptions.
+
+- Dynamic vector prefixes: CNetworkUtlVectorBase, CUtlVectorEmbeddedNetworkVar, C_NetworkUtlVectorBase, C_UtlVectorEmbeddedNetworkVar, CUtlVector.
+- char[N>1] is specialized as string in0eada0; a scalar char and an arbitrary fixed array are different.
+- CStrongHandle maps to uint64; CNetworkedQuantizedFloat to float32.
+- Unknown custom name can fall back to recognized native type/registered callback; do not guess an unknown required category or encoder.
+- Keep raw wire value, logical field value and derived player/event projection distinct. Signed fixed8/fixed32 already sign-extend in their native wire decoder; do not defer that conversion to a later storage cast.
+
+## Custom scalar accessors inspected
+
+All listed names are registered by both client/server with matching categories and dimensions in the scanned fixed-build registration sites. This is not a claim that arbitrary modules/plugins register no additional names.
+
+| Serializer | Wire family / components | Logical observation |
+|---|---|---|
+| animTimeSerializer | unsigned /1 | seconds→int(seconds*64+0.5); receive count/64 |
+| simulationTimeSerializer | unsigned /1 | same fixed-build time conversion |
+| funcRotatingSimulationTimeSerializer | unsigned /1 | sending object flag can force0; receive count/64 |
+| ClampHealth | signed /1 | sender clamps nonpositive to0; receiver stores32-bit value |
+| minusone | unsigned /1 | sender adds1; receiver subtracts1 |
+| angle_normalize_positive | float /1 | sender normalizes angle; receiver storesfloat |
+| StepSimulationFuncRotatingAnglesSerializer | float /3 | sender normalizes components; receiver storestriple |
+| cellx/celly/cellz | signed /1 | wireinteger is narrowed ushort; derived coordinates use configured cellwidth/range |
+| posx/posy/posz | float /1 | fractional position with quantizer bounds, distinct from absoluteposition |
+| gameSceneNode | unsigned /1 | includes upper32 node identity; preserve64-bit value |
+| gameSceneNodeStepSimulationAnglesSerializer | float /3 | received angles saved directly |
+| gameSceneNodeStepSimulationOriginSerializer | float /3 | received triple saved; native local notifications update derivedcoordinates |
+| fish_pos_x/y/z | float /1 | sender emits relative offset; receiver callback copies object origin. Additional callback semantics remain open; retain raw value for unused rendering fields |
+| ehandle | unsigned /1 | wire14-bit index+10-bit serial; invalid0xffffff. Native handle restoration additionally consults current entity identity |
+
+Accessor addresses are catalogued locally against fixed modules. The primitive type/encoder catalogs already committed in research/ remain authoritative for family and dimension enumeration. Color is a registered primitive unsigned family; an old fixture custom name color alone is not evidence of an unsupported current-build category.
+
+## Reference coverage and old fixture
+
+The old sample has268 serializers with versions0–5, three repeated names across versions, and3 polymorphic entries. Current prototype keys serializer map byname and omits nested version/custom field12/polymorphic metadata at construction. Treat this as a unified schema-model gap; do not apply isolated field patches or claim existing event values are all wrong without a reference-specific comparison.
+
+## Remaining before implementation
+
+Native fake-field reads now confirm pointer presence1bit then (if present/polymorphic) UBitVar 1-based candidate selector, and varuint array length (12 isolated cases). Forty field-path operations match the prototype on1,780 valid-domain examples. Still close versioned forward references, multi-type state replacement, invalid-path handling and full-stream field-path reset. Preserve exact bit alignment even for unprojected fields. Data size, recursion and allocation limits must be explicit local bounds, with a typed failure rather than a guessed skip.
+
+## Quantizer construction correction
+
+Expanded native initialization matrix:160 configurations, with only the diagnostic void Warning import stubbed in emulator memory where required. The frozen parser differs on46 configurations; this is a configuration discrepancy count, not46 independently confirmed live bugs. An independently derived research model now reproduces all160 native outputs, including effective width/flags, float32 low/high, decode multiplier and range multiplier.
+
+Rules needed in the unified implementation: float32 intermediate rounding; native signed32 shift/subtraction behavior; exact-integer strictly-next-power-of-two range and < width-growth comparison; multiplier correction by successive float ULP rather than coarse decimal factors; +0.5 quantization used in sentinel elision. Preserve warned derived-width>31 cases as a separate compatibility boundary. Existing client files remain frozen.
+
+## Native read-field boundary and state ownership
+Pinned s2sdk IFlattenedSerializers slot20 maps to fixed networksystem0a8ac0, which dispatches06fef0 after configuring diagnostic listeners. ReadFields starts a fresh field-list decode, clears the output serialized-entity buffers and initializes a packet-local polymorphic metadata map. It resolves each path through05f870→05cc10, then05f240 consumes the selected leaf/container/pointer encoding. An unresolved path marks bitreader overflow; the outer reader does not publish a successful field payload on overflow. The headless equivalent must reject the whole entity transaction rather than emit partially updated projections.
+
+05f240 records pointer alternatives and container sizes in a path-keyed metadata map;05cc10 consults that map when choosing nested serializer variants. Alternative IDs select1-based table entries. These choices cannot live on one globally shared mutable field descriptor: two entities/instances and different snapshots must not change one another's active serializer. Native wire read temporarily stores metadata with the serialized entity; logical object/application state is a separate layer. Preserve immutable schema definitions and entity/snapshot-local metadata in the unified model.
+
+Schema construction source comparisons also need care: both pinned Clarity and demoinfocs require some nested serializer dependencies to have already appeared in their maps. A robust two-pass indexed(name,version) schema graph with bounded resolution is preferable for our implementation; forward references should resolve against the complete received schema, and unresolved names/cycles should produce explicit construction failure rather than fall back to a same-name wrong version. This is a design decision consistent with native versioned lookup, not a claim that all library constructors already do it.
+
+
+## Persistent merge and array shrink (fixed native evidence, 2026-10-19 18:19 UTC)
+SDK MergeDeltas slot 11 resolves through 0aa3a0 to networksystem 074ac0. The merge walks sorted old/delta field paths: equal paths use delta bits; an old-only field is retained only when it remains inside all applicable new array-size metadata bounds. For metadata kind 0, an ancestor path matching the old field prefix excludes it when the next index is >= the new length (074ac0 branch 07500f–0750bf). This is explicit shrink pruning, not merely updating a length property. Missing old base is a distinct supported merge case.
+
+Metadata records are 12 bytes: path key, value, kind (0 array size, 1 polymorphic selector). At finalization, 10ee80 copies old metadata into a temporary vector; 074ac0 then replaces records with matching path keys or appends new delta records and sorts before retaining them with the output. Assembly at 0768cc–0768de confirms RCX is the old serialized entity for the copy call. Thus delta metadata does not replace the entire persistent map. Array shrink removes out-of-range old field data even though the inspected map merge retains old metadata keys absent from the delta. Do not invent a global metadata purge or globally mutable serializer state.
+
+05cc10 resolves a polymorphic prefix using 059190 and a kind-1 record, selecting candidate (value - 1). A changed candidate therefore affects subsequent field-name/type resolution. The complete logical object consumer semantics for stale descendants after a pointer/type transition still require reconciliation; these observations alone do not prove blanket removal of all nested metadata on every type change.
+
+Evidence: local fixed-hash networksystem decompilations 074ac0,10ee80,05cc10,0589f0 and exact caller assembly. No runtime client patch, live stream or product claim is implied.
+
+Lookup precedence is now independently exercised: 059190 checks current transient records, then the optional external metadata helper, then the retained serialized-entity metadata. Five isolated native cases (external helper null) confirm transient override, persistent fallback, unrelated transient path, explicit kind-0 zero overriding prior kind-1 selector, and missing path. Evidence: metadata-lookup-emulation.json and reproducible harness. The optional helper branch is established by static control flow, not emulated in these cases.
+
+## Logical pointer object lifetime
+SDK Decode slot 7 is 0a9790→06de20; pointer base application is 06cc90, separate from ReadFields and MergeDeltas. In the ordinary non-fake, no-deferred-listener path, presence=false with an existing object invokes 1b4aa0 and clears its pointer; presence=true with the same runtime class keeps the object; a different polymorphic class destroys the old object and creates a new one through 1b4a50. Deferred network change listeners receive their own operation path, but type replacement still destroys/recreates before notification. Therefore observer logical projected state must clear pointer descendants on absence/type replacement and retain them for unchanged active type when applying a delta. This is separate from the serialized metadata map merge, which may retain dormant path records. Native fake serializers deliberately skip object allocation/destruction after consuming wire data, so they are not evidence that logical descendants should stay visible.
+
+Array application 06d9f0 delegates resizing to the configured container accessor and supplies a destructor callback for pointer elements. This agrees with MergeDeltas' out-of-range pruning and pinned demoinfocs' nested-state release on shrink. No renderer or gameplay simulation is required to model these ownership transitions. Codec callback selection and wire reads remain the previously established contract.
