@@ -70,9 +70,9 @@ p.parseEntityPacket(
 );
 assert.equal(p.directEntities[0].properties['Test.value'], 1);
 assert.deepEqual(receipts, [
-  { tick: 10, baselineAck: 0 },
-  { tick: 11, baselineAck: null },
-  { tick: 12, baselineAck: null },
+  { tick: 10, baselineAck: 0, full: true },
+  { tick: 11, baselineAck: null, full: false },
+  { tick: 12, baselineAck: null, full: false },
 ]);
 console.log(
   'Actual entity bitstream: baseline capture, deletion, re-entry with empty delta inherited bank, exact receipt passed',
@@ -210,3 +210,4 @@ assert.equal(receipts.at(-1).tick, 22);
 console.log(
   'Pending full-frame placeholder is not acknowledged as decoded; stale full snapshot is ignored',
 );
+

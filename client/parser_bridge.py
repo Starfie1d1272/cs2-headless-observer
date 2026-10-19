@@ -104,6 +104,8 @@ class ParserBridge:
                 if type(row.get('tick')) is not int or not 0 <= row['tick'] <= 0x7fffffff:
                     raise ProbeError('parser-control-tick')
                 if row['type'] == 'receipt':
+                    if type(row.get('full')) is not bool:
+                        raise ProbeError('parser-full-snapshot-receipt')
                     value = row.get('baselineAck')
                     if value is not None and (type(value) is not int or value not in (0, 1)):
                         raise ProbeError('parser-baseline-receipt')
@@ -150,3 +152,4 @@ class ParserBridge:
                 self.process.kill(); self.process.wait(timeout=3)
         self._writer.join(timeout=1); self._reader.join(timeout=1)
         self.process.stdin.close(); self.process.stdout.close()
+

@@ -102,6 +102,66 @@ class DriverTest(unittest.TestCase):
         driver.close()
         self.assertEqual(port.closed, 1)
 
+    def test_full_requires_a_processed_full_snapshot_and_does_not_wait_for_remote_full(self):
+        driver, port, _, _ = self.ready()
+        class Parser:
+            checkpoint = {'sequence': 1, 'schemaFields': 1, 'serverInfo': True, 'stringTables': 0}
+            controls = []
+            def pop_receipts(self):
+                controls, self.controls = self.controls, []
+                return controls
+        driver.parser = Parser()
+        driver._parser_sequence = 1
+        driver.signon.server_info(7)
+        for state in (3, 4, 5):
+            driver.signon.receive(number(1, state) + number(2, 7))
+        driver.signon.finish_spawn()
+        driver._new_sent = driver._prespawn_sent = driver._spawn_sent = True
+        driver._advance_initialization(100)
+        self.assertFalse(driver._full_sent)
+        driver._parser_sequence = 2  # Later traffic cannot stall a completed full snapshot.
+        driver.parser.controls = [{'type': 'receipt', 'sequence': 1, 'tick': 100, 'baselineAck': None, 'full': True}]
+        driver._send_processed_tick(200)
+        self.assertTrue(driver._full_sent)
+        self.assertEqual(driver.signon.state, 6)
+        sent = [m for data, reliable in port.sent[3:] for m in messages(decode_frame(data, gns_reliable=True).body)[0]]
+        self.assertEqual(sent[0].message_id, 7)
+        self.assertEqual(scalar(fields(sent[0].body), 1), 6)
+        self.assertEqual(driver.report()['received_signon_state'], 5)
+        self.assertEqual(driver.report()['effective_signon_state'], 6)
+        before = len(port.sent)
+        driver.signon.receive(number(1, 6) + number(2, 7))
+        driver._advance_initialization(300)
+        self.assertEqual(len(port.sent), before)
+
+    def test_remote_full_and_delta_receipt_do_not_replace_first_full_snapshot(self):
+        driver, port, _, _ = self.ready()
+        class Parser:
+            checkpoint = {'sequence': 1, 'schemaFields': 1, 'serverInfo': True, 'stringTables': 0}
+            controls = []
+            def pop_receipts(self):
+                controls, self.controls = self.controls, []
+                return controls
+        driver.parser = Parser()
+        driver._parser_sequence = 1
+        driver.signon.server_info(7)
+        for state in (3, 4, 5):
+            driver.signon.receive(number(1, state) + number(2, 7))
+        driver.signon.finish_spawn()
+        driver._new_sent = driver._prespawn_sent = driver._spawn_sent = True
+        driver.signon.receive(number(1, 6) + number(2, 7))
+        driver._advance_initialization(100)
+        self.assertFalse(driver._full_sent)
+        driver.parser.controls = [{'type': 'receipt', 'sequence': 1, 'tick': 100, 'baselineAck': None, 'full': False}]
+        driver._send_processed_tick(200)
+        self.assertFalse(driver._full_sent)
+        self.assertEqual(len(port.sent), 3)
+        driver.parser.controls = [{'type': 'receipt', 'sequence': 1, 'tick': 101, 'baselineAck': 0, 'full': True}]
+        driver._send_processed_tick(300)
+        self.assertTrue(driver._full_sent)
+        self.assertEqual(driver.report()['received_signon_state'], 6)
+        self.assertEqual(driver.report()['baseline_ack_count'], 1)
+
     def test_tick_receipt_waits_for_processed_entities_and_is_rate_bounded(self):
         driver, port, _, _ = self.ready()
         class Parser:

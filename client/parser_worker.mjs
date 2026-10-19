@@ -9,7 +9,7 @@ const send = (record) => {
   if (process.stdout.writableLength > 8 * 1024 ** 2) throw new Error('parser-output-budget');
   process.stdout.write(JSON.stringify(record) + '\n');
 };
-if (ordinaryViewerProtocol !== 1) throw new Error('ordinary-viewer-parser-build-required');
+if (ordinaryViewerProtocol !== 2) throw new Error('ordinary-viewer-parser-build-required');
 let recovering = false;
 const decoder = viewerDecoder(
   (event) => {
@@ -47,3 +47,4 @@ try {
   });
   process.exitCode = 1;
 }
+
