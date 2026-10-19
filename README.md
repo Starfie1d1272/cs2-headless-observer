@@ -13,7 +13,7 @@ Node 24、Python 3、pnpm 12.9.1。
 
 固定解析器源码：`osztenkurden/cs2parser` 的 `deced963b86d3ec26b28a225824130fdf9fe3167`。
 运行 `pnpm build:parser <源码目录> <输出 parser_worker.mjs>`，应用研究补丁、检查源码类型并构建独立解析进程。
-Windows 便携客户端由 Actions 的 Observer Research Package 手动构建。工作流保持手动触发，使用账户现有免费 Actions 额度；不启用付费计划。
+Windows 包可通过 `Observer Research Package` 手动构建；触发前核对免费额度。2026-10-19 的 ABI 2 测试包已在云端交叉编译并私下交付，未使用私有 Actions 分钟，见[构建记录](client/PACKAGE-EVIDENCE.md)。
 
 ## 状态
 
