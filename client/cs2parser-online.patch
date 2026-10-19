@@ -11,16 +11,57 @@ index 917f08d..c2b109f 100644
 @@ -177,0 +178 @@ export const parseClassInfo = (sendTables: CDemoSendTables, cDemoClassInfo: CDem
 +		...(serializerMessage.coord_size_params ? { coordSizeParams: serializerMessage.coord_size_params } : {}),
 diff --git a/src/parser/entities/constructorFields.ts b/src/parser/entities/constructorFields.ts
-index f89613a..ea126c9 100644
+index f89613a..5791fbc 100644
 --- a/src/parser/entities/constructorFields.ts
 +++ b/src/parser/entities/constructorFields.ts
-@@ -616,3 +616,3 @@ export const constructorFieldHelper = {
+@@ -134,0 +135 @@ const D_CTRANSFORM = 23;
++const D_QANGLE_BITS = 24;
+@@ -141 +142,2 @@ export type QuantalizedFloatDecoder = {
+-export type Decoder = number | QuantalizedFloatDecoder;
++export type AngleBitsDecoder = { type: typeof D_QANGLE_BITS; bitcount: number; components: 2 | 3 };
++export type Decoder = number | QuantalizedFloatDecoder | AngleBitsDecoder;
+@@ -486,2 +488,4 @@ export const constructorFieldHelper = {
+-		if (field.encoder === 'm_angEyeAngles') {
+-			return Decoders.QanglePitchYawDecoder;
++		if (field.encoder === 'qangle_pitch_yaw' || field.encoder === 'm_angEyeAngles') {
++			if (field.bitcount === 0 || field.bitcount === 32) return Decoders.QanglePitchYawDecoder;
++			if (field.bitcount < 1 || field.bitcount > 31) throw new Error('Invalid angle bit count');
++			return { type: D_QANGLE_BITS, bitcount: field.bitcount, components: 2 };
+@@ -488,0 +493 @@ export const constructorFieldHelper = {
++		if (field.bitcount === 32) return Decoders.Qangle3Decoder;
+@@ -490 +495,2 @@ export const constructorFieldHelper = {
+-			return Decoders.Qangle3Decoder;
++			if (field.bitcount < 1 || field.bitcount > 31) throw new Error('Invalid angle bit count');
++			return { type: D_QANGLE_BITS, bitcount: field.bitcount, components: 3 };
+@@ -492 +497,0 @@ export const constructorFieldHelper = {
+-
+@@ -496 +501,4 @@ export const constructorFieldHelper = {
+-		if (typeof decoder === 'object') return decodeQfloat(reader, decoder.decoder);
++		if (typeof decoder === 'object') {
++			if (decoder.type === D_QUANTALIZED_FLOAT) return decodeQfloat(reader, decoder.decoder);
++			return [reader.readAngle(decoder.bitcount), reader.readAngle(decoder.bitcount), decoder.components === 3 ? reader.readAngle(decoder.bitcount) : 0];
++		}
+@@ -567 +575 @@ export const constructorFieldHelper = {
+-			decodeQfloat(reader, decoder.decoder);
++			constructorFieldHelper.decode(reader, decoder);
+@@ -585 +592,0 @@ export const constructorFieldHelper = {
+-			case D_QANGLE_PITCH_YAW:
+@@ -590,0 +598,4 @@ export const constructorFieldHelper = {
++			case D_QANGLE_PITCH_YAW:
++				reader.consumePeeked(32);
++				reader.consumePeeked(32);
++				return;
+@@ -616,3 +627,3 @@ export const constructorFieldHelper = {
 -				if (flags & 1) reader.ReadUBits(20);
 -				if (flags & 2) reader.ReadUBits(20);
 -				if (flags & 4) reader.ReadUBits(20);
 +				if (flags & 1) reader.readBitCoordPres();
 +				if (flags & 2) reader.readBitCoordPres();
 +				if (flags & 4) reader.readBitCoordPres();
+@@ -645 +656,2 @@ export const constructorFieldHelper = {
+-		if (field.encoder === 'qangle_precise' && field.bitcount !== 32) return Decoders.QanglePresDecoder;
++		if (field.encoder === 'qangle_precise' && field.bitcount === 0) return Decoders.QanglePresDecoder;
++		if (field.encoder === 'qangle_pitch_yaw') return constructorFieldHelper.findQAngleDecoder(field);
 diff --git a/src/parser/entities/entityParser.ts b/src/parser/entities/entityParser.ts
 index 80f63fe..c6451ac 100644
 --- a/src/parser/entities/entityParser.ts
@@ -135,6 +176,13 @@ index 80f63fe..c6451ac 100644
 +			const receipt = this.online.finish(msg.delta_from);
 +			this.onOnlineReceipt?.(receipt);
 +		}
+diff --git a/src/parser/entities/entityWasm.ts b/src/parser/entities/entityWasm.ts
+index 2c2f952..6f12236 100644
+--- a/src/parser/entities/entityWasm.ts
++++ b/src/parser/entities/entityWasm.ts
+@@ -91,0 +92,2 @@ export class EntityWasm {
++		if ((typeof decoder === 'object' && decoder.type !== 0) || decoder === Decoders.QanglePitchYawDecoder)
++			throw new Error('Angle decoder requires the JS path');
 diff --git a/src/parser/entities/parseSession.ts b/src/parser/entities/parseSession.ts
 index 2aa047f..96c2faf 100644
 --- a/src/parser/entities/parseSession.ts
@@ -292,7 +340,7 @@ index 2aa047f..96c2faf 100644
 -			for (const event of gameEventQueue) {
 +			for (const event of this.entityParser?.online?.waitingFull ? [] : gameEventQueue) {
 diff --git a/src/parser/ubitreader.ts b/src/parser/ubitreader.ts
-index 3172e33..5b01b8b 100644
+index 3172e33..b330ea1 100644
 --- a/src/parser/ubitreader.ts
 +++ b/src/parser/ubitreader.ts
 @@ -0,0 +1 @@
@@ -324,6 +372,15 @@ index 3172e33..5b01b8b 100644
 +		return this;
 +	}
 +
+@@ -433 +455 @@ export class BitBuffer {
+-		// used by readAngle for fixed-point fractions; not what we want for vec3.)
++		// not what we want for vec3.)
+@@ -442 +464 @@ export class BitBuffer {
+-		return this.decode_noscale() / (1 << n);
++		return Math.fround(this.ReadUBits(n) * (360 / 2 ** n));
+@@ -446 +468 @@ export class BitBuffer {
+-		return [this.readAngle(32), this.readAngle(32), this.readAngle(32)];
++		return [this.readFloat32LE(), this.readFloat32LE(), 0];
 @@ -471 +493 @@ export class BitBuffer {
 -			intVal = this.ReadUBits(14) + 1;
 +			intVal = this.ReadUBits(this.coordIntegerBits) + 1;

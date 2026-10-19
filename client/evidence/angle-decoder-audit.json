@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-19",
+  "networksystem_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "evidence": {
+    "pitch_yaw": "0x1800d4640 reads two raw float32 axes for bit_count 0/32 and sets Z=0; explicit other widths use bit-angle",
+    "precise": "0x1800d3d90 uses negotiated profile only without explicit bit_count; explicit width selects bit-angle",
+    "bit_angle": "0x1801bec20 verified in assembly: unsigned bits * 360/(1<<n). Decompiler return inference was incomplete."
+  },
+  "verification": [
+    "15 explicit angle profiles across 3 encoders and 5 widths",
+    "raw two-axis 0/32, raw three-axis32 retained",
+    "skip alignment and WASM fallback",
+    "original decoder fails independent vector",
+    "clean pinned parser patch/build",
+    "full real Demo replay 185932 packets, matching event hash and185922 receipts each"
+  ],
+  "limits": [
+    "no live GOTV or Windows execution",
+    "real fixture does not contain pitch_yaw encoder",
+    "coord_integral and enum signedness remain under investigation"
+  ]
+}

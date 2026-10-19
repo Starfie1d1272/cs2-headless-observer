@@ -68,4 +68,6 @@
 
 坐标配置已接入 protobuf → ClassInfo → 单实例 BitBuffer → 实体及跳过路径，包含整数/小数位宽、normal 与 precise angle 位宽及游戏相同的参数预算检查。已对照 networksystem 的三个实际解码函数：normal `0x1800d1930`、coord `0x1800d5fd0`、qangle_precise `0x1800d3d90`；precise-angle 跳过路径同步消费协商位宽。带配置的流避开只认识固定位宽的 WASM，普通观众本来就使用 JS 实体路径。独立字节向量、完整实体创建、两个实例的默认隔离及非法参数拒绝通过；干净补丁构建、实体回归和真实旧录像首次 FULL/反馈通过。证据见 `evidence/coordinate-profile-audit.json` 与 `evidence/coordinate-profile-first-full.json`，复现用 `verify_coordinate_profile.mjs`。现有真实录像没有新配置/枚举字段，不能作为这些新增协议字段的在线证据。
 
-下一批明确核对的编码分支：qangle_pitch_yaw（实际游戏读两轴）、带显式 bit_count 的角度、coord_integral 与 var_enum_info 的有符号分支。当前库这些分支的映射仍需对照；不得把默认通用 decoder 当成已完成兼容。
+qangle_pitch_yaw 与显式 bit_count 角度分支已按固定游戏实现补齐：两轴 raw float32（0/32 位）及 1–31 位量化角度，跳过路径同宽，固定 WASM 不支持时退回 JS。15 个独立量化向量、raw 两轴/三轴和跳过对齐通过；原解析器在同一测试失败。完整录像 185932 包、两边各 185922 回执、事件摘要完全一致（709.922 秒），见 `evidence/angle-decoder-audit.json`、`evidence/angle-decoder-full-replay.json` 与 `verify_angle_codecs.mjs`。这是离线互操作回归，尚未 Windows/在线测试。
+
+下一批核对 coord_integral 与 var_enum_info 有符号分支，以及 Tick 回退与未消费消息。
