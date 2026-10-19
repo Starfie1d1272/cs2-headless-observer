@@ -1,0 +1,1004 @@
+{
+  "manifest": "8766757721818354077",
+  "build": "14191/10924",
+  "type_count": 36,
+  "client_server_sign_conflicts": 0,
+  "normalization": "Array suffix removed for enum base identity only; array length stays in received schema. width_argument may be whole storage width (MedalRank array24), never blindly use it as element width.",
+  "scope": "All constructor sites found by explicit IsEnum+IsSigned byte-write pattern in the fixed modules. This static extraction is not a proof about arbitrary dynamically installed extensions. Explicit received enum metadata remains authoritative; unknown unannotated names are not guessed.",
+  "types": {
+    "AnimLoopMode_t": {
+      "signed": true,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "AnimLoopMode_t",
+          "field": "m_nAnimLoopMode",
+          "width_argument": 4,
+          "call": "0x18044f2ce",
+          "constructor": "0x180417c50",
+          "signed": true,
+          "signed_write": "0x180417eb3",
+          "enum_write": "0x180417eba"
+        },
+        {
+          "module": "server",
+          "type": "AnimLoopMode_t",
+          "field": "m_nAnimLoopMode",
+          "width_argument": 4,
+          "call": "0x180618d8e",
+          "constructor": "0x1805e9290",
+          "signed": true,
+          "signed_write": "0x1805e94f3",
+          "enum_write": "0x1805e94fa"
+        }
+      ]
+    },
+    "AnimationAlgorithm_t": {
+      "signed": true,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "AnimationAlgorithm_t",
+          "field": "m_nAnimationAlgorithm",
+          "width_argument": 1,
+          "call": "0x18044ddd9",
+          "constructor": "0x1804181b0",
+          "signed": true,
+          "signed_write": "0x180418413",
+          "enum_write": "0x18041841a"
+        },
+        {
+          "module": "server",
+          "type": "AnimationAlgorithm_t",
+          "field": "m_nAnimationAlgorithm",
+          "width_argument": 1,
+          "call": "0x180617899",
+          "constructor": "0x1805e97f0",
+          "signed": true,
+          "signed_write": "0x1805e9a53",
+          "enum_write": "0x1805e9a5a"
+        }
+      ]
+    },
+    "BeamType_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "BeamType_t",
+          "field": "m_nBeamType",
+          "width_argument": 4,
+          "call": "0x18030a14a",
+          "constructor": "0x1802f2dc0",
+          "signed": false,
+          "signed_write": "0x1802f3023",
+          "enum_write": "0x1802f302a"
+        },
+        {
+          "module": "server",
+          "type": "BeamType_t",
+          "field": "m_nBeamType",
+          "width_argument": 4,
+          "call": "0x1804d7eca",
+          "constructor": "0x1804c3e40",
+          "signed": false,
+          "signed_write": "0x1804c40a3",
+          "enum_write": "0x1804c40aa"
+        }
+      ]
+    },
+    "BloodType": {
+      "signed": true,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "BloodType",
+          "field": "m_nBloodType",
+          "width_argument": 4,
+          "call": "0x180454a81",
+          "constructor": "0x180418710",
+          "signed": true,
+          "signed_write": "0x180418973",
+          "enum_write": "0x18041897a"
+        },
+        {
+          "module": "server",
+          "type": "BloodType",
+          "field": "m_nBloodType",
+          "width_argument": 4,
+          "call": "0x18061d8c7",
+          "constructor": "0x1805e9d50",
+          "signed": true,
+          "signed_write": "0x1805e9fb3",
+          "enum_write": "0x1805e9fba"
+        }
+      ]
+    },
+    "CSPlayerBlockingUseAction_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "CSPlayerBlockingUseAction_t",
+          "field": "m_iBlockingUseActionInProgress",
+          "width_argument": 4,
+          "call": "0x180c83380",
+          "constructor": "0x180c4b0b0",
+          "signed": false,
+          "signed_write": "0x180c4b313",
+          "enum_write": "0x180c4b31a"
+        },
+        {
+          "module": "server",
+          "type": "CSPlayerBlockingUseAction_t",
+          "field": "m_iBlockingUseActionInProgress",
+          "width_argument": 4,
+          "call": "0x18024437c",
+          "constructor": "0x180201b80",
+          "signed": false,
+          "signed_write": "0x180201de3",
+          "enum_write": "0x180201dea"
+        }
+      ]
+    },
+    "CSPlayerState": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "CSPlayerState",
+          "field": "m_iPlayerState",
+          "width_argument": 4,
+          "call": "0x180c84d0f",
+          "constructor": "0x180c4b610",
+          "signed": false,
+          "signed_write": "0x180c4b873",
+          "enum_write": "0x180c4b87a"
+        },
+        {
+          "module": "server",
+          "type": "CSPlayerState",
+          "field": "m_iPlayerState",
+          "width_argument": 4,
+          "call": "0x1802460ec",
+          "constructor": "0x1802020e0",
+          "signed": false,
+          "signed_write": "0x180202343",
+          "enum_write": "0x18020234a"
+        }
+      ]
+    },
+    "CSWeaponMode": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "CSWeaponMode",
+          "field": "m_weaponMode",
+          "width_argument": 4,
+          "call": "0x1808139ae",
+          "constructor": "0x1807edfc0",
+          "signed": false,
+          "signed_write": "0x1807ee223",
+          "enum_write": "0x1807ee22a"
+        },
+        {
+          "module": "server",
+          "type": "CSWeaponMode",
+          "field": "m_weaponMode",
+          "width_argument": 4,
+          "call": "0x180a01016",
+          "constructor": "0x1809dedf0",
+          "signed": false,
+          "signed_write": "0x1809df053",
+          "enum_write": "0x1809df05a"
+        }
+      ]
+    },
+    "CustomCameraMode_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "CustomCameraMode_t",
+          "field": "m_nCameraMode",
+          "width_argument": 1,
+          "call": "0x180726f8c",
+          "constructor": "0x180715140",
+          "signed": false,
+          "signed_write": "0x1807153a3",
+          "enum_write": "0x1807153aa"
+        },
+        {
+          "module": "server",
+          "type": "CustomCameraMode_t",
+          "field": "m_nCameraMode",
+          "width_argument": 1,
+          "call": "0x1808c3a8c",
+          "constructor": "0x1808aefc0",
+          "signed": false,
+          "signed_write": "0x1808af223",
+          "enum_write": "0x1808af22a"
+        }
+      ]
+    },
+    "DoorState_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "DoorState_t",
+          "field": "m_eDoorState",
+          "width_argument": 4,
+          "call": "0x180494cbd",
+          "constructor": "0x18047d030",
+          "signed": false,
+          "signed_write": "0x18047d293",
+          "enum_write": "0x18047d29a"
+        },
+        {
+          "module": "server",
+          "type": "DoorState_t",
+          "field": "m_eDoorState",
+          "width_argument": 4,
+          "call": "0x180622a71",
+          "constructor": "0x1805ea2b0",
+          "signed": false,
+          "signed_write": "0x1805ea513",
+          "enum_write": "0x1805ea51a"
+        }
+      ]
+    },
+    "EHudPanelClassStatus_t": {
+      "signed": true,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "EHudPanelClassStatus_t",
+          "field": "m_eClassStatus",
+          "width_argument": 4,
+          "call": "0x18072af99",
+          "constructor": "0x18071af30",
+          "signed": true,
+          "signed_write": "0x18071b193",
+          "enum_write": "0x18071b19a"
+        },
+        {
+          "module": "server",
+          "type": "EHudPanelClassStatus_t",
+          "field": "m_eClassStatus",
+          "width_argument": 4,
+          "call": "0x1808c6a79",
+          "constructor": "0x1808b3020",
+          "signed": true,
+          "signed_write": "0x1808b3283",
+          "enum_write": "0x1808b328a"
+        }
+      ]
+    },
+    "EKillTypes_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "EKillTypes_t",
+          "field": "m_killType",
+          "width_argument": 1,
+          "call": "0x18090c70c",
+          "constructor": "0x1808f7520",
+          "signed": false,
+          "signed_write": "0x1808f7783",
+          "enum_write": "0x1808f778a"
+        },
+        {
+          "module": "server",
+          "type": "EKillTypes_t",
+          "field": "m_killType",
+          "width_argument": 1,
+          "call": "0x180b0ad0c",
+          "constructor": "0x180af01e0",
+          "signed": false,
+          "signed_write": "0x180af0443",
+          "enum_write": "0x180af044a"
+        }
+      ]
+    },
+    "EntityDissolveType_t": {
+      "signed": true,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "EntityDissolveType_t",
+          "field": "m_nDissolveType",
+          "width_argument": 4,
+          "call": "0x18045d28b",
+          "constructor": "0x180418c70",
+          "signed": true,
+          "signed_write": "0x180418ed3",
+          "enum_write": "0x180418eda"
+        },
+        {
+          "module": "server",
+          "type": "EntityDissolveType_t",
+          "field": "m_nDissolveType",
+          "width_argument": 4,
+          "call": "0x180660e5e",
+          "constructor": "0x18064a000",
+          "signed": true,
+          "signed_write": "0x18064a263",
+          "enum_write": "0x18064a26a"
+        }
+      ]
+    },
+    "EntityPlatformTypes_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "EntityPlatformTypes_t",
+          "field": "m_nPlatformType",
+          "width_argument": 1,
+          "call": "0x180452c3b",
+          "constructor": "0x1804191d0",
+          "signed": false,
+          "signed_write": "0x180419433",
+          "enum_write": "0x18041943a"
+        },
+        {
+          "module": "server",
+          "type": "EntityPlatformTypes_t",
+          "field": "m_nPlatformType",
+          "width_argument": 1,
+          "call": "0x18061baff",
+          "constructor": "0x1805ea810",
+          "signed": false,
+          "signed_write": "0x1805eaa73",
+          "enum_write": "0x1805eaa7a"
+        }
+      ]
+    },
+    "FixAngleSet_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "FixAngleSet_t",
+          "field": "nType",
+          "width_argument": 1,
+          "call": "0x18094a72f",
+          "constructor": "0x18091de50",
+          "signed": false,
+          "signed_write": "0x18091e0b3",
+          "enum_write": "0x18091e0ba"
+        },
+        {
+          "module": "server",
+          "type": "FixAngleSet_t",
+          "field": "nType",
+          "width_argument": 1,
+          "call": "0x180b52a0f",
+          "constructor": "0x180b2d110",
+          "signed": false,
+          "signed_write": "0x180b2d373",
+          "enum_write": "0x180b2d37a"
+        }
+      ]
+    },
+    "MedalRank_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "MedalRank_t[MEDAL_CATEGORY_COUNT]",
+          "field": "m_rank",
+          "width_argument": 24,
+          "call": "0x1809082d2",
+          "constructor": "0x1808ed540",
+          "signed": false,
+          "signed_write": "0x1808ed7f7",
+          "enum_write": "0x1808ed803"
+        },
+        {
+          "module": "server",
+          "type": "MedalRank_t[MEDAL_CATEGORY_COUNT]",
+          "field": "m_rank",
+          "width_argument": 24,
+          "call": "0x180b068d2",
+          "constructor": "0x180ae5c20",
+          "signed": false,
+          "signed_write": "0x180ae5ed7",
+          "enum_write": "0x180ae5ee3"
+        }
+      ]
+    },
+    "MoveCollide_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "MoveCollide_t",
+          "field": "m_MoveCollide",
+          "width_argument": 1,
+          "call": "0x180453f68",
+          "constructor": "0x180419730",
+          "signed": false,
+          "signed_write": "0x180419993",
+          "enum_write": "0x18041999a"
+        },
+        {
+          "module": "server",
+          "type": "MoveCollide_t",
+          "field": "m_MoveCollide",
+          "width_argument": 1,
+          "call": "0x18061bd0b",
+          "constructor": "0x1805ead70",
+          "signed": false,
+          "signed_write": "0x1805eafd3",
+          "enum_write": "0x1805eafda"
+        }
+      ]
+    },
+    "MoveType_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "MoveType_t",
+          "field": "m_MoveType",
+          "width_argument": 1,
+          "call": "0x180453ff9",
+          "constructor": "0x180419c90",
+          "signed": false,
+          "signed_write": "0x180419ef3",
+          "enum_write": "0x180419efa"
+        },
+        {
+          "module": "server",
+          "type": "MoveType_t",
+          "field": "m_MoveType",
+          "width_argument": 1,
+          "call": "0x18061bea3",
+          "constructor": "0x1805eb2d0",
+          "signed": false,
+          "signed_write": "0x1805eb533",
+          "enum_write": "0x1805eb53a"
+        }
+      ]
+    },
+    "PlayerConnectedState": {
+      "signed": true,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "PlayerConnectedState",
+          "field": "m_iConnected",
+          "width_argument": 4,
+          "call": "0x180947e6f",
+          "constructor": "0x18091e3b0",
+          "signed": true,
+          "signed_write": "0x18091e613",
+          "enum_write": "0x18091e61a"
+        },
+        {
+          "module": "client",
+          "type": "PlayerConnectedState",
+          "field": "m_iMostConnected",
+          "width_argument": 4,
+          "call": "0x1809480ec",
+          "constructor": "0x18091e910",
+          "signed": true,
+          "signed_write": "0x18091eb73",
+          "enum_write": "0x18091eb7a"
+        },
+        {
+          "module": "server",
+          "type": "PlayerConnectedState",
+          "field": "m_iConnected",
+          "width_argument": 4,
+          "call": "0x180b5019f",
+          "constructor": "0x180b2d670",
+          "signed": true,
+          "signed_write": "0x180b2d8d3",
+          "enum_write": "0x180b2d8da"
+        },
+        {
+          "module": "server",
+          "type": "PlayerConnectedState",
+          "field": "m_iMostConnected",
+          "width_argument": 4,
+          "call": "0x180b5041c",
+          "constructor": "0x180b2dbd0",
+          "signed": true,
+          "signed_write": "0x180b2de33",
+          "enum_write": "0x180b2de3a"
+        }
+      ]
+    },
+    "PointWorldTextJustifyHorizontal_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "PointWorldTextJustifyHorizontal_t",
+          "field": "m_nJustifyHorizontal",
+          "width_argument": 4,
+          "call": "0x180bdebb2",
+          "constructor": "0x180bbf250",
+          "signed": false,
+          "signed_write": "0x180bbf4b3",
+          "enum_write": "0x180bbf4ba"
+        },
+        {
+          "module": "server",
+          "type": "PointWorldTextJustifyHorizontal_t",
+          "field": "m_nJustifyHorizontal",
+          "width_argument": 4,
+          "call": "0x180ec87e0",
+          "constructor": "0x180eaba00",
+          "signed": false,
+          "signed_write": "0x180eabc63",
+          "enum_write": "0x180eabc6a"
+        }
+      ]
+    },
+    "PointWorldTextJustifyVertical_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "PointWorldTextJustifyVertical_t",
+          "field": "m_nJustifyVertical",
+          "width_argument": 4,
+          "call": "0x180bdec21",
+          "constructor": "0x180bbf7b0",
+          "signed": false,
+          "signed_write": "0x180bbfa13",
+          "enum_write": "0x180bbfa1a"
+        },
+        {
+          "module": "server",
+          "type": "PointWorldTextJustifyVertical_t",
+          "field": "m_nJustifyVertical",
+          "width_argument": 4,
+          "call": "0x180ec884f",
+          "constructor": "0x180eabf60",
+          "signed": false,
+          "signed_write": "0x180eac1c3",
+          "enum_write": "0x180eac1ca"
+        }
+      ]
+    },
+    "PointWorldTextReorientMode_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "PointWorldTextReorientMode_t",
+          "field": "m_nReorientMode",
+          "width_argument": 4,
+          "call": "0x180bdec89",
+          "constructor": "0x180bbfd10",
+          "signed": false,
+          "signed_write": "0x180bbff73",
+          "enum_write": "0x180bbff7a"
+        },
+        {
+          "module": "server",
+          "type": "PointWorldTextReorientMode_t",
+          "field": "m_nReorientMode",
+          "width_argument": 4,
+          "call": "0x180ec88b7",
+          "constructor": "0x180eac4c0",
+          "signed": false,
+          "signed_write": "0x180eac723",
+          "enum_write": "0x180eac72a"
+        }
+      ]
+    },
+    "QuestProgress::Reason": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "QuestProgress::Reason",
+          "field": "m_nQuestProgressReason",
+          "width_argument": 4,
+          "call": "0x18089093c",
+          "constructor": "0x1808775a0",
+          "signed": false,
+          "signed_write": "0x180877803",
+          "enum_write": "0x18087780a"
+        },
+        {
+          "module": "server",
+          "type": "QuestProgress::Reason",
+          "field": "m_nQuestProgressReason",
+          "width_argument": 4,
+          "call": "0x180a7adfc",
+          "constructor": "0x180a5ded0",
+          "signed": false,
+          "signed_write": "0x180a5e133",
+          "enum_write": "0x180a5e13a"
+        }
+      ]
+    },
+    "RenderFx_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "RenderFx_t",
+          "field": "m_nRenderFX",
+          "width_argument": 1,
+          "call": "0x18045668b",
+          "constructor": "0x18041a1f0",
+          "signed": false,
+          "signed_write": "0x18041a453",
+          "enum_write": "0x18041a45a"
+        },
+        {
+          "module": "server",
+          "type": "RenderFx_t",
+          "field": "m_nRenderFX",
+          "width_argument": 1,
+          "call": "0x18061f1bc",
+          "constructor": "0x1805eb830",
+          "signed": false,
+          "signed_write": "0x1805eba93",
+          "enum_write": "0x1805eba9a"
+        }
+      ]
+    },
+    "RenderMode_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "RenderMode_t",
+          "field": "m_nRenderMode",
+          "width_argument": 1,
+          "call": "0x1804564db",
+          "constructor": "0x18041a750",
+          "signed": false,
+          "signed_write": "0x18041a9b3",
+          "enum_write": "0x18041a9ba"
+        },
+        {
+          "module": "server",
+          "type": "RenderMode_t",
+          "field": "m_nRenderMode",
+          "width_argument": 1,
+          "call": "0x18061f00e",
+          "constructor": "0x1805ebd90",
+          "signed": false,
+          "signed_write": "0x1805ebff3",
+          "enum_write": "0x1805ebffa"
+        }
+      ]
+    },
+    "ShardSolid_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "ShardSolid_t",
+          "field": "m_solid",
+          "width_argument": 1,
+          "call": "0x180314fa4",
+          "constructor": "0x1802f3320",
+          "signed": false,
+          "signed_write": "0x1802f3583",
+          "enum_write": "0x1802f358a"
+        },
+        {
+          "module": "server",
+          "type": "ShardSolid_t",
+          "field": "m_solid",
+          "width_argument": 1,
+          "call": "0x1804e66c4",
+          "constructor": "0x1804c43a0",
+          "signed": false,
+          "signed_write": "0x1804c4603",
+          "enum_write": "0x1804c460a"
+        }
+      ]
+    },
+    "SolidType_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "SolidType_t",
+          "field": "m_nSolidType",
+          "width_argument": 1,
+          "call": "0x1803065d6",
+          "constructor": "0x1802f3880",
+          "signed": false,
+          "signed_write": "0x1802f3ae3",
+          "enum_write": "0x1802f3aea"
+        },
+        {
+          "module": "server",
+          "type": "SolidType_t",
+          "field": "m_nSolidType",
+          "width_argument": 1,
+          "call": "0x1804da116",
+          "constructor": "0x1804c4900",
+          "signed": false,
+          "signed_write": "0x1804c4b63",
+          "enum_write": "0x1804c4b6a"
+        }
+      ]
+    },
+    "SurroundingBoundsType_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "SurroundingBoundsType_t",
+          "field": "m_nSurroundType",
+          "width_argument": 1,
+          "call": "0x180306a35",
+          "constructor": "0x1802f3de0",
+          "signed": false,
+          "signed_write": "0x1802f4043",
+          "enum_write": "0x1802f404a"
+        },
+        {
+          "module": "server",
+          "type": "SurroundingBoundsType_t",
+          "field": "m_nSurroundType",
+          "width_argument": 1,
+          "call": "0x1804da575",
+          "constructor": "0x1804c4e60",
+          "signed": false,
+          "signed_write": "0x1804c50c3",
+          "enum_write": "0x1804c50ca"
+        }
+      ]
+    },
+    "TakeDamageFlags_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "TakeDamageFlags_t",
+          "field": "m_nTakeDamageFlags",
+          "width_argument": 8,
+          "call": "0x180452a02",
+          "constructor": "0x18041acb0",
+          "signed": false,
+          "signed_write": "0x18041af13",
+          "enum_write": "0x18041af1a"
+        },
+        {
+          "module": "server",
+          "type": "TakeDamageFlags_t",
+          "field": "m_nTakeDamageFlags",
+          "width_argument": 8,
+          "call": "0x18061b8c2",
+          "constructor": "0x1805ec2f0",
+          "signed": false,
+          "signed_write": "0x1805ec553",
+          "enum_write": "0x1805ec55a"
+        }
+      ]
+    },
+    "ValueRemapperHapticsType_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "ValueRemapperHapticsType_t",
+          "field": "m_nHapticsType",
+          "width_argument": 4,
+          "call": "0x180bde193",
+          "constructor": "0x180bc0270",
+          "signed": false,
+          "signed_write": "0x180bc04d3",
+          "enum_write": "0x180bc04da"
+        },
+        {
+          "module": "server",
+          "type": "ValueRemapperHapticsType_t",
+          "field": "m_nHapticsType",
+          "width_argument": 4,
+          "call": "0x180ec7c67",
+          "constructor": "0x180eaca20",
+          "signed": false,
+          "signed_write": "0x180eacc83",
+          "enum_write": "0x180eacc8a"
+        }
+      ]
+    },
+    "ValueRemapperInputType_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "ValueRemapperInputType_t",
+          "field": "m_nInputType",
+          "width_argument": 4,
+          "call": "0x180bdccea",
+          "constructor": "0x180bc07d0",
+          "signed": false,
+          "signed_write": "0x180bc0a33",
+          "enum_write": "0x180bc0a3a"
+        },
+        {
+          "module": "server",
+          "type": "ValueRemapperInputType_t",
+          "field": "m_nInputType",
+          "width_argument": 4,
+          "call": "0x180ec67ba",
+          "constructor": "0x180eacf80",
+          "signed": false,
+          "signed_write": "0x180ead1e3",
+          "enum_write": "0x180ead1ea"
+        }
+      ]
+    },
+    "ValueRemapperMomentumType_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "ValueRemapperMomentumType_t",
+          "field": "m_nMomentumType",
+          "width_argument": 4,
+          "call": "0x180bde2c7",
+          "constructor": "0x180bc0d30",
+          "signed": false,
+          "signed_write": "0x180bc0f93",
+          "enum_write": "0x180bc0f9a"
+        },
+        {
+          "module": "server",
+          "type": "ValueRemapperMomentumType_t",
+          "field": "m_nMomentumType",
+          "width_argument": 4,
+          "call": "0x180ec7d9b",
+          "constructor": "0x180ead4e0",
+          "signed": false,
+          "signed_write": "0x180ead743",
+          "enum_write": "0x180ead74a"
+        }
+      ]
+    },
+    "ValueRemapperOutputType_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "ValueRemapperOutputType_t",
+          "field": "m_nOutputType",
+          "width_argument": 4,
+          "call": "0x180bddff3",
+          "constructor": "0x180bc1290",
+          "signed": false,
+          "signed_write": "0x180bc14f3",
+          "enum_write": "0x180bc14fa"
+        },
+        {
+          "module": "server",
+          "type": "ValueRemapperOutputType_t",
+          "field": "m_nOutputType",
+          "width_argument": 4,
+          "call": "0x180ec7ac7",
+          "constructor": "0x180eada40",
+          "signed": false,
+          "signed_write": "0x180eadca3",
+          "enum_write": "0x180eadcaa"
+        }
+      ]
+    },
+    "ValueRemapperRatchetType_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "ValueRemapperRatchetType_t",
+          "field": "m_nRatchetType",
+          "width_argument": 4,
+          "call": "0x180bde5d8",
+          "constructor": "0x180bc17f0",
+          "signed": false,
+          "signed_write": "0x180bc1a53",
+          "enum_write": "0x180bc1a5a"
+        },
+        {
+          "module": "server",
+          "type": "ValueRemapperRatchetType_t",
+          "field": "m_nRatchetType",
+          "width_argument": 4,
+          "call": "0x180ec80ac",
+          "constructor": "0x180eadfa0",
+          "signed": false,
+          "signed_write": "0x180eae203",
+          "enum_write": "0x180eae20a"
+        }
+      ]
+    },
+    "WeaponGameplayAnimState": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "WeaponGameplayAnimState",
+          "field": "m_iWeaponGameplayAnimState",
+          "width_argument": 2,
+          "call": "0x1808128b7",
+          "constructor": "0x1807ee520",
+          "signed": false,
+          "signed_write": "0x1807ee783",
+          "enum_write": "0x1807ee78a"
+        },
+        {
+          "module": "server",
+          "type": "WeaponGameplayAnimState",
+          "field": "m_iWeaponGameplayAnimState",
+          "width_argument": 2,
+          "call": "0x1809fff17",
+          "constructor": "0x1809df350",
+          "signed": false,
+          "signed_write": "0x1809df5b3",
+          "enum_write": "0x1809df5ba"
+        }
+      ]
+    },
+    "attributeprovidertypes_t": {
+      "signed": false,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "attributeprovidertypes_t",
+          "field": "m_ProviderType",
+          "width_argument": 4,
+          "call": "0x18113daa1",
+          "constructor": "0x1810dae80",
+          "signed": false,
+          "signed_write": "0x1810db0e3",
+          "enum_write": "0x1810db0ea"
+        },
+        {
+          "module": "server",
+          "type": "attributeprovidertypes_t",
+          "field": "m_ProviderType",
+          "width_argument": 4,
+          "call": "0x18102ac91",
+          "constructor": "0x180fedd80",
+          "signed": false,
+          "signed_write": "0x180fedfe3",
+          "enum_write": "0x180fedfea"
+        }
+      ]
+    },
+    "loadout_slot_t": {
+      "signed": true,
+      "evidence": [
+        {
+          "module": "client",
+          "type": "loadout_slot_t",
+          "field": "m_RetakesMVPBoostExtraUtility",
+          "width_argument": 4,
+          "call": "0x180c81f3a",
+          "constructor": "0x180c4bb70",
+          "signed": true,
+          "signed_write": "0x180c4bdd3",
+          "enum_write": "0x180c4bdda"
+        },
+        {
+          "module": "server",
+          "type": "loadout_slot_t",
+          "field": "m_RetakesMVPBoostExtraUtility",
+          "width_argument": 4,
+          "call": "0x180242b4e",
+          "constructor": "0x180202640",
+          "signed": true,
+          "signed_write": "0x1802028a3",
+          "enum_write": "0x1802028aa"
+        }
+      ]
+    }
+  }
+}

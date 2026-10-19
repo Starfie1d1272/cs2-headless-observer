@@ -1,0 +1,383 @@
+{
+  "summary": {
+    "module": ".agent-tmp/gotv-tools/cs2/game/csgo/bin/win64/client.dll",
+    "constructor_count": 37,
+    "identified_calls": 37,
+    "unresolved_calls": 0,
+    "unique_types": 36,
+    "method": "Static immediate flag writes and direct constructor calls; symbolic register tracking is linear, unresolved calls retained, not runtime execution"
+  },
+  "calls": [
+    {
+      "type": "SolidType_t",
+      "field": "m_nSolidType",
+      "width_argument": 1,
+      "call": "0x1803065d6",
+      "constructor": "0x1802f3880",
+      "signed": false,
+      "signed_write": "0x1802f3ae3",
+      "enum_write": "0x1802f3aea"
+    },
+    {
+      "type": "SurroundingBoundsType_t",
+      "field": "m_nSurroundType",
+      "width_argument": 1,
+      "call": "0x180306a35",
+      "constructor": "0x1802f3de0",
+      "signed": false,
+      "signed_write": "0x1802f4043",
+      "enum_write": "0x1802f404a"
+    },
+    {
+      "type": "BeamType_t",
+      "field": "m_nBeamType",
+      "width_argument": 4,
+      "call": "0x18030a14a",
+      "constructor": "0x1802f2dc0",
+      "signed": false,
+      "signed_write": "0x1802f3023",
+      "enum_write": "0x1802f302a"
+    },
+    {
+      "type": "ShardSolid_t",
+      "field": "m_solid",
+      "width_argument": 1,
+      "call": "0x180314fa4",
+      "constructor": "0x1802f3320",
+      "signed": false,
+      "signed_write": "0x1802f3583",
+      "enum_write": "0x1802f358a"
+    },
+    {
+      "type": "AnimationAlgorithm_t",
+      "field": "m_nAnimationAlgorithm",
+      "width_argument": 1,
+      "call": "0x18044ddd9",
+      "constructor": "0x1804181b0",
+      "signed": true,
+      "signed_write": "0x180418413",
+      "enum_write": "0x18041841a"
+    },
+    {
+      "type": "AnimLoopMode_t",
+      "field": "m_nAnimLoopMode",
+      "width_argument": 4,
+      "call": "0x18044f2ce",
+      "constructor": "0x180417c50",
+      "signed": true,
+      "signed_write": "0x180417eb3",
+      "enum_write": "0x180417eba"
+    },
+    {
+      "type": "TakeDamageFlags_t",
+      "field": "m_nTakeDamageFlags",
+      "width_argument": 8,
+      "call": "0x180452a02",
+      "constructor": "0x18041acb0",
+      "signed": false,
+      "signed_write": "0x18041af13",
+      "enum_write": "0x18041af1a"
+    },
+    {
+      "type": "EntityPlatformTypes_t",
+      "field": "m_nPlatformType",
+      "width_argument": 1,
+      "call": "0x180452c3b",
+      "constructor": "0x1804191d0",
+      "signed": false,
+      "signed_write": "0x180419433",
+      "enum_write": "0x18041943a"
+    },
+    {
+      "type": "MoveCollide_t",
+      "field": "m_MoveCollide",
+      "width_argument": 1,
+      "call": "0x180453f68",
+      "constructor": "0x180419730",
+      "signed": false,
+      "signed_write": "0x180419993",
+      "enum_write": "0x18041999a"
+    },
+    {
+      "type": "MoveType_t",
+      "field": "m_MoveType",
+      "width_argument": 1,
+      "call": "0x180453ff9",
+      "constructor": "0x180419c90",
+      "signed": false,
+      "signed_write": "0x180419ef3",
+      "enum_write": "0x180419efa"
+    },
+    {
+      "type": "BloodType",
+      "field": "m_nBloodType",
+      "width_argument": 4,
+      "call": "0x180454a81",
+      "constructor": "0x180418710",
+      "signed": true,
+      "signed_write": "0x180418973",
+      "enum_write": "0x18041897a"
+    },
+    {
+      "type": "RenderMode_t",
+      "field": "m_nRenderMode",
+      "width_argument": 1,
+      "call": "0x1804564db",
+      "constructor": "0x18041a750",
+      "signed": false,
+      "signed_write": "0x18041a9b3",
+      "enum_write": "0x18041a9ba"
+    },
+    {
+      "type": "RenderFx_t",
+      "field": "m_nRenderFX",
+      "width_argument": 1,
+      "call": "0x18045668b",
+      "constructor": "0x18041a1f0",
+      "signed": false,
+      "signed_write": "0x18041a453",
+      "enum_write": "0x18041a45a"
+    },
+    {
+      "type": "EntityDissolveType_t",
+      "field": "m_nDissolveType",
+      "width_argument": 4,
+      "call": "0x18045d28b",
+      "constructor": "0x180418c70",
+      "signed": true,
+      "signed_write": "0x180418ed3",
+      "enum_write": "0x180418eda"
+    },
+    {
+      "type": "DoorState_t",
+      "field": "m_eDoorState",
+      "width_argument": 4,
+      "call": "0x180494cbd",
+      "constructor": "0x18047d030",
+      "signed": false,
+      "signed_write": "0x18047d293",
+      "enum_write": "0x18047d29a"
+    },
+    {
+      "type": "CustomCameraMode_t",
+      "field": "m_nCameraMode",
+      "width_argument": 1,
+      "call": "0x180726f8c",
+      "constructor": "0x180715140",
+      "signed": false,
+      "signed_write": "0x1807153a3",
+      "enum_write": "0x1807153aa"
+    },
+    {
+      "type": "EHudPanelClassStatus_t",
+      "field": "m_eClassStatus",
+      "width_argument": 4,
+      "call": "0x18072af99",
+      "constructor": "0x18071af30",
+      "signed": true,
+      "signed_write": "0x18071b193",
+      "enum_write": "0x18071b19a"
+    },
+    {
+      "type": "WeaponGameplayAnimState",
+      "field": "m_iWeaponGameplayAnimState",
+      "width_argument": 2,
+      "call": "0x1808128b7",
+      "constructor": "0x1807ee520",
+      "signed": false,
+      "signed_write": "0x1807ee783",
+      "enum_write": "0x1807ee78a"
+    },
+    {
+      "type": "CSWeaponMode",
+      "field": "m_weaponMode",
+      "width_argument": 4,
+      "call": "0x1808139ae",
+      "constructor": "0x1807edfc0",
+      "signed": false,
+      "signed_write": "0x1807ee223",
+      "enum_write": "0x1807ee22a"
+    },
+    {
+      "type": "QuestProgress::Reason",
+      "field": "m_nQuestProgressReason",
+      "width_argument": 4,
+      "call": "0x18089093c",
+      "constructor": "0x1808775a0",
+      "signed": false,
+      "signed_write": "0x180877803",
+      "enum_write": "0x18087780a"
+    },
+    {
+      "type": "MedalRank_t[MEDAL_CATEGORY_COUNT]",
+      "field": "m_rank",
+      "width_argument": 24,
+      "call": "0x1809082d2",
+      "constructor": "0x1808ed540",
+      "signed": false,
+      "signed_write": "0x1808ed7f7",
+      "enum_write": "0x1808ed803"
+    },
+    {
+      "type": "EKillTypes_t",
+      "field": "m_killType",
+      "width_argument": 1,
+      "call": "0x18090c70c",
+      "constructor": "0x1808f7520",
+      "signed": false,
+      "signed_write": "0x1808f7783",
+      "enum_write": "0x1808f778a"
+    },
+    {
+      "type": "PlayerConnectedState",
+      "field": "m_iConnected",
+      "width_argument": 4,
+      "call": "0x180947e6f",
+      "constructor": "0x18091e3b0",
+      "signed": true,
+      "signed_write": "0x18091e613",
+      "enum_write": "0x18091e61a"
+    },
+    {
+      "type": "PlayerConnectedState",
+      "field": "m_iMostConnected",
+      "width_argument": 4,
+      "call": "0x1809480ec",
+      "constructor": "0x18091e910",
+      "signed": true,
+      "signed_write": "0x18091eb73",
+      "enum_write": "0x18091eb7a"
+    },
+    {
+      "type": "FixAngleSet_t",
+      "field": "nType",
+      "width_argument": 1,
+      "call": "0x18094a72f",
+      "constructor": "0x18091de50",
+      "signed": false,
+      "signed_write": "0x18091e0b3",
+      "enum_write": "0x18091e0ba"
+    },
+    {
+      "type": "ValueRemapperInputType_t",
+      "field": "m_nInputType",
+      "width_argument": 4,
+      "call": "0x180bdccea",
+      "constructor": "0x180bc07d0",
+      "signed": false,
+      "signed_write": "0x180bc0a33",
+      "enum_write": "0x180bc0a3a"
+    },
+    {
+      "type": "ValueRemapperOutputType_t",
+      "field": "m_nOutputType",
+      "width_argument": 4,
+      "call": "0x180bddff3",
+      "constructor": "0x180bc1290",
+      "signed": false,
+      "signed_write": "0x180bc14f3",
+      "enum_write": "0x180bc14fa"
+    },
+    {
+      "type": "ValueRemapperHapticsType_t",
+      "field": "m_nHapticsType",
+      "width_argument": 4,
+      "call": "0x180bde193",
+      "constructor": "0x180bc0270",
+      "signed": false,
+      "signed_write": "0x180bc04d3",
+      "enum_write": "0x180bc04da"
+    },
+    {
+      "type": "ValueRemapperMomentumType_t",
+      "field": "m_nMomentumType",
+      "width_argument": 4,
+      "call": "0x180bde2c7",
+      "constructor": "0x180bc0d30",
+      "signed": false,
+      "signed_write": "0x180bc0f93",
+      "enum_write": "0x180bc0f9a"
+    },
+    {
+      "type": "ValueRemapperRatchetType_t",
+      "field": "m_nRatchetType",
+      "width_argument": 4,
+      "call": "0x180bde5d8",
+      "constructor": "0x180bc17f0",
+      "signed": false,
+      "signed_write": "0x180bc1a53",
+      "enum_write": "0x180bc1a5a"
+    },
+    {
+      "type": "PointWorldTextJustifyHorizontal_t",
+      "field": "m_nJustifyHorizontal",
+      "width_argument": 4,
+      "call": "0x180bdebb2",
+      "constructor": "0x180bbf250",
+      "signed": false,
+      "signed_write": "0x180bbf4b3",
+      "enum_write": "0x180bbf4ba"
+    },
+    {
+      "type": "PointWorldTextJustifyVertical_t",
+      "field": "m_nJustifyVertical",
+      "width_argument": 4,
+      "call": "0x180bdec21",
+      "constructor": "0x180bbf7b0",
+      "signed": false,
+      "signed_write": "0x180bbfa13",
+      "enum_write": "0x180bbfa1a"
+    },
+    {
+      "type": "PointWorldTextReorientMode_t",
+      "field": "m_nReorientMode",
+      "width_argument": 4,
+      "call": "0x180bdec89",
+      "constructor": "0x180bbfd10",
+      "signed": false,
+      "signed_write": "0x180bbff73",
+      "enum_write": "0x180bbff7a"
+    },
+    {
+      "type": "loadout_slot_t",
+      "field": "m_RetakesMVPBoostExtraUtility",
+      "width_argument": 4,
+      "call": "0x180c81f3a",
+      "constructor": "0x180c4bb70",
+      "signed": true,
+      "signed_write": "0x180c4bdd3",
+      "enum_write": "0x180c4bdda"
+    },
+    {
+      "type": "CSPlayerBlockingUseAction_t",
+      "field": "m_iBlockingUseActionInProgress",
+      "width_argument": 4,
+      "call": "0x180c83380",
+      "constructor": "0x180c4b0b0",
+      "signed": false,
+      "signed_write": "0x180c4b313",
+      "enum_write": "0x180c4b31a"
+    },
+    {
+      "type": "CSPlayerState",
+      "field": "m_iPlayerState",
+      "width_argument": 4,
+      "call": "0x180c84d0f",
+      "constructor": "0x180c4b610",
+      "signed": false,
+      "signed_write": "0x180c4b873",
+      "enum_write": "0x180c4b87a"
+    },
+    {
+      "type": "attributeprovidertypes_t",
+      "field": "m_ProviderType",
+      "width_argument": 4,
+      "call": "0x18113daa1",
+      "constructor": "0x1810dae80",
+      "signed": false,
+      "signed_write": "0x1810db0e3",
+      "enum_write": "0x1810db0ea"
+    }
+  ],
+  "unresolved": []
+}
