@@ -70,4 +70,6 @@
 
 qangle_pitch_yaw 与显式 bit_count 角度分支已按固定游戏实现补齐：两轴 raw float32（0/32 位）及 1–31 位量化角度，跳过路径同宽，固定 WASM 不支持时退回 JS。15 个独立量化向量、raw 两轴/三轴和跳过对齐通过；原解析器在同一测试失败。完整录像 185932 包、两边各 185922 回执、事件摘要完全一致（709.922 秒），见 `evidence/angle-decoder-audit.json`、`evidence/angle-decoder-full-replay.json` 与 `verify_angle_codecs.mjs`。这是离线互操作回归，尚未 Windows/在线测试。
 
-下一批核对 coord_integral 与 var_enum_info 有符号分支，以及 Tick 回退与未消费消息。
+coord_integral 的 float32 与三维 Vector 分支已对照 `0x1800da4f0` 和两位 flag reader `0x1800dcf30` 落地；MP 位宽使用协商配置，旧默认由固定构建常量核验为 11 位。16 个独立标量向量、混合位宽向量、skip、截断与固定 WASM 回退通过；旧实现反证失败。干净构建与完整 185932 包回归通过，见 `evidence/integral-coordinate-audit.json`、`evidence/integral-coordinate-full-replay.json` 和 `verify_integral_coordinates.mjs`。CTransform 相关分支继续明确不支持，未进行在线测试。
+
+下一批核对 var_enum_info 有符号分支，以及 Tick 回退与未消费消息。

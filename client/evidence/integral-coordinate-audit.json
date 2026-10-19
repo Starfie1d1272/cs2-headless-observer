@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-19",
+  "networksystem_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "decoder": "0x1800da4f0",
+  "flag_reader": "0x1800dcf30 verified reads two bits",
+  "wire": "bit0 chooses MP integer width; bit1 indicates nonzero; following width+1 bits contain sign in low bit and magnitude-minus-one above",
+  "default_profile": "0x1800ddc30 uses constants0x18023e970/978: integer14/fraction5, MP integer11/fraction3, normal11/angle20",
+  "implemented": [
+    "float32",
+    "Vector3",
+    "negotiated integer MP width",
+    "skip alignment",
+    "disable fixed WASM for these new codecs"
+  ],
+  "verification": [
+    "16 independent scalar vectors",
+    "vector mixed widths and signs",
+    "truncation rejection",
+    "original parser fails literal vector",
+    "clean pinned patch build and TypeScript",
+    "185932 real Demo packets equivalent;786.702 seconds"
+  ],
+  "limits": [
+    "CTransform-related variants remain unsupported",
+    "no Windows or live GOTV execution",
+    "real fixture does not prove all new codec forms occur online"
+  ]
+}
