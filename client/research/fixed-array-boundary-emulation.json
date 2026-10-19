@@ -1,0 +1,482 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "cases": 44,
+    "passed": 44,
+    "method": "native ordinary fixed-array readers and char-array atomic bypass; saved callback table, no allocator or OS imports"
+  },
+  "cases": [
+    {
+      "kind": "char_array_atomic_accessor",
+      "mode": 0,
+      "bank": 0,
+      "array_serializer": 0,
+      "field_array_callbacks": 0,
+      "passed": true
+    },
+    {
+      "kind": "char_array_atomic_accessor",
+      "mode": 0,
+      "bank": 1,
+      "array_serializer": 0,
+      "field_array_callbacks": 0,
+      "passed": true
+    },
+    {
+      "kind": "char_array_atomic_accessor",
+      "mode": 1,
+      "bank": 0,
+      "array_serializer": 0,
+      "field_array_callbacks": 0,
+      "passed": true
+    },
+    {
+      "kind": "char_array_atomic_accessor",
+      "mode": 1,
+      "bank": 1,
+      "array_serializer": 0,
+      "field_array_callbacks": 0,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 0,
+      "encoded": false,
+      "input": 0,
+      "actual": 0,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 0,
+      "encoded": false,
+      "input": 1,
+      "actual": 0,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 0,
+      "encoded": true,
+      "input": 0,
+      "actual": 0,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 0,
+      "encoded": true,
+      "input": 1,
+      "actual": 1,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 1,
+      "encoded": false,
+      "input": 1,
+      "actual": 1,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 1,
+      "encoded": false,
+      "input": 2,
+      "actual": 1,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 1,
+      "encoded": true,
+      "input": 1,
+      "actual": 1,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 1,
+      "encoded": true,
+      "input": 2,
+      "actual": 2,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 6,
+      "encoded": false,
+      "input": 6,
+      "actual": 6,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 6,
+      "encoded": false,
+      "input": 7,
+      "actual": 6,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 6,
+      "encoded": true,
+      "input": 6,
+      "actual": 6,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 6,
+      "encoded": true,
+      "input": 7,
+      "actual": 7,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 128,
+      "encoded": false,
+      "input": 128,
+      "actual": 128,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 128,
+      "encoded": false,
+      "input": 129,
+      "actual": 128,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 128,
+      "encoded": true,
+      "input": 128,
+      "actual": 128,
+      "bits": 16,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 128,
+      "encoded": true,
+      "input": 129,
+      "actual": 129,
+      "bits": 16,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 65535,
+      "encoded": false,
+      "input": 65535,
+      "actual": 65535,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 65535,
+      "encoded": false,
+      "input": 0,
+      "actual": 65535,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 65535,
+      "encoded": true,
+      "input": 65535,
+      "actual": 65535,
+      "bits": 24,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb0f0",
+      "declared": 65535,
+      "encoded": true,
+      "input": 0,
+      "actual": 0,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 0,
+      "encoded": false,
+      "input": 0,
+      "actual": 0,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 0,
+      "encoded": false,
+      "input": 1,
+      "actual": 0,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 0,
+      "encoded": true,
+      "input": 0,
+      "actual": 0,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 0,
+      "encoded": true,
+      "input": 1,
+      "actual": 1,
+      "bits": 8,
+      "accepted": 0,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 1,
+      "encoded": false,
+      "input": 1,
+      "actual": 1,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 1,
+      "encoded": false,
+      "input": 2,
+      "actual": 1,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 1,
+      "encoded": true,
+      "input": 1,
+      "actual": 1,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 1,
+      "encoded": true,
+      "input": 2,
+      "actual": 2,
+      "bits": 8,
+      "accepted": 0,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 6,
+      "encoded": false,
+      "input": 6,
+      "actual": 6,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 6,
+      "encoded": false,
+      "input": 7,
+      "actual": 6,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 6,
+      "encoded": true,
+      "input": 6,
+      "actual": 6,
+      "bits": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 6,
+      "encoded": true,
+      "input": 7,
+      "actual": 7,
+      "bits": 8,
+      "accepted": 0,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 128,
+      "encoded": false,
+      "input": 128,
+      "actual": 128,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 128,
+      "encoded": false,
+      "input": 129,
+      "actual": 128,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 128,
+      "encoded": true,
+      "input": 128,
+      "actual": 128,
+      "bits": 16,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 128,
+      "encoded": true,
+      "input": 129,
+      "actual": 129,
+      "bits": 16,
+      "accepted": 0,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 65535,
+      "encoded": false,
+      "input": 65535,
+      "actual": 65535,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 65535,
+      "encoded": false,
+      "input": 0,
+      "actual": 65535,
+      "bits": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 65535,
+      "encoded": true,
+      "input": 65535,
+      "actual": 65535,
+      "bits": 24,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "fixed_array_length",
+      "function": "0x1800eb150",
+      "declared": 65535,
+      "encoded": true,
+      "input": 0,
+      "actual": 0,
+      "bits": 8,
+      "accepted": 0,
+      "passed": true
+    }
+  ]
+}

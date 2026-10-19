@@ -42,6 +42,7 @@ for kind,width,parts,expected,configbits in cases:
  except UcError as e:row.update(passed=False,error=str(e),rip=hex(u.reg_read(UC_X86_REG_RIP)))
  rows.append(row)
 summary={'manifest':'8766757721818354077','method':'isolated native normal vector and presence-conditioned precise angle decoders, configured profiles; no OS imports or network','cases':len(rows),'passed':sum(x['passed']for x in rows)}
+Path('.agent-tmp/gotv-research-plan/geometry-profile-boundary-vectors.json').write_text(json.dumps({'cases':rows},separators=(',',':'))+'\n')
 summary['scope']='all permitted normal/precise profile widths1..31, masks/signs and boundary magnitudes'
 summary['cases_sha256']=hashlib.sha256(json.dumps(rows,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 Path('.agent-tmp/gotv-research-plan/geometry-profile-boundary-emulation.json').write_text(json.dumps({'summary':summary,'failures':[r for r in rows if not r['passed']]},indent=2)+'\n');print(json.dumps(summary));print(json.dumps([x for x in rows if not x['passed']][:5]))
