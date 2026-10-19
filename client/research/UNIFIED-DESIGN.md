@@ -47,3 +47,7 @@ All limits are identified as local resilience policy unless native wire bounds a
 - Two simultaneous independent sources and measured CPU/RSS. Any live failure retains exact diagnosis; static tests do not imply99/100 percent live success.
 
 Before implementation, reconcile this design against all maintained contracts and actual prototype owners, then make a cohesive change set. Do not treat this document itself as an implementation or live-acceptance milestone.
+
+## Inbound control reconciliation
+
+INBOUND-CONTROL-CONTRACT.md records the remaining engine receiver classifications. Preserve the actual GetCvarValue58→RespondCvarValue25 reply using a truthful bounded local registry, independently of entity/event decoding. Known unsupported presentation envelopes do not become snapshot receipts. Fixed-build ID74 replay metadata is separate from both the old parser's Broadcast_Command name and the configured120-second two-source offset. Internal callback sentinels are excluded from the wire registry. Type resolution also consumes the separately pinned replay-compat resource profile and demonstrated boxed/enum registration profiles from SERIALIZER-CONTRACT.md; no generic unsigned fallback is authoritative.
