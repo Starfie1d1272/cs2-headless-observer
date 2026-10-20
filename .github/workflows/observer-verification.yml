@@ -32,6 +32,7 @@ jobs:
       - name: Verify pinned parser and owned-process boundaries without Steam
         shell: pwsh
         run: |
+          python -c "import pathlib,subprocess,hashlib; names=['client/research/SERIALIZER-CONTRACT.md','client/research/RECOVERY-CONTRACT.md']; [(print(n,'worktree',hashlib.sha256(pathlib.Path(n).read_bytes()).hexdigest(),'git',hashlib.sha256(subprocess.check_output(['git','show','HEAD:'+n])).hexdigest())) for n in names]"
           New-Item -ItemType Directory -Force .agent-tmp/build | Out-Null
           node client/build_parser.mjs .agent-tmp/parser .agent-tmp/build/parser_worker.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -40,6 +41,7 @@ jobs:
           $env:GOTV_ORDERED_WORKER = "$env:GITHUB_WORKSPACE/.agent-tmp/build/parser_worker.mjs"
           python -m unittest discover -s client -p "test_*.py" -v
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -c "import pathlib,subprocess,hashlib; names=['client/research/SERIALIZER-CONTRACT.md','client/research/RECOVERY-CONTRACT.md']; [(print(n,'worktree',hashlib.sha256(pathlib.Path(n).read_bytes()).hexdigest(),'git',hashlib.sha256(subprocess.check_output(['git','show','HEAD:'+n])).hexdigest())) for n in names]"
           python client/research/knowledge/validate.py .
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify synthetic native session lifecycle
