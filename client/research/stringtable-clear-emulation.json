@@ -1,0 +1,38 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "method": "isolated engine2 SetUserData empty-request cases; external-backed storage flags suppress allocator release; no imports stubbed/no OS execution",
+    "cases": 4,
+    "passed": 4
+  },
+  "cases": [
+    {
+      "prior_size": 0,
+      "size": 0,
+      "changed": 0,
+      "tick": 0,
+      "passed": true
+    },
+    {
+      "prior_size": 1,
+      "size": 0,
+      "changed": 1,
+      "tick": 123,
+      "passed": true
+    },
+    {
+      "prior_size": 16,
+      "size": 0,
+      "changed": 1,
+      "tick": 123,
+      "passed": true
+    },
+    {
+      "prior_size": 128,
+      "size": 0,
+      "changed": 1,
+      "tick": 123,
+      "passed": true
+    }
+  ]
+}

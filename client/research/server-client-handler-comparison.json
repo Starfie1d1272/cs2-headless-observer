@@ -1,0 +1,149 @@
+{
+  "basis": "pinned s2sdk declaration order cross-checked ClientInfo wrapper and LoadCompleted native contents; primary vtables RTTI",
+  "rows": [
+    {
+      "slot": "0xb8",
+      "method": "Tick",
+      "game_client": "0x1800c8c10",
+      "hltv_client": "0x1800c8c10"
+    },
+    {
+      "slot": "0xc0",
+      "method": "StringCmd",
+      "game_client": "0x1800c8f90",
+      "hltv_client": "0x1800c8f90"
+    },
+    {
+      "slot": "0xc8",
+      "method": "SetConVar",
+      "game_client": "0x1800c92f0",
+      "hltv_client": "0x180121b30"
+    },
+    {
+      "slot": "0xd0",
+      "method": "SignonState",
+      "game_client": "0x1800c9320",
+      "hltv_client": "0x1800c9320"
+    },
+    {
+      "slot": "0xd8",
+      "method": "SpawnGroup_LoadCompleted",
+      "game_client": "0x1800c8f70",
+      "hltv_client": "0x180121280"
+    },
+    {
+      "slot": "0xe0",
+      "method": "ClientInfo",
+      "game_client": "0x1800bc470",
+      "hltv_client": "0x1801211b0"
+    },
+    {
+      "slot": "0xe8",
+      "method": "BaselineAck",
+      "game_client": "0x1800c95f0",
+      "hltv_client": "0x1800c95f0"
+    },
+    {
+      "slot": "0xf0",
+      "method": "LoadingProgress",
+      "game_client": "0x1800c95e0",
+      "hltv_client": "0x1800c95e0"
+    },
+    {
+      "slot": "0xf8",
+      "method": "SplitPlayerConnect",
+      "game_client": "0x1800cbc80",
+      "hltv_client": "0x1800cbc80"
+    },
+    {
+      "slot": "0x100",
+      "method": "SplitPlayerDisconnect",
+      "game_client": "0x1800cba80",
+      "hltv_client": "0x1800cba80"
+    },
+    {
+      "slot": "0x108",
+      "method": "CmdKeyValues",
+      "game_client": "0x1800bc610",
+      "hltv_client": "0x180021ba0"
+    },
+    {
+      "slot": "0x110",
+      "method": "RconServerDetails",
+      "game_client": "0x1800cbc90",
+      "hltv_client": "0x1800cbc90"
+    },
+    {
+      "slot": "0x118",
+      "method": "Diagnostic",
+      "game_client": "0x1800bc7a0",
+      "hltv_client": "0x180021ba0"
+    },
+    {
+      "slot": "0x120",
+      "method": "Move",
+      "game_client": "0x1800bc480",
+      "hltv_client": "0x180121230"
+    },
+    {
+      "slot": "0x128",
+      "method": "VoiceData",
+      "game_client": "0x1800bc5b0",
+      "hltv_client": "0x180021ba0"
+    },
+    {
+      "slot": "0x130",
+      "method": "RespondCvarValue",
+      "game_client": "0x180021ba0",
+      "hltv_client": "0x180021ba0"
+    },
+    {
+      "slot": "0x138",
+      "method": "PacketStart",
+      "game_client": "0x1800c0c00",
+      "hltv_client": "0x180121270"
+    },
+    {
+      "slot": "0x140",
+      "method": "PacketEnd",
+      "game_client": "0x1800c0c70",
+      "hltv_client": "0x180021ba0"
+    },
+    {
+      "slot": "0x148",
+      "method": "ConnectionClosed",
+      "game_client": "0x1800c0c90",
+      "hltv_client": "0x180121240"
+    },
+    {
+      "slot": "0x150",
+      "method": "ConnectionCrashed",
+      "game_client": "0x1800c0d30",
+      "hltv_client": "0x180121240"
+    },
+    {
+      "slot": "0x158",
+      "method": "SplitscreenUserChanged",
+      "game_client": "0x1800cc120",
+      "hltv_client": "0x1800cc120"
+    },
+    {
+      "slot": "0x160",
+      "method": "HltvReplay",
+      "game_client": "0x1800bc7d0",
+      "hltv_client": "0x1800242d0"
+    },
+    {
+      "slot": "0x168",
+      "method": "HltvFixupOperatorTick",
+      "game_client": "0x1800242d0",
+      "hltv_client": "0x1800242d0"
+    },
+    {
+      "slot": "0x170",
+      "method": "UserMessage",
+      "game_client": "0x1800bc8a0",
+      "hltv_client": "0x180021ba0"
+    }
+  ]
+}

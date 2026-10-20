@@ -18,7 +18,7 @@ import time
 from channel import decode_frame, messages, UnreliableOrder, UnreliableFeedback, encode_message, reliable_frame, ReliableMessageFilter, join_messages
 from handshake import (SignonSequence, connect_inner_message, connect_payload,
                        initial_challenge_request, parse_challenge_body, parse_connection_inner, uint, number)
-from live import LiveDecoder, client_info
+from live import LiveDecoder, client_info, int32
 from observer_settings import ObserverSettings
 from password import transform_password
 from wire import ProbeError, fields, scalar
@@ -257,7 +257,17 @@ class ObserverDriver:
             return
         received_messages, _ = messages(frame.body)
         decoded, actions = [], []
+        context_tick = int32(frame.reliable_tick_hint) if reliable else 0
+        if context_tick is None:
+            context_tick = 0
         for message in received_messages:
+            # network0c00b0 assigns receive metadata before the game-side
+            # reliable filter. Positive Tick/PacketEntities values advance it;
+            # an unreliable frame starts from zero, not the last frame clock.
+            if message.message_id in (4, 55):
+                candidate = int32(scalar(fields(message.body, limit=4 * 1024**2), 1 if message.message_id == 4 else 12))
+                if candidate is not None and candidate > 0:
+                    context_tick = candidate
             if not self.reliable_filter.accept(message.message_id, message.body):
                 continue
             decoded.append(message)
@@ -276,7 +286,7 @@ class ObserverDriver:
                     actions.extend([('reset',), ('admit', 0)])
                 self.signon.receive(message.body)
                 self.stages.append({'stage': 'received-signon', 'value': self.signon.state, 'elapsed_ms': now_ms - self.start_ms})
-                actions.append(('message', 7, message.body))
+                actions.append(('message', 7, message.body, context_tick))
                 if state == 7:
                     self._reset_world_protocol(now_ms, replace_client=True)
                     actions.extend([('reset',), ('admit', 0)])
@@ -284,7 +294,7 @@ class ObserverDriver:
                     self._send_connected_ack(now_ms)
             else:
                 self.decoder.consume(message.message_id, message.body)
-                actions.append(('message', message.message_id, message.body))
+                actions.append(('message', message.message_id, message.body, context_tick))
                 if message.message_id == 40:
                     self.signon.server_info(self.decoder.server['server_count'])
                 elif message.message_id == 11:

@@ -1,6 +1,6 @@
-# Field construction contract, research draft
+# Field construction contract
 
-Fixed module build14191/10924; manifest8766757721818354077. No client implementation changes in this research phase.
+Fixed module build14191/10924; manifest8766757721818354077. The initial research-only phase is historical. Current implementation evidence is recorded separately in COHESIVE-IMPLEMENTATION.md; this file describes the fixed-profile native contract.
 
 ## Construction order supported by native evidence
 
@@ -30,7 +30,7 @@ All listed names are registered by both client/server with matching categories a
 | gameSceneNode | unsigned /1 | includes upper32 node identity; preserve64-bit value |
 | gameSceneNodeStepSimulationAnglesSerializer | float /3 | received angles saved directly |
 | gameSceneNodeStepSimulationOriginSerializer | float /3 | received triple saved; native local notifications update derivedcoordinates |
-| fish_pos_x/y/z | float /1 | sender emits relative offset; receiver callback copies object origin. Additional callback semantics remain open; retain raw value for unused rendering fields |
+| fish_pos_x/y/z | float /1 | sender emits field minus object base; both registered receive variants copy the corresponding object base. Checked variant requires category3/dimension1, otherwise leaves target unchanged. All45 isolated callback cases pass; see fish-position-callbacks.json. This is callback behavior, not a complete animation model |
 | ehandle | unsigned /1 | wire14-bit index+10-bit serial; invalid0xffffff. Native handle restoration additionally consults current entity identity |
 
 Accessor addresses are catalogued locally against fixed modules. The primitive type/encoder catalogs already committed in research/ remain authoritative for family and dimension enumeration. Color is a registered primitive unsigned family; an old fixture custom name color alone is not evidence of an unsupported current-build category.

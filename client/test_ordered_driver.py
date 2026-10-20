@@ -3,7 +3,7 @@ import os
 import struct
 import time
 import unittest
-from channel import encode_message, join_messages, reliable_frame, decode_frame, messages
+from channel import encode_message, join_messages, reliable_frame, decode_frame, messages, unreliable_frame
 from driver import ObserverDriver
 from handshake import blob, number
 from ordered_parser_bridge import OrderedParserBridge
@@ -45,9 +45,9 @@ class OrderedDriverTests(unittest.TestCase):
     def tearDown(self):
         self.driver.close()
         self.parser.close()
-    def send(self, messages):
+    def send(self, messages, hint=0):
         body, _ = join_messages([encode_message(i, b) for i, b in messages])
-        self.port.incoming.append((reliable_frame(body, 0), True))
+        self.port.incoming.append((reliable_frame(body, hint), True))
         self.step()
     def step(self):
         self.now += 1
@@ -94,6 +94,32 @@ class OrderedDriverTests(unittest.TestCase):
         self.send([(4, number(1, 5)), (55, full(5))])
         self.until(lambda: self.driver._full_sent)
         self.assertEqual(self.driver._processed_entity_tick, 5)
+
+    def test_transport_context_is_per_frame_and_message_before_filtering(self):
+        self.initialize()
+        self.send([(4, number(1, 90))])
+        self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
+        # PacketEntities itself assigns positive receive metadata before dispatch.
+        self.send([(55, full(100))])
+        self.until(lambda: self.driver._full_sent)
+        self.assertEqual(self.driver._processed_entity_tick, 100)
+        self.assertEqual(self.driver.decoder.tick, 90)
+        descriptor = blob(1, number(1, 17) + blob(2, b'round_start'))
+        self.send([(205, descriptor), (207, number(2, 17))], hint=200)
+        self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
+        self.assertEqual([r for r in self.output if r['kind'] == 'round_start'][-1]['tick'], 200)
+        # The framing pass sees a suppressed Tick; its game callback does not.
+        self.send([(61, number(1, 1) + number(3, 1)), (61, number(1, 1) + number(3, 1)),
+                   (4, number(1, 400)), (61, number(3, 0)), (207, number(2, 17))])
+        self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
+        self.assertEqual(self.driver.decoder.tick, 90)
+        self.assertEqual([r for r in self.output if r['kind'] == 'round_start'][-1]['tick'], 400)
+        # An unrelated unreliable frame has no inherited reliable-frame context.
+        body, _ = join_messages([encode_message(207, number(2, 17))])
+        self.port.incoming.append((unreliable_frame(body, 1, 0, (0, 0, 0)), False))
+        self.step()
+        self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
+        self.assertEqual([r for r in self.output if r['kind'] == 'round_start'][-1]['tick'], 0)
 
     def test_event_subscription_and_changelevel_keep_channel(self):
         self.initialize()

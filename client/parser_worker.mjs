@@ -36,7 +36,7 @@ const consume=row=>{
   throw new Error('ordered-parser-message-shape');
  const body=Buffer.from(row.bodyBase64,'base64');
  if(body.length>MAX_BODY||body.toString('base64')!==row.bodyBase64)throw new Error('ordered-parser-body-budget-or-encoding');
- for(const record of core.consume({...identity(row),sequence:row.sequence,messageId:row.messageId,body}))send(record);
+ for(const record of core.consume({...identity(row),sequence:row.sequence,messageId:row.messageId,body,contextTick:row.contextTick}))send(record);
 };
 process.stdout.on('error',()=>{process.exitCode=1;process.stdin.destroy();});
 process.once('SIGTERM',()=>{process.stdin.destroy();});

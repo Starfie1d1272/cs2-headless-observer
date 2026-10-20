@@ -1,0 +1,70 @@
+caller	depth	site	kind	target
+1809f8a90	0	1809f8ad3	indirect	CALL qword ptr [RAX + 0x128]
+1809f8a90	0	1809f8ae9	direct	1809ecb80
+1809f8a90	0	1809f8afe	indirect	CALL qword ptr [RAX + 0x128]
+1809f8a90	0	1809f8b1a	indirect	CALL qword ptr [0x181aaca08]
+1809f8a90	0	1809f8b3d	indirect	CALL qword ptr [RAX + 0x60]
+1809f8a90	0	1809f8b5e	indirect-jump	JMP qword ptr [0x181aad608]
+1809f8a90	0	1809f8b87	direct	180166050
+1809f8a90	0	1809f8baf	indirect	CALL RBX
+1809f8a90	0	1809f8bcd	indirect-jump	JMP qword ptr [RAX + 0x40]
+1809aee70	0	1809aeee1	indirect	CALL qword ptr [RAX + 0x128]
+1809aee70	0	1809aeef8	indirect	CALL qword ptr [RAX + 0x60]
+1809aee70	0	1809aef0d	indirect	CALL qword ptr [R8 + 0x40]
+1809aee70	0	1809aef1a	indirect	CALL qword ptr [0x181aad608]
+1809aee70	0	1809aef2f	indirect	CALL qword ptr [RAX]
+1809aee70	0	1809aef53	direct	181a56a20
+180a1e460	0	180a1e493	indirect	CALL qword ptr [0x181aac358]
+180a1e460	0	180a1e4cd	indirect	CALL qword ptr [0x181aad980]
+180a1e460	0	180a1e51a	indirect	CALL qword ptr [0x181aad608]
+180a1e460	0	180a1e567	indirect	CALL qword ptr [0x181aad988]
+180a1e460	0	180a1e5ac	indirect	CALL qword ptr [0x181aac358]
+180a1e460	0	180a1e5e0	indirect	CALL qword ptr [0x181aad980]
+180a1e460	0	180a1e5eb	direct-unparsed	180c319d0
+180a1e460	0	180a1e5fe	direct	1809c11f0
+180a1e460	0	180a1e62f	indirect	CALL qword ptr [0x181aad988]
+180a1e460	0	180a1e644	indirect	CALL qword ptr [0x181aad608]
+180a1e460	0	180a1e676	direct	180166050
+180a1e460	0	180a1e69f	indirect	CALL RBX
+180a1e460	0	180a1e712	indirect-jump	JMP RCX
+180a1e460	0	180a1eac7	indirect	CALL qword ptr [0x181aaca08]
+180a1e460	0	180a1eb09	direct	1805f9ea0
+180a1eb50	0	180a1eba8	direct	18062ecc0
+180a1eb50	0	180a1ebd4	indirect	CALL qword ptr [RAX + 0x110]
+180a1eb50	0	180a1ec88	indirect	CALL qword ptr [0x181aad830]
+180a1eb50	0	180a1eca7	indirect	CALL qword ptr [0x181aad828]
+180a1eb50	0	180a1ecef	direct	181234180
+180a1eb50	0	180a1ed22	indirect	CALL qword ptr [RAX + 0x60]
+180a1eb50	0	180a1ed55	indirect	CALL RSI
+180a1eb50	0	180a1ed71	direct	18062f880
+1809b02c0	0	1809b0314	indirect	CALL R8
+1809b02c0	0	1809b0353	indirect	CALL qword ptr [RAX + 0x60]
+1809b02c0	0	1809b0366	indirect	CALL qword ptr [RAX + 0x68]
+1809b02c0	0	1809b038f	indirect	CALL qword ptr [R14 + RBX*0x1 + 0x18]
+1809b02c0	0	1809b03bf	indirect	CALL qword ptr [RAX + 0x80]
+180b7a0d0	0	180b7a0d9	direct-unparsed	1804ffd20
+180b7a0d0	0	180b7a0ea	tail	1804fff70
+180b7a0f0	0	180b7a0f4	direct-unparsed	1804ffd20
+180b7a0f0	0	180b7a100	tail-unparsed	1805003d0
+180b78c70	0	180b78c91	direct	1819fa040
+180b78c70	0	180b78ccf	direct-unparsed	1819aece0
+180b78c70	0	180b78d44	direct	180b57cf0
+180b78c70	0	180b78d94	direct	180b57b70
+180b78c70	0	180b78db3	direct	1815c1550
+180b78c70	0	180b78df2	indirect	CALL qword ptr [RAX + 0x18]
+180b78c70	0	180b78e34	indirect	CALL qword ptr [RAX + 0x18]
+180b6d700	0	180b6d722	indirect	CALL qword ptr [0x181aacc88]
+180b6d700	0	180b6d737	indirect	CALL qword ptr [RAX + 0x10]
+180b6d700	0	180b6d759	indirect	CALL qword ptr [RAX + 0x2b0]
+180b6d700	0	180b6d785	indirect-jump	JMP RCX
+180b6d700	0	180b6d8f7	direct-unparsed	180355b3c
+180b6d700	0	180b6d90c	direct-unparsed	180355180
+180b6d700	0	180b6d923	direct	180360740
+180b6d700	0	180b6d932	indirect	CALL qword ptr [RAX + 0xb8]
+180b6d700	0	180b6d93e	indirect	CALL qword ptr [RDX + 0x40]
+180b6d700	0	180b6d962	direct-unparsed	180c319d0
+180b6d700	0	180b6d9b6	indirect	CALL qword ptr [0x181aad9f8]
+180b6d700	0	180b6d9d2	indirect	CALL qword ptr [RAX + 0x80]
+180b6d700	0	180b6d9f1	indirect	CALL qword ptr [RAX + 0x10]
+180b6d700	0	180b6dc95	direct	1819fa138
+180b6d700	0	180b6dcbc	direct	1819fa0cc

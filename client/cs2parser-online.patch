@@ -893,10 +893,10 @@ index 0000000..a34dcd2
 +}
 diff --git a/src/parser/entities/nativeObserverCore.ts b/src/parser/entities/nativeObserverCore.ts
 new file mode 100644
-index 0000000..89f7bfc
+index 0000000..c736908
 --- /dev/null
 +++ b/src/parser/entities/nativeObserverCore.ts
-@@ -0,0 +1,159 @@
+@@ -0,0 +1,160 @@
 +import {CSVCMsg_ServerInfo,CSVCMsg_FlattenedSerializer,CSVCMsg_ClassInfo,CSVCMsg_CreateStringTable,CSVCMsg_UpdateStringTable,CSVCMsg_PacketEntities} from '../../ts-proto/netmessages.js';
 +import {CNETMsg_Tick} from '../../ts-proto/networkbasetypes.js';
 +import {CMsgSource1LegacyGameEventList,CMsgSource1LegacyGameEvent,type CMsgSource1LegacyGameEventList_descriptor_t} from '../../ts-proto/gameevents.js';
@@ -908,7 +908,7 @@ index 0000000..89f7bfc
 +import {projectNativeEvent} from './nativeEventProjection.js';
 +
 +export type NativeSourceIdentity=Readonly<{source:string;channel:number;world:number}>;
-+export type NativeMessageEnvelope=Readonly<NativeSourceIdentity&{sequence:number;messageId:number;body:Uint8Array}>;
++export type NativeMessageEnvelope=Readonly<NativeSourceIdentity&{sequence:number;messageId:number;body:Uint8Array;contextTick?:number}>;
 +export type NativeCoreRecord=Readonly<NativeSourceIdentity&{sequence:number;tick:number;type:string;[name:string]:unknown}>;
 +
 +/** Ordered, synchronous data-plane decoder. Actual SDK/transport/control state
@@ -964,9 +964,10 @@ index 0000000..89f7bfc
 +   throw new Error('Retired message generation');
 +  if(input.sequence!==this.sequence+1||!Number.isSafeInteger(input.sequence))throw new Error('Message sequence mismatch');
 +  if(!Number.isInteger(input.messageId)||input.messageId<0||input.body.length>4*1024**2)throw new Error('Message envelope budget');
++  if(input.contextTick!==undefined&&(!Number.isInteger(input.contextTick)||input.contextTick< -0x80000000||input.contextTick>0x7fffffff))throw new Error('Invalid transport message tick');
 +  this.sequence=input.sequence;
 +  const output:NativeCoreRecord[]=[];
-+  const record=(type:string,data:Record<string,unknown>={})=>output.push(Object.freeze({...this.identity,sequence:this.sequence,tick:this.tick,type,...data}));
++  const record=(type:string,data:Record<string,unknown>={})=>output.push(Object.freeze({...this.identity,sequence:this.sequence,tick:input.contextTick??this.tick,networkTick:this.tick,type,...data}));
 +  if(this.halted){record('blocked',{reason:'world-reinitialization-required'});return Object.freeze(output);}
 +  try{
 +   switch(input.messageId){
@@ -995,7 +996,7 @@ index 0000000..89f7bfc
 +     if(msg.max_spawngroup_creationsequence!==undefined&&msg.max_spawngroup_creationsequence>this.knownCreationSequence)
 +      throw new Error('Snapshot exceeds admitted world creation sequence');
 +     const priorEpoch=this.snapshots.epoch;
-+     const receipt=this.packets.decode(msg,this.tick);
++     const receipt=this.packets.decode(msg,input.contextTick??this.tick);
 +     if(receipt){
 +      record('receipt',receipt);
 +      if(receipt.epoch!==priorEpoch){record('gap',{reason:'snapshot-epoch-restarted'});this.lastCursor=-Infinity;}

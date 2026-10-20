@@ -110,12 +110,15 @@ class OrderedParserBridge:
         rows = []
         for action in actions:
             if action[0] == 'message':
-                _, message_id, body = action
+                _, message_id, body, *context = action
                 if type(message_id) is not int or message_id < 0 or not isinstance(body, bytes) or len(body) > self.MAX_BODY:
                     raise ProbeError('ordered-parser-message-budget')
                 sequence += 1
+                if len(context) > 1 or (context and (type(context[0]) is not int or not -0x80000000 <= context[0] <= 0x7fffffff)):
+                    raise ProbeError('ordered-parser-message-context')
                 rows.append(dict(type='message', **identity, sequence=sequence, messageId=message_id,
-                                 bodyBase64=base64.b64encode(body).decode('ascii')))
+                                 bodyBase64=base64.b64encode(body).decode('ascii'),
+                                 **({'contextTick': context[0]} if context else {})))
                 if message_id == 51:
                     identity = {**identity, 'world': identity['world'] + 1}
             elif action[0] == 'admit':
@@ -203,7 +206,7 @@ class OrderedParserBridge:
             if emit is not None and (row['type'] == 'cursor' or (row['type'] == 'raw-event' and row.get('name') in {'weapon_fire', 'player_death', 'round_start', 'round_end'})):
                 emit(dict(kind='cursor' if row['type'] == 'cursor' else row['name'], **{key: row.get(key) for key in ('tick', 'tickInterval', 'map',
                     'warmup', 'round', 'weapon', 'actor', 'target', 'source', 'channel', 'world', 'sequence',
-                    'descriptorGeneration', 'eventServerTick', 'identityResolved')}))
+                    'descriptorGeneration', 'eventServerTick', 'networkTick', 'identityResolved')}))
             result.append(row)
 
     def pop_receipts(self):

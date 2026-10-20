@@ -1,0 +1,125 @@
+{
+  "candidates": [
+    {
+      "call": "18021e1ed",
+      "name": "animTimeSerializer",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "18021e27d",
+      "name": "ClampHealth",
+      "category": 1,
+      "dimensions": 1
+    },
+    {
+      "call": "18021e30d",
+      "name": "funcRotatingSimulationTimeSerializer",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "18021e39d",
+      "name": "minusone",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "18021e42d",
+      "name": "angle_normalize_positive",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "18021e4bd",
+      "name": "simulationTimeSerializer",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "18021e54d",
+      "name": "StepSimulationFuncRotatingAnglesSerializer",
+      "category": 3,
+      "dimensions": 3
+    },
+    {
+      "call": "1809eacad",
+      "name": "cellx",
+      "category": 1,
+      "dimensions": 1
+    },
+    {
+      "call": "1809ead3d",
+      "name": "celly",
+      "category": 1,
+      "dimensions": 1
+    },
+    {
+      "call": "1809eadcd",
+      "name": "cellz",
+      "category": 1,
+      "dimensions": 1
+    },
+    {
+      "call": "1809eae5d",
+      "name": "posx",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "1809eaeed",
+      "name": "posy",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "1809eaf7d",
+      "name": "posz",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "1809eb00d",
+      "name": "gameSceneNode",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "1809eb09d",
+      "name": "gameSceneNodeStepSimulationAnglesSerializer",
+      "category": 3,
+      "dimensions": 3
+    },
+    {
+      "call": "1809eb12d",
+      "name": "gameSceneNodeStepSimulationOriginSerializer",
+      "category": 3,
+      "dimensions": 3
+    },
+    {
+      "call": "180b97d5d",
+      "name": "fish_pos_x",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "180b97ded",
+      "name": "fish_pos_y",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "180b97e7d",
+      "name": "fish_pos_z",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "1815b950d",
+      "name": "ehandle",
+      "category": 2,
+      "dimensions": 1
+    }
+  ],
+  "unresolved": []
+}

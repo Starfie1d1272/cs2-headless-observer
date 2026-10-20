@@ -48,3 +48,13 @@ signon is never labeled a successful GOTV connection.
 
 This is not a stopping gate. Continue the authorized engineering work without
 producing intermediate user packages or repeatedly requesting a test match.
+
+## 2026-10-20 15:24 correction
+
+The archive review found that receive-message metadata had been conflated with
+the game network clock. Driver now derives it per frame and per message before
+reliable filtering; the pipe and core preserve it explicitly. A clean pinned
+source checkout accepts the regenerated patch and full locked-toolchain
+typecheck/build. All54 Python tests and195 component assertions pass, as do
+5582 path-opcode and56 path-boundary cases. See message-context-integration.json.
+The earlier53-test record remains historical rather than being silently rewritten.

@@ -1,0 +1,143 @@
+{
+  "candidates": [
+    {
+      "call": "1803d39fd",
+      "name": "animTimeSerializer",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "1803d3abd",
+      "name": "ClampHealth",
+      "category": 1,
+      "dimensions": 1
+    },
+    {
+      "call": "1803d3dad",
+      "name": "funcRotatingSimulationTimeSerializer",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "1803d3e3d",
+      "name": "minusone",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "1803d3ecd",
+      "name": "angle_normalize_positive",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "1803d405d",
+      "name": "simulationTimeSerializer",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "1803d40ed",
+      "name": "StepSimulationFuncRotatingAnglesSerializer",
+      "category": 3,
+      "dimensions": 3
+    },
+    {
+      "call": "180bfd05d",
+      "name": "cellx",
+      "category": 1,
+      "dimensions": 1
+    },
+    {
+      "call": "180bfd0ed",
+      "name": "celly",
+      "category": 1,
+      "dimensions": 1
+    },
+    {
+      "call": "180bfd17d",
+      "name": "cellz",
+      "category": 1,
+      "dimensions": 1
+    },
+    {
+      "call": "180bfd20d",
+      "name": "posx",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "180bfd29d",
+      "name": "posy",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "180bfd32d",
+      "name": "posz",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "180bfd3bd",
+      "name": "gameSceneNode",
+      "category": 2,
+      "dimensions": 1
+    },
+    {
+      "call": "180bfd44d",
+      "name": "gameSceneNodeStepSimulationAnglesSerializer",
+      "category": 3,
+      "dimensions": 3
+    },
+    {
+      "call": "180bfd4dd",
+      "name": "gameSceneNodeStepSimulationOriginSerializer",
+      "category": 3,
+      "dimensions": 3
+    },
+    {
+      "call": "180da249d",
+      "name": "fish_pos_x",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "180da252d",
+      "name": "fish_pos_y",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "180da25bd",
+      "name": "fish_pos_z",
+      "category": 3,
+      "dimensions": 1
+    },
+    {
+      "call": "18137ecdd",
+      "name": "ehandle",
+      "category": 2,
+      "dimensions": 1
+    }
+  ],
+  "resolved_non_serializer_calls": [
+    {
+      "call": "0x180ddb248",
+      "owner_global": "0x182182cf8",
+      "slot": "0x50",
+      "event": "hltv_title",
+      "classification": "IGameEventManager2::FreeEvent",
+      "reason": "Same owner creates the named event through slot0x30 and serializes it through0x58; slot0x50 matches pinned IGameEventManager2 FreeEvent. This is not the serializer registration owner."
+    },
+    {
+      "call": "0x180dde7be",
+      "owner_global": "0x182182cf8",
+      "slot": "0x50",
+      "event": "hltv_chat",
+      "classification": "IGameEventManager2::FreeEvent",
+      "reason": "Same owner creates the named event through slot0x30 and serializes it through0x58; slot0x50 matches pinned IGameEventManager2 FreeEvent. This is not the serializer registration owner."
+    }
+  ],
+  "evidence": "custom-registration-exclusions.json"
+}
