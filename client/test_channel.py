@@ -1,7 +1,7 @@
 """Synthetic packets only; no source session, secrets or captured ciphertext."""
 import struct
 import unittest
-from channel import decode_frame, reliable_frame, messages, encode_message, lz4_block, UnreliableOrder
+from channel import decode_frame, reliable_frame, messages, encode_message, lz4_block, UnreliableOrder, UnreliableFeedback
 from handshake import signon_message_bits
 
 
@@ -49,6 +49,24 @@ class ChannelTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'bit-underflow'):
             decode_frame(b'\x02\x01\x01', gns_reliable=False)
 
+    def test_unreliable_feedback_literal_sequence_ack_and_loss_history(self):
+        feedback = UnreliableFeedback()
+        self.assertEqual(feedback.frame(), bytes.fromhex('02 01 00 fd ff fd ff fd ff'))
+        incoming = lambda n: decode_frame(bytes([2, n, 0]) + bytes.fromhex('fd ff fd ff fd ff'), gns_reliable=False)
+        feedback.observe(incoming(3))
+        self.assertEqual(feedback.frame(), bytes.fromhex('02 02 03 fd ff ff ff ff ff'))
+        feedback.observe(incoming(2))  # Late arrival: do not rewind the acknowledged sequence.
+        self.assertEqual(feedback.frame(), bytes.fromhex('02 03 03 fd ff fe ff ff ff'))
+        feedback.observe(incoming(3))  # Duplicate changes neither receipt state nor latency.
+        feedback.observe(decode_frame(reliable_frame(b'', 100), gns_reliable=True))
+        self.assertEqual(feedback.frame(b'x'), bytes.fromhex('02 04 03 fd ff fe ff ff ff 78'))
+        feedback.observe(incoming(6))
+        self.assertEqual(feedback.frame(), bytes.fromhex('02 05 06 fd ff ff ff ff ff'))
+        self.assertEqual(len(feedback.history), 3)
+        feedback.sequence = 0x80000000
+        with self.assertRaisesRegex(ValueError, 'outgoing-sequence-restart-required'):
+            feedback.frame()
+
     def test_compression_is_lz4_block_after_channel_header(self):
         # One literal-only raw LZ4 block, deliberately not a Demo Snappy wrapper.
         block = b'\x50hello'
@@ -70,3 +88,4 @@ class ChannelTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
+

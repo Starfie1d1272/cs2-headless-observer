@@ -1,0 +1,27 @@
+{
+  "manifest": "8766757721818354077",
+  "custom_registry": {
+    "initializer": "networksystem0ddc30",
+    "table": "networksystem2a4220",
+    "case_flag_instruction": "networksystem0de02c: mov r9b,1",
+    "constructor_call": "networksystem0de048",
+    "lookup": "networksystem0e0f70",
+    "case_insensitive": true,
+    "sdk": "https://github.com/alliedmodders/s2sdk/blob/5864d8db8519e80a0d870c0e0474eddc8172fb4e/public/tier0/utlsymboltable.h"
+  },
+  "custom_field_fallback": {
+    "callback": "clientb70dd0",
+    "map_offset": "helper+0x100",
+    "lookup": "client159970",
+    "comparison": "V_stricmp_fast",
+    "case_insensitive": true
+  },
+  "pointer_field_compatibility": {
+    "callback": "clientb6c860",
+    "hash": "client9ea690",
+    "lookup": "client9b8430",
+    "equality": "client1a57460 raw byte/word comparison",
+    "case_insensitive": false
+  },
+  "scope": "Fixed-build static data flow and pinned SDK constructor signature. No native client login or runtime integration."
+}

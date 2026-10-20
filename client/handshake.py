@@ -251,14 +251,13 @@ def connect_inner_message(payload: bytes):
     return message
 
 
-def initial_challenge_request():
-    """engine2 057620 initializes number=0; 057370 writes this first q/context.
+def initial_challenge_request(challenge_number=0):
+    """Official q context: initial zero, then the last server-provided challenge.
 
-    Exact first-attempt subset. No GNS outer header or Source 1 challenge request.
-    Send on the authenticated GNS connection with UnreliableNoDelay (flags=5).
-    Retries/reservation contexts are deliberately not synthesized here.
+    engine2 057370 uses connect0x%08X and UnreliableNoDelay (flags=5).
+    The default cl_resend is 0.5 seconds; the driver owns its bounded scheduler.
     """
-    return b'\xff\xff\xff\xffqconnect0x00000000\0'
+    return b'\xff\xff\xff\xffq' + f'connect0x{uint(challenge_number):08X}'.encode('ascii') + b'\0'
 
 
 def parse_connection_inner(message: bytes):

@@ -12,6 +12,7 @@ args=ap.parse_args()
 from parser_bridge import ParserBridge
 from parser_stream import frame
 from wire import fields,scalar,varint
+from channel import decode_frame,messages
 from handshake import number
 from driver import ObserverDriver
 from test_driver import Port
@@ -48,7 +49,13 @@ try:
     time.sleep(.001)
    driver._send_processed_tick(100+packets*100)
  assert driver._full_sent,'no-full-snapshot'
- result={'evidence':'REAL_DEMO_ENTITY_PARSE_WITH_SYNTHETIC_SPAWN_STATE_NO_NETWORK','fixture_sha256':hashlib.sha256(data).hexdigest(),'packets':packets,'parser_checkpoint':p.checkpoint,'received_signon_state':driver.signon.received_state,'effective_signon_state':driver.signon.state,'first_full_tick':driver.report()['last_processed_entity_tick'],'full_sent':driver._full_sent,'online_verified':False}
+ feedback=[decode_frame(data,gns_reliable=False) for data,flags in port.sent if flags==1]
+ assert feedback,'missing-game-channel-feedback'
+ ticks=[scalar(fields(msg.body),1) for packet in feedback for msg in messages(packet.body)[0] if msg.message_id==4]
+ assert ticks and ticks[-1]==1380,'missing-processed-tick-feedback' 
+ result={'evidence':'REAL_DEMO_ENTITY_PARSE_WITH_SYNTHETIC_SPAWN_STATE_NO_NETWORK','fixture_sha256':hashlib.sha256(data).hexdigest(),'packets':packets,'parser_checkpoint':p.checkpoint,'received_signon_state':driver.signon.received_state,'effective_signon_state':driver.signon.state,'first_full_tick':driver.report()['last_processed_entity_tick'],'full_sent':driver._full_sent,'feedback_frames':len(feedback),'feedback_tick':ticks[-1],'online_verified':False}
  with args.output.open('x') as output: output.write(json.dumps(result,indent=2)+'\n')
  print(json.dumps(result))
-finally:p.close()
+finally:
+ driver.close()
+ p.close()

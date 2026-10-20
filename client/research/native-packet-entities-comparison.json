@@ -1,0 +1,5 @@
+{
+  "checks": 27,
+  "passed": true,
+  "scope": "Synthetic fixed-profile PacketEntities through schema/field/snapshot components, not runtime or live GOTV acceptance"
+}

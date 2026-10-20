@@ -1,0 +1,76 @@
+# 普通观众客户端协议覆盖审查
+> 当前状态（2026-10-20 00:46，北京时间）：下文保留原型阶段的逐次审查记录，表格中的历史待办须结合后续修正阅读。当前完整研究进度以 [研究与统一设计](RESEARCH-2026-10-19.md) 为准。已完成原生对照的字段路径、量化配置、法线/角度与部分坐标分支不再列为未研究；应用层可靠过滤、版本化字段与恢复规则尚待统一迁入客户端。现有原型并未完成这一轮统一实现，Windows 实际运行、完美持续连接及双实例验收仍未完成。
+
+2026-10-19。实现基线：`0a870745cf4e1bbabdc8239ce800f311c83754f9`。
+
+本轮先建立端到端路径与分支清单，再统一修正、验证、提供一个测试版本。中途不分发安装包。此清单随证据更新；尚未达到集中测试版本交付条件。
+
+## 目标与边界
+
+使用本人合法 Steam App 730 上下文、源端提供的普通观战密码，以普通观众身份接入获准的 GOTV 源。持续输出玩家身份、武器/击杀/回合等事件。优先支持当前 CS2 官方构建的普通比赛源；源端配置的延迟照常生效。身份验证、加密和底层可靠传输由官方 SDK 完成。
+
+分析固定模块：engine2 SHA-256 `6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21`；networksystem SHA-256 `be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec`。函数地址仅适用于这些摘要。原始二进制和反编译正文留在研究环境。
+
+## 路径清单
+
+| 路径 | 当前实现与证据 | 本轮还需闭合的分支 |
+|---|---|---|
+| SDK 初始化、App 身份、用户登录 | `sdk_host.cpp` / `steam_bridge.hpp`；编译和合成 ABI 测试；pump 前后检查登录上下文 | Windows 实际 SDK 启动、两个实例并行资源占用；区分本机失败和源端拒绝 |
+| GNS 认证、远端身份、加密连接 | SDK GetAuthenticationStatus/GetIdentity；连接回调再次查当前连接；拒绝未认证/未加密 | 固定构建实际调用路径和连接配置逐项对照，超时和销毁后回调审查 |
+| challenge / connect | 初始 q、上下文、auth2/auth3、已知密码变换；正常/拒绝向量 | 官方重发和超时调度、重复或延迟 challenge、连接响应重排；当前仅一次发送 |
+| Steam ticket 生命周期 | auth3 callback 后发送；auth2 仅在远端选择后；关闭取消 ticket 并清空 | SDK 回调异常和网络断开交叉时序；Windows 实际生命周期 |
+| GNS 内层 tag 1–4 | VarInt、UBitVar、未对齐消息、LZ4；独立 liblz4 oracle | 发送序号、接收确认、历史统计和可靠帧上下文的完整演进；目前驱动只发可靠帧 |
+| 消息注册和分派 | 已解析初始化/实体/游戏事件相关消息；其他消息统计后交解析器 | 逐类确定必要响应、可忽略通知、命令执行边界；不能把未知消息统一当作无关 |
+| CONNECTED → NEW | CONNECTED/-1 先应答；ClientInfo CRC=0 请求全表，真实身份/server_count | 与异步字符串表回调/服务器初始化完成条件整体复核 |
+| PRESPAWN → SPAWN | schema、ClassInfo、解析检查点；manifest 和父世界组注册 | 世界创建/删除/加载失败与依赖循环；真实无画面注册是否完整满足事件依赖 |
+| SPAWN → FULL | 首个实际解码 full 快照推进本地 6；远端状态独立 | 与远端 FULL、连续快照、恢复和 queued 包的全部排列；已修正旧等待死锁 |
+| 字符串表、schema、实体身份 | 实际 Demo 全包重放；12 张初始化表回调；22889 字段 | 在线生命周期差异、清表重建、同 tick 多更新与实体序列号重用 |
+| PacketEntities | 双基线、PVS、非传输位图、备用类基线、缺帧恢复 | 逐分支核对官方解码入口和状态写入；明确真实样本与合成分支覆盖差异 |
+| 完整快照分片 | 消息70 raw Snappy、连续 section、pending 帧、增量暂存 | 包预算、过期/缺片、重复快照、重新请求的组合时序 |
+| Tick 与持续发送 | 解析完成后确认 last_tick_recv，恢复发送 -1；当前原型10Hz可靠发送 | 对照官方发送调度、unreliable envelope 和 header ACK；当前选择尚未证明等价 |
+| 事件语义 | 完整 Demo 事件顺序/武器/Steam64/热身/回合摘要一致 | 中途加入、恢复期间事件丢失/重复的显式标记；支持狙击/电击等消费需求 |
+| UserCommands | 已找到完整指令缓存、增量缺失和玩家实体存在条件 | 判断事件接收是否依赖该路径；游戏控制台刷屏根因另需异常源证据 |
+| 断线、重连、换图 | 断线关闭；server_info 变化要求新实例 | 明确自动重连/换图状态重置、旧事件隔离和单次运行结束行为 |
+| 背压、预算和诊断 | 四包检查点窗口，SDK回调持续pump；有限队列与明确错误 | 长时输入、慢消费者、子进程退出、SDK队列压力、错误分类完整性 |
+
+## 当前明确的对照差异
+
+1. 官方 networksystem `0x1800be6e0` 每次正常 Transmit 构造不可靠包，写入本端序号、对端接收序号及三个历史字段；可靠数据有内容时另发可靠包。原型 `driver.py` 的通道发送全部为 tag 1，尚未发送上述游戏层确认包。GNS 自身 ACK 不能作为该差异已经闭合的证据。
+2. `0x1800be510` 将 `+0x8dbc` 复制至可靠上下文 `+0x8dc0` 并清空前者；驱动始终写零。进一步沿 `0x18007edd0` → networksystem `0x1800f6830` → `0x1800bc610` 核对：普通客户端发送类别为 2（mask=4），接收类别为 1（mask=2）。`0x1800c3780` 的自动 tick 上下文写入仅在发送 mask 的 bit1 置位时启用；客户端保持零不能直接判成错误。还需确认显式 setter 的调用场景。
+3. 初始发送序号在 `0x1800bba50` 与 `0x1800bc610` 设置为 1，接收序号为 0；现有接收过滤初值 0 一致。符号边界行为仍需对照，不能据此称整个发送路径完成。
+4. 官方 engine2 `0x180057370` 在连接仍处于 challenge 时按 cl_resend 重发 q 请求，并计数/判断重试截止；注册函数 `0x180003360` 的默认值为 0.5 秒（约束 0.1–2 秒）。原型只发一次，确有丢包恢复缺口。连接响应重试与 challenge 更新需一并设计，避免只补定时器后误拒重复包。
+5. SDK 登录上下文失效检查已存在于 `SteamBridge::pump` 的回调前后；不能仅根据 `Session::tick` 对 ready 状态提前返回就误报该问题。
+
+## 证据要求
+
+每个必要路径须具备：官方入口/状态写入依据、当前实现位置、独立预期的失败与成功样本。测试自己编码再自己解码不能单独证明互操作。真实 Demo 证明实体与事件解码，合成网络时序证明驱动逻辑；在线接入与 Windows 执行分别以真实记录验收。
+
+集中测试版本前：完成此表必要路径审查与修正；完整录像语义无回归；关键异常序列可复现；Windows产物的依赖/架构/入口检查；把仍需真实环境验证的条件列成一次测试流程。最终成品放私有 GitHub 下载。
+
+## 本轮已落实的连接修正
+
+按固定构建的 0.5 秒默认间隔补充 challenge 重发，后续 q 带上最近收到的 challenge number；重复响应沿同一已认证连接重用现有 ticket，不重复申请、不延长本阶段截止。auth 类型或 secure 标记变化显式结束本次连接。观战密码仅在连接完成前留内存以便使用新 challenge 重新编码，接受连接或关闭时清空；不落日志。已进入通道后的迟到握手回复跳过。
+
+三项新增独立预期测试在原实现产生 2 个失败、1 个异常；修改后全部 35 项 Python 验证通过。覆盖请求丢失重发、服务端新 challenge、pending ticket 重复响应、协议降级拒绝及连接后清理。此次没有网络连接或打包。
+
+游戏层反馈已接入驱动：初始化与持续接收期间以有界节奏发送本端序号/对端确认号；三个历史字段区分缺失和迟到，未测延迟使用官方未知值 0xfffd。正常已解析 Tick 放入不可靠帧，控制应答仍可靠。即使没有新实体也维持反馈；恢复等待时不再次确认旧实体 Tick。字面量向量验证初始状态、跳号、迟到、重复和可靠消息隔离，集成验证初始化期间和持续 Tick。全部 Python 检查现为 37 项；真实录像前 11 包仍完成首次 FULL（22889 字段、12 张表、tick 1380）。
+
+新增待核对分支：官方 ProcessTick `0x180069cd0` 对服务端 Tick 回退有状态重置，而当前 LiveDecoder/ParserStream/事件输出层均直接拒绝。需要将普通持续源、回放状态变化和换图拆开核对后处理，不能只删除检查。
+
+原生边界同步升级为 ABI 3：明确允许官方 flags=1 的不可靠反馈帧，旧 DLL 在加载时拒绝混用；新增远端断开原因码供报告读取。实际 ctypes/C ABI 验证覆盖 flags=1，固定 SDK 头文件编译通过。Windows x64 DLL 交叉链接通过，16 个导出齐全，导入只有 Steam API 与 Windows 系统库；无额外 libwinpthread 依赖。见 `evidence/windows-native-abi3-build.json`。尚未执行 Windows 运行或在线连接，未制作/分发新便携包。
+
+实体 Tick 来源已核实并修正：官方 `0x180086220` 在 PacketEntities 带 server_tick 时使用该值，否则取网络消息上下文；原解析器错误地要求其等于外围 Demo 包 Tick。新增真实 protobuf 字节用例（外围99、实体100）在修改前触发 mismatch，修改后明确确认100。仅调整 ordinaryViewer 路径，普通 Demo 解析保留原行为；干净固定源码应用补丁、类型检查和二进制实体用例均通过。完整真实录像已通过两套网络消息适配路径对照：185932 包、两边各185922实体回执，事件规范化摘要一致，包含4402开火、224击杀、30回合开始与30回合结束。结果与输入摘要见 `evidence/protocol-control-full-replay.json`；手动复现用 `verify_control_replay.py`，不加入日常 CI。
+
+## 当前构建 schema 与数值解码复核
+
+固定 engine2 内嵌 netmessages.proto 描述与固定解析库比较，发现 10 个新增字段、没有变更或删除字段；见 `evidence/current-schema-comparison.json`。新增涉及坐标位宽配置、枚举有符号性以及 usercmd delta 处理标记。普通观战能接收 schema 不等于解析库已消费这些字段；坐标配置和枚举 decoder 仍需逐项核实，不把忽略新增 protobuf 字段视为兼容证明。
+
+已确认并修正一个独立的 normal 解码算术问题：固定引擎 `0x18009ca50` 的归一化比例为 `1 / (2^normal_bits - 1)`。旧解析器写成 `1 / 2048 - 1`，11 位正向 magnitude=1 实际解为 -0.99951171875，正确值应为 1/2047。修后八个正负端点/中间向量以及现有实体二进制回归通过，干净固定源码应用补丁与类型检查通过。见 `evidence/normal-decoder-audit.json`。完整录像 185932 包对照通过，两边事件顺序/摘要一致，各 185922 实体回执，见 `evidence/normal-decoder-full-replay.json`。此回归证明受测事件未退化，normal 数值正确性由独立向量证明；尚未据此发布或制作测试包。
+
+坐标配置已接入 protobuf → ClassInfo → 单实例 BitBuffer → 实体及跳过路径，包含整数/小数位宽、normal 与 precise angle 位宽及游戏相同的参数预算检查。已对照 networksystem 的三个实际解码函数：normal `0x1800d1930`、coord `0x1800d5fd0`、qangle_precise `0x1800d3d90`；precise-angle 跳过路径同步消费协商位宽。带配置的流避开只认识固定位宽的 WASM，普通观众本来就使用 JS 实体路径。独立字节向量、完整实体创建、两个实例的默认隔离及非法参数拒绝通过；干净补丁构建、实体回归和真实旧录像首次 FULL/反馈通过。证据见 `evidence/coordinate-profile-audit.json` 与 `evidence/coordinate-profile-first-full.json`，复现用 `verify_coordinate_profile.mjs`。现有真实录像没有新配置/枚举字段，不能作为这些新增协议字段的在线证据。
+
+qangle_pitch_yaw 与显式 bit_count 角度分支已按固定游戏实现补齐：两轴 raw float32（0/32 位）及 1–31 位量化角度，跳过路径同宽，固定 WASM 不支持时退回 JS。15 个独立量化向量、raw 两轴/三轴和跳过对齐通过；原解析器在同一测试失败。完整录像 185932 包、两边各 185922 回执、事件摘要完全一致（709.922 秒），见 `evidence/angle-decoder-audit.json`、`evidence/angle-decoder-full-replay.json` 与 `verify_angle_codecs.mjs`。这是离线互操作回归，尚未 Windows/在线测试。
+
+coord_integral 的 float32 与三维 Vector 分支已对照 `0x1800da4f0` 和两位 flag reader `0x1800dcf30` 落地；MP 位宽使用协商配置，旧默认由固定构建常量核验为 11 位。16 个独立标量向量、混合位宽向量、skip、截断与固定 WASM 回退通过；旧实现反证失败。干净构建与完整 185932 包回归通过，见 `evidence/integral-coordinate-audit.json`、`evidence/integral-coordinate-full-replay.json` 和 `verify_integral_coordinates.mjs`。CTransform 相关分支继续明确不支持，未进行在线测试。
+
+下一批核对 var_enum_info 有符号分支，以及 Tick 回退与未消费消息。

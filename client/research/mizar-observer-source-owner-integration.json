@@ -1,0 +1,43 @@
+{
+  "as_of_beijing": "2026-10-20T16:26:00+08:00",
+  "method": "Generated protocol bytes through actual pinned Node worker and Python bridge; emitted NDJSON consumed by built Mizar bounded pipe reader, existing source manager and event consumer",
+  "checks": 9,
+  "passed": true,
+  "sourceManagerConnected": true,
+  "desktopProcessComposition": false,
+  "realGOTV": false,
+  "windows": false,
+  "events": [
+    {
+      "kind": "weapon-fire",
+      "cursor": {
+        "kind": "cs2-cstv",
+        "role": "lookahead",
+        "generation": 0,
+        "sequence": 0,
+        "tick": 100,
+        "observedAt": "2026-10-20T08:26:00Z",
+        "observedMonotonicMs": 100,
+        "mapName": "de_test",
+        "ticksPerSecond": 64
+      },
+      "player": {
+        "sourceUserId": 42,
+        "sourcePlayerId": "76561198000000123"
+      },
+      "weapon": "ak47",
+      "silenced": false
+    }
+  ],
+  "states": [
+    "connecting",
+    "live",
+    "live",
+    "connecting",
+    "reconnecting"
+  ],
+  "outcome": {
+    "status": "ended",
+    "parsedRecords": 2
+  }
+}

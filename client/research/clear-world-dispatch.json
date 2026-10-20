@@ -1,0 +1,17 @@
+{
+  "manifest": "8766757721818354077",
+  "engine_clear_dispatch": {
+    "vtable": "0x180540bc8",
+    "slot": "0x480",
+    "thunk": "0x18006bd20",
+    "direct_jump_target": "0x1800610c0"
+  },
+  "game_table_callback": {
+    "source2client_slot": "0x410",
+    "thunk": "0x180b6de20",
+    "object": "0x182228dd8",
+    "vtable": "0x181c2bb78",
+    "target": "0x1809b0170"
+  },
+  "method": "hash-verified static PE pointers and direct jump; no native execution"
+}

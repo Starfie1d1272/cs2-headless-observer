@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-19",
+  "target": "Windows x86_64",
+  "nativeAbi": 3,
+  "compiler": "GCC MinGW-w64 14-posix (existing local official package toolchain)",
+  "dllBytes": 755013,
+  "dllSha256": "fe0dc44b0973cd04d7d00270c3b53cfc65e8ef9f45e9520660c45475fa8579c5",
+  "exports": [
+    "observer_abi_version",
+    "observer_accept_server_auth2",
+    "observer_auth",
+    "observer_boot_failure",
+    "observer_close",
+    "observer_create",
+    "observer_failure",
+    "observer_init_result",
+    "observer_local_id",
+    "observer_pump",
+    "observer_receive",
+    "observer_remote_end_reason",
+    "observer_remote_id",
+    "observer_request_ticket",
+    "observer_send",
+    "observer_state"
+  ],
+  "imports": [
+    "steam_api64.dll",
+    "KERNEL32.dll",
+    "msvcrt.dll"
+  ],
+  "sdkCompile": "passed",
+  "nativeLink": "passed",
+  "ctypesFixtureTests": "passed; synthetic socket-free library, not the Windows SDK binary",
+  "windowsRuntime": "NOT_RUN",
+  "onlineReceipt": "NOT_RUN"
+}

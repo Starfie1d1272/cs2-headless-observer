@@ -1,0 +1,111 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "function": "networksystem+0xeb600",
+    "method": "Isolated native scalar selection; only primitive-registry lookup and dictionary lookup stubbed against saved native catalog. No schema constructor, OS imports or game process executed.",
+    "cases": 10,
+    "passed": 10
+  },
+  "cases": [
+    {
+      "kind": "boxed-float",
+      "width": 4,
+      "signed": false,
+      "underlying": "float32",
+      "expected": "float32",
+      "returned_catalog_address": "0x180274cb0",
+      "field_flags_d0": 0,
+      "passed": true
+    },
+    {
+      "kind": "boxed-integer",
+      "width": 4,
+      "signed": true,
+      "underlying": "int32",
+      "expected": "int32",
+      "returned_catalog_address": "0x180274ab0",
+      "field_flags_d0": 0,
+      "passed": true
+    },
+    {
+      "kind": "enum",
+      "width": 1,
+      "signed": false,
+      "underlying": "",
+      "expected": "uint8",
+      "returned_catalog_address": "0x180274930",
+      "field_flags_d0": 8,
+      "passed": true
+    },
+    {
+      "kind": "enum",
+      "width": 1,
+      "signed": true,
+      "underlying": "",
+      "expected": "int8",
+      "returned_catalog_address": "0x1802748b0",
+      "field_flags_d0": 24,
+      "passed": true
+    },
+    {
+      "kind": "enum",
+      "width": 2,
+      "signed": false,
+      "underlying": "",
+      "expected": "uint16",
+      "returned_catalog_address": "0x180274a30",
+      "field_flags_d0": 8,
+      "passed": true
+    },
+    {
+      "kind": "enum",
+      "width": 2,
+      "signed": true,
+      "underlying": "",
+      "expected": "int16",
+      "returned_catalog_address": "0x1802749b0",
+      "field_flags_d0": 24,
+      "passed": true
+    },
+    {
+      "kind": "enum",
+      "width": 4,
+      "signed": false,
+      "underlying": "",
+      "expected": "uint32",
+      "returned_catalog_address": "0x180274b30",
+      "field_flags_d0": 8,
+      "passed": true
+    },
+    {
+      "kind": "enum",
+      "width": 4,
+      "signed": true,
+      "underlying": "",
+      "expected": "int32",
+      "returned_catalog_address": "0x180274ab0",
+      "field_flags_d0": 24,
+      "passed": true
+    },
+    {
+      "kind": "enum",
+      "width": 8,
+      "signed": false,
+      "underlying": "",
+      "expected": "uint64",
+      "returned_catalog_address": "0x180274c30",
+      "field_flags_d0": 8,
+      "passed": true
+    },
+    {
+      "kind": "enum",
+      "width": 8,
+      "signed": true,
+      "underlying": "",
+      "expected": "int64",
+      "returned_catalog_address": "0x180274bb0",
+      "field_flags_d0": 24,
+      "passed": true
+    }
+  ]
+}

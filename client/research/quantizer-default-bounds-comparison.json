@@ -1,0 +1,6 @@
+{
+  "cases": 24,
+  "matchedValidConfigurations": 20,
+  "matchedNativeFatalRejections": 4,
+  "missingBoundsMatchNativeSentinels": true
+}

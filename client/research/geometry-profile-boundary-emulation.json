@@ -1,0 +1,11 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "method": "isolated native normal vector and presence-conditioned precise angle decoders, configured profiles; no OS imports or network",
+    "cases": 4960,
+    "passed": 4960,
+    "scope": "all permitted normal/precise profile widths1..31, masks/signs and boundary magnitudes",
+    "cases_sha256": "78a49d491e9943f238806e47d07aa31ab6f7ef33d355414bc20b05824997768c"
+  },
+  "failures": []
+}

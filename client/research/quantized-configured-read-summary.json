@@ -1,0 +1,9 @@
+{
+  "manifest": "8766757721818354077",
+  "configs": 194,
+  "cases": 5400,
+  "completed": 5400,
+  "native_function": "networksystem0d1520",
+  "method": "decode saved native configuration bytes across dimensions1/2/3/4/6/8 and sentinel/integer boundary inputs; no import execution",
+  "vectors_sha256": "62d7a296c7046a0ab2f4de8b9f80b47e5b2dc75ecabee858b372a818382365c8"
+}

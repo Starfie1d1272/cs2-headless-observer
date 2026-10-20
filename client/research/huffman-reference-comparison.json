@@ -1,0 +1,7 @@
+{
+  "prefixes": 131072,
+  "matched": 131072,
+  "codewords": 40,
+  "maximumBits": 17,
+  "scope": "Actual pinned TypeScript Huffman LUT versus fixed-native-derived decoder table; no source opcode, runtime integration or live acceptance implied."
+}

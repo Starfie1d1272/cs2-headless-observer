@@ -1,0 +1,38 @@
+[
+  {
+    "opcode": 5,
+    "depth": 10,
+    "function": "0x1801cd270",
+    "returned": true,
+    "rip": "0x30000000",
+    "result_depth": 10,
+    "overflow": 1
+  },
+  {
+    "opcode": 7,
+    "depth": 10,
+    "function": "0x1801cd9d0",
+    "returned": true,
+    "rip": "0x30000000",
+    "result_depth": 10,
+    "overflow": 1
+  },
+  {
+    "opcode": 13,
+    "depth": 9,
+    "function": "0x1801cf9f0",
+    "returned": true,
+    "rip": "0x30000000",
+    "result_depth": 9,
+    "overflow": 1
+  },
+  {
+    "opcode": 15,
+    "depth": 8,
+    "function": "0x1801d1550",
+    "returned": true,
+    "rip": "0x30000000",
+    "result_depth": 8,
+    "overflow": 1
+  }
+]

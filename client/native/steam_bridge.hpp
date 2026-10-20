@@ -19,6 +19,7 @@ class SteamBridge final : private Port {
   SteamBridge& operator=(const SteamBridge&) = delete;
 
   Session& session() { return session_; }
+  int remote_end_reason() const { return remote_end_reason_; }
   std::uint64_t remote_steam_id() {
     SteamNetConnectionInfo_t info{};
     return transport_ready() && sockets_.GetConnectionInfo(session_.connection(), &info) && trusted(info)
@@ -104,6 +105,7 @@ class SteamBridge final : private Port {
         sockets_.GetConnectionInfo(callback->m_hConn, &current) && trusted(current));
     } else if (callback->m_info.m_eState == k_ESteamNetworkingConnectionState_ClosedByPeer ||
                callback->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally) {
+      remote_end_reason_ = callback->m_info.m_eEndReason;
       session_.disconnected(callback->m_hConn);
     }
   }
@@ -112,6 +114,7 @@ class SteamBridge final : private Port {
   ISteamNetworkingSockets& sockets_;
   SteamNetworkingIPAddr endpoint_;
   Session session_;
+  int remote_end_reason_ = 0;
   CCallback<SteamBridge, GetAuthSessionTicketResponse_t> ticket_callback_;
   CCallback<SteamBridge, SteamNetConnectionStatusChangedCallback_t> connection_callback_;
 };

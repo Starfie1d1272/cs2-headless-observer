@@ -24,9 +24,11 @@ if (
 ) {
   throw new Error('Unexpected parser source commit');
 }
-const patch = resolve(here, 'cs2parser-online.patch');
-execFileSync('git', ['-C', source, 'apply', '--check', '--unidiff-zero', patch]);
-execFileSync('git', ['-C', source, 'apply', '--unidiff-zero', patch]);
+// Upstream enforces LF, while this repository's patch can be checked out as
+// CRLF on Windows. Normalize only the diff transport, not source or matching.
+const patch = readFileSync(resolve(here, 'cs2parser-online.patch'), 'utf8').replaceAll('\r\n', '\n');
+execFileSync('git', ['-C', source, 'apply', '--check', '--unidiff-zero', '-'], { input: patch });
+execFileSync('git', ['-C', source, 'apply', '--unidiff-zero', '-'], { input: patch });
 if (!readFileSync(resolve(source, 'src/index.ts'), 'utf8').includes('ordinaryViewerProtocol = 2')) {
   throw new Error('Online parser capability is missing');
 }
@@ -77,6 +79,7 @@ await esbuild.build({
   outfile: resolve(outputArg),
   alias: {
     cs2parser: resolve(source, 'src/index.ts'),
+    'cs2parser/observer-core': resolve(source, 'src/parser/entities/nativeObserverCore.ts'),
   },
   nodePaths: [protobufModules],
 });

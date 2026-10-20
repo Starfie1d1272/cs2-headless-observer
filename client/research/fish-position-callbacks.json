@@ -1,0 +1,330 @@
+{
+  "profile": "14191/10924",
+  "module": "client.dll",
+  "sha256": "659940c1db362ed981d1df10637cec8c2a3d99409b77fc3b73e435e4649e36b0",
+  "method": "Isolated exact callbacks with preallocated CPU memory; no hooks, OS imports, game launch or networking",
+  "checks": 45,
+  "passed": 45,
+  "conclusions": [
+    "Serialize callback emits field minus per-axis object base and declares float/category3 dimension1.",
+    "Both registered receive callback variants copy the corresponding object base to target; changing incoming scalar does not change that result.",
+    "The checked variant rejects non-float or non-scalar input without writing target.",
+    "These callback results describe network-to-object adaptation, not a complete fish animation/rendered-position model."
+  ],
+  "callbacks": [
+    {
+      "axis": "x",
+      "serialize": "0x180b9adc0",
+      "unserialize": "0x180b9e2c0",
+      "checked_unserialize": "0x180b9f540",
+      "base_offset": "0x12d8"
+    },
+    {
+      "axis": "y",
+      "serialize": "0x180b9ad40",
+      "unserialize": "0x180b9e280",
+      "checked_unserialize": "0x180b9f570",
+      "base_offset": "0x12dc"
+    },
+    {
+      "axis": "z",
+      "serialize": "0x180b9ad80",
+      "unserialize": "0x180b9e2a0",
+      "checked_unserialize": "0x180b9f5a0",
+      "base_offset": "0x12e0"
+    }
+  ],
+  "cases": [
+    {
+      "axis": "x",
+      "kind": "serialize-relative",
+      "base": 3.0,
+      "value": 10.0,
+      "output": 7.0
+    },
+    {
+      "axis": "x",
+      "kind": "serialize-relative",
+      "base": 4.0,
+      "value": -2.0,
+      "output": -6.0
+    },
+    {
+      "axis": "x",
+      "kind": "serialize-relative",
+      "base": 0.0,
+      "value": 0.0,
+      "output": 0.0
+    },
+    {
+      "axis": "x",
+      "kind": "serialize-relative",
+      "base": -5.0,
+      "value": 1.0,
+      "output": 6.0
+    },
+    {
+      "axis": "x",
+      "kind": "serialize-relative",
+      "base": 16384.0,
+      "value": 16385.0,
+      "output": 1.0
+    },
+    {
+      "axis": "x",
+      "kind": "unserialize",
+      "incoming": -100.0,
+      "output": 25.0
+    },
+    {
+      "axis": "x",
+      "kind": "unserialize",
+      "incoming": 0.0,
+      "output": 25.0
+    },
+    {
+      "axis": "x",
+      "kind": "unserialize",
+      "incoming": 12.5,
+      "output": 25.0
+    },
+    {
+      "axis": "x",
+      "kind": "unserialize",
+      "incoming": 999.0,
+      "output": 25.0
+    },
+    {
+      "axis": "x",
+      "kind": "checked-unserialize",
+      "incoming": -100.0,
+      "output": 25.0
+    },
+    {
+      "axis": "x",
+      "kind": "checked-unserialize",
+      "incoming": 0.0,
+      "output": 25.0
+    },
+    {
+      "axis": "x",
+      "kind": "checked-unserialize",
+      "incoming": 12.5,
+      "output": 25.0
+    },
+    {
+      "axis": "x",
+      "kind": "checked-unserialize",
+      "incoming": 999.0,
+      "output": 25.0
+    },
+    {
+      "axis": "x",
+      "kind": "checked-reject",
+      "dimension": 2,
+      "category": 3,
+      "target_unchanged": true
+    },
+    {
+      "axis": "x",
+      "kind": "checked-reject",
+      "dimension": 1,
+      "category": 2,
+      "target_unchanged": true
+    },
+    {
+      "axis": "y",
+      "kind": "serialize-relative",
+      "base": 3.0,
+      "value": 10.0,
+      "output": 7.0
+    },
+    {
+      "axis": "y",
+      "kind": "serialize-relative",
+      "base": 4.0,
+      "value": -2.0,
+      "output": -6.0
+    },
+    {
+      "axis": "y",
+      "kind": "serialize-relative",
+      "base": 0.0,
+      "value": 0.0,
+      "output": 0.0
+    },
+    {
+      "axis": "y",
+      "kind": "serialize-relative",
+      "base": -5.0,
+      "value": 1.0,
+      "output": 6.0
+    },
+    {
+      "axis": "y",
+      "kind": "serialize-relative",
+      "base": 16384.0,
+      "value": 16385.0,
+      "output": 1.0
+    },
+    {
+      "axis": "y",
+      "kind": "unserialize",
+      "incoming": -100.0,
+      "output": 25.0
+    },
+    {
+      "axis": "y",
+      "kind": "unserialize",
+      "incoming": 0.0,
+      "output": 25.0
+    },
+    {
+      "axis": "y",
+      "kind": "unserialize",
+      "incoming": 12.5,
+      "output": 25.0
+    },
+    {
+      "axis": "y",
+      "kind": "unserialize",
+      "incoming": 999.0,
+      "output": 25.0
+    },
+    {
+      "axis": "y",
+      "kind": "checked-unserialize",
+      "incoming": -100.0,
+      "output": 25.0
+    },
+    {
+      "axis": "y",
+      "kind": "checked-unserialize",
+      "incoming": 0.0,
+      "output": 25.0
+    },
+    {
+      "axis": "y",
+      "kind": "checked-unserialize",
+      "incoming": 12.5,
+      "output": 25.0
+    },
+    {
+      "axis": "y",
+      "kind": "checked-unserialize",
+      "incoming": 999.0,
+      "output": 25.0
+    },
+    {
+      "axis": "y",
+      "kind": "checked-reject",
+      "dimension": 2,
+      "category": 3,
+      "target_unchanged": true
+    },
+    {
+      "axis": "y",
+      "kind": "checked-reject",
+      "dimension": 1,
+      "category": 2,
+      "target_unchanged": true
+    },
+    {
+      "axis": "z",
+      "kind": "serialize-relative",
+      "base": 3.0,
+      "value": 10.0,
+      "output": 7.0
+    },
+    {
+      "axis": "z",
+      "kind": "serialize-relative",
+      "base": 4.0,
+      "value": -2.0,
+      "output": -6.0
+    },
+    {
+      "axis": "z",
+      "kind": "serialize-relative",
+      "base": 0.0,
+      "value": 0.0,
+      "output": 0.0
+    },
+    {
+      "axis": "z",
+      "kind": "serialize-relative",
+      "base": -5.0,
+      "value": 1.0,
+      "output": 6.0
+    },
+    {
+      "axis": "z",
+      "kind": "serialize-relative",
+      "base": 16384.0,
+      "value": 16385.0,
+      "output": 1.0
+    },
+    {
+      "axis": "z",
+      "kind": "unserialize",
+      "incoming": -100.0,
+      "output": 25.0
+    },
+    {
+      "axis": "z",
+      "kind": "unserialize",
+      "incoming": 0.0,
+      "output": 25.0
+    },
+    {
+      "axis": "z",
+      "kind": "unserialize",
+      "incoming": 12.5,
+      "output": 25.0
+    },
+    {
+      "axis": "z",
+      "kind": "unserialize",
+      "incoming": 999.0,
+      "output": 25.0
+    },
+    {
+      "axis": "z",
+      "kind": "checked-unserialize",
+      "incoming": -100.0,
+      "output": 25.0
+    },
+    {
+      "axis": "z",
+      "kind": "checked-unserialize",
+      "incoming": 0.0,
+      "output": 25.0
+    },
+    {
+      "axis": "z",
+      "kind": "checked-unserialize",
+      "incoming": 12.5,
+      "output": 25.0
+    },
+    {
+      "axis": "z",
+      "kind": "checked-unserialize",
+      "incoming": 999.0,
+      "output": 25.0
+    },
+    {
+      "axis": "z",
+      "kind": "checked-reject",
+      "dimension": 2,
+      "category": 3,
+      "target_unchanged": true
+    },
+    {
+      "axis": "z",
+      "kind": "checked-reject",
+      "dimension": 1,
+      "category": 2,
+      "target_unchanged": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "evidence": "REAL_DEMO_NETWORK_BODIES_THROUGH_BOTH_ADAPTERS_NO_NETWORK",
+  "fixture_sha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+  "packets": 185932,
+  "equivalent": true,
+  "event_sha256": "c2d3fc2513e507734fc0d8415928075756ec50ebc656128e1ba7cfdea394c4b4",
+  "counts": [
+    {
+      "cursor": 2906,
+      "round_start": 30,
+      "weapon_fire": 4402,
+      "player_death": 224,
+      "round_end": 30
+    },
+    {
+      "cursor": 2906,
+      "round_start": 30,
+      "weapon_fire": 4402,
+      "player_death": 224,
+      "round_end": 30
+    }
+  ],
+  "receipts": [
+    185922,
+    185922
+  ],
+  "seconds": 786.702,
+  "online": false
+}

@@ -1,0 +1,652 @@
+{
+  "manifest": "8766757721818354077",
+  "sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "method": "Static constructor frequency extraction; real native insert/sift and tree-table builder in isolated Unicorn memory; preallocated storage, no allocator hooks or OS imports. Tree parent assembly follows inspected1d7440; table reversal follows inspected1d6de0.",
+  "weights": [
+    36271,
+    10334,
+    1375,
+    646,
+    4128,
+    35,
+    3,
+    521,
+    2942,
+    560,
+    471,
+    10530,
+    251,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    310,
+    2,
+    0,
+    1837,
+    149,
+    300,
+    634,
+    0,
+    0,
+    1,
+    76,
+    271,
+    99,
+    25474
+  ],
+  "frequency_stores": [
+    {
+      "index": 0,
+      "weight": 36271,
+      "address": "0x1801d71f8",
+      "bytes": "c700af8d0000"
+    },
+    {
+      "index": 39,
+      "weight": 25474,
+      "address": "0x1801d7202",
+      "bytes": "c7809c00000082630000"
+    },
+    {
+      "index": 11,
+      "weight": 10530,
+      "address": "0x1801d7210",
+      "bytes": "c7402c22290000"
+    },
+    {
+      "index": 1,
+      "weight": 10334,
+      "address": "0x1801d721b",
+      "bytes": "c740045e280000"
+    },
+    {
+      "index": 4,
+      "weight": 4128,
+      "address": "0x1801d7226",
+      "bytes": "c7401020100000"
+    },
+    {
+      "index": 8,
+      "weight": 2942,
+      "address": "0x1801d7231",
+      "bytes": "c740207e0b0000"
+    },
+    {
+      "index": 29,
+      "weight": 1837,
+      "address": "0x1801d723c",
+      "bytes": "c740742d070000"
+    },
+    {
+      "index": 2,
+      "weight": 1375,
+      "address": "0x1801d7247",
+      "bytes": "c740085f050000"
+    },
+    {
+      "index": 3,
+      "weight": 646,
+      "address": "0x1801d7252",
+      "bytes": "c7400c86020000"
+    },
+    {
+      "index": 32,
+      "weight": 634,
+      "address": "0x1801d725d",
+      "bytes": "c780800000007a020000"
+    },
+    {
+      "index": 9,
+      "weight": 560,
+      "address": "0x1801d726b",
+      "bytes": "c7402430020000"
+    },
+    {
+      "index": 7,
+      "weight": 521,
+      "address": "0x1801d7276",
+      "bytes": "c7401c09020000"
+    },
+    {
+      "index": 10,
+      "weight": 471,
+      "address": "0x1801d7281",
+      "bytes": "c74028d7010000"
+    },
+    {
+      "index": 26,
+      "weight": 310,
+      "address": "0x1801d728c",
+      "bytes": "c7406836010000"
+    },
+    {
+      "index": 31,
+      "weight": 300,
+      "address": "0x1801d7297",
+      "bytes": "c7407c2c010000"
+    },
+    {
+      "index": 37,
+      "weight": 271,
+      "address": "0x1801d72a2",
+      "bytes": "c780940000000f010000"
+    },
+    {
+      "index": 12,
+      "weight": 251,
+      "address": "0x1801d72b0",
+      "bytes": "c74030fb000000"
+    },
+    {
+      "index": 30,
+      "weight": 149,
+      "address": "0x1801d72bb",
+      "bytes": "c7407895000000"
+    },
+    {
+      "index": 38,
+      "weight": 99,
+      "address": "0x1801d72c6",
+      "bytes": "c7809800000063000000"
+    },
+    {
+      "index": 36,
+      "weight": 76,
+      "address": "0x1801d72d4",
+      "bytes": "c780900000004c000000"
+    },
+    {
+      "index": 5,
+      "weight": 35,
+      "address": "0x1801d72e2",
+      "bytes": "c7401423000000"
+    },
+    {
+      "index": 6,
+      "weight": 3,
+      "address": "0x1801d72ed",
+      "bytes": "c7401803000000"
+    },
+    {
+      "index": 27,
+      "weight": 2,
+      "address": "0x1801d72f8",
+      "bytes": "c7406c02000000"
+    },
+    {
+      "index": 35,
+      "weight": 1,
+      "address": "0x1801d7303",
+      "bytes": "c7808c00000001000000"
+    },
+    {
+      "index": 34,
+      "weight": 0,
+      "address": "0x1801d7311",
+      "bytes": "44898088000000"
+    },
+    {
+      "index": 33,
+      "weight": 0,
+      "address": "0x1801d731c",
+      "bytes": "44898084000000"
+    },
+    {
+      "index": 28,
+      "weight": 0,
+      "address": "0x1801d7327",
+      "bytes": "44894070"
+    },
+    {
+      "index": 25,
+      "weight": 0,
+      "address": "0x1801d732f",
+      "bytes": "44894064"
+    },
+    {
+      "index": 24,
+      "weight": 0,
+      "address": "0x1801d7337",
+      "bytes": "44894060"
+    },
+    {
+      "index": 23,
+      "weight": 0,
+      "address": "0x1801d733f",
+      "bytes": "4489405c"
+    },
+    {
+      "index": 22,
+      "weight": 0,
+      "address": "0x1801d7347",
+      "bytes": "44894058"
+    },
+    {
+      "index": 21,
+      "weight": 0,
+      "address": "0x1801d734f",
+      "bytes": "44894054"
+    },
+    {
+      "index": 20,
+      "weight": 0,
+      "address": "0x1801d7357",
+      "bytes": "44894050"
+    },
+    {
+      "index": 19,
+      "weight": 0,
+      "address": "0x1801d735f",
+      "bytes": "4489404c"
+    },
+    {
+      "index": 18,
+      "weight": 0,
+      "address": "0x1801d7367",
+      "bytes": "44894048"
+    },
+    {
+      "index": 17,
+      "weight": 0,
+      "address": "0x1801d736f",
+      "bytes": "44894044"
+    },
+    {
+      "index": 16,
+      "weight": 0,
+      "address": "0x1801d7377",
+      "bytes": "44894040"
+    },
+    {
+      "index": 15,
+      "weight": 0,
+      "address": "0x1801d737f",
+      "bytes": "4489403c"
+    },
+    {
+      "index": 14,
+      "weight": 0,
+      "address": "0x1801d7387",
+      "bytes": "44894038"
+    },
+    {
+      "index": 13,
+      "weight": 0,
+      "address": "0x1801d738f",
+      "bytes": "44894034"
+    }
+  ],
+  "matched_codewords": 40,
+  "max_code_bits": 17,
+  "codes": [
+    {
+      "symbol": 0,
+      "wire_bits_first_to_last": "0",
+      "length": 1
+    },
+    {
+      "symbol": 1,
+      "wire_bits_first_to_last": "1110",
+      "length": 4
+    },
+    {
+      "symbol": 2,
+      "wire_bits_first_to_last": "110010",
+      "length": 6
+    },
+    {
+      "symbol": 3,
+      "wire_bits_first_to_last": "11011111",
+      "length": 8
+    },
+    {
+      "symbol": 4,
+      "wire_bits_first_to_last": "11010",
+      "length": 5
+    },
+    {
+      "symbol": 5,
+      "wire_bits_first_to_last": "110110001101",
+      "length": 12
+    },
+    {
+      "symbol": 6,
+      "wire_bits_first_to_last": "110110001100101",
+      "length": 15
+    },
+    {
+      "symbol": 7,
+      "wire_bits_first_to_last": "11011010",
+      "length": 8
+    },
+    {
+      "symbol": 8,
+      "wire_bits_first_to_last": "11000",
+      "length": 5
+    },
+    {
+      "symbol": 9,
+      "wire_bits_first_to_last": "11011100",
+      "length": 8
+    },
+    {
+      "symbol": 10,
+      "wire_bits_first_to_last": "11011001",
+      "length": 8
+    },
+    {
+      "symbol": 11,
+      "wire_bits_first_to_last": "1111",
+      "length": 4
+    },
+    {
+      "symbol": 12,
+      "wire_bits_first_to_last": "110110110",
+      "length": 9
+    },
+    {
+      "symbol": 13,
+      "wire_bits_first_to_last": "1101100011001000",
+      "length": 16
+    },
+    {
+      "symbol": 14,
+      "wire_bits_first_to_last": "11011000110010011",
+      "length": 17
+    },
+    {
+      "symbol": 15,
+      "wire_bits_first_to_last": "11011000110010010",
+      "length": 17
+    },
+    {
+      "symbol": 16,
+      "wire_bits_first_to_last": "11011000110011101",
+      "length": 17
+    },
+    {
+      "symbol": 17,
+      "wire_bits_first_to_last": "11011000110011100",
+      "length": 17
+    },
+    {
+      "symbol": 18,
+      "wire_bits_first_to_last": "11011000110011111",
+      "length": 17
+    },
+    {
+      "symbol": 19,
+      "wire_bits_first_to_last": "11011000110011110",
+      "length": 17
+    },
+    {
+      "symbol": 20,
+      "wire_bits_first_to_last": "11011000110011001",
+      "length": 17
+    },
+    {
+      "symbol": 21,
+      "wire_bits_first_to_last": "11011000110011000",
+      "length": 17
+    },
+    {
+      "symbol": 22,
+      "wire_bits_first_to_last": "11011000110011011",
+      "length": 17
+    },
+    {
+      "symbol": 23,
+      "wire_bits_first_to_last": "11011000110011010",
+      "length": 17
+    },
+    {
+      "symbol": 24,
+      "wire_bits_first_to_last": "1101100011000101",
+      "length": 16
+    },
+    {
+      "symbol": 25,
+      "wire_bits_first_to_last": "1101100011000100",
+      "length": 16
+    },
+    {
+      "symbol": 26,
+      "wire_bits_first_to_last": "110111011",
+      "length": 9
+    },
+    {
+      "symbol": 27,
+      "wire_bits_first_to_last": "110110001100001",
+      "length": 15
+    },
+    {
+      "symbol": 28,
+      "wire_bits_first_to_last": "1101100011000111",
+      "length": 16
+    },
+    {
+      "symbol": 29,
+      "wire_bits_first_to_last": "110011",
+      "length": 6
+    },
+    {
+      "symbol": 30,
+      "wire_bits_first_to_last": "110110000",
+      "length": 9
+    },
+    {
+      "symbol": 31,
+      "wire_bits_first_to_last": "110111010",
+      "length": 9
+    },
+    {
+      "symbol": 32,
+      "wire_bits_first_to_last": "11011110",
+      "length": 8
+    },
+    {
+      "symbol": 33,
+      "wire_bits_first_to_last": "1101100011000110",
+      "length": 16
+    },
+    {
+      "symbol": 34,
+      "wire_bits_first_to_last": "1101100011000001",
+      "length": 16
+    },
+    {
+      "symbol": 35,
+      "wire_bits_first_to_last": "1101100011000000",
+      "length": 16
+    },
+    {
+      "symbol": 36,
+      "wire_bits_first_to_last": "11011000111",
+      "length": 11
+    },
+    {
+      "symbol": 37,
+      "wire_bits_first_to_last": "110110111",
+      "length": 9
+    },
+    {
+      "symbol": 38,
+      "wire_bits_first_to_last": "1101100010",
+      "length": 10
+    },
+    {
+      "symbol": 39,
+      "wire_bits_first_to_last": "10",
+      "length": 2
+    }
+  ],
+  "decoder_table": [
+    [
+      -1,
+      1
+    ],
+    [
+      -40,
+      2
+    ],
+    [
+      4,
+      3
+    ],
+    [
+      -2,
+      -12
+    ],
+    [
+      37,
+      5
+    ],
+    [
+      -5,
+      6
+    ],
+    [
+      11,
+      7
+    ],
+    [
+      9,
+      8
+    ],
+    [
+      -33,
+      -4
+    ],
+    [
+      -10,
+      10
+    ],
+    [
+      -32,
+      -27
+    ],
+    [
+      14,
+      12
+    ],
+    [
+      -8,
+      13
+    ],
+    [
+      -13,
+      -38
+    ],
+    [
+      15,
+      -11
+    ],
+    [
+      -31,
+      16
+    ],
+    [
+      -39,
+      17
+    ],
+    [
+      18,
+      -37
+    ],
+    [
+      19,
+      -6
+    ],
+    [
+      31,
+      20
+    ],
+    [
+      28,
+      21
+    ],
+    [
+      25,
+      22
+    ],
+    [
+      24,
+      23
+    ],
+    [
+      -20,
+      -19
+    ],
+    [
+      -18,
+      -17
+    ],
+    [
+      27,
+      26
+    ],
+    [
+      -24,
+      -23
+    ],
+    [
+      -22,
+      -21
+    ],
+    [
+      29,
+      -7
+    ],
+    [
+      -14,
+      30
+    ],
+    [
+      -16,
+      -15
+    ],
+    [
+      35,
+      32
+    ],
+    [
+      34,
+      33
+    ],
+    [
+      -34,
+      -29
+    ],
+    [
+      -26,
+      -25
+    ],
+    [
+      36,
+      -28
+    ],
+    [
+      -36,
+      -35
+    ],
+    [
+      -9,
+      38
+    ],
+    [
+      -3,
+      -30
+    ]
+  ],
+  "scope": "Fixed-build actual Huffman selection, not just individual opcode behavior. No whole-game or live acceptance claim."
+}

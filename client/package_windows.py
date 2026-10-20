@@ -11,7 +11,7 @@ RUNTIMES = {
     'python': ('python-3.14.8-embed-amd64.zip', 'a93abe456ab01bd96d7a085b3cdb6566b3063f4241360d114142fbdb07f0a310'),
     'node': ('node-v24.22.0-win-x64.zip', 'f9683a19877e12a9b167305c8db71040d812876359de21f0d2e97c3f321f80c3'),
 }
-MODULES = ['driver', 'launcher', 'parser_bridge', 'parser_stream', 'wire', 'live', 'channel',
+MODULES = ['driver', 'launcher', 'ordered_parser_bridge', 'observer_settings', 'wire', 'live', 'channel',
            'handshake', 'password', 'resource_manifest', 'replay', 'sdk']
 
 

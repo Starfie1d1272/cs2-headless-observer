@@ -1,0 +1,7306 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "method": "isolated native qangle bitcount0, all presence masks and coordinate profiles; no OS imports or network",
+    "cases": 384,
+    "passed": 384
+  },
+  "cases": [
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0900",
+      "expected": [
+        1,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "4900",
+      "expected": [
+        2,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        2.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "c9ff",
+      "expected": [
+        1024,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        1024.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "2900",
+      "expected": [
+        -1,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "6900",
+      "expected": [
+        -2,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        -2.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "e9ff",
+      "expected": [
+        -1024,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        -1024.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d103",
+      "expected": [
+        0.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d103",
+      "expected": [
+        0.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d103",
+      "expected": [
+        0.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f103",
+      "expected": [
+        -0.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        -0.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f103",
+      "expected": [
+        -0.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        -0.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f103",
+      "expected": [
+        -0.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        -0.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "19000f",
+      "expected": [
+        1.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        1.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "59000f",
+      "expected": [
+        2.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        2.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d9ff0f",
+      "expected": [
+        1024.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        1024.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "39000f",
+      "expected": [
+        -1.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        -1.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "79000f",
+      "expected": [
+        -2.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        -2.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f9ff0f",
+      "expected": [
+        -1024.9375,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        -1024.9375,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0a00",
+      "expected": [
+        0.0,
+        1,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "4a00",
+      "expected": [
+        0.0,
+        2,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        2.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "caff",
+      "expected": [
+        0.0,
+        1024,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        1024.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "2a00",
+      "expected": [
+        0.0,
+        -1,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "6a00",
+      "expected": [
+        0.0,
+        -2,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        -2.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "eaff",
+      "expected": [
+        0.0,
+        -1024,
+        0.0
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        -1024.0,
+        0.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d203",
+      "expected": [
+        0.0,
+        0.9375,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        0.9375,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d203",
+      "expected": [
+        0.0,
+        0.9375,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        0.9375,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d203",
+      "expected": [
+        0.0,
+        0.9375,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        0.9375,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f203",
+      "expected": [
+        0.0,
+        -0.9375,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        -0.9375,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f203",
+      "expected": [
+        0.0,
+        -0.9375,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        -0.9375,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f203",
+      "expected": [
+        0.0,
+        -0.9375,
+        0.0
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        -0.9375,
+        0.0
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "1a000f",
+      "expected": [
+        0.0,
+        1.9375,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        1.9375,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "5a000f",
+      "expected": [
+        0.0,
+        2.9375,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        2.9375,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "daff0f",
+      "expected": [
+        0.0,
+        1024.9375,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        1024.9375,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "3a000f",
+      "expected": [
+        0.0,
+        -1.9375,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        -1.9375,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "7a000f",
+      "expected": [
+        0.0,
+        -2.9375,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        -2.9375,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "faff0f",
+      "expected": [
+        0.0,
+        -1024.9375,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        -1024.9375,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0b000100",
+      "expected": [
+        1,
+        1,
+        0.0
+      ],
+      "expected_bits": 29,
+      "actual": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "4b000900",
+      "expected": [
+        2,
+        2,
+        0.0
+      ],
+      "expected_bits": 29,
+      "actual": [
+        2.0,
+        2.0,
+        0.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "cbfff91f",
+      "expected": [
+        1024,
+        1024,
+        0.0
+      ],
+      "expected_bits": 29,
+      "actual": [
+        1024.0,
+        1024.0,
+        0.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "2b000500",
+      "expected": [
+        -1,
+        -1,
+        0.0
+      ],
+      "expected_bits": 29,
+      "actual": [
+        -1.0,
+        -1.0,
+        0.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "6b000d00",
+      "expected": [
+        -2,
+        -2,
+        0.0
+      ],
+      "expected_bits": 29,
+      "actual": [
+        -2.0,
+        -2.0,
+        0.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "ebfffd1f",
+      "expected": [
+        -1024,
+        -1024,
+        0.0
+      ],
+      "expected_bits": 29,
+      "actual": [
+        -1024.0,
+        -1024.0,
+        0.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d3eb01",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.0
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.0
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d3eb01",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.0
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.0
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d3eb01",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.0
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.0
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f3fb01",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        0.0
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        0.0
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f3fb01",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        0.0
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        0.0
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f3fb01",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        0.0
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        0.0
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "1b003f001e",
+      "expected": [
+        1.9375,
+        1.9375,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        1.9375,
+        1.9375,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "5b00bf001e",
+      "expected": [
+        2.9375,
+        2.9375,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        2.9375,
+        2.9375,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "dbffbfff1f",
+      "expected": [
+        1024.9375,
+        1024.9375,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        1024.9375,
+        1024.9375,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "3b007f001e",
+      "expected": [
+        -1.9375,
+        -1.9375,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -1.9375,
+        -1.9375,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "7b00ff001e",
+      "expected": [
+        -2.9375,
+        -2.9375,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -2.9375,
+        -2.9375,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "fbffffff1f",
+      "expected": [
+        -1024.9375,
+        -1024.9375,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -1024.9375,
+        -1024.9375,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0c00",
+      "expected": [
+        0.0,
+        0.0,
+        1
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "4c00",
+      "expected": [
+        0.0,
+        0.0,
+        2
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "ccff",
+      "expected": [
+        0.0,
+        0.0,
+        1024
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        0.0,
+        1024.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "2c00",
+      "expected": [
+        0.0,
+        0.0,
+        -1
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "6c00",
+      "expected": [
+        0.0,
+        0.0,
+        -2
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        0.0,
+        -2.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "ecff",
+      "expected": [
+        0.0,
+        0.0,
+        -1024
+      ],
+      "expected_bits": 16,
+      "actual": [
+        0.0,
+        0.0,
+        -1024.0
+      ],
+      "actual_bits": 16,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d403",
+      "expected": [
+        0.0,
+        0.0,
+        0.9375
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        0.0,
+        0.9375
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d403",
+      "expected": [
+        0.0,
+        0.0,
+        0.9375
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        0.0,
+        0.9375
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d403",
+      "expected": [
+        0.0,
+        0.0,
+        0.9375
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        0.0,
+        0.9375
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f403",
+      "expected": [
+        0.0,
+        0.0,
+        -0.9375
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        0.0,
+        -0.9375
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f403",
+      "expected": [
+        0.0,
+        0.0,
+        -0.9375
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        0.0,
+        -0.9375
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f403",
+      "expected": [
+        0.0,
+        0.0,
+        -0.9375
+      ],
+      "expected_bits": 10,
+      "actual": [
+        0.0,
+        0.0,
+        -0.9375
+      ],
+      "actual_bits": 10,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "1c000f",
+      "expected": [
+        0.0,
+        0.0,
+        1.9375
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        1.9375
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "5c000f",
+      "expected": [
+        0.0,
+        0.0,
+        2.9375
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        2.9375
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "dcff0f",
+      "expected": [
+        0.0,
+        0.0,
+        1024.9375
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        1024.9375
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "3c000f",
+      "expected": [
+        0.0,
+        0.0,
+        -1.9375
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        -1.9375
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "7c000f",
+      "expected": [
+        0.0,
+        0.0,
+        -2.9375
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        -2.9375
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "fcff0f",
+      "expected": [
+        0.0,
+        0.0,
+        -1024.9375
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        -1024.9375
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0d000100",
+      "expected": [
+        1,
+        0.0,
+        1
+      ],
+      "expected_bits": 29,
+      "actual": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "4d000900",
+      "expected": [
+        2,
+        0.0,
+        2
+      ],
+      "expected_bits": 29,
+      "actual": [
+        2.0,
+        0.0,
+        2.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "cdfff91f",
+      "expected": [
+        1024,
+        0.0,
+        1024
+      ],
+      "expected_bits": 29,
+      "actual": [
+        1024.0,
+        0.0,
+        1024.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "2d000500",
+      "expected": [
+        -1,
+        0.0,
+        -1
+      ],
+      "expected_bits": 29,
+      "actual": [
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "6d000d00",
+      "expected": [
+        -2,
+        0.0,
+        -2
+      ],
+      "expected_bits": 29,
+      "actual": [
+        -2.0,
+        0.0,
+        -2.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "edfffd1f",
+      "expected": [
+        -1024,
+        0.0,
+        -1024
+      ],
+      "expected_bits": 29,
+      "actual": [
+        -1024.0,
+        0.0,
+        -1024.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d5eb01",
+      "expected": [
+        0.9375,
+        0.0,
+        0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.9375,
+        0.0,
+        0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d5eb01",
+      "expected": [
+        0.9375,
+        0.0,
+        0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.9375,
+        0.0,
+        0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d5eb01",
+      "expected": [
+        0.9375,
+        0.0,
+        0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.9375,
+        0.0,
+        0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f5fb01",
+      "expected": [
+        -0.9375,
+        0.0,
+        -0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -0.9375,
+        0.0,
+        -0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f5fb01",
+      "expected": [
+        -0.9375,
+        0.0,
+        -0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -0.9375,
+        0.0,
+        -0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f5fb01",
+      "expected": [
+        -0.9375,
+        0.0,
+        -0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -0.9375,
+        0.0,
+        -0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "1d003f001e",
+      "expected": [
+        1.9375,
+        0.0,
+        1.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        1.9375,
+        0.0,
+        1.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "5d00bf001e",
+      "expected": [
+        2.9375,
+        0.0,
+        2.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        2.9375,
+        0.0,
+        2.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "ddffbfff1f",
+      "expected": [
+        1024.9375,
+        0.0,
+        1024.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        1024.9375,
+        0.0,
+        1024.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "3d007f001e",
+      "expected": [
+        -1.9375,
+        0.0,
+        -1.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -1.9375,
+        0.0,
+        -1.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "7d00ff001e",
+      "expected": [
+        -2.9375,
+        0.0,
+        -2.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -2.9375,
+        0.0,
+        -2.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "fdffffff1f",
+      "expected": [
+        -1024.9375,
+        0.0,
+        -1024.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -1024.9375,
+        0.0,
+        -1024.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0e000100",
+      "expected": [
+        0.0,
+        1,
+        1
+      ],
+      "expected_bits": 29,
+      "actual": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "4e000900",
+      "expected": [
+        0.0,
+        2,
+        2
+      ],
+      "expected_bits": 29,
+      "actual": [
+        0.0,
+        2.0,
+        2.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "cefff91f",
+      "expected": [
+        0.0,
+        1024,
+        1024
+      ],
+      "expected_bits": 29,
+      "actual": [
+        0.0,
+        1024.0,
+        1024.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "2e000500",
+      "expected": [
+        0.0,
+        -1,
+        -1
+      ],
+      "expected_bits": 29,
+      "actual": [
+        0.0,
+        -1.0,
+        -1.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "6e000d00",
+      "expected": [
+        0.0,
+        -2,
+        -2
+      ],
+      "expected_bits": 29,
+      "actual": [
+        0.0,
+        -2.0,
+        -2.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "eefffd1f",
+      "expected": [
+        0.0,
+        -1024,
+        -1024
+      ],
+      "expected_bits": 29,
+      "actual": [
+        0.0,
+        -1024.0,
+        -1024.0
+      ],
+      "actual_bits": 29,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d6eb01",
+      "expected": [
+        0.0,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.0,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d6eb01",
+      "expected": [
+        0.0,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.0,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d6eb01",
+      "expected": [
+        0.0,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.0,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f6fb01",
+      "expected": [
+        0.0,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.0,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f6fb01",
+      "expected": [
+        0.0,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.0,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f6fb01",
+      "expected": [
+        0.0,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        0.0,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "1e003f001e",
+      "expected": [
+        0.0,
+        1.9375,
+        1.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        1.9375,
+        1.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "5e00bf001e",
+      "expected": [
+        0.0,
+        2.9375,
+        2.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        2.9375,
+        2.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "deffbfff1f",
+      "expected": [
+        0.0,
+        1024.9375,
+        1024.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        1024.9375,
+        1024.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "3e007f001e",
+      "expected": [
+        0.0,
+        -1.9375,
+        -1.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        -1.9375,
+        -1.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "7e00ff001e",
+      "expected": [
+        0.0,
+        -2.9375,
+        -2.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        -2.9375,
+        -2.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "feffffff1f",
+      "expected": [
+        0.0,
+        -1024.9375,
+        -1024.9375
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        -1024.9375,
+        -1024.9375
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "0f0001200000",
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "expected_bits": 42,
+      "actual": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "actual_bits": 42,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "4f0009200100",
+      "expected": [
+        2,
+        2,
+        2
+      ],
+      "expected_bits": 42,
+      "actual": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "actual_bits": 42,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "cffff93fff03",
+      "expected": [
+        1024,
+        1024,
+        1024
+      ],
+      "expected_bits": 42,
+      "actual": [
+        1024.0,
+        1024.0,
+        1024.0
+      ],
+      "actual_bits": 42,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "2f0005a00000",
+      "expected": [
+        -1,
+        -1,
+        -1
+      ],
+      "expected_bits": 42,
+      "actual": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "actual_bits": 42,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "6f000da00100",
+      "expected": [
+        -2,
+        -2,
+        -2
+      ],
+      "expected_bits": 42,
+      "actual": [
+        -2.0,
+        -2.0,
+        -2.0
+      ],
+      "actual_bits": 42,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "effffdbfff03",
+      "expected": [
+        -1024,
+        -1024,
+        -1024
+      ],
+      "expected_bits": 42,
+      "actual": [
+        -1024.0,
+        -1024.0,
+        -1024.0
+      ],
+      "actual_bits": 42,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d7ebf5",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 24,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d7ebf5",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 24,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "d7ebf5",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 24,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f7fbfd",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 24,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f7fbfd",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 24,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "f7fbfd",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 24,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "1f003f007e003c",
+      "expected": [
+        1.9375,
+        1.9375,
+        1.9375
+      ],
+      "expected_bits": 54,
+      "actual": [
+        1.9375,
+        1.9375,
+        1.9375
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "5f00bf007e013c",
+      "expected": [
+        2.9375,
+        2.9375,
+        2.9375
+      ],
+      "expected_bits": 54,
+      "actual": [
+        2.9375,
+        2.9375,
+        2.9375
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "dfffbfff7fff3f",
+      "expected": [
+        1024.9375,
+        1024.9375,
+        1024.9375
+      ],
+      "expected_bits": 54,
+      "actual": [
+        1024.9375,
+        1024.9375,
+        1024.9375
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "3f007f00fe003c",
+      "expected": [
+        -1.9375,
+        -1.9375,
+        -1.9375
+      ],
+      "expected_bits": 54,
+      "actual": [
+        -1.9375,
+        -1.9375,
+        -1.9375
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "7f00ff00fe013c",
+      "expected": [
+        -2.9375,
+        -2.9375,
+        -2.9375
+      ],
+      "expected_bits": 54,
+      "actual": [
+        -2.9375,
+        -2.9375,
+        -2.9375
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 10,
+      "input_hex": "ffffffffffff3f",
+      "expected": [
+        -1024.9375,
+        -1024.9375,
+        -1024.9375
+      ],
+      "expected_bits": 54,
+      "actual": [
+        -1024.9375,
+        -1024.9375,
+        -1024.9375
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 3,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 3,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "01",
+      "expected": [
+        0,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "090000",
+      "expected": [
+        1,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "490000",
+      "expected": [
+        2,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        2.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "c9ff0f",
+      "expected": [
+        16384,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        16384.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "290000",
+      "expected": [
+        -1,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "690000",
+      "expected": [
+        -2,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        -2.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "e9ff0f",
+      "expected": [
+        -16384,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        -16384.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d107",
+      "expected": [
+        0.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d107",
+      "expected": [
+        0.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d107",
+      "expected": [
+        0.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f107",
+      "expected": [
+        -0.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        -0.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f107",
+      "expected": [
+        -0.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        -0.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f107",
+      "expected": [
+        -0.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        -0.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "1900f001",
+      "expected": [
+        1.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        1.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "5900f001",
+      "expected": [
+        2.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        2.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d9ffff01",
+      "expected": [
+        16384.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        16384.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "3900f001",
+      "expected": [
+        -1.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        -1.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "7900f001",
+      "expected": [
+        -2.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        -2.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f9ffff01",
+      "expected": [
+        -16384.96875,
+        0.0,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        -16384.96875,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "02",
+      "expected": [
+        0.0,
+        0,
+        0.0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0a0000",
+      "expected": [
+        0.0,
+        1,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "4a0000",
+      "expected": [
+        0.0,
+        2,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        2.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "caff0f",
+      "expected": [
+        0.0,
+        16384,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        16384.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "2a0000",
+      "expected": [
+        0.0,
+        -1,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "6a0000",
+      "expected": [
+        0.0,
+        -2,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        -2.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "eaff0f",
+      "expected": [
+        0.0,
+        -16384,
+        0.0
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        -16384.0,
+        0.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d207",
+      "expected": [
+        0.0,
+        0.96875,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        0.96875,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d207",
+      "expected": [
+        0.0,
+        0.96875,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        0.96875,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d207",
+      "expected": [
+        0.0,
+        0.96875,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        0.96875,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f207",
+      "expected": [
+        0.0,
+        -0.96875,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        -0.96875,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f207",
+      "expected": [
+        0.0,
+        -0.96875,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        -0.96875,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f207",
+      "expected": [
+        0.0,
+        -0.96875,
+        0.0
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        -0.96875,
+        0.0
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "1a00f001",
+      "expected": [
+        0.0,
+        1.96875,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        1.96875,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "5a00f001",
+      "expected": [
+        0.0,
+        2.96875,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        2.96875,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "daffff01",
+      "expected": [
+        0.0,
+        16384.96875,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        16384.96875,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "3a00f001",
+      "expected": [
+        0.0,
+        -1.96875,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        -1.96875,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "7a00f001",
+      "expected": [
+        0.0,
+        -2.96875,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        -2.96875,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "faffff01",
+      "expected": [
+        0.0,
+        -16384.96875,
+        0.0
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        -16384.96875,
+        0.0
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "03",
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0b00100000",
+      "expected": [
+        1,
+        1,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "4b00900000",
+      "expected": [
+        2,
+        2,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        2.0,
+        2.0,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "cbff9fff1f",
+      "expected": [
+        16384,
+        16384,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        16384.0,
+        16384.0,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "2b00500000",
+      "expected": [
+        -1,
+        -1,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -1.0,
+        -1.0,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "6b00d00000",
+      "expected": [
+        -2,
+        -2,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -2.0,
+        -2.0,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "ebffdfff1f",
+      "expected": [
+        -16384,
+        -16384,
+        0.0
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -16384.0,
+        -16384.0,
+        0.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d3d707",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.0
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.0
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d3d707",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.0
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.0
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d3d707",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.0
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.0
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f3f707",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        0.0
+      ],
+      "expected_bits": 19,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        0.0
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f3f707",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        0.0
+      ],
+      "expected_bits": 19,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        0.0
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f3f707",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        0.0
+      ],
+      "expected_bits": 19,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        0.0
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "1b00f007007c",
+      "expected": [
+        1.96875,
+        1.96875,
+        0.0
+      ],
+      "expected_bits": 47,
+      "actual": [
+        1.96875,
+        1.96875,
+        0.0
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "5b00f017007c",
+      "expected": [
+        2.96875,
+        2.96875,
+        0.0
+      ],
+      "expected_bits": 47,
+      "actual": [
+        2.96875,
+        2.96875,
+        0.0
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "dbfffff7ff7f",
+      "expected": [
+        16384.96875,
+        16384.96875,
+        0.0
+      ],
+      "expected_bits": 47,
+      "actual": [
+        16384.96875,
+        16384.96875,
+        0.0
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "3b00f00f007c",
+      "expected": [
+        -1.96875,
+        -1.96875,
+        0.0
+      ],
+      "expected_bits": 47,
+      "actual": [
+        -1.96875,
+        -1.96875,
+        0.0
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "7b00f01f007c",
+      "expected": [
+        -2.96875,
+        -2.96875,
+        0.0
+      ],
+      "expected_bits": 47,
+      "actual": [
+        -2.96875,
+        -2.96875,
+        0.0
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "fbffffffff7f",
+      "expected": [
+        -16384.96875,
+        -16384.96875,
+        0.0
+      ],
+      "expected_bits": 47,
+      "actual": [
+        -16384.96875,
+        -16384.96875,
+        0.0
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "04",
+      "expected": [
+        0.0,
+        0.0,
+        0
+      ],
+      "expected_bits": 5,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 5,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0c0000",
+      "expected": [
+        0.0,
+        0.0,
+        1
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "4c0000",
+      "expected": [
+        0.0,
+        0.0,
+        2
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "ccff0f",
+      "expected": [
+        0.0,
+        0.0,
+        16384
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        16384.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "2c0000",
+      "expected": [
+        0.0,
+        0.0,
+        -1
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "6c0000",
+      "expected": [
+        0.0,
+        0.0,
+        -2
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        -2.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "ecff0f",
+      "expected": [
+        0.0,
+        0.0,
+        -16384
+      ],
+      "expected_bits": 20,
+      "actual": [
+        0.0,
+        0.0,
+        -16384.0
+      ],
+      "actual_bits": 20,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d407",
+      "expected": [
+        0.0,
+        0.0,
+        0.96875
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        0.0,
+        0.96875
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d407",
+      "expected": [
+        0.0,
+        0.0,
+        0.96875
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        0.0,
+        0.96875
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d407",
+      "expected": [
+        0.0,
+        0.0,
+        0.96875
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        0.0,
+        0.96875
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f407",
+      "expected": [
+        0.0,
+        0.0,
+        -0.96875
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        0.0,
+        -0.96875
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f407",
+      "expected": [
+        0.0,
+        0.0,
+        -0.96875
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        0.0,
+        -0.96875
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f407",
+      "expected": [
+        0.0,
+        0.0,
+        -0.96875
+      ],
+      "expected_bits": 11,
+      "actual": [
+        0.0,
+        0.0,
+        -0.96875
+      ],
+      "actual_bits": 11,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "1c00f001",
+      "expected": [
+        0.0,
+        0.0,
+        1.96875
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        0.0,
+        1.96875
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "5c00f001",
+      "expected": [
+        0.0,
+        0.0,
+        2.96875
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        0.0,
+        2.96875
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "dcffff01",
+      "expected": [
+        0.0,
+        0.0,
+        16384.96875
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        0.0,
+        16384.96875
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "3c00f001",
+      "expected": [
+        0.0,
+        0.0,
+        -1.96875
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        0.0,
+        -1.96875
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "7c00f001",
+      "expected": [
+        0.0,
+        0.0,
+        -2.96875
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        0.0,
+        -2.96875
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "fcffff01",
+      "expected": [
+        0.0,
+        0.0,
+        -16384.96875
+      ],
+      "expected_bits": 25,
+      "actual": [
+        0.0,
+        0.0,
+        -16384.96875
+      ],
+      "actual_bits": 25,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "05",
+      "expected": [
+        0,
+        0.0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0d00100000",
+      "expected": [
+        1,
+        0.0,
+        1
+      ],
+      "expected_bits": 37,
+      "actual": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "4d00900000",
+      "expected": [
+        2,
+        0.0,
+        2
+      ],
+      "expected_bits": 37,
+      "actual": [
+        2.0,
+        0.0,
+        2.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "cdff9fff1f",
+      "expected": [
+        16384,
+        0.0,
+        16384
+      ],
+      "expected_bits": 37,
+      "actual": [
+        16384.0,
+        0.0,
+        16384.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "2d00500000",
+      "expected": [
+        -1,
+        0.0,
+        -1
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "6d00d00000",
+      "expected": [
+        -2,
+        0.0,
+        -2
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -2.0,
+        0.0,
+        -2.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "edffdfff1f",
+      "expected": [
+        -16384,
+        0.0,
+        -16384
+      ],
+      "expected_bits": 37,
+      "actual": [
+        -16384.0,
+        0.0,
+        -16384.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d5d707",
+      "expected": [
+        0.96875,
+        0.0,
+        0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.96875,
+        0.0,
+        0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d5d707",
+      "expected": [
+        0.96875,
+        0.0,
+        0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.96875,
+        0.0,
+        0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d5d707",
+      "expected": [
+        0.96875,
+        0.0,
+        0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.96875,
+        0.0,
+        0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f5f707",
+      "expected": [
+        -0.96875,
+        0.0,
+        -0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        -0.96875,
+        0.0,
+        -0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f5f707",
+      "expected": [
+        -0.96875,
+        0.0,
+        -0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        -0.96875,
+        0.0,
+        -0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f5f707",
+      "expected": [
+        -0.96875,
+        0.0,
+        -0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        -0.96875,
+        0.0,
+        -0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "1d00f007007c",
+      "expected": [
+        1.96875,
+        0.0,
+        1.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        1.96875,
+        0.0,
+        1.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "5d00f017007c",
+      "expected": [
+        2.96875,
+        0.0,
+        2.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        2.96875,
+        0.0,
+        2.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "ddfffff7ff7f",
+      "expected": [
+        16384.96875,
+        0.0,
+        16384.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        16384.96875,
+        0.0,
+        16384.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "3d00f00f007c",
+      "expected": [
+        -1.96875,
+        0.0,
+        -1.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        -1.96875,
+        0.0,
+        -1.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "7d00f01f007c",
+      "expected": [
+        -2.96875,
+        0.0,
+        -2.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        -2.96875,
+        0.0,
+        -2.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "fdffffffff7f",
+      "expected": [
+        -16384.96875,
+        0.0,
+        -16384.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        -16384.96875,
+        0.0,
+        -16384.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "06",
+      "expected": [
+        0.0,
+        0,
+        0
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0e00100000",
+      "expected": [
+        0.0,
+        1,
+        1
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "4e00900000",
+      "expected": [
+        0.0,
+        2,
+        2
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        2.0,
+        2.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "ceff9fff1f",
+      "expected": [
+        0.0,
+        16384,
+        16384
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        16384.0,
+        16384.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "2e00500000",
+      "expected": [
+        0.0,
+        -1,
+        -1
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        -1.0,
+        -1.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "6e00d00000",
+      "expected": [
+        0.0,
+        -2,
+        -2
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        -2.0,
+        -2.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "eeffdfff1f",
+      "expected": [
+        0.0,
+        -16384,
+        -16384
+      ],
+      "expected_bits": 37,
+      "actual": [
+        0.0,
+        -16384.0,
+        -16384.0
+      ],
+      "actual_bits": 37,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d6d707",
+      "expected": [
+        0.0,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.0,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d6d707",
+      "expected": [
+        0.0,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.0,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d6d707",
+      "expected": [
+        0.0,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.0,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f6f707",
+      "expected": [
+        0.0,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.0,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f6f707",
+      "expected": [
+        0.0,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.0,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f6f707",
+      "expected": [
+        0.0,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 19,
+      "actual": [
+        0.0,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 19,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "1e00f007007c",
+      "expected": [
+        0.0,
+        1.96875,
+        1.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        0.0,
+        1.96875,
+        1.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "5e00f017007c",
+      "expected": [
+        0.0,
+        2.96875,
+        2.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        0.0,
+        2.96875,
+        2.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "defffff7ff7f",
+      "expected": [
+        0.0,
+        16384.96875,
+        16384.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        0.0,
+        16384.96875,
+        16384.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "3e00f00f007c",
+      "expected": [
+        0.0,
+        -1.96875,
+        -1.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        0.0,
+        -1.96875,
+        -1.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "7e00f01f007c",
+      "expected": [
+        0.0,
+        -2.96875,
+        -2.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        0.0,
+        -2.96875,
+        -2.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "feffffffff7f",
+      "expected": [
+        0.0,
+        -16384.96875,
+        -16384.96875
+      ],
+      "expected_bits": 47,
+      "actual": [
+        0.0,
+        -16384.96875,
+        -16384.96875
+      ],
+      "actual_bits": 47,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0700",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 9,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_bits": 9,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "0f001000200000",
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "expected_bits": 54,
+      "actual": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "4f009000200100",
+      "expected": [
+        2,
+        2,
+        2
+      ],
+      "expected_bits": 54,
+      "actual": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "cfff9fff3fff3f",
+      "expected": [
+        16384,
+        16384,
+        16384
+      ],
+      "expected_bits": 54,
+      "actual": [
+        16384.0,
+        16384.0,
+        16384.0
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "2f005000a00000",
+      "expected": [
+        -1,
+        -1,
+        -1
+      ],
+      "expected_bits": 54,
+      "actual": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "6f00d000a00100",
+      "expected": [
+        -2,
+        -2,
+        -2
+      ],
+      "expected_bits": 54,
+      "actual": [
+        -2.0,
+        -2.0,
+        -2.0
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "efffdfffbfff3f",
+      "expected": [
+        -16384,
+        -16384,
+        -16384
+      ],
+      "expected_bits": 54,
+      "actual": [
+        -16384.0,
+        -16384.0,
+        -16384.0
+      ],
+      "actual_bits": 54,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d7d7d707",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 27,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 27,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d7d7d707",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 27,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 27,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "d7d7d707",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 27,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 27,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f7f7f707",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 27,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 27,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f7f7f707",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 27,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 27,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "f7f7f707",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 27,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 27,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "1f00f00700fc01001f",
+      "expected": [
+        1.96875,
+        1.96875,
+        1.96875
+      ],
+      "expected_bits": 69,
+      "actual": [
+        1.96875,
+        1.96875,
+        1.96875
+      ],
+      "actual_bits": 69,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "5f00f01700fc05001f",
+      "expected": [
+        2.96875,
+        2.96875,
+        2.96875
+      ],
+      "expected_bits": 69,
+      "actual": [
+        2.96875,
+        2.96875,
+        2.96875
+      ],
+      "actual_bits": 69,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "dffffff7fffffdff1f",
+      "expected": [
+        16384.96875,
+        16384.96875,
+        16384.96875
+      ],
+      "expected_bits": 69,
+      "actual": [
+        16384.96875,
+        16384.96875,
+        16384.96875
+      ],
+      "actual_bits": 69,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "3f00f00f00fc03001f",
+      "expected": [
+        -1.96875,
+        -1.96875,
+        -1.96875
+      ],
+      "expected_bits": 69,
+      "actual": [
+        -1.96875,
+        -1.96875,
+        -1.96875
+      ],
+      "actual_bits": 69,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "7f00f01f00fc07001f",
+      "expected": [
+        -2.96875,
+        -2.96875,
+        -2.96875
+      ],
+      "expected_bits": 69,
+      "actual": [
+        -2.96875,
+        -2.96875,
+        -2.96875
+      ],
+      "actual_bits": 69,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "qangle_zero",
+      "width": 14,
+      "input_hex": "ffffffffffffffff1f",
+      "expected": [
+        -16384.96875,
+        -16384.96875,
+        -16384.96875
+      ],
+      "expected_bits": 69,
+      "actual": [
+        -16384.96875,
+        -16384.96875,
+        -16384.96875
+      ],
+      "actual_bits": 69,
+      "overflow": 0,
+      "passed": true
+    }
+  ]
+}

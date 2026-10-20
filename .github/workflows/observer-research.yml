@@ -35,10 +35,13 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force .agent-tmp/observer-build | Out-Null
           node client/build_parser.mjs .agent-tmp/observer-parser-source .agent-tmp/observer-build/parser_worker.mjs
-      - name: Verify online entity state with synthetic binary messages
+      - name: Verify cohesive observer with synthetic inputs
         shell: pwsh
         run: |
-          pnpm exec tsx client/verify_online_entities.mjs "$env:GITHUB_WORKSPACE/.agent-tmp/observer-parser-source"
+          node client/verify_cohesive_parser.mjs "$env:GITHUB_WORKSPACE/.agent-tmp/observer-parser-source"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:GOTV_ORDERED_WORKER = "$env:GITHUB_WORKSPACE/.agent-tmp/observer-build/parser_worker.mjs"
+          python -m unittest discover -s client -p "test_*.py" -v
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Fetch pinned official SDK headers and portable runtimes
         shell: pwsh
@@ -77,7 +80,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & .agent-tmp/observer-build/client/runtime/node.exe --version
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -c "import pathlib; s=pathlib.Path('.agent-tmp/observer-build/exports.txt').read_text(); assert all(n in s for n in ['observer_create','observer_send','observer_receive','observer_auth','observer_close','observer_abi_version','observer_local_id','observer_accept_server_auth2'])"
+          python -c "import pathlib; s=pathlib.Path('.agent-tmp/observer-build/exports.txt').read_text(); assert all(n in s for n in ['observer_create','observer_send','observer_receive','observer_auth','observer_close','observer_abi_version','observer_local_id','observer_accept_server_auth2','observer_remote_end_reason'])"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:

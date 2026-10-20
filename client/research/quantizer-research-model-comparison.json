@@ -1,0 +1,4162 @@
+[
+  {
+    "input": {
+      "bits": 1,
+      "flags": 0,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 1.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 0,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 0.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.5,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 0,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 0.001,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.001,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 0,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 3.0517578125e-05,
+      "flags": 0
+    },
+    "native_high_low_mul": 3.0517578125e-05,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 1,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.0,
+      "high": 0.5,
+      "dec_mul": 1.0,
+      "high_low_mul": 2.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2.0,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.5,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 1,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": -1.0,
+      "high": 0.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 1.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 0.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 1,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.0,
+      "high": 500.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 0.002,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.002,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 500.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 1,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": -16384.0,
+      "high": 0.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 6.103515625e-05,
+      "flags": 0
+    },
+    "native_high_low_mul": 6.103515625e-05,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 0.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 2,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.5,
+      "high": 1.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 2.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2.0,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 0.5,
+      "configured_high": 1.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 2,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 1.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 2,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 500.0,
+      "high": 1000.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 0.002,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.002,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 500.0,
+      "configured_high": 1000.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 2,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.0,
+      "high": 16384.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 6.103515625e-05,
+      "flags": 0
+    },
+    "native_high_low_mul": 6.103515625e-05,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 16384.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 4,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.0,
+      "high": 0.5,
+      "dec_mul": 1.0,
+      "high_low_mul": 2.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2.0,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.5,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 4,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 0.5,
+      "flags": 4
+    },
+    "native_high_low_mul": 0.5,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 4,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 4,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.0,
+      "high": 500.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 0.002,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.002,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 500.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 4,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 3.0517578125e-05,
+      "flags": 4
+    },
+    "native_high_low_mul": 3.0517578125e-05,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 4,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 8,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 1,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 1,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 8,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -1.0,
+      "high": 2.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 8,
+      "configured_low": -1.0,
+      "configured_high": 2.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 8,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 10,
+      "low": 0.0,
+      "high": 1023.0,
+      "dec_mul": 0.0009775171065493646,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 10,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1023.0,
+      "dec_mul": 0.0009775171065493646
+    }
+  },
+  {
+    "input": {
+      "bits": 1,
+      "flags": 8,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -16384.0,
+      "high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 8,
+      "configured_low": -16384.0,
+      "configured_high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 0,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 3.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 3.0,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 0,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 1.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 1.5,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 0,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 0.003,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.003,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 0,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 9.1552734375e-05,
+      "flags": 0
+    },
+    "native_high_low_mul": 9.1552734375e-05,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 1,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": 0.0,
+      "high": 0.75,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 4.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 4.0,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.75,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 1,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -1.0,
+      "high": 0.5,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 2.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2.0,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 0.5,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 1,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": 0.0,
+      "high": 750.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 0.004,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.004,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 750.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 1,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -16384.0,
+      "high": 8192.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 0.0001220703125,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.0001220703125,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 8192.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 2,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": 0.25,
+      "high": 1.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 4.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 4.0,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": 0.25,
+      "configured_high": 1.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 2,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -0.5,
+      "high": 1.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 2.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2.0,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": -0.5,
+      "configured_high": 1.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 2,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": 250.0,
+      "high": 1000.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 0.004,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.004,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": 250.0,
+      "configured_high": 1000.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 2,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -8192.0,
+      "high": 16384.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 0.0001220703125,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.0001220703125,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": -8192.0,
+      "configured_high": 16384.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 4,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": 0.0,
+      "high": 0.75,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 4.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 4.0,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.75,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 4,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 1.5,
+      "flags": 4
+    },
+    "native_high_low_mul": 1.5,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 4,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 4,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": 0.0,
+      "high": 750.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 0.004,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.004,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 750.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 4,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 9.1552734375e-05,
+      "flags": 4
+    },
+    "native_high_low_mul": 9.1552734375e-05,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 4,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 8,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": 0.0,
+      "high": 1.5,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 2.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 2.0,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1.5,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 8,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 2,
+      "low": -1.0,
+      "high": 2.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 2,
+      "effective_flags": 8,
+      "configured_low": -1.0,
+      "configured_high": 2.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 8,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 10,
+      "low": 0.0,
+      "high": 1023.0,
+      "dec_mul": 0.0009775171065493646,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 10,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1023.0,
+      "dec_mul": 0.0009775171065493646
+    }
+  },
+  {
+    "input": {
+      "bits": 2,
+      "flags": 8,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -16384.0,
+      "high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 8,
+      "configured_low": -16384.0,
+      "configured_high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 0,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 127.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 127.0,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 0,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 63.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 63.5,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 0,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 0.127,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.127,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 0,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 0.003875732421875,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.003875732421875,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 1,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": 0.0,
+      "high": 0.9921875,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 128.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 128.0,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.9921875,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 1,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": -1.0,
+      "high": 0.984375,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 64.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 64.0,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 0.984375,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 1,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": 0.0,
+      "high": 992.1875,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 0.128,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.128,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 992.1875,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 1,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": -16384.0,
+      "high": 16128.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 0.00390625,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.00390625,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16128.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 2,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": 0.0078125,
+      "high": 1.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 128.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 128.0,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": 0.0078125,
+      "configured_high": 1.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 2,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": -0.984375,
+      "high": 1.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 64.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 64.0,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": -0.984375,
+      "configured_high": 1.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 2,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": 7.8125,
+      "high": 1000.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 0.128,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.128,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": 7.8125,
+      "configured_high": 1000.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 2,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": -16128.0,
+      "high": 16384.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 0.00390625,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.00390625,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": -16128.0,
+      "configured_high": 16384.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 4,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": 0.0,
+      "high": 0.9921875,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 128.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 128.0,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.9921875,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 4,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 63.5,
+      "flags": 4
+    },
+    "native_high_low_mul": 63.5,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 4,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 4,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": 0.0,
+      "high": 992.1875,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 0.128,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.128,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 992.1875,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 4,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 0.003875732421875,
+      "flags": 4
+    },
+    "native_high_low_mul": 0.003875732421875,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 4,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 8,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": 0.0,
+      "high": 1.984375,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 64.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 64.0,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1.984375,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 8,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 7,
+      "low": -1.0,
+      "high": 2.96875,
+      "dec_mul": 0.007874015748031496,
+      "high_low_mul": 32.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 32.0,
+    "native": {
+      "effective_bits": 7,
+      "effective_flags": 8,
+      "configured_low": -1.0,
+      "configured_high": 2.96875,
+      "dec_mul": 0.007874015748031496
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 8,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 10,
+      "low": 0.0,
+      "high": 1023.0,
+      "dec_mul": 0.0009775171065493646,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 10,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1023.0,
+      "dec_mul": 0.0009775171065493646
+    }
+  },
+  {
+    "input": {
+      "bits": 7,
+      "flags": 8,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -16384.0,
+      "high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 8,
+      "configured_low": -16384.0,
+      "configured_high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 0,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 255.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 255.0,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 0,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 127.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 127.5,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 0,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 0.255,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.255,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 0,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 0.007781982421875,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.007781982421875,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 1,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": 0.0,
+      "high": 0.99609375,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 256.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 256.0,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.99609375,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 1,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": -1.0,
+      "high": 0.9921875,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 128.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 128.0,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 0.9921875,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 1,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": 0.0,
+      "high": 996.09375,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 0.256,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.256,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 996.09375,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 1,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": -16384.0,
+      "high": 16256.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 0.0078125,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.0078125,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16256.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 2,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": 0.00390625,
+      "high": 1.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 256.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 256.0,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": 0.00390625,
+      "configured_high": 1.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 2,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": -0.9921875,
+      "high": 1.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 128.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 128.0,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": -0.9921875,
+      "configured_high": 1.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 2,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": 3.90625,
+      "high": 1000.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 0.256,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.256,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": 3.90625,
+      "configured_high": 1000.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 2,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": -16256.0,
+      "high": 16384.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 0.0078125,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.0078125,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": -16256.0,
+      "configured_high": 16384.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 4,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": 0.0,
+      "high": 0.99609375,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 256.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 256.0,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.99609375,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 4,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 127.5,
+      "flags": 4
+    },
+    "native_high_low_mul": 127.5,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 4,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 4,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": 0.0,
+      "high": 996.09375,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 0.256,
+      "flags": 0
+    },
+    "native_high_low_mul": 0.256,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 996.09375,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 4,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 0.007781982421875,
+      "flags": 4
+    },
+    "native_high_low_mul": 0.007781982421875,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 4,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 8,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": 0.0,
+      "high": 1.9921875,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 128.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 128.0,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1.9921875,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 8,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 8,
+      "low": -1.0,
+      "high": 2.984375,
+      "dec_mul": 0.00392156862745098,
+      "high_low_mul": 64.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 64.0,
+    "native": {
+      "effective_bits": 8,
+      "effective_flags": 8,
+      "configured_low": -1.0,
+      "configured_high": 2.984375,
+      "dec_mul": 0.00392156862745098
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 8,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 10,
+      "low": 0.0,
+      "high": 1023.0,
+      "dec_mul": 0.0009775171065493646,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 10,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1023.0,
+      "dec_mul": 0.0009775171065493646
+    }
+  },
+  {
+    "input": {
+      "bits": 8,
+      "flags": 8,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -16384.0,
+      "high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 8,
+      "configured_low": -16384.0,
+      "configured_high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 0,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 65535.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 65535.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 0,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 32767.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 32767.5,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 0,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 65.535,
+      "flags": 0
+    },
+    "native_high_low_mul": 65.535,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 0,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 1.999969482421875,
+      "flags": 0
+    },
+    "native_high_low_mul": 1.999969482421875,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 1,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 0.0,
+      "high": 0.9999847412109375,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 65536.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 65536.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.9999847412109375,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 1,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -1.0,
+      "high": 0.999969482421875,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 32768.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 32768.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 0.999969482421875,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 1,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 0.0,
+      "high": 999.9847412109375,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 65.536,
+      "flags": 0
+    },
+    "native_high_low_mul": 65.536,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 999.9847412109375,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 1,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -16384.0,
+      "high": 16383.5,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 2.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16383.5,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 2,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 1.52587890625e-05,
+      "high": 1.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 65536.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 65536.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": 1.52587890625e-05,
+      "configured_high": 1.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 2,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -0.999969482421875,
+      "high": 1.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 32768.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 32768.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": -0.999969482421875,
+      "configured_high": 1.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 2,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 0.0152587890625,
+      "high": 1000.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 65.536,
+      "flags": 0
+    },
+    "native_high_low_mul": 65.536,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": 0.0152587890625,
+      "configured_high": 1000.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 2,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -16383.5,
+      "high": 16384.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 2.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": -16383.5,
+      "configured_high": 16384.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 4,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 0.0,
+      "high": 0.9999847412109375,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 65536.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 65536.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.9999847412109375,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 4,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 32767.5,
+      "flags": 4
+    },
+    "native_high_low_mul": 32767.5,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 4,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 4,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 0.0,
+      "high": 999.9847412109375,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 65.536,
+      "flags": 0
+    },
+    "native_high_low_mul": 65.536,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 999.9847412109375,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 4,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 1.999969482421875,
+      "flags": 4
+    },
+    "native_high_low_mul": 1.999969482421875,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 4,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 8,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 0.0,
+      "high": 1.999969482421875,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 32768.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 32768.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1.999969482421875,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 8,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -1.0,
+      "high": 2.99993896484375,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 16384.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 16384.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 8,
+      "configured_low": -1.0,
+      "configured_high": 2.99993896484375,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 8,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": 0.0,
+      "high": 1023.984375,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 64.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 64.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1023.984375,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 16,
+      "flags": 8,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 16,
+      "low": -16384.0,
+      "high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 16,
+      "effective_flags": 8,
+      "configured_low": -16384.0,
+      "configured_high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 0,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 16777215.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 16777215.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 0,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 8388607.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 8388607.5,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 0,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 16777.215,
+      "flags": 0
+    },
+    "native_high_low_mul": 16777.215,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 0,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 511.9999694824219,
+      "flags": 0
+    },
+    "native_high_low_mul": 511.9999694824219,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 1,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 0.0,
+      "high": 0.9999999403953552,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 16777216.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 16777216.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.9999999403953552,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 1,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -1.0,
+      "high": 0.9999998807907104,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 8388608.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 8388608.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 0.9999998807907104,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 1,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 0.0,
+      "high": 999.9999389648438,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 16777.216024,
+      "flags": 0
+    },
+    "native_high_low_mul": 16777.216024,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 999.9999389648438,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 1,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -16384.0,
+      "high": 16383.998046875,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 512.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 512.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16383.998046875,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 2,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 5.960464477539063e-08,
+      "high": 1.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 16777216.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 16777216.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": 5.960464477539063e-08,
+      "configured_high": 1.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 2,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -0.9999998807907104,
+      "high": 1.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 8388608.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 8388608.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": -0.9999998807907104,
+      "configured_high": 1.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 2,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 5.9604644775390625e-05,
+      "high": 1000.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 16777.216024,
+      "flags": 0
+    },
+    "native_high_low_mul": 16777.216024,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": 5.9604644775390625e-05,
+      "configured_high": 1000.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 2,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -16383.998046875,
+      "high": 16384.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 512.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 512.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": -16383.998046875,
+      "configured_high": 16384.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 4,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 0.0,
+      "high": 0.9999999403953552,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 16777216.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 16777216.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 0.9999999403953552,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 4,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 8388607.5,
+      "flags": 4
+    },
+    "native_high_low_mul": 8388607.5,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 4,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 4,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 0.0,
+      "high": 999.9999389648438,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 16777.216024,
+      "flags": 0
+    },
+    "native_high_low_mul": 16777.216024,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 999.9999389648438,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 4,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 511.9999694824219,
+      "flags": 4
+    },
+    "native_high_low_mul": 511.9999694824219,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 4,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 8,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 0.0,
+      "high": 1.9999998807907104,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 8388608.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 8388608.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1.9999998807907104,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 8,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -1.0,
+      "high": 2.999999761581421,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 4194304.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 4194304.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 8,
+      "configured_low": -1.0,
+      "configured_high": 2.999999761581421,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 8,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": 0.0,
+      "high": 1023.9999389648438,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 16384.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 16384.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1023.9999389648438,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 24,
+      "flags": 8,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 24,
+      "low": -16384.0,
+      "high": 49151.99609375,
+      "dec_mul": 5.960464832810452e-08,
+      "high_low_mul": 256.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 256.0,
+    "native": {
+      "effective_bits": 24,
+      "effective_flags": 8,
+      "configured_low": -16384.0,
+      "configured_high": 49151.99609375,
+      "dec_mul": 5.960464832810452e-08
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 0,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 1073741823.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741823.0,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 0,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 536870911.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 536870911.5,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 0,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 1073741.759,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741.759,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 0,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 32767.999969482422,
+      "flags": 0
+    },
+    "native_high_low_mul": 32767.999969482422,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 1,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 1073741823.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741823.0,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 1,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 536870911.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 536870911.5,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 1,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 1073741.759,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741.759,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 1,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 32767.999969482422,
+      "flags": 0
+    },
+    "native_high_low_mul": 32767.999969482422,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 2,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 9.313225746154785e-10,
+      "high": 1.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 1073741823.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741823.0,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": 9.313225746154785e-10,
+      "configured_high": 1.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 2,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 536870911.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 536870911.5,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 2,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 9.313225746154785e-07,
+      "high": 1000.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 1073741.759,
+      "flags": 2
+    },
+    "native_high_low_mul": 1073741.759,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 2,
+      "configured_low": 9.313225746154785e-07,
+      "configured_high": 1000.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 2,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 32767.999969482422,
+      "flags": 0
+    },
+    "native_high_low_mul": 32767.999969482422,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 4,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 1073741823.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741823.0,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 4,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 536870911.5,
+      "flags": 4
+    },
+    "native_high_low_mul": 536870911.5,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 4,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 4,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 1073741.759,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741.759,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 4,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 32767.999969482422,
+      "flags": 4
+    },
+    "native_high_low_mul": 32767.999969482422,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 4,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 8,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 0.0,
+      "high": 2.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 536870911.5,
+      "flags": 8
+    },
+    "native_high_low_mul": 536870911.5,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 2.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 8,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -1.0,
+      "high": 3.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 268435455.75,
+      "flags": 8
+    },
+    "native_high_low_mul": 268435455.75,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 8,
+      "configured_low": -1.0,
+      "configured_high": 3.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 8,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": 0.0,
+      "high": 1024.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 1048575.9990234375,
+      "flags": 8
+    },
+    "native_high_low_mul": 1048575.9990234375,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1024.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 30,
+      "flags": 8,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 30,
+      "low": -16384.0,
+      "high": 49152.0,
+      "dec_mul": 9.313225754828403e-10,
+      "high_low_mul": 16383.999984741211,
+      "flags": 8
+    },
+    "native_high_low_mul": 16383.999984741211,
+    "native": {
+      "effective_bits": 30,
+      "effective_flags": 8,
+      "configured_low": -16384.0,
+      "configured_high": 49152.0,
+      "dec_mul": 9.313225754828403e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 0,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 2147483647.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2147483647.0,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 0,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 1073741823.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741823.5,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 0,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 2147483.647,
+      "flags": 0
+    },
+    "native_high_low_mul": 2147483.647,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 0,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 65535.99996948242,
+      "flags": 0
+    },
+    "native_high_low_mul": 65535.99996948242,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 1,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 2147483647.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2147483647.0,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 1,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 1073741823.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741823.5,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 1,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 2147483.647,
+      "flags": 0
+    },
+    "native_high_low_mul": 2147483.647,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 1,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 65535.99996948242,
+      "flags": 0
+    },
+    "native_high_low_mul": 65535.99996948242,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 2,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -4.656612873077393e-10,
+      "high": 1.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 2147483647.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2147483647.0,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": -4.656612873077393e-10,
+      "configured_high": 1.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 2,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 1073741823.5,
+      "flags": 0
+    },
+    "native_high_low_mul": 1073741823.5,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 2,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -4.6566128730773926e-07,
+      "high": 1000.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 2147483.647,
+      "flags": 0
+    },
+    "native_high_low_mul": 2147483.647,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": -4.6566128730773926e-07,
+      "configured_high": 1000.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 2,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 65535.99996948242,
+      "flags": 0
+    },
+    "native_high_low_mul": 65535.99996948242,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 4,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 2147483647.0,
+      "flags": 0
+    },
+    "native_high_low_mul": 2147483647.0,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 4,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -1.0,
+      "high": 1.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 1073741823.5,
+      "flags": 4
+    },
+    "native_high_low_mul": 1073741823.5,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 4,
+      "configured_low": -1.0,
+      "configured_high": 1.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 4,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": 0.0,
+      "high": 1000.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 2147483.647,
+      "flags": 0
+    },
+    "native_high_low_mul": 2147483.647,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 0,
+      "configured_low": 0.0,
+      "configured_high": 1000.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 4,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 31,
+      "low": -16384.0,
+      "high": 16384.0,
+      "dec_mul": 4.656612875245797e-10,
+      "high_low_mul": 65535.99996948242,
+      "flags": 4
+    },
+    "native_high_low_mul": 65535.99996948242,
+    "native": {
+      "effective_bits": 31,
+      "effective_flags": 4,
+      "configured_low": -16384.0,
+      "configured_high": 16384.0,
+      "dec_mul": 4.656612875245797e-10
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 8,
+      "low": 0,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 33,
+      "low": 0.0,
+      "high": 1.0,
+      "dec_mul": 1.0,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 33,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1.0,
+      "dec_mul": 1.0
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 8,
+      "low": -1,
+      "high": 1
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 34,
+      "low": -1.0,
+      "high": 2.0,
+      "dec_mul": 0.3333333333333333,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 34,
+      "effective_flags": 8,
+      "configured_low": -1.0,
+      "configured_high": 2.0,
+      "dec_mul": 0.3333333333333333
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 8,
+      "low": 0,
+      "high": 1000
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 42,
+      "low": 0.0,
+      "high": 1023.0,
+      "dec_mul": 0.0009775171065493646,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 42,
+      "effective_flags": 8,
+      "configured_low": 0.0,
+      "configured_high": 1023.0,
+      "dec_mul": 0.0009775171065493646
+    }
+  },
+  {
+    "input": {
+      "bits": 31,
+      "flags": 8,
+      "low": -16384,
+      "high": 16384
+    },
+    "same": true,
+    "model": {
+      "raw": false,
+      "bits": 48,
+      "low": -16384.0,
+      "high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05,
+      "high_low_mul": 1.0,
+      "flags": 8
+    },
+    "native_high_low_mul": 1.0,
+    "native": {
+      "effective_bits": 48,
+      "effective_flags": 8,
+      "configured_low": -16384.0,
+      "configured_high": 49151.0,
+      "dec_mul": 1.5259021896696422e-05
+    }
+  }
+]

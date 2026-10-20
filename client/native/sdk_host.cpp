@@ -54,7 +54,10 @@ OBS_API int observer_state(void* handle) noexcept {
 OBS_API int observer_failure(void* handle) noexcept {
   return valid(handle) ? static_cast<int>(bridge->session().failure()) : static_cast<int>(Failure::context);
 }
-OBS_API int observer_abi_version() noexcept { return 2; }
+OBS_API int observer_remote_end_reason(void* handle) noexcept {
+  return valid(handle) ? bridge->remote_end_reason() : 0;
+}
+OBS_API int observer_abi_version() noexcept { return 3; }
 OBS_API void observer_pump(void* handle, std::uint64_t now_ms) noexcept {
   if (!valid(handle)) return;
   try { bridge->pump(now_ms); } catch (...) { bridge->session().close(Failure::consumer); }
@@ -86,7 +89,7 @@ OBS_API const std::uint8_t* observer_auth(void* handle, std::uint32_t* size) noe
 }
 OBS_API int observer_send(void* handle, const std::uint8_t* bytes, std::uint32_t size, int flags) noexcept {
   if (!valid(handle) || !bytes || !size ||
-      (flags != k_nSteamNetworkingSend_UnreliableNoDelay && flags != k_nSteamNetworkingSend_Reliable)) return 0;
+      (flags != k_nSteamNetworkingSend_UnreliableNoDelay && flags != k_nSteamNetworkingSend_UnreliableNoNagle && flags != k_nSteamNetworkingSend_Reliable)) return 0;
   return bridge->send({bytes, size}, flags) == k_EResultOK;
 }
 OBS_API int observer_receive(void* handle, std::uint8_t* output, std::uint32_t capacity, int* reliable) noexcept {

@@ -1,0 +1,194 @@
+[
+  {
+    "base": "0x180274830",
+    "name": "char",
+    "category": 1,
+    "dimensions": 1
+  },
+  {
+    "base": "0x1802748b0",
+    "name": "int8",
+    "category": 1,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180274930",
+    "name": "uint8",
+    "category": 2,
+    "dimensions": 1
+  },
+  {
+    "base": "0x1802749b0",
+    "name": "int16",
+    "category": 1,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180274a30",
+    "name": "uint16",
+    "category": 2,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180274ab0",
+    "name": "int32",
+    "category": 1,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180274b30",
+    "name": "uint32",
+    "category": 2,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180274bb0",
+    "name": "int64",
+    "category": 1,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180274c30",
+    "name": "uint64",
+    "category": 2,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180274cb0",
+    "name": "float32",
+    "category": 3,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180274d30",
+    "name": "float64",
+    "category": 4,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180274db0",
+    "name": "Vector2D",
+    "category": 3,
+    "dimensions": 2
+  },
+  {
+    "base": "0x180274e30",
+    "name": "Vector",
+    "category": 3,
+    "dimensions": 3
+  },
+  {
+    "base": "0x180274eb0",
+    "name": "VectorWS",
+    "category": 3,
+    "dimensions": 3
+  },
+  {
+    "base": "0x180274f30",
+    "name": "Vector4D",
+    "category": 3,
+    "dimensions": 4
+  },
+  {
+    "base": "0x180274fb0",
+    "name": "QAngle",
+    "category": 3,
+    "dimensions": 3
+  },
+  {
+    "base": "0x180275030",
+    "name": "QuaternionStorage",
+    "category": 3,
+    "dimensions": 4
+  },
+  {
+    "base": "0x1802750b0",
+    "name": "Quaternion",
+    "category": 3,
+    "dimensions": 4
+  },
+  {
+    "base": "0x180275130",
+    "name": "Color",
+    "category": 2,
+    "dimensions": 1
+  },
+  {
+    "base": "0x1802751b0",
+    "name": "bool",
+    "category": 7,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180275230",
+    "name": "matrix3x4_t",
+    "category": 3,
+    "dimensions": 8
+  },
+  {
+    "base": "0x1802752b0",
+    "name": "string_t",
+    "category": 5,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180275330",
+    "name": "CUtlString",
+    "category": 5,
+    "dimensions": 1
+  },
+  {
+    "base": "0x1802753b0",
+    "name": "matrix3x4a_t",
+    "category": 3,
+    "dimensions": 8
+  },
+  {
+    "base": "0x180275430",
+    "name": "CUtlBinaryBlock",
+    "category": 6,
+    "dimensions": 0
+  },
+  {
+    "base": "0x1802754b0",
+    "name": "CTransform",
+    "category": 3,
+    "dimensions": 6
+  },
+  {
+    "base": "0x180275530",
+    "name": "CTransformWS",
+    "category": 3,
+    "dimensions": 6
+  },
+  {
+    "base": "0x1802755b0",
+    "name": "RadianEuler",
+    "category": 3,
+    "dimensions": 3
+  },
+  {
+    "base": "0x180275630",
+    "name": "DegreeEuler",
+    "category": 3,
+    "dimensions": 3
+  },
+  {
+    "base": "0x1802756b0",
+    "name": "CGlobalSymbol",
+    "category": 5,
+    "dimensions": 1
+  },
+  {
+    "base": "0x180275730",
+    "name": "CUtlSymbolLarge",
+    "category": 5,
+    "dimensions": 1
+  },
+  {
+    "base": "0x1802757b0",
+    "name": "RotationVector",
+    "category": 3,
+    "dimensions": 3
+  }
+]

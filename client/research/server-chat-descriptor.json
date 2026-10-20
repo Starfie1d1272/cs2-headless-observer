@@ -1,0 +1,151 @@
+{
+  "module": "server",
+  "module_sha256": "09e8c04c5f44040155d04fa79a3f43491d542a386f45807ed77785729e5925a9",
+  "descriptor_sha256": "952630207208eda80c94bd6a5e5f6b08b03487a50bacb6ce6c40ff3f8a180f73",
+  "descriptor_offset": 25772208,
+  "descriptor_size": 19838,
+  "messages": [
+    {
+      "name": "CUserMessageSayText",
+      "fields": [
+        {
+          "name": "playerindex",
+          "tag": 1,
+          "label": 1,
+          "type": 5,
+          "default": "-1"
+        },
+        {
+          "name": "text",
+          "tag": 2,
+          "label": 1,
+          "type": 9
+        },
+        {
+          "name": "chat",
+          "tag": 3,
+          "label": 1,
+          "type": 8
+        },
+        {
+          "name": "textallchat",
+          "tag": 4,
+          "label": 1,
+          "type": 8
+        }
+      ]
+    },
+    {
+      "name": "CUserMessageSayText2",
+      "fields": [
+        {
+          "name": "entityindex",
+          "tag": 1,
+          "label": 1,
+          "type": 5,
+          "default": "-1"
+        },
+        {
+          "name": "chat",
+          "tag": 2,
+          "label": 1,
+          "type": 8
+        },
+        {
+          "name": "messagename",
+          "tag": 3,
+          "label": 1,
+          "type": 9
+        },
+        {
+          "name": "param1",
+          "tag": 4,
+          "label": 1,
+          "type": 9
+        },
+        {
+          "name": "param2",
+          "tag": 5,
+          "label": 1,
+          "type": 9
+        },
+        {
+          "name": "param3",
+          "tag": 6,
+          "label": 1,
+          "type": 9
+        },
+        {
+          "name": "param4",
+          "tag": 7,
+          "label": 1,
+          "type": 9
+        },
+        {
+          "name": "textallchat",
+          "tag": 8,
+          "label": 1,
+          "type": 8
+        }
+      ]
+    },
+    {
+      "name": "CUserMessageTextMsg",
+      "fields": [
+        {
+          "name": "dest",
+          "tag": 1,
+          "label": 1,
+          "type": 13
+        },
+        {
+          "name": "param",
+          "tag": 2,
+          "label": 3,
+          "type": 9
+        }
+      ]
+    },
+    {
+      "name": "CUserMessageSayTextChannel",
+      "fields": [
+        {
+          "name": "player",
+          "tag": 1,
+          "label": 1,
+          "type": 5
+        },
+        {
+          "name": "channel",
+          "tag": 2,
+          "label": 1,
+          "type": 5
+        },
+        {
+          "name": "text",
+          "tag": 3,
+          "label": 1,
+          "type": 9
+        }
+      ]
+    }
+  ],
+  "enum": [
+    {
+      "name": "UM_SayText",
+      "id": 117
+    },
+    {
+      "name": "UM_SayText2",
+      "id": 118
+    },
+    {
+      "name": "UM_SayTextChannel",
+      "id": 119
+    },
+    {
+      "name": "UM_TextMsg",
+      "id": 124
+    }
+  ]
+}

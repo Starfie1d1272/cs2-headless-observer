@@ -29,7 +29,7 @@ class NativePort:
             raise
         self.lib.observer_abi_version.argtypes = []
         self.lib.observer_abi_version.restype = c.c_int
-        if self.lib.observer_abi_version() != 2:
+        if self.lib.observer_abi_version() != 3:
             if self.directory: self.directory.close()
             raise ProbeError('native-abi-version')
         byte = c.POINTER(c.c_ubyte)
@@ -37,6 +37,7 @@ class NativePort:
             'abi_version': ([], c.c_int),
             'boot_failure': ([], c.c_int), 'init_result': ([], c.c_int),
             'create': ([c.c_char_p, c.c_uint64], c.c_void_p),
+            'remote_end_reason': ([c.c_void_p], c.c_int),
             'state': ([c.c_void_p], c.c_int), 'failure': ([c.c_void_p], c.c_int),
             'pump': ([c.c_void_p, c.c_uint64], None),
             'remote_id': ([c.c_void_p], c.c_uint64),
@@ -64,6 +65,10 @@ class NativePort:
     @property
     def failure(self):
         return self.lib.observer_failure(self.handle)
+
+    @property
+    def remote_end_reason(self):
+        return self.lib.observer_remote_end_reason(self.handle)
 
     def pump(self, now_ms):
         self.lib.observer_pump(self.handle, now_ms)
@@ -96,7 +101,7 @@ class NativePort:
             del local
 
     def send(self, data, flags):
-        if not data or len(data) > 512 * 1024 or flags not in (5, 8):
+        if not data or len(data) > 512 * 1024 or flags not in (1, 5, 8):
             raise ProbeError('native-send-boundary')
         local = (c.c_ubyte * len(data)).from_buffer_copy(data)
         try:

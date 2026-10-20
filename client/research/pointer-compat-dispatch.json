@@ -1,0 +1,47 @@
+{
+  "manifest": "8766757721818354077",
+  "checks": [
+    {
+      "module": "client",
+      "sha256": "659940c1db362ed981d1df10637cec8c2a3d99409b77fc3b73e435e4649e36b0",
+      "words": [
+        {
+          "address": "0x181c638a8",
+          "value": "0x180b6c860"
+        }
+      ],
+      "instructions": [
+        {
+          "address": "0x180b6c881",
+          "bytes": "498be9"
+        }
+      ]
+    },
+    {
+      "module": "networksystem",
+      "sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+      "words": [],
+      "instructions": [
+        {
+          "address": "0x180077292",
+          "bytes": "488bb510020000"
+        },
+        {
+          "address": "0x1800773bc",
+          "bytes": "4c8bce"
+        },
+        {
+          "address": "0x1800773bf",
+          "bytes": "4c8b5010"
+        },
+        {
+          "address": "0x1800773cf",
+          "bytes": "41ffd2"
+        }
+      ]
+    }
+  ],
+  "observation": "network077240 passes its fifth argument (field name) as callback R9; clientb6c860 reads R9 and searches helper+0x80. It ignores the owner/type arguments for this fixed implementation. Explicit trailing* is tested before the callback.",
+  "configuration": "b77390 populates helper+0x80 from the configured PointerFieldTypes name list; despite the section name, use the observed callback lookup argument",
+  "scope": "fixed-build metadata compatibility path; does not infer pointer semantics for unknown builds"
+}

@@ -1,0 +1,5 @@
+{
+  "checks": 33,
+  "passed": true,
+  "scope": "Transactional indexed string tables and fixed-build Snappy/raw fallback; no runtime/live acceptance"
+}

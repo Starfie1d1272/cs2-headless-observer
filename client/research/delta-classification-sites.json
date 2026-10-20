@@ -1,0 +1,41 @@
+{
+  "scope": "ordinary-viewer unified migration audit, not edits",
+  "native_authority": "engine2 047960 with protobuf parser160d00; delta_from presence",
+  "sites": [
+    {
+      "file": "fullFrameSplit.ts",
+      "line": 57,
+      "expression": "if (packet.server_tick !== sourceTick || packet.legacy_is_delta === true)"
+    },
+    {
+      "file": "entityParser.ts",
+      "line": 492,
+      "expression": "return msg.legacy_is_delta !== true && (msg.updated_entries ?? 0) > 0;"
+    },
+    {
+      "file": "entityParser.ts",
+      "line": 495,
+      "expression": "let independent = msg.legacy_is_delta !== true && (msg.updated_entries ?? 0) > 0;"
+    },
+    {
+      "file": "entityParser.ts",
+      "line": 578,
+      "expression": "} else if (msg.legacy_is_delta) {"
+    },
+    {
+      "file": "parseSession.ts",
+      "line": 1274,
+      "expression": "queueElement.legacy_is_delta &&"
+    },
+    {
+      "file": "onlineState.ts",
+      "line": 38,
+      "expression": "if (this.waitingFull && (msg.legacy_is_delta || tick < this.minimumFullTick)) return false;"
+    },
+    {
+      "file": "onlineState.ts",
+      "line": 44,
+      "expression": "const delta = msg.legacy_is_delta === true;"
+    }
+  ]
+}

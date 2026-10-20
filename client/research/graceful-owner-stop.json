@@ -1,0 +1,17 @@
+{
+  "as_of_beijing": "2026-10-20T17:16:00+08:00",
+  "python_tests": 60,
+  "python_passed": 60,
+  "mizar_process_tests": 6,
+  "owner_eof": "Normal loop stop and existing finalization; bounded termination only as fallback",
+  "verified": "Real CLI/parser worker with in-memory SDK fixture closes the port once, requests no ticket, records owner-stopped and has no finalization errors",
+  "real_steam_shutdown": false,
+  "live_gotv": false,
+  "windows_runtime": false,
+  "files": {
+    "driver.py": "22cd88881369ee3a1c7894fe04a2020ea45a98af307aae7e67aca0ddd9081735",
+    "test_managed_connection.py": "dc92958700a26843deca6d78197963820ffc7a689c33151cafab7b3ad0328d66"
+  },
+  "owner_poll": "Main-loop POSIX select / Windows PeekNamedPipe; no background reader",
+  "windows_api_reference": "https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-peeknamedpipe"
+}

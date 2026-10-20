@@ -63,6 +63,14 @@ class LiveDecoder:
         self.manifest_resources = 0
         self.session_manifest = None
         self.ready_spawn_groups = set()
+        self.max_creation_sequence = 0
+        self.retired_spawn_groups = {}
+
+    def reset_world(self):
+        # Explicit application/world boundary; transport counters live elsewhere.
+        counts = self.counts
+        self.__init__(self.emit)
+        self.counts = counts
 
     def _manifest_fragment(self, payload):
         items = decode_resource_manifest(payload)
@@ -115,17 +123,15 @@ class LiveDecoder:
         f = fields(body, limit=4 * 1024**2)
         if message_id == 4:
             tick = scalar(f, 1)
-            if tick is None or tick > 0x7fffffff or (self.tick is not None and tick < self.tick):
-                raise ProbeError('live-tick-regressed-or-missing')
+            if tick is None or tick > 0x7fffffff:
+                raise ProbeError('live-tick-invalid-or-missing')
             self.tick = tick
         elif message_id == 8:
             handle = scalar(f, 4)
             if handle is None or not 0 < handle <= 0xffffffff:
                 raise ProbeError('spawn-group-handle')
             if handle in self.spawn_groups:
-                if self.spawn_groups[handle]['payload_sha256'] == hashlib.sha256(body).hexdigest():
-                    return
-                raise ProbeError('spawn-group-conflicting-load')
+                return  # Fixed080b60 ignores already loaded/loading duplicates.
             if len(self.spawn_groups) >= 1024:
                 raise ProbeError('spawn-group-count-budget')
             self.spawn_groups[handle] = {
@@ -143,7 +149,7 @@ class LiveDecoder:
         elif message_id == 9:
             group = self.spawn_groups.get(scalar(f, 1))
             if group is None or not group['manifest_incomplete']:
-                raise ProbeError('spawn-group-manifest-update-order')
+                return
             if len(group['manifest_fragments']) >= 1024:
                 raise ProbeError('spawn-group-fragment-budget')
             fragment = self._manifest_fragment(scalar(f, 2, 2) or b'')
@@ -151,17 +157,23 @@ class LiveDecoder:
             group['manifest_incomplete'] = bool(scalar(f, 3))
         elif message_id == 11:
             group = self.spawn_groups.get(scalar(f, 1))
+            sequence = scalar(f, 3) or 0
+            uint(sequence)
+            self.max_creation_sequence = max(self.max_creation_sequence, sequence)
             if group is None:
-                raise ProbeError('spawn-group-creation-before-load')
-            sequence = scalar(f, 3)
-            if sequence is not None and sequence != group['creation_sequence']:
-                raise ProbeError('spawn-group-creation-sequence')
+                return  # Native083a30 advances the global watermark even here.
+            group['creation_sequence'] = sequence
             group['creation_tick'] = int32(scalar(f, 2))
         elif message_id == 12:
             handle = scalar(f, 1)
-            if handle not in self.spawn_groups:
-                raise ProbeError('spawn-group-unload-before-load')
-            self.spawn_groups.pop(handle)
+            group = self.spawn_groups.pop(handle, None)
+            if group is None:
+                return
+            group['destruction_tick'] = int32(scalar(f, 3))
+            group['cancelled'] = True
+            self.retired_spawn_groups[handle] = group
+            while len(self.retired_spawn_groups) > 1024:
+                self.retired_spawn_groups.pop(next(iter(self.retired_spawn_groups)))
             self.ready_spawn_groups.discard(handle)
         elif message_id == 40:
             count, protocol = scalar(f, 2), scalar(f, 1)
@@ -170,7 +182,8 @@ class LiveDecoder:
                 raise ProbeError('live-serverinfo-required-field')
             interval = struct.unpack('<f', interval)[0]
             info = {'server_count': uint(count), 'protocol': uint(protocol),
-                    'map': text(scalar(f, 15, 2)), 'tick_interval': interval}
+                    'map': text(scalar(f, 15, 2)), 'tick_interval': interval,
+                    'player_slot': int32(scalar(f, 12)) if scalar(f, 12) is not None else -1}
             if not math.isfinite(interval) or not 0 < interval <= 1:
                 raise ProbeError('live-tick-interval')
             if self.server is not None and self.server != info:
@@ -224,7 +237,7 @@ class LiveDecoder:
             if index is None or index >= len(self.tables):
                 raise ProbeError('string-table-update-before-create')
         elif message_id == 51:
-            self.tables.clear()
+            self.reset_world()
         elif message_id == 55:
             self.entity_packets += 1  # Opaque; receiving this does not establish a baseline.
         elif message_id == 205:

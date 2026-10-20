@@ -1,0 +1,34 @@
+{
+  "evidence": "REAL_DEMO_NETWORK_BODIES_THROUGH_BOTH_ADAPTERS_NO_NETWORK",
+  "fixture_sha256": "143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60",
+  "packets": 185932,
+  "equivalent": true,
+  "event_sha256": "c2d3fc2513e507734fc0d8415928075756ec50ebc656128e1ba7cfdea394c4b4",
+  "counts": [
+    {
+      "cursor": 2906,
+      "round_start": 30,
+      "weapon_fire": 4402,
+      "player_death": 224,
+      "round_end": 30
+    },
+    {
+      "cursor": 2906,
+      "round_start": 30,
+      "weapon_fire": 4402,
+      "player_death": 224,
+      "round_end": 30
+    }
+  ],
+  "receipts": [
+    185922,
+    185922
+  ],
+  "seconds": 661.508,
+  "online": false,
+  "candidateSource": "48e387168009882c67aa5417b71cc5045b839866",
+  "workers": {
+    "parser_worker-full.mjs": "31fb5c9ca7b18f42608718605095c150cdc1d3f373dec289bae028a40bc932b1",
+    "parser_worker-audit.mjs": "bb8133a1a3a650123cf26811dbf5a69068fe8c4b91f0c075d316c083d022e44f"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "manifest": "8766757721818354077",
+  "module": "engine2.dll",
+  "protobuf_parser": "0x180160d00",
+  "handler": "0x180047960",
+  "protobuf_hasbits_offset": "0x10",
+  "network_wrapper_proto_offset": "0x30",
+  "delta_rule": "delta_from field presence (mask0x800), independent of legacy_is_delta value",
+  "fields": [
+    {
+      "number": 1,
+      "name": "max_entries",
+      "protobuf_offset": "0x70",
+      "wrapper_offset": "0xa0",
+      "presence_mask": "0x20"
+    },
+    {
+      "number": 2,
+      "name": "updated_entries",
+      "protobuf_offset": "0x74",
+      "wrapper_offset": "0xa4",
+      "presence_mask": "0x40"
+    },
+    {
+      "number": 3,
+      "name": "legacy_is_delta",
+      "protobuf_offset": "0x7c",
+      "wrapper_offset": "0xac",
+      "presence_mask": "0x100"
+    },
+    {
+      "number": 4,
+      "name": "update_baseline",
+      "protobuf_offset": "0x7d",
+      "wrapper_offset": "0xad",
+      "presence_mask": "0x200"
+    },
+    {
+      "number": 5,
+      "name": "baseline",
+      "protobuf_offset": "0x78",
+      "wrapper_offset": "0xa8",
+      "presence_mask": "0x80"
+    },
+    {
+      "number": 6,
+      "name": "delta_from",
+      "protobuf_offset": "0x80",
+      "wrapper_offset": "0xb0",
+      "presence_mask": "0x800"
+    },
+    {
+      "number": 7,
+      "name": "entity_data",
+      "protobuf_offset": "0x48",
+      "wrapper_offset": "0x78",
+      "presence_mask": "0x1"
+    },
+    {
+      "number": 8,
+      "name": "pending_full_frame",
+      "protobuf_offset": "0x7e",
+      "wrapper_offset": "0xae",
+      "presence_mask": "0x400"
+    },
+    {
+      "number": 9,
+      "name": "active_spawngroup_handle",
+      "protobuf_offset": "0x84",
+      "wrapper_offset": "0xb4",
+      "presence_mask": "0x1000"
+    },
+    {
+      "number": 10,
+      "name": "max_spawngroup_creationsequence",
+      "protobuf_offset": "0x88",
+      "wrapper_offset": "0xb8",
+      "presence_mask": "0x2000"
+    },
+    {
+      "number": 11,
+      "name": "last_cmd_number_executed",
+      "protobuf_offset": "0x8c",
+      "wrapper_offset": "0xbc",
+      "presence_mask": "0x4000"
+    },
+    {
+      "number": 12,
+      "name": "server_tick",
+      "protobuf_offset": "0x90",
+      "wrapper_offset": "0xc0",
+      "presence_mask": "0x8000"
+    },
+    {
+      "number": 13,
+      "name": "serialized_entities",
+      "protobuf_offset": "0x50",
+      "wrapper_offset": "0x80",
+      "presence_mask": "0x2"
+    }
+  ]
+}

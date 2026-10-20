@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+import { pathToFileURL } from 'node:url';
+const base=process.argv[2];
+if (!base) throw new Error('Expected patched parser source directory');
+const { BitBuffer }=await import(pathToFileURL(base+'/src/parser/ubitreader.ts'));
+const { CSVCMsg_FlattenedSerializer }=await import(pathToFileURL(base+'/src/ts-proto/netmessages.ts'));
+const { parseClassInfo }=await import(pathToFileURL(base+'/src/parser/entities/classInfo.ts'));
+const { EntityParser }=await import(pathToFileURL(base+'/src/parser/entities/entityParser.ts'));
+// Literal protobuf: field4, six int32 fields [10,4,8,3,8,16].
+const wire=Uint8Array.of(0x22,12,8,10,16,4,24,8,32,3,40,8,48,16);
+const profile=CSVCMsg_FlattenedSerializer.decode(wire).coord_size_params;
+assert.deepEqual(profile,{coord_integer_bits:10,coord_fractional_bits:4,coord_integer_bits_mp:8,coord_fractional_bits_mp:3,normal_fractional_bits:8,angle_bits:16});
+const bits=(...parts)=>{const b=new Uint8Array(Math.ceil(parts.reduce((s,[,n])=>s+n,0)/8));let p=0;for(const [v,n]of parts)for(let i=0;i<n;i++,p++)b[p>>>3]|=((v>>>i)&1)<<(p&7);return b;};
+const reader=(bytes,p=profile)=>new BitBuffer(bytes).setCoordinateEncoding(p);
+assert.equal(reader(bits([1,1],[1,1],[0,1],[2,10],[8,4])).readBitCoord(),3.5);
+assert.equal(reader(bits([0,1],[255,8])).decodeNormal(),1);
+assert.equal(reader(bits([1,1],[255,8])).decodeNormal(),-1);
+assert.equal(reader(bits([32768,16])).readBitCoordPres(),0);
+assert.equal(new BitBuffer(bits([1,1],[1,1],[0,1],[2,14],[16,5])).readBitCoord(),3.5);
+const info=parseClassInfo({data:Uint8Array.of(wire.length,...wire)},{classes:[]});
+assert.deepEqual(info.coordSizeParams,profile);
+const parser=new EntityParser(info,()=>{});
+for(const key of ['cachedBitBuffer','cachedBitBuffer2'])assert.equal(parser[key].setTo(bits([0,1],[255,8])).decodeNormal(),1);
+for(const p of [{...profile,normal_fractional_bits:0},{...profile,angle_bits:32},{...profile,coord_integer_bits:30},{}])assert.throws(()=>reader(new Uint8Array(),p));
+console.log('coordinate profile protobuf, class plumbing, per-stream defaults, signed normals, and invalid widths passed');
+
+const { constructorFieldHelper, Decoders, Field, FieldTypeEnum }=await import(pathToFileURL(base+'/src/parser/entities/constructorFields.ts'));
+const fields=[new Field(FieldTypeEnum.Value,{name:'normal',decoder:Decoders.VectorNormalDecoder,prop_id:0})];
+const names={},decoders={},meta={};constructorFieldHelper.traverseFields(fields,'Test',names,{id:0},decoders,meta);
+const schema={classes:[{class_id:0,name:'Test',serializer:{name:'Test',fields}}],classIdBits:1,propIdToName:names,propIdToDecoder:decoders,propIdToInfo:meta,propNameById:Object.values(names),propInfoById:Object.values(meta),coordSizeParams:profile};
+const entity=new EntityParser(schema,()=>{});entity.directEntities=[];entity.directPropInfoById=schema.propInfoById;
+entity.parseEntityPacket({entity_data:bits([0,6],[2,2],[0,1],[0,17],[0,8],[2,3],[1,1],[0,1],[0,1],[255,8],[0,1]),updated_entries:1,alternate_baselines:[],non_transmitted_entities:{header_count:0,data:new Uint8Array()}},[]);
+assert.deepEqual(entity.directEntities[0].properties['Test.normal'],[1,0,0]);
+assert.equal(entity.wasm,undefined);
+console.log('profile-aware full entity packet decoded without fixed-width WASM');
+
+const skipped=reader(bits([7,3],[32768,16],[32768,16],[32768,16],[0x5a,8]));
+constructorFieldHelper.skip(skipped,Decoders.QanglePresDecoder);
+assert.equal(skipped.ReadUBits(8),0x5a);
+console.log('angle skip preserves stream alignment with negotiated widths');

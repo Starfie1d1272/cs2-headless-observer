@@ -1,0 +1,52 @@
+{
+  "binary_manifest": "8766757721818354077",
+  "build": "14191/10924",
+  "method": "Static client schema binding, schema token replacement, and native scalar selector cross-check; no OS game execution",
+  "module_type_array": "client+0x271c1f0",
+  "schema_token_rule": {
+    "site": "schemasystem+0x29eaf..0x29ee1",
+    "tag": "0xf000000000000000",
+    "resolution": "Low32 is an index into the caller-supplied module type array, not a SchemaBuiltinType ID"
+  },
+  "types": [
+    {
+      "name": "GameTime_t",
+      "class_record": "client+0x226b700",
+      "field_record": "client+0x226b6e0",
+      "field": "m_Value",
+      "encoded_type": "0xf00000000000000e",
+      "module_index": 14,
+      "metadata": "MIsBoxedFloatType",
+      "metadata_record": "client+0x1d98038",
+      "initialization": "client+0x15ef773..0x15ef796",
+      "builtin_argument": 11,
+      "builtin_name": "float32",
+      "network_field_constructor": "client+0x1af6e0 sets IsAtomic+144, IsTypeSafeFloat+14c, underlying+130=float32, then registers GameTime_t\u2192float32 through1ddd90"
+    },
+    {
+      "name": "GameTick_t",
+      "class_record": "client+0x226b790",
+      "field_record": "client+0x226b770",
+      "field": "m_Value",
+      "encoded_type": "0xf00000000000000a",
+      "module_index": 10,
+      "metadata": "MIsBoxedIntegerType",
+      "metadata_record": "client+0x1d98048",
+      "initialization": "client+0x15ef737..0x15ef74e",
+      "builtin_argument": 7,
+      "builtin_name": "int32",
+      "network_field_constructor": "client+0x91d2b0 sets IsAtomic+144, IsTypeSafeInt+14b, underlying+130=int32, and inserts GameTick_t\u2192int32 into database+58"
+    }
+  ],
+  "builtin_name_table": "schemasystem+0x4ba80; pointer entries 7=int32 and 11=float32",
+  "scalar_selection": {
+    "site": "networksystem+0xeb600",
+    "boxed_integer_flag": "fieldInfo+0x14b",
+    "boxed_float_flag": "fieldInfo+0x14c",
+    "underlying_name": "fieldInfo+0x130",
+    "rule": "Boxed fields select their underlying name before primitive lookup, after explicit custom serializer resolution. This does not remove field encoder/bit-count/custom metadata."
+  },
+  "wire_name": "0ec420 copies original raw typename through0ec230 to compiledField+0xb0; the emitted alias may remain GameTime_t/GameTick_t although primitive selection uses its underlying name",
+  "bounds": "Direct generated networking constructors close the alias-database origin for these two types. Offline binary evidence, not Windows/live acceptance.",
+  "atomic_dictionary": "client1ddd90 inserts name\u2192underlying into database+58, matching networksystem1b5780 lookup"
+}

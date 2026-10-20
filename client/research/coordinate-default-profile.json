@@ -1,0 +1,23 @@
+{
+  "manifest": "8766757721818354077",
+  "client_interface_slot": "0x518",
+  "client_callback": "0x180b6fcb0",
+  "legacy_profile_writer": "0x1809f6e90",
+  "legacy_profile_values": [
+    14,
+    5,
+    11,
+    3,
+    11,
+    20
+  ],
+  "field_order": [
+    "coord_integer_bits",
+    "coord_fractional_bits",
+    "coord_integer_bits_mp",
+    "coord_fractional_bits_mp",
+    "normal_fractional_bits",
+    "angle_bits"
+  ],
+  "method": "fixed-hash static pointers/constants; no native module execution"
+}

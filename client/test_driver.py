@@ -49,11 +49,12 @@ class DriverTest(unittest.TestCase):
         f = fields(data[pos:])
         self.assertEqual(len(scalar(f, 6, 2)), 96)
         self.assertEqual(scalar(f, 8, 2), struct.pack('<Q', 76561198000000123) + b'SYNTHETIC-NOT-A-TICKET')
-        self.assertEqual(password, bytes(len(password)))
+        self.assertEqual(password, b'unit-only')  # Retained only until connection acceptance.
         self.assertEqual(sample.getvalue(), b'MZRCS2\x01\0')  # No handshake/credentials captured.
         port.incoming.append((b'\xff\xff\xff\xffB\0' + b'0' * 10, False))
         driver.step(14)
         self.assertEqual(driver.phase, 'channel')
+        self.assertEqual(password, bytes(len(password)))
         self.assertIsNone(driver.decoder.server)
         self.assertEqual(len(port.sent), 3)
         self.assertEqual(port.sent[-1][1], 8)
@@ -61,8 +62,119 @@ class DriverTest(unittest.TestCase):
         self.assertEqual(ack.reliable_tick_hint, 0)
         decoded, _ = messages(ack.body)
         self.assertEqual([(m.message_id, m.body) for m in decoded],
-                         [(7, bytes.fromhex('08 02 10 ff ff ff ff 0f 18 00'))])
+                         [(6, driver.settings.userinfo()),
+                          (7, bytes.fromhex('08 02 10 ff ff ff ff 0f 18 00'))])
         return driver, port, output, sample
+
+    def test_challenge_retries_at_official_default_without_extending_deadline(self):
+        port = Port()
+        driver = ObserverDriver(port, host_version=14191, password=bytearray(), emit=lambda _: None)
+        driver.step(1)
+        driver.step(500)
+        self.assertEqual(len(port.sent), 1)
+        driver.step(501)
+        self.assertEqual(port.sent, [(initial_challenge_request(), 5)] * 2)
+        self.assertEqual(driver.deadline, 15001)
+        with self.assertRaisesRegex(DriverError, 'phase-timeout'):
+            driver.step(15001)
+        driver.close()
+
+    def test_auth2_rechallenge_uses_new_number_and_keeps_password_until_connected(self):
+        port, password = Port(), bytearray(b'unit-only')
+        driver = ObserverDriver(port, host_version=14191, password=password, emit=lambda _: None)
+        challenge = lambda n, context: (b'\xff\xff\xff\xffA' + struct.pack('<IIHQB', n, 2, 0, 456, 0) + context + b'\0', False)
+        driver.step(1)
+        port.incoming.append(challenge(7, b'connect0x00000000'))
+        driver.step(2)
+        first = port.sent[-1][0]
+        deadline = driver.deadline
+        driver.step(501)
+        self.assertEqual(port.sent[-1], (b'\xff\xff\xff\xffqconnect0x00000007\0', 5))
+        port.incoming.append(challenge(9, b'connect0x00000007'))
+        driver.step(502)
+        second = port.sent[-1][0]
+        self.assertNotEqual(first, second)
+        from password import transform_password
+        size, pos = varint(second, 5)
+        self.assertEqual(scalar(fields(second[pos:pos + size]), 6, 2), transform_password(b'unit-only', 9))
+        self.assertEqual(driver.deadline, deadline)
+        port.incoming.append((b'\xff\xff\xff\xffB\0' + b'0' * 10, False))
+        driver.step(503)
+        self.assertEqual(password, bytes(len(password)))
+        sent = len(port.sent)
+        port.incoming.append(challenge(9, b'connect0x00000007'))
+        driver.step(1001)
+        self.assertTrue(all(flags == 1 for _, flags in port.sent[sent:]))
+        driver.close()
+
+    def test_channel_feedback_runs_during_initialization_and_repeats_processed_tick(self):
+        driver, port, _, _ = self.ready()
+        driver.step(110)
+        self.assertEqual(port.sent[-1], (bytes.fromhex('02 01 00 fd ff fd ff fd ff'), 1))
+        port.incoming.append((bytes.fromhex('02 03 00 fd ff fd ff fd ff'), False))
+        driver.step(210)
+        self.assertEqual(port.sent[-1], (bytes.fromhex('02 02 03 fd ff ff ff ff ff'), 1))
+        port.incoming.append((bytes.fromhex('02 02 00 fd ff fd ff fd ff'), False))
+        driver._full_sent = True
+        driver._processed_entity_tick = 1380
+        driver.step(310)
+        feedback = decode_frame(port.sent[-1][0], gns_reliable=False)
+        self.assertEqual((feedback.sequence, feedback.acknowledgement), (3, 3))
+        self.assertEqual(feedback.history_raw, (0xfffd, 0xfffe, 0xffff))
+        tick_messages, _ = messages(feedback.body)
+        self.assertEqual([(m.message_id, scalar(fields(m.body), 1)) for m in tick_messages], [(4, 1380)])
+        driver.step(410)
+        repeat = decode_frame(port.sent[-1][0], gns_reliable=False)
+        self.assertEqual(repeat.body, feedback.body)
+        self.assertEqual(repeat.sequence, 4)
+        driver._recovery_pending = True
+        driver.step(510)
+        self.assertEqual(decode_frame(port.sent[-1][0], gns_reliable=False).body, b'')
+        driver.close()
+
+    def test_missing_challenge_identity_uses_trusted_peer_without_skipping_ticket(self):
+        port = Port()
+        driver = ObserverDriver(port, host_version=14191, password=bytearray(), emit=lambda _: None)
+        driver.step(1)
+        packet = b'\xff\xff\xff\xffA' + struct.pack('<IIHQB', 7, 3, 0, 0, 1) + b'connect0x00000000\0'
+        port.incoming.append((packet, False))
+        driver.step(2)
+        self.assertTrue(port.ticket_requested)
+        self.assertEqual(driver.phase, 'ticket')
+        self.assertEqual(len(port.sent), 1)
+        driver.close()
+
+    def test_conflicting_challenge_identity_still_rejected(self):
+        port = Port()
+        driver = ObserverDriver(port, host_version=14191, password=bytearray(), emit=lambda _: None)
+        driver.step(1)
+        packet = b'\xff\xff\xff\xffA' + struct.pack('<IIHQB', 7, 3, 0, 999, 1) + b'connect0x00000000\0'
+        port.incoming.append((packet, False))
+        with self.assertRaisesRegex(DriverError, 'challenge-peer-mismatch'):
+            driver.step(2)
+        self.assertFalse(port.ticket_requested)
+        driver.close()
+
+    def test_auth3_duplicate_challenge_waits_for_same_ticket_and_rejects_downgrade(self):
+        port = Port()
+        driver = ObserverDriver(port, host_version=14191, password=bytearray(b'unit-only'), emit=lambda _: None)
+        packet = lambda n, auth: (b'\xff\xff\xff\xffA' + struct.pack('<IIHQB', n, auth, 0, 456, auth == 3) + b'connect0x00000000\0', False)
+        driver.step(1)
+        port.incoming.append(packet(7, 3))
+        driver.step(2)
+        deadline = driver.deadline
+        port.incoming.append(packet(9, 3))
+        driver.step(3)
+        self.assertEqual((driver.phase, port.state), ('ticket', 4))
+        self.assertEqual(driver.deadline, deadline)
+        self.assertEqual(len(port.sent), 1)
+        port.state = 5
+        driver.step(4)
+        self.assertEqual(driver.phase, 'connection')
+        port.incoming.append(packet(9, 2))
+        with self.assertRaisesRegex(DriverError, 'challenge-auth-changed'):
+            driver.step(5)
+        driver.close()
 
     def test_driver_requests_full_schema_at_new_and_capture_replays(self):
         driver, port, output, sample = self.ready()
@@ -74,14 +186,14 @@ class DriverTest(unittest.TestCase):
         driver.step(20)
         self.assertEqual((driver.phase, driver.reason), ('channel', None))
         self.assertEqual(len(port.sent), 5)  # q, connect, CONNECTED, ClientInfo, NEW.
-        info_messages, _ = messages(decode_frame(port.sent[-2][0], gns_reliable=True).body)
+        info_messages, _ = messages(decode_frame(port.sent[-2][0], gns_reliable=bool(port.sent[-2][1] & 8)).body)
         self.assertEqual(info_messages[0].message_id, 20)
         info_fields = fields(info_messages[0].body)
         self.assertEqual(scalar(info_fields, 1, 5), bytes(4))
         self.assertEqual(scalar(info_fields, 2), 7)
         self.assertEqual(scalar(info_fields, 3), 0)
         self.assertEqual(scalar(info_fields, 5), 76561198000000123 & 0xffffffff)
-        ack_messages, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=True).body)
+        ack_messages, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=bool(port.sent[-1][1] & 8)).body)
         self.assertEqual((ack_messages[0].message_id, ack_messages[0].body),
                          (7, bytes.fromhex('08 03 10 07 18 00')))
         self.assertEqual(output[0]['weapon'], 'weapon_awp')
@@ -124,7 +236,7 @@ class DriverTest(unittest.TestCase):
         driver._send_processed_tick(200)
         self.assertTrue(driver._full_sent)
         self.assertEqual(driver.signon.state, 6)
-        sent = [m for data, reliable in port.sent[3:] for m in messages(decode_frame(data, gns_reliable=True).body)[0]]
+        sent = [m for data, reliable in port.sent[3:] for m in messages(decode_frame(data, gns_reliable=bool(reliable & 8)).body)[0]]
         self.assertEqual(sent[0].message_id, 7)
         self.assertEqual(scalar(fields(sent[0].body), 1), 6)
         self.assertEqual(driver.report()['received_signon_state'], 5)
@@ -179,7 +291,7 @@ class DriverTest(unittest.TestCase):
         self.assertEqual(len(port.sent), 3)
         driver.parser.checkpoint = {'sequence': 1}
         driver._send_processed_tick(200)
-        decoded, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=True).body)
+        decoded, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=bool(port.sent[-1][1] & 8)).body)
         self.assertEqual((decoded[0].message_id, scalar(fields(decoded[0].body), 1)), (4, 100))
         driver.parser.controls = [{'type': 'receipt', 'sequence': 2, 'tick': 101, 'baselineAck': None}]
         driver.parser.checkpoint = {'sequence': 2}
@@ -190,7 +302,7 @@ class DriverTest(unittest.TestCase):
         driver.parser.controls = [{'type': 'recovery', 'sequence': 3, 'tick': 103, 'deltaFrom': 102}]
         driver.parser.checkpoint = {'sequence': 3}
         driver._send_processed_tick(400)
-        decoded, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=True).body)
+        decoded, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=bool(port.sent[-1][1] & 8)).body)
         self.assertEqual(scalar(fields(decoded[0].body), 1), 0xffffffff)
         size = len(port.sent)
         driver._send_processed_tick(500)
@@ -198,7 +310,7 @@ class DriverTest(unittest.TestCase):
         driver.parser.controls = [{'type': 'receipt', 'sequence': 4, 'tick': 110, 'baselineAck': 1}]
         driver.parser.checkpoint = {'sequence': 4}
         driver._send_processed_tick(600)
-        decoded, _ = messages(decode_frame(port.sent[-2][0], gns_reliable=True).body)
+        decoded, _ = messages(decode_frame(port.sent[-2][0], gns_reliable=bool(port.sent[-2][1] & 8)).body)
         self.assertEqual((decoded[0].message_id, scalar(fields(decoded[0].body), 1), scalar(fields(decoded[0].body), 2)), (23, 110, 1))
         self.assertEqual(driver.report()['full_update_requests'], 1)
         self.assertEqual(driver.report()['last_acknowledged_entity_tick'], 110)
@@ -223,7 +335,7 @@ class DriverTest(unittest.TestCase):
             driver.parser.checkpoint = {'sequence': sequence}
             driver._send_processed_tick(now)
         self.assertEqual(driver.report()['full_update_requests'], 3)
-        decoded, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=True).body)
+        decoded, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=bool(port.sent[-1][1] & 8)).body)
         self.assertEqual(scalar(fields(decoded[0].body), 1), 0xffffffff)
         size = len(port.sent)
         driver._send_processed_tick(840)
@@ -240,7 +352,7 @@ class DriverTest(unittest.TestCase):
             driver.step(2)
             self.assertFalse(port.ticket_requested)
             self.assertEqual((driver.phase, port.state), ('connection', 7))
-            self.assertEqual(password, bytes(len(password)))
+            self.assertEqual(password, b'unit-only')
             data = port.sent[-1][0]
             size, pos = varint(data, 5)
             self.assertEqual(len(data) - pos, size)

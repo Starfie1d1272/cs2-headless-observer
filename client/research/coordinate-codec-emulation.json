@@ -1,0 +1,2842 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "method": "isolated native coordinate decoder, configured integer/fraction profiles and dimensions; no OS imports or network",
+    "cases": 144,
+    "passed": 144
+  },
+  "cases": [
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0100",
+      "expected": [
+        1
+      ],
+      "expected_bits": 13,
+      "actual": [
+        1
+      ],
+      "actual_bits": 13,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0900",
+      "expected": [
+        2
+      ],
+      "expected_bits": 13,
+      "actual": [
+        2
+      ],
+      "actual_bits": 13,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "f91f",
+      "expected": [
+        1024
+      ],
+      "expected_bits": 13,
+      "actual": [
+        1024
+      ],
+      "actual_bits": 13,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0500",
+      "expected": [
+        -1
+      ],
+      "expected_bits": 13,
+      "actual": [
+        -1
+      ],
+      "actual_bits": 13,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0d00",
+      "expected": [
+        -2
+      ],
+      "expected_bits": 13,
+      "actual": [
+        -2
+      ],
+      "actual_bits": 13,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "fd1f",
+      "expected": [
+        -1024
+      ],
+      "expected_bits": 13,
+      "actual": [
+        -1024
+      ],
+      "actual_bits": 13,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7a",
+      "expected": [
+        0.9375
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.9375
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7a",
+      "expected": [
+        0.9375
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.9375
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7a",
+      "expected": [
+        0.9375
+      ],
+      "expected_bits": 7,
+      "actual": [
+        0.9375
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7e",
+      "expected": [
+        -0.9375
+      ],
+      "expected_bits": 7,
+      "actual": [
+        -0.9375
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7e",
+      "expected": [
+        -0.9375
+      ],
+      "expected_bits": 7,
+      "actual": [
+        -0.9375
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7e",
+      "expected": [
+        -0.9375
+      ],
+      "expected_bits": 7,
+      "actual": [
+        -0.9375
+      ],
+      "actual_bits": 7,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "03e001",
+      "expected": [
+        1.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        1.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0be001",
+      "expected": [
+        2.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        2.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "fbff01",
+      "expected": [
+        1024.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        1024.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "07e001",
+      "expected": [
+        -1.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -1.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0fe001",
+      "expected": [
+        -2.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -2.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "ffff01",
+      "expected": [
+        -1024.9375
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -1024.9375
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0120000400",
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "expected_bits": 39,
+      "actual": [
+        1,
+        1,
+        1
+      ],
+      "actual_bits": 39,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0920012400",
+      "expected": [
+        2,
+        2,
+        2
+      ],
+      "expected_bits": 39,
+      "actual": [
+        2,
+        2,
+        2
+      ],
+      "actual_bits": 39,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "f93fffe77f",
+      "expected": [
+        1024,
+        1024,
+        1024
+      ],
+      "expected_bits": 39,
+      "actual": [
+        1024,
+        1024,
+        1024
+      ],
+      "actual_bits": 39,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "05a0001400",
+      "expected": [
+        -1,
+        -1,
+        -1
+      ],
+      "expected_bits": 39,
+      "actual": [
+        -1,
+        -1,
+        -1
+      ],
+      "actual_bits": 39,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0da0013400",
+      "expected": [
+        -2,
+        -2,
+        -2
+      ],
+      "expected_bits": 39,
+      "actual": [
+        -2,
+        -2,
+        -2
+      ],
+      "actual_bits": 39,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "fdbffff77f",
+      "expected": [
+        -1024,
+        -1024,
+        -1024
+      ],
+      "expected_bits": 39,
+      "actual": [
+        -1024,
+        -1024,
+        -1024
+      ],
+      "actual_bits": 39,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7abd1e",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 21,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 21,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7abd1e",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 21,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 21,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7abd1e",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 21,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 21,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7ebf1f",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 21,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 21,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7ebf1f",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 21,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 21,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7ebf1f",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 21,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 21,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "03e007c00f8007",
+      "expected": [
+        1.9375,
+        1.9375,
+        1.9375
+      ],
+      "expected_bits": 51,
+      "actual": [
+        1.9375,
+        1.9375,
+        1.9375
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0be017c02f8007",
+      "expected": [
+        2.9375,
+        2.9375,
+        2.9375
+      ],
+      "expected_bits": 51,
+      "actual": [
+        2.9375,
+        2.9375,
+        2.9375
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "fbfff7ffefff07",
+      "expected": [
+        1024.9375,
+        1024.9375,
+        1024.9375
+      ],
+      "expected_bits": 51,
+      "actual": [
+        1024.9375,
+        1024.9375,
+        1024.9375
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "07e00fc01f8007",
+      "expected": [
+        -1.9375,
+        -1.9375,
+        -1.9375
+      ],
+      "expected_bits": 51,
+      "actual": [
+        -1.9375,
+        -1.9375,
+        -1.9375
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0fe01fc03f8007",
+      "expected": [
+        -2.9375,
+        -2.9375,
+        -2.9375
+      ],
+      "expected_bits": 51,
+      "actual": [
+        -2.9375,
+        -2.9375,
+        -2.9375
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "ffffffffffff07",
+      "expected": [
+        -1024.9375,
+        -1024.9375,
+        -1024.9375
+      ],
+      "expected_bits": 51,
+      "actual": [
+        -1024.9375,
+        -1024.9375,
+        -1024.9375
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0120000480078000100000",
+      "expected": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "expected_bits": 81,
+      "actual": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "actual_bits": 81,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0920012480278004900000",
+      "expected": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "expected_bits": 81,
+      "actual": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "actual_bits": 81,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "f93fffe7ffe7fffc9fff01",
+      "expected": [
+        1024,
+        1024,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "expected_bits": 81,
+      "actual": [
+        1024,
+        1024,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "actual_bits": 81,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "05a0001480178002500000",
+      "expected": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "expected_bits": 81,
+      "actual": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "actual_bits": 81,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0da0013480378006d00000",
+      "expected": [
+        -2,
+        -2,
+        -2,
+        -2,
+        -2,
+        -2
+      ],
+      "expected_bits": 81,
+      "actual": [
+        -2,
+        -2,
+        -2,
+        -2,
+        -2,
+        -2
+      ],
+      "actual_bits": 81,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "fdbffff7fff7fffedfff01",
+      "expected": [
+        -1024,
+        -1024,
+        -1024,
+        -1024,
+        -1024,
+        -1024
+      ],
+      "expected_bits": 81,
+      "actual": [
+        -1024,
+        -1024,
+        -1024,
+        -1024,
+        -1024,
+        -1024
+      ],
+      "actual_bits": 81,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7abdfe7abd1e",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 45,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 45,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7abdfe7abd1e",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 45,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 45,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7abdfe7abd1e",
+      "expected": [
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "expected_bits": 45,
+      "actual": [
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375,
+        0.9375
+      ],
+      "actual_bits": 45,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7ebfff7ebf1f",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 45,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 45,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7ebfff7ebf1f",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 45,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 45,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "7ebfff7ebf1f",
+      "expected": [
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "expected_bits": 45,
+      "actual": [
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375,
+        -0.9375
+      ],
+      "actual_bits": 45,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "03e007c00f80ff00f801f003e001",
+      "expected": [
+        1.9375,
+        1.9375,
+        1.9375,
+        1.9375,
+        1.9375,
+        1.9375
+      ],
+      "expected_bits": 105,
+      "actual": [
+        1.9375,
+        1.9375,
+        1.9375,
+        1.9375,
+        1.9375,
+        1.9375
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0be017c02f80ff02f805f00be001",
+      "expected": [
+        2.9375,
+        2.9375,
+        2.9375,
+        2.9375,
+        2.9375,
+        2.9375
+      ],
+      "expected_bits": 105,
+      "actual": [
+        2.9375,
+        2.9375,
+        2.9375,
+        2.9375,
+        2.9375,
+        2.9375
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "fbfff7ffeffffffefffdfffbff01",
+      "expected": [
+        1024.9375,
+        1024.9375,
+        1024.9375,
+        1024.9375,
+        1024.9375,
+        1024.9375
+      ],
+      "expected_bits": 105,
+      "actual": [
+        1024.9375,
+        1024.9375,
+        1024.9375,
+        1024.9375,
+        1024.9375,
+        1024.9375
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "07e00fc01f80ff01f803f007e001",
+      "expected": [
+        -1.9375,
+        -1.9375,
+        -1.9375,
+        -1.9375,
+        -1.9375,
+        -1.9375
+      ],
+      "expected_bits": 105,
+      "actual": [
+        -1.9375,
+        -1.9375,
+        -1.9375,
+        -1.9375,
+        -1.9375,
+        -1.9375
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "0fe01fc03f80ff03f807f00fe001",
+      "expected": [
+        -2.9375,
+        -2.9375,
+        -2.9375,
+        -2.9375,
+        -2.9375,
+        -2.9375
+      ],
+      "expected_bits": 105,
+      "actual": [
+        -2.9375,
+        -2.9375,
+        -2.9375,
+        -2.9375,
+        -2.9375,
+        -2.9375
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 10,
+      "input_hex": "ffffffffffffffffffffffffff01",
+      "expected": [
+        -1024.9375,
+        -1024.9375,
+        -1024.9375,
+        -1024.9375,
+        -1024.9375,
+        -1024.9375
+      ],
+      "expected_bits": 105,
+      "actual": [
+        -1024.9375,
+        -1024.9375,
+        -1024.9375,
+        -1024.9375,
+        -1024.9375,
+        -1024.9375
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0
+      ],
+      "expected_bits": 2,
+      "actual": [
+        0
+      ],
+      "actual_bits": 2,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "010000",
+      "expected": [
+        1
+      ],
+      "expected_bits": 17,
+      "actual": [
+        1
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "090000",
+      "expected": [
+        2
+      ],
+      "expected_bits": 17,
+      "actual": [
+        2
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "f9ff01",
+      "expected": [
+        16384
+      ],
+      "expected_bits": 17,
+      "actual": [
+        16384
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "050000",
+      "expected": [
+        -1
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -1
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0d0000",
+      "expected": [
+        -2
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -2
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fdff01",
+      "expected": [
+        -16384
+      ],
+      "expected_bits": 17,
+      "actual": [
+        -16384
+      ],
+      "actual_bits": 17,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fa",
+      "expected": [
+        0.96875
+      ],
+      "expected_bits": 8,
+      "actual": [
+        0.96875
+      ],
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fa",
+      "expected": [
+        0.96875
+      ],
+      "expected_bits": 8,
+      "actual": [
+        0.96875
+      ],
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fa",
+      "expected": [
+        0.96875
+      ],
+      "expected_bits": 8,
+      "actual": [
+        0.96875
+      ],
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fe",
+      "expected": [
+        -0.96875
+      ],
+      "expected_bits": 8,
+      "actual": [
+        -0.96875
+      ],
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fe",
+      "expected": [
+        -0.96875
+      ],
+      "expected_bits": 8,
+      "actual": [
+        -0.96875
+      ],
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fe",
+      "expected": [
+        -0.96875
+      ],
+      "expected_bits": 8,
+      "actual": [
+        -0.96875
+      ],
+      "actual_bits": 8,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "03003e",
+      "expected": [
+        1.96875
+      ],
+      "expected_bits": 22,
+      "actual": [
+        1.96875
+      ],
+      "actual_bits": 22,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0b003e",
+      "expected": [
+        2.96875
+      ],
+      "expected_bits": 22,
+      "actual": [
+        2.96875
+      ],
+      "actual_bits": 22,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fbff3f",
+      "expected": [
+        16384.96875
+      ],
+      "expected_bits": 22,
+      "actual": [
+        16384.96875
+      ],
+      "actual_bits": 22,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "07003e",
+      "expected": [
+        -1.96875
+      ],
+      "expected_bits": 22,
+      "actual": [
+        -1.96875
+      ],
+      "actual_bits": 22,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0f003e",
+      "expected": [
+        -2.96875
+      ],
+      "expected_bits": 22,
+      "actual": [
+        -2.96875
+      ],
+      "actual_bits": 22,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "ffff3f",
+      "expected": [
+        -16384.96875
+      ],
+      "expected_bits": 22,
+      "actual": [
+        -16384.96875
+      ],
+      "actual_bits": 22,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "00",
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 6,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 6,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "01000200040000",
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "expected_bits": 51,
+      "actual": [
+        1,
+        1,
+        1
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "09001200240000",
+      "expected": [
+        2,
+        2,
+        2
+      ],
+      "expected_bits": 51,
+      "actual": [
+        2,
+        2,
+        2
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "f9fff3ffe7ff07",
+      "expected": [
+        16384,
+        16384,
+        16384
+      ],
+      "expected_bits": 51,
+      "actual": [
+        16384,
+        16384,
+        16384
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "05000a00140000",
+      "expected": [
+        -1,
+        -1,
+        -1
+      ],
+      "expected_bits": 51,
+      "actual": [
+        -1,
+        -1,
+        -1
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0d001a00340000",
+      "expected": [
+        -2,
+        -2,
+        -2
+      ],
+      "expected_bits": 51,
+      "actual": [
+        -2,
+        -2,
+        -2
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fdfffbfff7ff07",
+      "expected": [
+        -16384,
+        -16384,
+        -16384
+      ],
+      "expected_bits": 51,
+      "actual": [
+        -16384,
+        -16384,
+        -16384
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fafafa",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 24,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fafafa",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 24,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fafafa",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 24,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fefefe",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 24,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fefefe",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 24,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fefefe",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 24,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 24,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0300fe00803f00e003",
+      "expected": [
+        1.96875,
+        1.96875,
+        1.96875
+      ],
+      "expected_bits": 66,
+      "actual": [
+        1.96875,
+        1.96875,
+        1.96875
+      ],
+      "actual_bits": 66,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0b00fe0280bf00e003",
+      "expected": [
+        2.96875,
+        2.96875,
+        2.96875
+      ],
+      "expected_bits": 66,
+      "actual": [
+        2.96875,
+        2.96875,
+        2.96875
+      ],
+      "actual_bits": 66,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fbfffffeffbfffff03",
+      "expected": [
+        16384.96875,
+        16384.96875,
+        16384.96875
+      ],
+      "expected_bits": 66,
+      "actual": [
+        16384.96875,
+        16384.96875,
+        16384.96875
+      ],
+      "actual_bits": 66,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0700fe01807f00e003",
+      "expected": [
+        -1.96875,
+        -1.96875,
+        -1.96875
+      ],
+      "expected_bits": 66,
+      "actual": [
+        -1.96875,
+        -1.96875,
+        -1.96875
+      ],
+      "actual_bits": 66,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0f00fe0380ff00e003",
+      "expected": [
+        -2.96875,
+        -2.96875,
+        -2.96875
+      ],
+      "expected_bits": 66,
+      "actual": [
+        -2.96875,
+        -2.96875,
+        -2.96875
+      ],
+      "actual_bits": 66,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "ffffffffffffffff03",
+      "expected": [
+        -16384.96875,
+        -16384.96875,
+        -16384.96875
+      ],
+      "expected_bits": 66,
+      "actual": [
+        -16384.96875,
+        -16384.96875,
+        -16384.96875
+      ],
+      "actual_bits": 66,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "c001",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_bits": 15,
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_bits": 15,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0100020004007800800000010000",
+      "expected": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "expected_bits": 105,
+      "actual": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0900120024007802800400090000",
+      "expected": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "expected_bits": 105,
+      "actual": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "f9fff3ffe7ff7ffefffcfff9ff01",
+      "expected": [
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "expected_bits": 105,
+      "actual": [
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "05000a0014007801800200050000",
+      "expected": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "expected_bits": 105,
+      "actual": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0d001a00340078038006000d0000",
+      "expected": [
+        -2,
+        -2,
+        -2,
+        -2,
+        -2,
+        -2
+      ],
+      "expected_bits": 105,
+      "actual": [
+        -2,
+        -2,
+        -2,
+        -2,
+        -2,
+        -2
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fdfffbfff7ff7ffffffefffdff01",
+      "expected": [
+        -16384,
+        -16384,
+        -16384,
+        -16384,
+        -16384,
+        -16384
+      ],
+      "expected_bits": 105,
+      "actual": [
+        -16384,
+        -16384,
+        -16384,
+        -16384,
+        -16384,
+        -16384
+      ],
+      "actual_bits": 105,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fafafad7d7d707",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 51,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fafafad7d7d707",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 51,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fafafad7d7d707",
+      "expected": [
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "expected_bits": 51,
+      "actual": [
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875,
+        0.96875
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fefefef7f7f707",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 51,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fefefef7f7f707",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 51,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fefefef7f7f707",
+      "expected": [
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "expected_bits": 51,
+      "actual": [
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875,
+        -0.96875
+      ],
+      "actual_bits": 51,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0300fe00803f00e07f00c01f00f007007c",
+      "expected": [
+        1.96875,
+        1.96875,
+        1.96875,
+        1.96875,
+        1.96875,
+        1.96875
+      ],
+      "expected_bits": 135,
+      "actual": [
+        1.96875,
+        1.96875,
+        1.96875,
+        1.96875,
+        1.96875,
+        1.96875
+      ],
+      "actual_bits": 135,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0b00fe0280bf00e07f01c05f00f017007c",
+      "expected": [
+        2.96875,
+        2.96875,
+        2.96875,
+        2.96875,
+        2.96875,
+        2.96875
+      ],
+      "expected_bits": 135,
+      "actual": [
+        2.96875,
+        2.96875,
+        2.96875,
+        2.96875,
+        2.96875,
+        2.96875
+      ],
+      "actual_bits": 135,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "fbfffffeffbfffff7fffffdffffff7ff7f",
+      "expected": [
+        16384.96875,
+        16384.96875,
+        16384.96875,
+        16384.96875,
+        16384.96875,
+        16384.96875
+      ],
+      "expected_bits": 135,
+      "actual": [
+        16384.96875,
+        16384.96875,
+        16384.96875,
+        16384.96875,
+        16384.96875,
+        16384.96875
+      ],
+      "actual_bits": 135,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0700fe01807f00e0ff00c03f00f00f007c",
+      "expected": [
+        -1.96875,
+        -1.96875,
+        -1.96875,
+        -1.96875,
+        -1.96875,
+        -1.96875
+      ],
+      "expected_bits": 135,
+      "actual": [
+        -1.96875,
+        -1.96875,
+        -1.96875,
+        -1.96875,
+        -1.96875,
+        -1.96875
+      ],
+      "actual_bits": 135,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "0f00fe0380ff00e0ff01c07f00f01f007c",
+      "expected": [
+        -2.96875,
+        -2.96875,
+        -2.96875,
+        -2.96875,
+        -2.96875,
+        -2.96875
+      ],
+      "expected_bits": 135,
+      "actual": [
+        -2.96875,
+        -2.96875,
+        -2.96875,
+        -2.96875,
+        -2.96875,
+        -2.96875
+      ],
+      "actual_bits": 135,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "coord",
+      "width": 14,
+      "input_hex": "ffffffffffffffffffffffffffffffff7f",
+      "expected": [
+        -16384.96875,
+        -16384.96875,
+        -16384.96875,
+        -16384.96875,
+        -16384.96875,
+        -16384.96875
+      ],
+      "expected_bits": 135,
+      "actual": [
+        -16384.96875,
+        -16384.96875,
+        -16384.96875,
+        -16384.96875,
+        -16384.96875,
+        -16384.96875
+      ],
+      "actual_bits": 135,
+      "overflow": 0,
+      "passed": true
+    }
+  ]
+}

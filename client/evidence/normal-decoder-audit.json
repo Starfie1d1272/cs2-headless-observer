@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-19",
+  "fixed_engine_sha256": "6456df18d8f954394024c2c07da8c848df15a5ace74ce7390d78970ceb39ee21",
+  "scale_constructor": "0x18009ca50",
+  "scale": "1 / (2^normal_fractional_bits - 1)",
+  "legacy_bits": 11,
+  "pre_fix_positive_magnitude_1": -0.99951171875,
+  "expected_positive_magnitude_1": 0.0004885197850512946,
+  "post_fix_signed_vectors": 8,
+  "binary_entity_regressions": "passed",
+  "online_validation": "not run",
+  "remaining": "Negotiated coordinate profile, enum signedness, and tick rewind remain under audit."
+}

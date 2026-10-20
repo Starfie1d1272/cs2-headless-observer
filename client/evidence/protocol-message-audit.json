@@ -1,0 +1,322 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "0a870745cf4e1bbabdc8239ce800f311c83754f9",
+  "scope": "NET_Messages and SVC_Messages; additional game messages require separate event review",
+  "messages": [
+    {
+      "id": 0,
+      "name": "net_NOP",
+      "schema": "networkbasetypes.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 1,
+      "name": "net_Disconnect_Legacy",
+      "schema": "networkbasetypes.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 3,
+      "name": "net_SplitScreenUser",
+      "schema": "networkbasetypes.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 4,
+      "name": "net_Tick",
+      "schema": "networkbasetypes.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 5,
+      "name": "net_StringCmd",
+      "schema": "networkbasetypes.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 6,
+      "name": "net_SetConVar",
+      "schema": "networkbasetypes.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 7,
+      "name": "net_SignonState",
+      "schema": "networkbasetypes.proto",
+      "implementation": "SignonSequence + ObserverDriver",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 8,
+      "name": "net_SpawnGroup_Load",
+      "schema": "networkbasetypes.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 9,
+      "name": "net_SpawnGroup_ManifestUpdate",
+      "schema": "networkbasetypes.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 11,
+      "name": "net_SpawnGroup_SetCreationTick",
+      "schema": "networkbasetypes.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 12,
+      "name": "net_SpawnGroup_Unload",
+      "schema": "networkbasetypes.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 13,
+      "name": "net_SpawnGroup_LoadCompleted",
+      "schema": "networkbasetypes.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 15,
+      "name": "net_DebugOverlay",
+      "schema": "networkbasetypes.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 40,
+      "name": "svc_ServerInfo",
+      "schema": "netmessages.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 41,
+      "name": "svc_FlattenedSerializer",
+      "schema": "netmessages.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 42,
+      "name": "svc_ClassInfo",
+      "schema": "netmessages.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 43,
+      "name": "svc_SetPause",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 44,
+      "name": "svc_CreateStringTable",
+      "schema": "netmessages.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 45,
+      "name": "svc_UpdateStringTable",
+      "schema": "netmessages.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 46,
+      "name": "svc_VoiceInit",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 47,
+      "name": "svc_VoiceData",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 48,
+      "name": "svc_Print",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 49,
+      "name": "svc_Sounds",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 50,
+      "name": "svc_SetView",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 51,
+      "name": "svc_ClearAllStringTables",
+      "schema": "netmessages.proto",
+      "implementation": "LiveDecoder + parser adapter",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 52,
+      "name": "svc_CmdKeyValues",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 53,
+      "name": "svc_BSPDecal",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 54,
+      "name": "svc_SplitScreen",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 55,
+      "name": "svc_PacketEntities",
+      "schema": "netmessages.proto",
+      "implementation": "ordinaryViewer parser entity extension",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 56,
+      "name": "svc_Prefetch",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 57,
+      "name": "svc_Menu",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 58,
+      "name": "svc_GetCvarValue",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 59,
+      "name": "svc_StopSound",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 60,
+      "name": "svc_PeerList",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 61,
+      "name": "svc_PacketReliable",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 62,
+      "name": "svc_HLTVStatus",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 63,
+      "name": "svc_ServerSteamID",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 70,
+      "name": "svc_FullFrameSplit",
+      "schema": "netmessages.proto",
+      "implementation": "ordinaryViewer parser entity extension",
+      "review": "implemented-needs-whole-path-review"
+    },
+    {
+      "id": 71,
+      "name": "svc_RconServerDetails",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 72,
+      "name": "svc_UserMessage",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 74,
+      "name": "svc_Broadcast_Command",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 75,
+      "name": "svc_HltvFixupOperatorStatus",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 76,
+      "name": "svc_UserCmds",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 77,
+      "name": "svc_NextMsgPredicted",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    },
+    {
+      "id": 78,
+      "name": "svc_EncryptedData",
+      "schema": "netmessages.proto",
+      "implementation": "unclassified",
+      "review": "audit-required"
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+# Field construction contract
+
+Fixed module build14191/10924; manifest8766757721818354077. The initial research-only phase is historical. Current implementation evidence is recorded separately in COHESIVE-IMPLEMENTATION.md; this file describes the fixed-profile native contract.
+
+## Construction order supported by native evidence
+
+0779c0 recognizes vector-container prefixes and element type, fixed array suffix, aliases (bounded native resolution loop), explicit enum signedness, nested serializer references, primitive category, custom var_serializer override, then encoder and quantization configuration. 079ff0 resolves nested references using name plus version; 077240 includes polymorphic candidate references. This order must be represented explicitly rather than collapsed into field-name exceptions.
+
+- Dynamic vector prefixes: CNetworkUtlVectorBase, CUtlVectorEmbeddedNetworkVar, C_NetworkUtlVectorBase, C_UtlVectorEmbeddedNetworkVar, CUtlVector.
+- char[N>1] is specialized as string in0eada0; a scalar char and an arbitrary fixed array are different.
+- CStrongHandle maps to uint64; CNetworkedQuantizedFloat to float32.
+- Unknown custom name can fall back to recognized native type/registered callback; do not guess an unknown required category or encoder.
+- Keep raw wire value, logical field value and derived player/event projection distinct. Signed fixed8/fixed32 already sign-extend in their native wire decoder; do not defer that conversion to a later storage cast.
+
+## Custom scalar accessors inspected
+
+All listed names are registered by both client/server with matching categories and dimensions in the scanned fixed-build registration sites. This is not a claim that arbitrary modules/plugins register no additional names.
+
+| Serializer | Wire family / components | Logical observation |
+|---|---|---|
+| animTimeSerializer | unsigned /1 | seconds→int(seconds*64+0.5); receive count/64 |
+| simulationTimeSerializer | unsigned /1 | same fixed-build time conversion |
+| funcRotatingSimulationTimeSerializer | unsigned /1 | sending object flag can force0; receive count/64 |
+| ClampHealth | signed /1 | sender clamps nonpositive to0; receiver stores32-bit value |
+| minusone | unsigned /1 | sender adds1; receiver subtracts1 |
+| angle_normalize_positive | float /1 | sender normalizes angle; receiver storesfloat |
+| StepSimulationFuncRotatingAnglesSerializer | float /3 | sender normalizes components; receiver storestriple |
+| cellx/celly/cellz | signed /1 | wireinteger is narrowed ushort; derived coordinates use configured cellwidth/range |
+| posx/posy/posz | float /1 | fractional position with quantizer bounds, distinct from absoluteposition |
+| gameSceneNode | unsigned /1 | includes upper32 node identity; preserve64-bit value |
+| gameSceneNodeStepSimulationAnglesSerializer | float /3 | received angles saved directly |
+| gameSceneNodeStepSimulationOriginSerializer | float /3 | received triple saved; native local notifications update derivedcoordinates |
+| fish_pos_x/y/z | float /1 | sender emits field minus object base; both registered receive variants copy the corresponding object base. Checked variant requires category3/dimension1, otherwise leaves target unchanged. All45 isolated callback cases pass; see fish-position-callbacks.json. This is callback behavior, not a complete animation model |
+| ehandle | unsigned /1 | wire14-bit index+10-bit serial; invalid0xffffff. Native handle restoration additionally consults current entity identity |
+
+Accessor addresses are catalogued locally against fixed modules. The primitive type/encoder catalogs already committed in research/ remain authoritative for family and dimension enumeration. Color is a registered primitive unsigned family; an old fixture custom name color alone is not evidence of an unsupported current-build category.
+
+## Reference coverage and old fixture
+
+The old sample has268 serializers with versions0–5, three repeated names across versions, and3 polymorphic entries. Current prototype keys serializer map byname and omits nested version/custom field12/polymorphic metadata at construction. Treat this as a unified schema-model gap; do not apply isolated field patches or claim existing event values are all wrong without a reference-specific comparison.
+
+## Field-path and container decoding
+
+Native fake-field reads confirm pointer presence1bit then (if present/polymorphic) UBitVar 1-based candidate selector, and varuint array length (12 isolated cases). Forty field-path operations match the prototype on1,780 valid-domain examples. Versioned lookup, forward-reference design, state replacement and invalid-path transaction failure are documented in the following sections. Preserve exact bit alignment even for unprojected fields. Data size, recursion and allocation limits must be explicit local bounds, with a typed failure rather than a guessed skip.
+
+## Quantizer construction correction
+
+Preserve field presence before quantizer construction. Native fake-field0779c0 initializes low/high to-FLT_MAX/+FLT_MAX and overwrites each only when its protobuf presence bit is set (low bit4, high bit5). Native0d1250 then maps the low sentinel to0 and the high sentinel to float32(((1 << bits) - 1) in signed32 arithmetic) for widths1..31. An absent high bound is therefore not universally1 or0: width8 defaults to255, width16 to65535 and width31 rounds to2147483648. Explicit low=high=0 remains an invalid range; dd340 calls tier0!Plat_FatalError before any valid quantizer can be produced. Do not erase protobuf presence with low_value??0/high_value??0 before applying these rules.
+
+Twenty valid wrapper/default configurations and four native fatal-range branches were independently checked in quantizer-native-default-bounds.json. No imported function was executed or stubbed in this final run: the four invalid cases stop at the unresolved Plat_FatalError import (IAT2058f0, unbound target26d8b0), matching its static high<=low branch. The independent configureField research model matches all20 valid outputs, rejects all4 invalid ranges and treats missing bounds identically to the native sentinels. This extends the earlier160 explicit-bound initialization matrix; that matrix alone did not prove omitted-field behavior.
+
+Expanded native initialization matrix:160 configurations, with only the diagnostic void Warning import stubbed in emulator memory where required. The frozen parser differs on46 configurations; this is a configuration discrepancy count, not46 independently confirmed live bugs. An independently derived research model now reproduces all160 native outputs, including effective width/flags, float32 low/high, decode multiplier and range multiplier.
+
+Rules needed in the unified implementation: float32 intermediate rounding; native signed32 shift/subtraction behavior; exact-integer strictly-next-power-of-two range and < width-growth comparison; multiplier correction by successive float ULP rather than coarse decimal factors; +0.5 quantization used in sentinel elision. Preserve warned derived-width>31 cases as a separate compatibility boundary. Existing client files remain frozen.
+
+## Native read-field boundary and state ownership
+Pinned s2sdk IFlattenedSerializers slot20 maps to fixed networksystem0a8ac0, which dispatches06fef0 after configuring diagnostic listeners. ReadFields starts a fresh field-list decode, clears the output serialized-entity buffers and initializes a packet-local polymorphic metadata map. It resolves each path through05f870→05cc10, then05f240 consumes the selected leaf/container/pointer encoding. An unresolved path marks bitreader overflow; the outer reader does not publish a successful field payload on overflow. The headless equivalent must reject the whole entity transaction rather than emit partially updated projections.
+
+05f240 records pointer alternatives and container sizes in a path-keyed metadata map;05cc10 consults that map when choosing nested serializer variants. Alternative IDs select1-based table entries. These choices cannot live on one globally shared mutable field descriptor: two entities/instances and different snapshots must not change one another's active serializer. Native wire read temporarily stores metadata with the serialized entity; logical object/application state is a separate layer. Preserve immutable schema definitions and entity/snapshot-local metadata in the unified model.
+
+Schema construction source comparisons also need care: both pinned Clarity and demoinfocs require some nested serializer dependencies to have already appeared in their maps. A robust two-pass indexed(name,version) schema graph with bounded resolution is preferable for our implementation; forward references should resolve against the complete received schema, and unresolved names or impossible by-value cycles should produce explicit construction failure rather than fall back to a same-name wrong version. Pointer/reference cycles must not be rejected merely for revisiting an immutable schema node: resolve lazily under the proven field-path depth bound, with per-entity active metadata. This is a design decision consistent with native versioned lookup, not a claim that all library constructors already do it.
+
+
+## Persistent merge and array shrink (fixed native evidence, 2026-10-19 18:19 UTC)
+SDK MergeDeltas slot 11 resolves through 0aa3a0 to networksystem 074ac0. The merge walks sorted old/delta field paths: equal paths use delta bits; an old-only field is retained only when it remains inside all applicable new array-size metadata bounds. For metadata kind 0, an ancestor path matching the old field prefix excludes it when the next index is >= the new length (074ac0 branch 07500f–0750bf). This is explicit shrink pruning, not merely updating a length property. Missing old base is a distinct supported merge case.
+
+Metadata records are 12 bytes: path key, value, kind (0 array size, 1 polymorphic selector). At finalization, 10ee80 copies old metadata into a temporary vector; 074ac0 then replaces records with matching path keys or appends new delta records and sorts before retaining them with the output. Assembly at 0768cc–0768de confirms RCX is the old serialized entity for the copy call. Thus delta metadata does not replace the entire persistent map. Array shrink removes out-of-range old field data even though the inspected map merge retains old metadata keys absent from the delta. Do not invent a global metadata purge or globally mutable serializer state.
+
+05cc10 resolves a polymorphic prefix using 059190 and a kind-1 record, selecting candidate (value - 1). A changed candidate therefore affects subsequent field-name/type resolution. Logical object lifetime is established in the following section; serialized metadata retention must not be confused with visible logical descendants.
+
+Evidence: local fixed-hash networksystem decompilations 074ac0,10ee80,05cc10,0589f0 and exact caller assembly. No runtime client patch, live stream or product claim is implied.
+
+Lookup precedence is now independently exercised: 059190 checks current transient records, then the optional external metadata helper, then the retained serialized-entity metadata. Five isolated native cases (external helper null) confirm transient override, persistent fallback, unrelated transient path, explicit kind-0 zero overriding prior kind-1 selector, and missing path. Evidence: metadata-lookup-emulation.json and reproducible harness. The optional helper branch is established by static control flow, not emulated in these cases.
+
+## Logical pointer object lifetime
+SDK Decode slot 7 is 0a9790→06de20; pointer base application is 06cc90, separate from ReadFields and MergeDeltas. In the ordinary non-fake, no-deferred-listener path, presence=false with an existing object invokes 1b4aa0 and clears its pointer; presence=true with the same runtime class keeps the object; a different polymorphic class destroys the old object and creates a new one through 1b4a50. Deferred network change listeners receive their own operation path, but type replacement still destroys/recreates before notification. Therefore observer logical projected state must clear pointer descendants on absence/type replacement and retain them for unchanged active type when applying a delta. This is separate from the serialized metadata map merge, which may retain dormant path records. Native fake serializers deliberately skip object allocation/destruction after consuming wire data, so they are not evidence that logical descendants should stay visible.
+
+Array application 06d9f0 delegates resizing to the configured container accessor and supplies a destructor callback for pointer elements. This agrees with MergeDeltas' out-of-range pruning and pinned demoinfocs' nested-state release on shrink. No renderer or gameplay simulation is required to model these ownership transitions. Codec callback selection and wire reads remain the previously established contract.
+
+## Entity create header
+Fixed engine084810 computes class-ID bit width from received ServerInfo.max_classes (wrapper+94), V_log2_uint+1, and stores it atclient+290. ReadPacketEntities08b660 consumes that width, then exactly17 serial bits, then a varuint before create. ClassInfo085ad0 separately allocates its announced class count and rejects indices outside it. The frozen parser derives width from the converted DemoClassInfo list length instead; do not assume that adapter-derived count is always the server's encoding authority. Unified live mode carries ServerInfo.max_classes into parser construction and validates every class ID/list against it; the Demo fallback remains explicit. The17-bit create serial is distinct from the10-bit serial portion in the normalized ehandle wire accessor and must not be shortened.
+
+## Root and nested serializer version selection
+CFlattenedSerializers vtable+88 maps to0ac280 CreateReplayCompatSerializerFromMeta. It constructs the lookup key from requested class name with version0 atkey+10, then calls08d780. Nested lookup079ff0 instead fills that same key+10 from the received field's serializer version. 08d780 compares case-insensitive name then version. Therefore the headless fake-schema root is explicitly(className,0), while nested/poly references retain their advertised versions; choosing whichever same-name serializer appeared last is not equivalent. Keep original names for output while using validated case-insensitive lookup identity; reject conflicting duplicate definitions. This is specific to the fixed metadata path and must not silently rewrite old Demo roots with another schema convention.
+
+The independent JavaScript quantizer research model now matches the saved160 native configurations exactly, including float32 intermediates, effective flags and both multipliers. Four warned cases derive widths33/34/42/48; these remain unsupported production read widths rather than being silently passed to a32-bit reader. Evidence: quantizer-javascript-model-comparison.json andtools/quantizer-model.mjs. This is a research model, not a client patch.
+
+## Wire type authority and legacy aliases
+The metadata writer was followed through 0ab720 → 086e10 → 092450. The intermediate record stores the field name first and emitted type second; 092450 preserves that order. 0ab720 writes the second slot to protobuf object+38 and the first to+3c. Therefore +38 is the type-symbol slot and +3c is the name-symbol slot in this generated layout; do not label them from numerical protobuf tag order or a decompiler variable name. The type comes from the compiled field's +98 alias when +90 hash is nonzero, otherwise the string at +b0. These are observed compiled-field offsets, not asserted offsets of the SDK CNetworkSerializerFieldInfo declaration.
+
+The writer supports optional enum metadata, but support does not prove emission. In the inspected 086e10 path, record bytes +45/+46 begin zero and no assignment to them was found before 092450 copies the record. This must not be upgraded into a claim that every fixed-build enum is annotated. The reader separately supports an enum dictionary (1b56a0) and an atomic alias dictionary (1b5780). The fake-field constructor can also invoke its supplied compatibility object's +18 type-remap callback, with bounded repeated remapping. These sources must be reconciled for unannotated required types before the unified parser is connected.
+
+The older fixture contains unannotated GameTime_t, GameTick_t, CUtlStringToken, ResourceId_t, CEntityIndex and other aliases/enums. Their inventory is in fixture-type-authority.json. The pinned SDK's GameTime_t stores a float, which establishes storage only, not its selected network encoder. Do not turn that observation or the legacy parser's fallback into current-build wire proof. The isolated nativeQuantizedFloat module is not connected to the runtime; full integration remains gated on this reconciliation.
+
+The game compatibility remapper is now traced beyond its interface: client RTTI CBaseSerializerMatchToMetaReplayCompatHelper vtable1c63898 has type-remap method b77f10. Its global instance2230380 is initialized by b70a00; b77c80 reads scripts/replay_compatability_settings.txt through mounted game search paths and b77390 loads its KV3 settings. b77f10 walks the ordered alias vector, supports case-insensitive prefix matching when flagged and exact case-sensitive matching otherwise, returns the whole replacement string, and leaves unmatched input unchanged. The network constructor's repeated remap loop is bounded to16 replacements.
+
+The two relevant official resource files were retrieved anonymously from separately pinned content depot2347770 manifest2520908610273941189 (2026-10-15T17:23:21Z); both VPK entry CRCs were verified. The binary depot remains2347771 manifest8766757721818354077. The factual profile is replay-compat-resource-profile.json; raw resource archives remain local. Core explicitly maps CHandle< prefix→uint32, CUtlStringToken→uint32, CGameSceneNodeHandle→uint64 and several deleted enums; CS2 explicitly maps CEntityIndex→int32, WorldGroupId_t→uint32, WeaponAttackType_t→int32, among others. This is stronger evidence than the old parser's unsigned fallback. RenamedTypes entries are compatibility matching relationships, a different section from FieldTypeAliases; do not blindly turn all renamed pairs into decoder aliases. PointerFieldTypes and UserDefinedSerializerLookup are separate inputs, including the historical m_flSimulationTime→simulationTimeSerializer fallback.
+
+## Boxed type payloads, separate from enum fallback
+GameTime_t and GameTick_t no longer rely solely on a C++ declaration. Client static class records carry MIsBoxedFloatType/MIsBoxedIntegerType and m_Value fields. Their pre-registration type tokens are F000...000E and F000...000A. schemasystem29eaf..29ee1 replaces such tokens by indexing the module-supplied type array; they are not builtin enum IDs. Client15ef6b0 initializes that module's slot14 using Type_Builtin(11), and slot10 using Type_Builtin(7). The fixed schemasystem builtin-name table4ba80 independently identifies11=float32 and7=int32. Native scalar selector networksystem0eb600 routes IsTypeSafeFloat/Int fields through fieldInfo+130's builtin underlying name, after custom serializer resolution. The writer can still emit the original boxed name because0ec420 preserves the raw typename in compiledField+b0. Evidence: boxed-type-authority.json. Preserve custom encoder/configuration and avoid generalizing the two demonstrated mappings to all unannotated types.
+
+The generated network-field constructors now close the source of these two boxed mappings: client1af6e0 sets IsAtomic(+144), IsTypeSafeFloat(+14c), builtin underlying(+130) to the literal float32 and calls1ddd90 to insert GameTime_t→float32 into the database's+58 dictionary. Client91d2b0 sets IsTypeSafeInt(+14b), underlying int32 and inserts GameTick_t→int32 into the same dictionary. This is the dictionary read by networksystem1b5780. Ten isolated native0eb600 cases additionally confirm boxed-name selection and signed/unsigned enum-width selection for1/2/4/8 bytes, stubbing only registry/dictionary lookup against the saved native primitive catalog. See native-type-selection-emulation.json; this is not a claim that all type registrations or live traffic have been verified.
+
+## Unannotated enum registrations cross-checked in both game modules
+The generated field builders explicitly set IsEnum(+146) and IsSigned(+150), then register enum name/size/signedness into their codegen database. For example client417c50 sets AnimLoopMode_t signed and calls15d3980; attributeprovidertypes_t builder10dae80 sets unsigned. A bounded static constructor/call-site extractor found37 registrations representing36 base enum types in each fixed client/server module, with the same name set and no signedness conflicts. The complete factual profile and call/flag addresses are native-enum-type-profile.json plus the two module evidence files. All unannotated enum base names in the old fixture inventory are accounted for, including MedalRank_t and attributeprovidertypes_t; this does not turn that older Demo into a current-build live test.
+
+The array builder for MedalRank_t carries total width24 for six elements. Preserve array shape separately and do not interpret a constructor's total-width argument as enum element width. Explicit received var_enum_info remains the wire authority when present; the fixed-build registration profile fills demonstrated unannotated names. Unknown names in other builds or extensions need evidence rather than a generic unsigned fallback. The extractor uses linear symbolic tracking only for constant type-name/width arguments at validated direct constructor calls; it records unresolved sites instead of assigning guessed names. The saved runs have zero unresolved sites in this signature-matched constructor set.
+
+## Coordinate profile selection and omitted-profile behavior
+Engine085330 validates all six advertised coordinate widths in1..31 and max(integer,integer_mp)+3+max(fraction,fraction_mp)<=32 before installing the profile. If the whole profile is absent, it asks Source2Client slot518 for legacy settings. Fixed clientb6fcb0 marks that legacy profile available and calls9f6e90, which writes14,5,11,3,11,20 in protobuf field order. The first four values come from1c33ed0; the last two are explicit immediates11 and20. Evidence: coordinate-default-profile.json and its fixed-hash read-only verifier. This fallback is now tied to the actual game module rather than inherited from a parser's historical constants. A present but partial/invalid profile must fail native validation; do not fill its individual missing fields from this fallback. A new world must choose its own profile and cannot inherit a prior world's custom buffer configuration.
+
+The qangle bitcount0 branch was separately exercised against native0d2950 for384 combinations of presence masks, signs, integer/fraction cases and10+4/14+5 coordinate profiles. All expected triples and consumed bits match. It reads three component-presence bits before each present component's ordinary coordinate payload. This differs from three unconditional coords and from qangle_precise's default-angle encoding. Positive bitcounts and the distinct32-bit behaviors are covered by the prior90-case angle-bitcount observations.
+
+Engine09ca50 builds the derived coordinate context from the chosen six widths: float32 fractional reciprocals, float32 normal reciprocal after signed32 shift/subtraction, and double-precision precise-angle factors using a64-bit shift. INetworkMessages slot120 is network0e3db0, which copies the96-byte prepared context into its owned configuration. Thus precise-angle profile31 uses360/2^31, while an explicit qangle_precise field bitcount32 follows the separately observed scalar angle-reader shift behavior; these two width sources must not be conflated. Keep native float32 rounding for normal reconstruction and decoded components.
+
+## Origin cells: derive width from the quantizer rather than hardcode9
+
+The raw cell and fractional fields are sufficient for network-origin reconstruction; rendering/parented absolute transforms remain a separate projection. Clienta1e200 reads the fractional field's registered quantizer through tier0!GetQuantizedFloatEncoderByReg, uses config byte1e>>2 when nonzero, otherwise defaults to10, narrows the received cell to ushort, and calculates float32(int32((cell<<shift)-g_nConfigMaxCoord))+fraction. The old helper's universal CELL_BITS9 is not the native rule.
+
+Native quantizerdd340 fills those upper bits from the rounded power-of-two representable range, restoring its round-up/down offset before calculating the range. Non-power-of-two or raw configurations leave0, producing the callback's10-bit fallback. An independent research model matches the upper bits on the existing160 native configurations plus18 additional15-bit origin configurations with ranges128 through4096 and flags0/1/2. In particular range512 produces9 and range1024 produces10; byte1e is not only a raw/no-scale flag. Preserve this metadata during unified quantizer construction if emitting network origins.
+
+The necessary tier0 dependency was retrieved from the same official depot/manifest: SHA990ea56bf1626d299ba54b64b423f2e409bd592bb737c7a5edf7972ad5c7143e,3979928bytes. Its exported initial g_nConfigMaxCoord/g_flConfigMaxCoord are16384 at39c400/39c40c. GetQuantizedFloatEncoderByReg15c380 indexes the registered encoder pointer array with the field's ushort registration ID and has a fatal invalid-index branch. The observer should use its validated received field configuration directly, not fabricate registry IDs or invoke game imports. Exported globals could be changed by another module; this fixed default is a profile fact, not a guarantee about arbitrary games/plugins.
+
+Do not replace absent origin fields by zero and publish a made-up coordinate. Require the relevant committed cell/fraction fields and identity; preserve raw values otherwise. Label reconstructed data as network origin unless parent transforms are also evidenced and applied. Event-only kill/weapon output does not require reproducing the render scene graph.
+
+## Integral coordinate aggregates: mixed encodings
+Fixed networksystem0da4f0 accepts dimensions1,3,6,8. Dimensions1/3 read integral coordinates: compact/full width selector, presence, then sign and magnitude-minus-one when present. Dimensions6/8 use that encoding only for the first three components. The second triple has a three-bit component-presence mask, followed by ordinary fractional coordinate payloads for the present components, using the full integer/fraction profile. Do not apply integral decoding to all six values.
+
+Evidence: integral-coordinate-aggregate-emulation.json and tools/gotv-emulate-integral-coordinate-aggregate.py exercise1,024 fixed-binary cases over dimensions6/8, two coordinate profiles, compact/full first-triple widths, zero/nonzero first triples, all second-triple masks, integer/fraction combinations and signs. All values and exact bit counts match. Dimension6 completes the native function; dimension8 stops at matrix-conversion entry1b65e0 and checks its two input triples. This proves wire consumption and raw values, not the rendered matrix. The earlier96 integral cases cover dimensions1/3 only; they did not establish this aggregate rule.
+
+Angle configuration uses networksystem0d1f00: initialize config0, reject unsigned bitcounts above32, otherwise copy the advertised bitcount only when the field's presence/enable byte+108 is set. In qangle_pitch_yaw0d4640, both config0 and32 read exactly two raw float32 words and append zero roll. This differs from qangle0's presence-conditioned coordinates and qangle_precise0's presence-conditioned profile-angle components. Evidence:24 native configuration/zero-width cases in angle-zero-config-emulation.json. Geometry profile widths1..31 were additionally exercised in4,960 native normal-vector/precise-angle cases with exact values and bit consumption; see geometry-profile-boundary-emulation.json and its reproducible harness. The latter file stores a canonical case hash plus failures instead of thousands of duplicate successful rows.
+
+## Complete signature-matched boxed-type registration set
+A broader fixed-binary scan no longer starts from only the old Demo's unknown type names. It identifies generated constructors with IsAtomic(+144), IsTypeSafeInt/Float(+14b/+14c), and a proven CUtlString::Set call assigning the underlying builtin name to the same object+130. Both client and server have83 matched constructor calls,14 declared shapes and9 base types; the two profiles agree with no unresolved calls in this matched set. CUtlString::Set is independently identified through the PE import table at client181aad7f0/server1817643c8. The profile includes GameTime_t→float32; GameTick_t,CEntityIndex,CPlayerSlot,HSequence→int32; AttachmentHandle_t→uint8; ModelConfigHandle_t,WorldGroupId_t→uint32; ResourceId_t→uint64. This extends the initial two-name boxed evidence.
+
+Array shapes and vector wrappers remain separate: AttachmentHandle_t[10], CEntityIndex[12], GameTime_t[32], and the ResourceId_t network vectors must not use their total storage size as a scalar width. Native0779c0 strips the recognized vector wrapper and, when comma parameters exist, selects the first split component as the element type. Two real fixed-build declarations include NetworkVar metadata and -1 template arguments after ResourceId_t. Preserve the container shape and decode its first element-type argument. Native source here uses comma splitting; do not claim a general C++ template parser is required by this observed grammar.
+
+Evidence: native-boxed-type-profile.json, client/server-boxed-registration-evidence.json and tools/extract-boxed-profile.py plus verify-boxed-profile.py. The extractor records signature-limited static evidence, not proof about arbitrary dynamically registered/plugin types. Initial pattern-only hits in unrelated object methods were excluded by the shared IsAtomic/base/store requirements, rather than being converted into guessed types.
+
+Native quantizer initialization and actual value decoding are independently covered. networksystem0d1520 was executed against194 distinct saved native configurations, dimensions1/2/3/4/6/8, effective sentinel branches and representative raw payload boundaries:5400 reads completed with exact bit consumption. The standalone read model matches all5400 output byte sequences and cursor positions. Quantizer construction checks alone were not used as proof of decode arithmetic. The native vectors can be regenerated by the saved harness; their canonical hash is in quantized-configured-read-summary.json. The model and comparison remain research inputs, without observer runtime integration or live acceptance.
+
+## Field-path depth and ordinary array/string boundaries
+The fixed native CFieldPath contract permits depth10 (the SDK struct has12 inline shorts, which is storage capacity rather than the protocol depth). Expanded native comparisons cover5582 valid opcode cases with input/output depths up to10. Four over-depth push cases mark bitreader overflow and leave the path depth unchanged; they do not produce a successful new field path. A seven-entry tuple from the old parser must not become the new parser's protocol limit. Source evidence: field-path-depth-emulation.json, field-path-depth-limit-probe.json and saved harnesses.
+
+The fake-field helper is not sufficient evidence for ordinary fixed-array wire behavior. Real compiled-field selection0eb600 specializes fixed char arrays with size>1 to the atomic string accessor table291068. Array serializer selector0ebd90 recognizes that exact table's getter/setter pairs and returns no array serializer. Four native mode/bank cases verify this bypass without allocator/import execution. Therefore char[N>1] is one string value, not N individually decoded scalar characters or a dynamic-length vector. char[1] remains outside that string specialization.
+
+Ordinary fixed-array readers0eb0f0/0eb150 use the declared ushort size without consuming a payload when their encoded-size flag isfalse. With the flagtrue, they consume a varuint;0eb150 additionally checks it against the declared size. Their actual ReadFields caller supplies whether a dynamic size accessor exists. Forty native cases verify these branches. Keep fixed-array extent and dynamic-vector length separate; the previous fake-container varuint cases alone did not establish the fixed-array rule. The mature pinned demoinfocs parser independently excludes char arrays from generic fixed-array modeling.
+
+Metadata encoder defaults must be traced through the caller:079ff0 initializes omitted var_encoder_sym to the nonnull string default before calling0779c0. The latter's internal QAngle fallback applies only when its explicit encoder argument isnull. Consequently a metadata-only receiver must follow the advertised encoder, or default when absent, rather than unconditionally selecting qangle from the type name. Native encoder lookup is case-insensitive; an unsupported explicit encoder is a precise observer error instead of an invented fallback codec.
+
+Pointer compatibility lookup also requires the actual call argument. network077240 tests a trailing* first; otherwise its helper slot10 call passes the field-name fifth argument inR9. Fixed clientb6c860 ignores the owner/type arguments and searches that R9 name in helper+80, populated from the resource PointerFieldTypes name list byb77390. Therefore the maintained list must be applied to the field name for this fixed compatibility path, not generalized to every field whose underlying type happens to match. Common CBodyComponent fixture entries happen to have identical name/type and would hide this distinction. Evidence:pointer-compat-dispatch.json and exact-byte verifier.
+
+## Whole-list termination and malformed input boundary
+The ordinary field-list reader10eba0 checks root component32767 after dispatch and before appending a field. Termination is therefore a path-state sentinel, not only opcode39. A whole-reader isolated native probe with an explicitly synthetic two-leaf dispatch lookup proves that both opcode39 and PlusN from initial-1 to32767 return success with zero fields; truncated PlusN returns failure with overflow. The probe isolates termination, not real Huffman codeword construction. A unified reader must check the root sentinel before ordinary path validation/resolution.
+
+Twenty-six isolated malformed/boundary opcode probes distinguish native behavior from observer policy. Pop-one and penultimate operations at depth1 set overflow without changing depth. Simple increments use signed16-bit storage and can wrap without setting overflow; whole-list path resolution still decides whether a resulting path is valid. Non-topological varint decoding accepts nonminimal encodings, truncates the fifth-byte payload to32 bits, and stops after five bytes even when its continuation bit is set. Input truncation does set overflow, but can leave partially modified path state. Consequently neither an opcode return nor an unchanged path proves successful decoding. Preserve packet/entity transaction rollback and inspect overflow before publishing. Rejecting overwide/unterminated varints or wrapped invalid components is a deliberate observer resilience policy, not a claim that the native opcode reader rejects them. Evidence: field-path-invalid-probe.json and field-path-termination-probe.json, with reproducible hash-pinned tools. No runtime parser integration or artifact was produced by these probes.
+
+Custom serializer names use a case-insensitive native symbol table: network0ddc30 constructs table2a4220 with the fourth argument true (mov r9b,1 at0de02c), and0e0f70 queries that table. Pinned s2sdk public/tier0/utlsymboltable.h names this argument caseInsensitive. The separate field-name fallback helper clientb70dd0 searches helper+100 through159970, whose comparator calls V_stricmp_fast. Thus canonical custom names and compatibility fallback field names are case-insensitive in these two paths; do not globally case-fold unrelated aliases or primitive names. The isolated local schema model now covers these cases; it remains disconnected from the runtime. Source: https://github.com/alliedmodders/s2sdk/blob/5864d8db8519e80a0d870c0e0474eddc8172fb4e/public/tier0/utlsymboltable.h.
+
+The pointer-name compatibility set deliberately differs: clientb6c860 hashes the exact supplied field-name bytes through9ea690, then9b8430 checks length and calls1a57460, whose byte/word comparator is a raw memcmp with no case folding. Preserve case-sensitive pointer-name matching. This closes the distinction rather than applying the custom-serializer lookup normalization to all metadata names.
+
+CUtlBinaryBlock is category6 with catalog dimension0, unlike the fixed scalar families. Native0dcd80 ignores aggregate dimension, reads a varuint byte length through1bf770, then copies that many bytes through1bf2d0 and returns category6/count. Seventy-two native cases with dimension0 cover lengths0,1,2,7,31,127,128,257,1024 at every bit alignment, using preallocated output and no allocator/import hooks. The unintegrated local codec originally rejected dimension0 in its generic scalar guard; the profile-construction audit found and corrected that model error. All32 primitive default configurations now construct, and the binary model matches all72 native byte/cursor observations. This does not authorize arbitrary unbounded allocation: length/decompression budgets remain observer policy.
+
+## Explicit custom wire authority and lookup-specific case rules
+
+The full old fixture schema exposed a local model defect: 212 of 213 class
+graphs constructed, while CCSPlayerPawn failed on m_hItem/CEntityHandle despite
+that field explicitly advertising var_serializer=ehandle. The fixed client
+constructor 0873eb0 marks the field atomic and a CHandle, and sets its type
+override at +128 to ehandle; its caller 0894b10 supplies m_hItem. Both fixed
+client/server registration inventories assign ehandle unsigned category 2,
+dimension 1. The real compiled-field selector network0eb600 resolves a known
+custom serializer before primitive fallback and returns that registered group.
+
+This must be distinguished from network0779c0's fake-field construction order,
+which checks the raw/aliased primitive first. A headless wire-only model can
+accept an explicitly recognized, fixed-profile custom serializer even when it
+does not otherwise know the original C++ type. This is a deliberate observer
+construction choice supported by the advertised wire category, not proof that
+native fake-field lookup accepts every such raw type. It neither adds a blanket
+CEntityHandle-to-integer alias nor silently assigns unsigned to unknown types.
+An unknown type without a recognized serializer still fails.
+
+The primitive registry, enum dictionary and boxed-type dictionary use
+network0922c0, whose comparisons call V_stricmp_fast. The primitive initializer
+0e9820 also identifies its dictionary comparator as CDefFastCaselessStringLess.
+Thus those specific lookups are case-insensitive. Resource alias callback
+clientb77f10 is different: a prefix rule uses V_strnicmp_fast, while an exact
+rule calls CUtlString::IsEqual_CaseSensitive. Pointer-name matching remains
+case-sensitive as documented above. Do not apply one normalization rule to
+every metadata string.
+
+The isolated local model now passes ten targeted positive/negative authority
+and case tests, 25 existing graph tests, and constructs all 213 class roots
+from the old fixture's 268 serializers/1592 fields. These results establish
+schema construction only: they do not validate an entire stream, current live
+schema delivery, callbacks, Windows startup, or GOTV acceptance. The observer
+runtime remains unchanged.
+
+## Actual Huffman codebook, not only opcode behavior
+
+Final reconciliation found that the earlier opcode probes and the synthetic
+two-leaf termination test did not establish the real Huffman code assignment.
+The fixed constructor1d71a0's 40 frequency stores were extracted from machine
+instructions and agree with the pinned parser's frequency vector. Native
+builder1d7440 clamps each leaf weight to at least1, assigns monotonically
+increasing sequence IDs, and makes the first/second popped nodes its left/right
+children. Native heap insertion1d7da0 and sift1d80a0 prioritize smaller weights,
+then larger sequence IDs on a tie. Its sequence IDs start at1 rather than the
+reference's0, a constant offset that does not alter ordering.
+
+An isolated harness executes the real heap operations on preallocated memory,
+then the real recursive tree-table builder1d7030, with no allocator hooks or
+operating-system imports. Reversal/reindexing follows1d6de0. The resulting
+table agrees for all40 codewords with an independent reference construction,
+and its maximum code length is17. The actual pinned TypeScript
+fillHuffmanTables output then matches that native-derived table for every
+17-bit prefix. This validates reuse of the existing Huffman codebook; it does
+not validate the old reader's depth limit or opcode-only termination rule.
+
+The whole-list reader10eba0 was also exercised with this actual table for
+finish, PlusN-to-root-sentinel, truncated PlusN and truncated long-code cases
+at all eight bit alignments. All32 boundary cases returned the expected
+success/overflow and zero-field behavior. This replaces the old synthetic
+table as evidence for those boundaries, while the synthetic test remains a
+useful narrower historical check.
+
+Evidence: huffman-codebook-authority.json, huffman-reference-comparison.json,
+field-path-codebook-boundaries.json and their saved tools. This is fixed-build
+offline evidence, not a completed snapshot decoder or live connection.

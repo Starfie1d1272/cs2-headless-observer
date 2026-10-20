@@ -230,3 +230,78 @@ class UnreliableOrder:
         gap = 0 if self.last is None else frame.sequence - self.last - 1
         self.last = frame.sequence
         return {'accepted': True, 'gap': gap}
+
+
+
+class UnreliableFeedback:
+    """Source 2 receive acknowledgements, separate from SDK reliable-stream ACKs.
+
+    networksystem 0be6e0 / 0c2230: sequence starts at 1, received starts at 0.
+    Three history values describe received, late and missing frames. Latency is
+    deliberately 'unmeasured' (0xfffd), never an invented timing measurement.
+    """
+    UNKNOWN, LATE, DROPPED = 0xfffd, 0xfffe, 0xffff
+
+    def __init__(self):
+        self.sequence, self.received = 1, 0
+        self.history = {}
+
+    def observe(self, frame):
+        if frame.reliable:
+            return
+        sequence = frame.sequence
+        if type(sequence) is not int or not 0 <= sequence <= 0x7fffffff:
+            raise ProbeError('unsupported-sequence-domain')
+        if sequence <= self.received:
+            if self.history.get(sequence) == self.DROPPED:
+                self.history[sequence] = self.LATE
+            return
+        previous = self.received
+        self.received = sequence
+        self.history = {
+            n: (self.UNKNOWN if n == sequence or n <= 0 else
+                self.DROPPED if n > previous else self.history.get(n, self.UNKNOWN))
+            for n in range(sequence, sequence - 3, -1)
+        }
+
+    def frame(self, body=b''):
+        if self.sequence > 0x7fffffff:
+            raise ProbeError('outgoing-sequence-restart-required')
+        packet = unreliable_frame(body, self.sequence, self.received,
+            tuple(self.history.get(n, self.UNKNOWN) for n in range(self.received, self.received - 3, -1)))
+        self.sequence += 1
+        return packet
+
+
+class ReliableMessageFilter:
+    """Fixed engine08b010 application marker, separate from GNS and net sequence.
+
+    Clear/world-reset retains both fields. Replacing the game-client owner resets
+    its marker but does not infer removal of the retained channel's filter.
+    """
+    def __init__(self):
+        self.last_tick = 0
+        self.filtered = False
+
+    def replace_client_owner(self):
+        self.last_tick = 0
+
+    def accept(self, message_id, body):
+        if message_id != 61:
+            return not self.filtered
+        from wire import fields, scalar
+        values = fields(body)
+        state = scalar(values, 3)
+        if state not in (None, 0, 1):
+            raise ProbeError('reliable-marker-state')
+        tick = scalar(values, 1) or 0
+        tick &= 0xffffffff
+        if tick & 0x80000000:
+            tick -= 0x100000000
+        if not state:
+            self.filtered = False
+        elif tick <= self.last_tick:
+            self.filtered = True
+        else:
+            self.last_tick = tick
+        return True

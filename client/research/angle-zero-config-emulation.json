@@ -1,0 +1,212 @@
+{
+  "summary": {
+    "manifest": "8766757721818354077",
+    "cases": 24,
+    "passed": 24,
+    "method": "fixed-hash isolated angle config constructor and pitch/yaw native zero/32 branches, no OS imports"
+  },
+  "cases": [
+    {
+      "kind": "angle_config",
+      "present": 0,
+      "input_width": 0,
+      "actual_config": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 0,
+      "input_width": 1,
+      "actual_config": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 0,
+      "input_width": 8,
+      "actual_config": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 0,
+      "input_width": 31,
+      "actual_config": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 0,
+      "input_width": 32,
+      "actual_config": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 0,
+      "input_width": 33,
+      "actual_config": 0,
+      "accepted": 0,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 0,
+      "input_width": 4294967295,
+      "actual_config": 0,
+      "accepted": 0,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 1,
+      "input_width": 0,
+      "actual_config": 0,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 1,
+      "input_width": 1,
+      "actual_config": 1,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 1,
+      "input_width": 8,
+      "actual_config": 8,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 1,
+      "input_width": 31,
+      "actual_config": 31,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 1,
+      "input_width": 32,
+      "actual_config": 32,
+      "accepted": 1,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 1,
+      "input_width": 33,
+      "actual_config": 0,
+      "accepted": 0,
+      "passed": true
+    },
+    {
+      "kind": "angle_config",
+      "present": 1,
+      "input_width": 4294967295,
+      "actual_config": 0,
+      "accepted": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 0,
+      "input_hex": "0000000000000000",
+      "actual_hex": "000000000000000000000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 0,
+      "input_hex": "000000800000803f",
+      "actual_hex": "000000800000803f00000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 0,
+      "input_hex": "000034c200003443",
+      "actual_hex": "000034c20000344300000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 0,
+      "input_hex": "0000003f000080bf",
+      "actual_hex": "0000003f000080bf00000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 0,
+      "input_hex": "ffff7f7fffff7fff",
+      "actual_hex": "ffff7f7fffff7fff00000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 32,
+      "input_hex": "0000000000000000",
+      "actual_hex": "000000000000000000000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 32,
+      "input_hex": "000000800000803f",
+      "actual_hex": "000000800000803f00000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 32,
+      "input_hex": "000034c200003443",
+      "actual_hex": "000034c20000344300000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 32,
+      "input_hex": "0000003f000080bf",
+      "actual_hex": "0000003f000080bf00000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    },
+    {
+      "kind": "pitch_yaw",
+      "config_width": 32,
+      "input_hex": "ffff7f7fffff7fff",
+      "actual_hex": "ffff7f7fffff7fff00000000",
+      "actual_bits": 64,
+      "overflow": 0,
+      "passed": true
+    }
+  ]
+}

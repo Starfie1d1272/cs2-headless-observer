@@ -1,0 +1,27 @@
+{
+  "module": "server.dll",
+  "sha256": "09e8c04c5f44040155d04fa79a3f43491d542a386f45807ed77785729e5925a9",
+  "method": "Fixed-hash read-only aligned instructions, owner-global and embedded event-name checks; interface meaning cross-checked with pinned igameevents.h",
+  "sdk_commit": "5864d8db8519e80a0d870c0e0474eddc8172fb4e",
+  "sdk_source": "https://github.com/alliedmodders/s2sdk/blob/5864d8db8519e80a0d870c0e0474eddc8172fb4e/public/igameevents.h",
+  "resolved_exclusions": [
+    {
+      "call": "0x180ddb248",
+      "owner_global": "0x182182cf8",
+      "slot": "0x50",
+      "event": "hltv_title",
+      "classification": "IGameEventManager2::FreeEvent",
+      "reason": "Same owner creates the named event through slot0x30 and serializes it through0x58; slot0x50 matches pinned IGameEventManager2 FreeEvent. This is not the serializer registration owner."
+    },
+    {
+      "call": "0x180dde7be",
+      "owner_global": "0x182182cf8",
+      "slot": "0x50",
+      "event": "hltv_chat",
+      "classification": "IGameEventManager2::FreeEvent",
+      "reason": "Same owner creates the named event through slot0x30 and serializes it through0x58; slot0x50 matches pinned IGameEventManager2 FreeEvent. This is not the serializer registration owner."
+    }
+  ],
+  "checks": 2,
+  "passed": 2
+}

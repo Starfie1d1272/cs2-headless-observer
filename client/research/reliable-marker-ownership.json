@@ -1,0 +1,64 @@
+{
+  "manifest": "8766757721818354077",
+  "dispatch": [
+    {
+      "owner": "CNetworkClientService",
+      "vtable": "0x18057fac8",
+      "slot": "0x1a8",
+      "target": "0x1801d8a90"
+    },
+    {
+      "owner": "CNetworkClientService",
+      "vtable": "0x18057fac8",
+      "slot": "0xd8",
+      "target": "0x1801d6e90"
+    },
+    {
+      "owner": "CNetworkClientService",
+      "vtable": "0x18057fac8",
+      "slot": "0x1b0",
+      "target": "0x1801d8ad0"
+    },
+    {
+      "owner": "CNetChan",
+      "vtable": "0x1802358a0",
+      "slot": "0x1f8",
+      "target": "0x1800c1cf0"
+    },
+    {
+      "owner": "CNetChan",
+      "vtable": "0x1802358a0",
+      "slot": "0x248",
+      "target": "0x1800c0f80"
+    },
+    {
+      "owner": "CNetChan",
+      "vtable": "0x1802358a0",
+      "slot": "0x250",
+      "target": "0x1800c1010"
+    }
+  ],
+  "instructions": [
+    {
+      "address": "0x18007a962",
+      "instruction": "mov qword ptr [rsi + 0x2c1430], 1"
+    },
+    {
+      "address": "0x18008b047",
+      "instruction": "mov eax, dword ptr [r9 + 0x2c1434]"
+    },
+    {
+      "address": "0x18008b0b7",
+      "instruction": "mov dword ptr [r9 + 0x2c1434], eax"
+    },
+    {
+      "address": "0x18021b192",
+      "instruction": "call qword ptr [rax + 0x1a8]"
+    },
+    {
+      "address": "0x180213740",
+      "instruction": "call qword ptr [rax + 0xd8]"
+    }
+  ],
+  "method": "fixed-hash static reads; no online or game execution"
+}
