@@ -1,0 +1,449 @@
+{
+  "manifest": "8766757721818354077",
+  "module_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "method": "Isolated fixed-function Unicorn emulation; no OS imports, SDK, network or DLL loading; malformed input observations are not a requirement to emulate unsafe behavior",
+  "rows": [
+    {
+      "name": "underflow-op27",
+      "opcode": 27,
+      "initial": [
+        0
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        0
+      ],
+      "bits": 0,
+      "overflow": 1
+    },
+    {
+      "name": "underflow-op28",
+      "opcode": 28,
+      "initial": [
+        0
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        0
+      ],
+      "bits": 0,
+      "overflow": 1
+    },
+    {
+      "name": "underflow-op37",
+      "opcode": 37,
+      "initial": [
+        0
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        0
+      ],
+      "bits": 0,
+      "overflow": 1
+    },
+    {
+      "name": "component-32766-op0",
+      "opcode": 0,
+      "initial": [
+        32766
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        32767
+      ],
+      "bits": 0,
+      "overflow": 0
+    },
+    {
+      "name": "component-32767-op0",
+      "opcode": 0,
+      "initial": [
+        32767
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -32768
+      ],
+      "bits": 0,
+      "overflow": 0
+    },
+    {
+      "name": "component-32766-op1",
+      "opcode": 1,
+      "initial": [
+        32766
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -32768
+      ],
+      "bits": 0,
+      "overflow": 0
+    },
+    {
+      "name": "component-32767-op1",
+      "opcode": 1,
+      "initial": [
+        32767
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -32767
+      ],
+      "bits": 0,
+      "overflow": 0
+    },
+    {
+      "name": "component-32766-op2",
+      "opcode": 2,
+      "initial": [
+        32766
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -32767
+      ],
+      "bits": 0,
+      "overflow": 0
+    },
+    {
+      "name": "component-32767-op2",
+      "opcode": 2,
+      "initial": [
+        32767
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -32766
+      ],
+      "bits": 0,
+      "overflow": 0
+    },
+    {
+      "name": "component-32766-op3",
+      "opcode": 3,
+      "initial": [
+        32766
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -32766
+      ],
+      "bits": 0,
+      "overflow": 0
+    },
+    {
+      "name": "component-32767-op3",
+      "opcode": 3,
+      "initial": [
+        32767
+      ],
+      "input_hex": "",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -32765
+      ],
+      "bits": 0,
+      "overflow": 0
+    },
+    {
+      "name": "signed-varint-00",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "0100",
+      "valid_bits": 9,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 9,
+      "overflow": 0
+    },
+    {
+      "name": "signed-varint-7f",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ff00",
+      "valid_bits": 9,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -54
+      ],
+      "bits": 9,
+      "overflow": 0
+    },
+    {
+      "name": "signed-varint-8000",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "010100",
+      "valid_bits": 17,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 17,
+      "overflow": 0
+    },
+    {
+      "name": "signed-varint-ffffffff0f",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffff1f00",
+      "valid_bits": 41,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 41,
+      "overflow": 0
+    },
+    {
+      "name": "signed-varint-ffffffff7f",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffffff00",
+      "valid_bits": 41,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 41,
+      "overflow": 0
+    },
+    {
+      "name": "signed-varint-8080808080",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "010101010101",
+      "valid_bits": 41,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 41,
+      "overflow": 0
+    },
+    {
+      "name": "signed-varint-808080808000",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "01010101010100",
+      "valid_bits": 49,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 41,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-varint-0",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffff01",
+      "valid_bits": 0,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 0,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-varint-1",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffff01",
+      "valid_bits": 1,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 1,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-varint-2",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffff01",
+      "valid_bits": 2,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 2,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-varint-7",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffff01",
+      "valid_bits": 7,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 7,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-varint-8",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffff01",
+      "valid_bits": 8,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 8,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-varint-9",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffff01",
+      "valid_bits": 9,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -54
+      ],
+      "bits": 9,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-varint-16",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffff01",
+      "valid_bits": 16,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        -54
+      ],
+      "bits": 16,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-varint-32",
+      "opcode": 36,
+      "initial": [
+        10
+      ],
+      "input_hex": "ffffffff01",
+      "valid_bits": 32,
+      "returned": true,
+      "rip": "0x30000000",
+      "depth": 1,
+      "path": [
+        10
+      ],
+      "bits": 32,
+      "overflow": 1
+    }
+  ]
+}

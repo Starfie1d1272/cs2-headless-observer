@@ -1,0 +1,43 @@
+{
+  "manifest": "8766757721818354077",
+  "module_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "method": "Whole-list native function10eba0 plus native opcode handlers, isolated Unicorn; synthetic two-leaf lookup isolates dispatch, no imported callbacks",
+  "rows": [
+    {
+      "name": "finish-opcode",
+      "opcode": 39,
+      "input_hex": "00",
+      "valid_bits": 1,
+      "returned": true,
+      "rip": "0x30000000",
+      "success": 1,
+      "fields": 0,
+      "bits": 1,
+      "overflow": 0
+    },
+    {
+      "name": "plusN-reaches-root-sentinel",
+      "opcode": 4,
+      "input_hex": "70ff0f",
+      "valid_bits": 22,
+      "returned": true,
+      "rip": "0x30000000",
+      "success": 1,
+      "fields": 0,
+      "bits": 22,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-plusN",
+      "opcode": 4,
+      "input_hex": "00",
+      "valid_bits": 2,
+      "returned": true,
+      "rip": "0x30000000",
+      "success": 0,
+      "fields": 0,
+      "bits": 2,
+      "overflow": 1
+    }
+  ]
+}
