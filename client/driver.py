@@ -542,6 +542,41 @@ def read_managed_connection(stream):
         raise ValueError('configuration-boundary') from None
 
 
+class ManagedOwner:
+    """Poll only the owned stdin pipe; never leave a blocking reader at exit."""
+    def __init__(self, fd):
+        self.fd = fd
+        self.stopped = False
+        self.peek = None
+        if fd is not None and os.name == 'nt':
+            import ctypes
+            import msvcrt
+            from ctypes import wintypes
+            self.handle = msvcrt.get_osfhandle(fd)
+            self.available = wintypes.DWORD()
+            self.peek = ctypes.WinDLL('kernel32', use_last_error=True).PeekNamedPipe
+            self.peek.argtypes = [wintypes.HANDLE, wintypes.LPVOID, wintypes.DWORD,
+                                  wintypes.LPVOID, ctypes.POINTER(wintypes.DWORD), wintypes.LPVOID]
+            self.peek.restype = wintypes.BOOL
+
+    def is_set(self):
+        if self.stopped or self.fd is None:
+            return self.stopped
+        try:
+            if self.peek is not None:
+                import ctypes
+                # No concurrent reader and no consuming read on this synchronous pipe.
+                ok = self.peek(self.handle, None, 0, None, ctypes.byref(self.available), None)
+                self.stopped = not ok or self.available.value != 0
+            else:
+                import select
+                # After the single configuration line, EOF or extra input both stop.
+                self.stopped = bool(select.select([self.fd], [], [], 0)[0])
+        except OSError:
+            self.stopped = True
+        return self.stopped
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--native', type=Path, required=True)
@@ -571,6 +606,7 @@ def main():
         password[:] = bytes(len(password))
         raise SystemExit('configuration-boundary')
     args.output.mkdir(mode=0o700)
+    owner_stopped = ManagedOwner(sys.stdin.fileno() if args.managed else None)
     driver = native = events = samples = parser = None
     report, failure = {'online_success': 'INCONCLUSIVE', 'offset_seconds': args.offset}, None
     finalization = []
@@ -583,6 +619,8 @@ def main():
         from uuid import uuid4
         parser = OrderedParserBridge(source=args.source_role + ':' + (args.source_id or uuid4().hex), channel=1, world=1,
                                      node=args.node, worker=args.parser_worker)
+        if owner_stopped.is_set():
+            raise KeyboardInterrupt()
         native = NativePort(args.native, endpoint, clock(), steam_api=args.steam_api)
         del endpoint
         def emit_event(event):
@@ -592,21 +630,24 @@ def main():
         driver = ObserverDriver(native, host_version=args.host_version, password=password,
             emit=emit_event, capture=SampleWriter(samples) if samples else None, now_ms=clock(), parser=parser)
         stop = clock() + args.seconds * 1000
-        while not driver.done and clock() < stop:
+        while not driver.done and clock() < stop and not owner_stopped.is_set():
             driver.step(clock())
             time.sleep(.01)
         if not driver.done:
-            driver.reason = 'duration-limit-incomplete'
+            driver.reason = 'owner-stopped' if owner_stopped.is_set() else 'duration-limit-incomplete'
         report.update(driver.report())
     except BaseException as error:
-        # Never print exception text/tracebacks: SDK/source/password data may be present.
-        failure = str(error) if isinstance(error, (DriverError, ProbeError)) else 'interrupted' if isinstance(error, KeyboardInterrupt) else 'operation-failed-details-omitted'
-        if type(error).__name__ == 'NativeStartError':
-            failure = 'native-start-failed'
-            report['native_boot_code'], report['steam_init_result'] = error.boot_code, error.init_result
-        if driver is not None:
-            report.update(driver.report())
-        report.update(outcome='failed', reason=failure)
+        if isinstance(error, KeyboardInterrupt) and owner_stopped.is_set():
+            report['reason'] = 'owner-stopped'
+        else:
+            # Never print exception text/tracebacks: SDK/source/password data may be present.
+            failure = str(error) if isinstance(error, (DriverError, ProbeError)) else 'interrupted' if isinstance(error, KeyboardInterrupt) else 'operation-failed-details-omitted'
+            if type(error).__name__ == 'NativeStartError':
+                failure = 'native-start-failed'
+                report['native_boot_code'], report['steam_init_result'] = error.boot_code, error.init_result
+            if driver is not None:
+                report.update(driver.report())
+            report.update(outcome='failed', reason=failure)
     finally:
         password[:] = bytes(len(password))
         for stage, action in [('close-session', driver.close if driver else native.close if native else None),

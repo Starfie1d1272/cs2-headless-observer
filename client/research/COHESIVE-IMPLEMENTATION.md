@@ -80,3 +80,19 @@ output and retire readiness on EOF. Managed SDK-start failure is tested using
 an absent native library, before any SDK load or socket. All inputs are synthetic.
 No game binary, Windows account/session, real GOTV source, package or release
 was used for these new integration checks.
+
+## 2026-10-20 17:08 owner-directed normal shutdown
+
+The managed owner keeps stdin open after the single connection record. EOF is
+the stop signal; no server/OS commands are accepted on this channel. The driver
+polls its owned pipe in the main loop, exits and runs normal SDK/parser
+finalization. POSIX uses zero-timeout select; Windows uses PeekNamedPipe with
+no competing reader. No blocking reader thread survives shutdown. Windows
+runtime behavior is not verified by these Linux fixtures. The consumer retires
+event delivery first, sends EOF, then uses bounded termination only as fallback.
+
+All60 Python tests pass. The CLI/actual parser worker plus the existing in-memory
+SDK fixture confirms owner-stopped, one port close, no requested ticket and no
+finalization errors. This is not a real Steam shutdown rehearsal. Six Mizar
+owned-process checks pass; normal cancellation requires exitcode2 from the
+synthetic child, rather than accepting a signal-killed process as graceful.
