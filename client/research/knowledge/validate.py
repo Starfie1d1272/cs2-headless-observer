@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 """Validate this catalog's structure and evidence digests, not scientific truth."""
-import argparse, hashlib, json, pathlib, re
+import argparse, hashlib, json, pathlib, re, subprocess
 p=argparse.ArgumentParser();p.add_argument('repository',type=pathlib.Path);args=p.parse_args()
 root=args.repository.resolve();here=root/'client/research/knowledge'
+paths={}
+if (root/'.git').exists():
+ names=subprocess.check_output(['git','-C',str(root),'ls-files','-z','client/research']).decode('utf-8').split('\0')
+else:
+ names=[f.relative_to(root).as_posix() for f in (root/'client/research').rglob('*') if f.is_file()]
+for relative in filter(None,names):
+ key=relative.casefold()
+ assert key not in paths,('case-insensitive path collision',paths.get(key),relative)
+ paths[key]=relative
 d=json.loads((here/'facts.json').read_text(encoding='utf-8'));manifest=json.loads((here/'sources.json').read_text(encoding='utf-8'));ids=set();sources=set()
 for fact in d['facts']:
  assert re.fullmatch(r'[A-Z]+-\d{3}',fact['id']),fact['id']
