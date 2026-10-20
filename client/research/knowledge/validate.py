@@ -3,7 +3,7 @@
 import argparse, hashlib, json, pathlib, re
 p=argparse.ArgumentParser();p.add_argument('repository',type=pathlib.Path);args=p.parse_args()
 root=args.repository.resolve();here=root/'client/research/knowledge'
-d=json.loads((here/'facts.json').read_text());manifest=json.loads((here/'sources.json').read_text());ids=set();sources=set()
+d=json.loads((here/'facts.json').read_text(encoding='utf-8'));manifest=json.loads((here/'sources.json').read_text(encoding='utf-8'));ids=set();sources=set()
 for fact in d['facts']:
  assert re.fullmatch(r'[A-Z]+-\d{3}',fact['id']),fact['id']
  assert fact['id'] not in ids,fact['id'];ids.add(fact['id'])
