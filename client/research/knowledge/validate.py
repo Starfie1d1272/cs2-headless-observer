@@ -13,5 +13,6 @@ assert sources==set(manifest['files']), 'Evidence index differs from catalog'
 for name in sources:
  file=(root/name).resolve();assert root in file.parents,name
  assert file.is_file(),name
- assert hashlib.sha256(file.read_bytes()).hexdigest()==manifest['files'][name],name
+ data=file.read_bytes();actual=hashlib.sha256(data).hexdigest()
+ assert actual==manifest['files'][name],(name, {'actual':actual,'expected':manifest['files'][name],'crlf':data.count(b'\r\n'),'lf':data.count(b'\n')})
 print(json.dumps({'facts':len(ids),'sources':len(sources),'structure_and_hashes':'pass','semantic_verification':'not performed by this validator'},ensure_ascii=False))
