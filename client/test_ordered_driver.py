@@ -79,6 +79,7 @@ class OrderedDriverTests(unittest.TestCase):
         self.assertTrue(any(row['kind'] == 'discontinuity' for row in self.output))
         self.send([(4, number(1, 102)), (55, full(102))])
         self.until(lambda: self.driver._processed_entity_tick == 102)
+        self.until(lambda: any(row['kind'] == 'cursor' and row['tick'] == 102 for row in self.output))
         self.assertFalse(self.driver._recovery_pending)
         before = self.driver.feedback.sequence
         self.send([(51, b'')])

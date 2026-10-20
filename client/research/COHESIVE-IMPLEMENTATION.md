@@ -58,3 +58,25 @@ source checkout accepts the regenerated patch and full locked-toolchain
 typecheck/build. All54 Python tests and195 component assertions pass, as do
 5582 path-opcode and56 path-boundary cases. See message-context-integration.json.
 The earlier53-test record remains historical rather than being silently rewritten.
+
+## 2026-10-20 16:47 managed consumer integration
+
+Ordered core records now preserve each type9 controller-slot identity alongside
+the actual userinfo userid, Steam64 and controller serial. The bounded Python
+bridge forwards13 supported Mizar event names plus round start/end, keeping the
+legacy kind/actor/target fields. Recovery clears the cursor throttle baseline,
+so a new accepted full below the prior tick immediately restores a cursor.
+
+Managed CLI mode takes one bounded private stdin connection record, publishes
+event-only stdout, does not save event/channel captures, and keeps the final
+report off that stream. Source identity may be allocated by the owning process.
+The current decoder explicitly accepts hostVersion14191 only. No installed
+production source is automatically enabled by these changes.
+
+Clean pinned-source patch/typecheck/build and58 Python tests pass;203 component
+assertions and5582 opcode/56 boundary cases pass. A built Mizar pipe reader,
+existing source owner and consumer accept the actual generated worker/bridge
+output and retire readiness on EOF. Managed SDK-start failure is tested using
+an absent native library, before any SDK load or socket. All inputs are synthetic.
+No game binary, Windows account/session, real GOTV source, package or release
+was used for these new integration checks.

@@ -61,6 +61,10 @@ const before=core.committedTick;out=send(70,null,null);
 check(()=>assert.equal(core.committedTick,before));check(()=>assert.equal(out.some(r=>r.type==='receipt'),false));
 out=send(55,P,{...packet,delta_from:10,server_tick:11});
 check(()=>assert.match(out[0].reason,/tick/));check(()=>assert.equal(core.committedTick,-1));
+// Recovery may resume below the previous cursor; readiness cannot wait for its old tick.
+send(4,Tick,{tick:3});out=send(55,P,{...packet,server_tick:3});
+check(()=>assert.equal(out.some(r=>r.type==='receipt'&&r.tick===3),true));
+check(()=>assert.equal(out.some(r=>r.type==='cursor'&&r.tick===3),true));
 // Table failure is not repaired by a full snapshot using stale prior tables.
 out=send(45,U,{table_id:99,num_changed_entries:0});
 check(()=>assert.equal(out[0].worldReinitialization,true));check(()=>assert.equal(core.ready,false));

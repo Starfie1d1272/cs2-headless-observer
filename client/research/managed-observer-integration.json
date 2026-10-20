@@ -1,0 +1,30 @@
+{
+  "as_of_beijing": "2026-10-20T16:47:00+08:00",
+  "profile": "14191/10924",
+  "source_parser_commit": "deced963b86d3ec26b28a225824130fdf9fe3167",
+  "python_tests": 58,
+  "python_passed": 58,
+  "component_checks": 203,
+  "field_path_opcode_cases": 5582,
+  "field_path_boundary_cases": 56,
+  "clean_pinned_patch_typecheck_build": true,
+  "managed_mode": [
+    "one bounded private stdin connection object",
+    "event-only stdout, final report stderr",
+    "no event/channel capture files",
+    "caller-owned source UUID",
+    "explicit fixed hostVersion14191"
+  ],
+  "consumer_integration": "Generated protocol -> real Node worker -> Python bridge -> built Mizar NDJSON reader -> existing source owner -> event consumer",
+  "source_owner_checks": 9,
+  "live_gotv": false,
+  "windows_runtime": false,
+  "package_created": false,
+  "files": {
+    "cs2parser-online.patch": "0b3b74b01f4a07184d010059754ffde9b9dbdac3c0256b53f68e34f71e3e8220",
+    "driver.py": "db13243141e2f0622d02011709af3a655dad57629bb1309f0cb3b66b2f0021b1",
+    "ordered_parser_bridge.py": "f4c2590f2714a28ff22ea37535952de17451db162dd645bcbb9c76e8048daf53",
+    "test_ordered_driver.py": "833541c852bd203a20f737fbfd49f38b220a8d2e3dbc8d02bdeb275b7f2ebfa2",
+    "test_managed_connection.py": "cc1c65846530b670f7766ead6ab627a45a86aa22c6ed051189da49dc7ec724a7"
+  }
+}

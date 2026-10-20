@@ -1,5 +1,5 @@
 {
-  "checks": 31,
+  "checks": 33,
   "passed": true,
   "scope": "Ordered protobuf data-plane core, receive tick and generation fences; not SDK/transport/worker integration or live acceptance"
 }

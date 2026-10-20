@@ -590,10 +590,10 @@ index 0000000..7c1b08e
 +}
 diff --git a/src/parser/entities/nativeEventProjection.ts b/src/parser/entities/nativeEventProjection.ts
 new file mode 100644
-index 0000000..6e6dbaf
+index 0000000..d523281
 --- /dev/null
 +++ b/src/parser/entities/nativeEventProjection.ts
-@@ -0,0 +1,49 @@
+@@ -0,0 +1,61 @@
 +import {CMsgPlayerInfo} from '../../ts-proto/networkbasetypes.js';
 +import type {NativeSnapshotState,NativeEntity} from './nativeSnapshotState.js';
 +import type {NativeStringTables} from './nativeStringTables.js';
@@ -605,10 +605,17 @@ index 0000000..6e6dbaf
 + for(const record of entity.fields.entries())if(record.field.name===name&&record.operation==='value'){found=record.value;count++;}
 + return count===1?found:undefined;
 +};
++export interface NativePlayerIdentity {
++ readonly domain:'player-controller-slot';
++ readonly slot:number;
++ readonly steamId:string;
++ readonly userId:number|null;
++ readonly controller:Readonly<{index:number;serial:number}>;
++}
 +/** No historical slot guessing: a missing/mismatched identity remains null. */
 +export function projectNativeEvent(schema:NativeSchema|undefined,snapshots:NativeSnapshotState,tables:NativeStringTables,
 + name:string,fields:Readonly<Record<string,unknown>>,types:ReadonlyMap<string,number>){
-+ const player=(key:string):string|null=>{
++ const player=(key:string):NativePlayerIdentity|null=>{
 +  if(!schema||snapshots.waitingFull||types.get(key)!==9)return null;
 +  const raw=fields[key];if(typeof raw!=='number'||!Number.isInteger(raw))return null;
 +  const value=raw&65535;if(value===65535)return null;const slot=value&255;
@@ -628,7 +635,9 @@ index 0000000..6e6dbaf
 +   const linked=field(controller,'m_hPlayerPawn')??field(controller,'m_hPawn');
 +   if(typeof linked!=='number'||(linked&0x3fff)!==pawn.id||((linked>>>14)&0x3ff)!==(pawn.serial&0x3ff))return null;
 +  }
-+  return id;
++  return Object.freeze({domain:'player-controller-slot' as const,slot,steamId:id,
++   userId:typeof stored.userid==='number'&&Number.isInteger(stored.userid)&&stored.userid>0?stored.userid:null,
++   controller:Object.freeze({index:controller.id,serial:controller.serial})});
 + };
 + let warmup:boolean|null=null,round:number|null=null;
 + if(schema&&!snapshots.waitingFull){
@@ -637,9 +646,12 @@ index 0000000..6e6dbaf
 +   warmup=typeof w==='boolean'?w:null;round=typeof r==='number'&&Number.isInteger(r)?r:null;break;
 +  }
 + }
-+ const actor=name==='player_death'?player('attacker'):name==='weapon_fire'?player('userid'):null;
-+ const target=name==='player_death'?player('userid'):null;
-+ return Object.freeze({actor,target,warmup,round,
++ const players:Record<string,NativePlayerIdentity|null>=Object.create(null);
++ for(const [key,type] of types)if(type===9)players[key]=player(key);
++ Object.freeze(players);
++ const actor=name==='player_death'?players.attacker?.steamId??null:name==='weapon_fire'?players.userid?.steamId??null:null;
++ const target=name==='player_death'?players.userid?.steamId??null:null;
++ return Object.freeze({actor,target,warmup,round,players,
 +  weapon:typeof fields.weapon==='string'?fields.weapon:null,
 +  identityResolved:name==='weapon_fire'?actor!==null:name==='player_death'?actor!==null&&target!==null:false});
 +}
@@ -893,10 +905,10 @@ index 0000000..a34dcd2
 +}
 diff --git a/src/parser/entities/nativeObserverCore.ts b/src/parser/entities/nativeObserverCore.ts
 new file mode 100644
-index 0000000..c736908
+index 0000000..7991416
 --- /dev/null
 +++ b/src/parser/entities/nativeObserverCore.ts
-@@ -0,0 +1,160 @@
+@@ -0,0 +1,161 @@
 +import {CSVCMsg_ServerInfo,CSVCMsg_FlattenedSerializer,CSVCMsg_ClassInfo,CSVCMsg_CreateStringTable,CSVCMsg_UpdateStringTable,CSVCMsg_PacketEntities} from '../../ts-proto/netmessages.js';
 +import {CNETMsg_Tick} from '../../ts-proto/networkbasetypes.js';
 +import {CMsgSource1LegacyGameEventList,CMsgSource1LegacyGameEvent,type CMsgSource1LegacyGameEventList_descriptor_t} from '../../ts-proto/gameevents.js';
@@ -1049,6 +1061,7 @@ index 0000000..c736908
 +   if(input.messageId===207){record('gap',{reason});}
 +   else{
 +    this.snapshots.recover();
++    this.lastCursor=-Infinity;
 +    if(input.messageId!==55)this.halted=true;
 +    record('recovery',{reason,snapshotEpoch:this.snapshots.epoch,worldReinitialization:this.halted});
 +   }

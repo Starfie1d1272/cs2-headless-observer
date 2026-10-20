@@ -13,6 +13,12 @@ class OrderedParserBridge:
     ordered = True
     MAX_QUEUED_BYTES = 16 * 1024**2
     MAX_BODY = 4 * 1024**2
+    FORWARDED_EVENTS = frozenset({
+        'player_death', 'player_hurt', 'weapon_fire', 'grenade_thrown',
+        'bomb_beginplant', 'bomb_abortplant', 'bomb_planted', 'bomb_begindefuse',
+        'bomb_abortdefuse', 'bomb_defused', 'bomb_exploded', 'bomb_dropped', 'bomb_pickup',
+        'round_start', 'round_end',
+    })
 
     def __init__(self, *, source, channel, world, worker, node='node'):
         if (not isinstance(source, str) or not source or len(source) > 128 or
@@ -203,8 +209,10 @@ class OrderedParserBridge:
             if emit is not None and row['type'] in ('gap', 'recovery', 'world-reset'):
                 emit(dict(kind='discontinuity', reason=row.get('reason', row['type']),
                           **{key: row.get(key) for key in ('source', 'channel', 'world', 'sequence', 'tick')}))
-            if emit is not None and (row['type'] == 'cursor' or (row['type'] == 'raw-event' and row.get('name') in {'weapon_fire', 'player_death', 'round_start', 'round_end'})):
-                emit(dict(kind='cursor' if row['type'] == 'cursor' else row['name'], **{key: row.get(key) for key in ('tick', 'tickInterval', 'map',
+            if emit is not None and (row['type'] == 'cursor' or (row['type'] == 'raw-event' and row.get('name') in self.FORWARDED_EVENTS)):
+                emit(dict(kind='cursor' if row['type'] == 'cursor' else row['name'],
+                    **({key: row.get(key) for key in ('type', 'name', 'fields', 'players', 'committedTick')} if row['type'] == 'raw-event' else {}),
+                    **{key: row.get(key) for key in ('tick', 'tickInterval', 'map',
                     'warmup', 'round', 'weapon', 'actor', 'target', 'source', 'channel', 'world', 'sequence',
                     'descriptorGeneration', 'eventServerTick', 'networkTick', 'identityResolved')}))
             result.append(row)

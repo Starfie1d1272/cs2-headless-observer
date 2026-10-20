@@ -511,6 +511,37 @@ class SampleWriter:
         self.handle.write(struct.pack('<IQB', len(data), elapsed_ms, int(reliable)) + data)
 
 
+def connection_values(endpoint, supplied):
+    if not isinstance(endpoint, str) or not isinstance(supplied, str):
+        raise ValueError('configuration-boundary')
+    address, separator, port_text = endpoint.rpartition(':')
+    try:
+        ipaddress.ip_address(address.strip('[]'))
+        if not separator or not 0 < int(port_text) < 65536:
+            raise ValueError()
+        password = bytearray(supplied.encode('ascii'))
+        if len(password) > 95 or 0 in password:
+            password[:] = bytes(len(password))
+            raise ValueError()
+    except (ValueError, UnicodeError):
+        raise ValueError('configuration-boundary') from None
+    return endpoint, password
+
+
+def read_managed_connection(stream):
+    """One bounded private stdin record; no credentials in argv, logs or saved config."""
+    try:
+        raw = stream.readline(4097)
+        if len(raw) > 4096:
+            raise ValueError()
+        record = json.loads(raw)
+        if not isinstance(record, dict) or set(record) != {'endpoint', 'password'}:
+            raise ValueError()
+        return connection_values(record['endpoint'], record['password'])
+    except (ValueError, TypeError, UnicodeError, RecursionError):
+        raise ValueError('configuration-boundary') from None
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--native', type=Path, required=True)
@@ -518,26 +549,24 @@ def main():
     ap.add_argument('--node', default='node', help='Node runtime for the ordered entity parser')
     ap.add_argument('--parser-worker', type=Path, default=Path(__file__).with_name('parser_worker.mjs'))
     ap.add_argument('--source-role', choices=('ahead', 'delayed'), default='ahead')
-    ap.add_argument('--host-version', type=int, required=True)
+    from uuid import UUID
+    ap.add_argument('--source-id', type=lambda value: UUID(value).hex)
+    ap.add_argument('--managed', action='store_true', help='Private stdin connection; event-only stdout; no channel/event capture')
+    ap.add_argument('--host-version', type=int, required=True, choices=(14191,), help='Fixed researched protocol profile')
     ap.add_argument('--output', type=Path, required=True)
     ap.add_argument('--seconds', type=int, default=300, choices=range(1, 14401), metavar='1..14400')
     ap.add_argument('--offset', type=int, default=120, choices=range(0, 3601), metavar='0..3600')
     args = ap.parse_args()
-    # Source and known password are local prompts, not process arguments/log files.
-    endpoint = getpass.getpass('Authorized GOTV numeric IP:port (hidden): ')
-    address, separator, port_text = endpoint.rpartition(':')
+    # The managed owner supplies secrets through stdin, never process arguments.
     try:
-        ipaddress.ip_address(address.strip('[]'))
-        if not separator or not 0 < int(port_text) < 65536:
-            raise ValueError()
+        if args.managed:
+            endpoint, password = read_managed_connection(sys.stdin.buffer)
+        else:
+            endpoint, password = connection_values(
+                getpass.getpass('Authorized GOTV numeric IP:port (hidden): '),
+                getpass.getpass('Existing ordinary spectator password (ASCII subset, hidden): '))
     except ValueError:
-        raise SystemExit('invalid-numeric-endpoint') from None
-    supplied = getpass.getpass('Existing ordinary spectator password (ASCII subset, hidden): ')
-    try:
-        password = bytearray(supplied.encode('ascii'))
-    except UnicodeError:
-        raise SystemExit('non-ascii-password-requires-verified-source-encoding') from None
-    del supplied
+        raise SystemExit('configuration-boundary') from None
     if not 0 < args.host_version <= 0xffffffff or len(password) > 95 or 0 in password:
         password[:] = bytes(len(password))
         raise SystemExit('configuration-boundary')
@@ -548,16 +577,20 @@ def main():
     def clock(): return time.monotonic_ns() // 1000000
     try:
         from sdk import NativePort, NativeStartError
-        events = private_file(args.output / 'events.jsonl', 'w')
-        samples = private_file(args.output / 'channel.frames', 'wb')
+        events = sys.stdout if args.managed else private_file(args.output / 'events.jsonl', 'w')
+        samples = None if args.managed else private_file(args.output / 'channel.frames', 'wb')
         from ordered_parser_bridge import OrderedParserBridge
         from uuid import uuid4
-        parser = OrderedParserBridge(source=args.source_role + ':' + uuid4().hex, channel=1, world=1,
+        parser = OrderedParserBridge(source=args.source_role + ':' + (args.source_id or uuid4().hex), channel=1, world=1,
                                      node=args.node, worker=args.parser_worker)
         native = NativePort(args.native, endpoint, clock(), steam_api=args.steam_api)
         del endpoint
+        def emit_event(event):
+            events.write(json.dumps(event) + '\n')
+            if args.managed:
+                events.flush()
         driver = ObserverDriver(native, host_version=args.host_version, password=password,
-            emit=lambda event: events.write(json.dumps(event) + '\n'), capture=SampleWriter(samples), now_ms=clock(), parser=parser)
+            emit=emit_event, capture=SampleWriter(samples) if samples else None, now_ms=clock(), parser=parser)
         stop = clock() + args.seconds * 1000
         while not driver.done and clock() < stop:
             driver.step(clock())
@@ -578,7 +611,7 @@ def main():
         password[:] = bytes(len(password))
         for stage, action in [('close-session', driver.close if driver else native.close if native else None),
                               ('close-parser', parser.close if parser else None),
-                              ('close-events', events.close if events else None),
+                              ('close-events', events.close if events and events is not sys.stdout else None),
                               ('close-samples', samples.close if samples else None)]:
             if action:
                 try: action()
@@ -594,7 +627,7 @@ def main():
         except BaseException:
             report['finalization_failures'].append('write-report')
             report['outcome'] = 'failed'
-        print(json.dumps(report), file=sys.stderr if report['outcome'] == 'failed' else sys.stdout)
+        print(json.dumps(report), file=sys.stderr if args.managed or report['outcome'] == 'failed' else sys.stdout)
     return 1 if report['outcome'] == 'failed' else 2
 
 

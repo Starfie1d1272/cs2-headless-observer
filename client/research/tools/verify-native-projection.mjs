@@ -17,8 +17,15 @@ const project=()=>projectNativeEvent(schema,snapshots,tables,'weapon_fire',field
 let checks=0;const check=f=>{f();checks++;};
 check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().warmup,true));check(()=>assert.equal(project().round,3));
 check(()=>assert.equal(project().identityResolved,true));
+check(()=>assert.deepEqual(project().players.userid,{domain:'player-controller-slot',slot:0,steamId:steam,userId:null,controller:{index:1,serial:1}}));
+info=Uint8Array.of(17,...fixed64(steam),24,42);
+check(()=>assert.equal(project().players.userid.userId,42));
+check(()=>assert.equal(project().players.userid.slot,0));
+check(()=>assert.equal(projectNativeEvent(schema,snapshots,tables,'player_hurt',fields,types).players.userid.steamId,steam));
+check(()=>assert.equal(Object.isFrozen(project().players.userid.controller),true));
+info=Uint8Array.of(17,...fixed64(steam));
 const original=fields.userid_pawn;fields.userid_pawn=((serial-1024)*32768+pawn)|0;
-check(()=>assert.equal(project().actor,null)); // Same compressed10-bit serial, different native17-bit identity.
+check(()=>assert.equal(project().actor,null));check(()=>assert.equal(project().players.userid,null)); // Same compressed10-bit serial, different native17-bit identity.
 fields.userid_pawn=original;entities.get(pawn).serial++;
 check(()=>assert.equal(project().actor,null));entities.get(pawn).serial--;
 fields.userid_pawn=-1;check(()=>assert.equal(project().actor,null));fields.userid_pawn=original;
