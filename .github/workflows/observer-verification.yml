@@ -1,0 +1,53 @@
+name: Observer Offline Verification
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: observer-verification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          runtime: node@24
+          cache: false
+          require-lockfile: true
+          install: true
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: osztenkurden/cs2parser
+          ref: deced963b86d3ec26b28a225824130fdf9fe3167
+          path: .agent-tmp/parser
+          persist-credentials: false
+      - name: Verify pinned parser and owned-process boundaries without Steam
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .agent-tmp/build | Out-Null
+          node client/build_parser.mjs .agent-tmp/parser .agent-tmp/build/parser_worker.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node client/verify_cohesive_parser.mjs "$env:GITHUB_WORKSPACE/.agent-tmp/parser"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:GOTV_ORDERED_WORKER = "$env:GITHUB_WORKSPACE/.agent-tmp/build/parser_worker.mjs"
+          python -m unittest discover -s client -p "test_*.py" -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python client/research/knowledge/validate.py .
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify synthetic native session lifecycle
+        shell: cmd
+        run: |
+          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do call "%%i\VC\Auxiliary\Build\vcvars64.bat"
+          cl /nologo /std:c++20 /EHsc /W4 client\native\session_test.cpp /Fo.agent-tmp\build\session_test.obj /Fe.agent-tmp\build\session_test.exe
+          if errorlevel 1 exit /b %errorlevel%
+          .agent-tmp\build\session_test.exe
+          if errorlevel 1 exit /b %errorlevel%
+# No Steam/game binaries, login, game connection, portable assembly, or release.
