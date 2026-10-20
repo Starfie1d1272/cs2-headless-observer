@@ -1,0 +1,50 @@
+{
+  "as_of_beijing": "2026-10-20T14:50:00+08:00",
+  "source_parser_commit": "deced963b86d3ec26b28a225824130fdf9fe3167",
+  "fixed_game_build": "14191/10924",
+  "fixed_manifest": "8766757721818354077",
+  "clean_pinned_source_patch_application": true,
+  "locked_workspace_full_source_typecheck_and_worker_build": true,
+  "python_unittest_cases": 53,
+  "python_unittest_passed": 53,
+  "component_checks": 195,
+  "field_path_opcode_cases": 5582,
+  "field_path_list_boundary_cases": 56,
+  "integration": "Actual local Node worker and Python pipe, synthetic SDK port and generated protobuf/bitstreams only",
+  "verified_paths": [
+    "initialization without waiting for first full",
+    "full snapshot receipt before FULL",
+    "missing baseline -> explicit resync -> new full",
+    "ClearAllStringTables -> new world -> reinitialize",
+    "changelevel retains channel but resets client marker owner",
+    "generation-fenced retired receipts",
+    "event subscription bitmap and assigned slot",
+    "two independent parser processes",
+    "input/output budgets and owned-process cleanup"
+  ],
+  "not_verified": [
+    "real GOTV source acceptance",
+    "Windows SDK process startup in this round",
+    "current-build captured stream replay",
+    "Mizar consumer acceptance of new generation/discontinuity output"
+  ],
+  "not_run": [
+    "Windows package workflow",
+    "package creation",
+    "release publishing",
+    "user Windows operations",
+    "new engineering agents/tasks"
+  ],
+  "environment_note": "Legacy tsx CLI failed opening its local IPC pipe with EPERM. No socket retry; compatibility check was independently bundled with esbuild and run without that IPC operation. Legacy assertions are not current-profile authority.",
+  "files": {
+    "cs2parser-online.patch": "280a5be422ca352e1f4727862d8b46e1821b6ce5b76df3abba3f819702e048bc",
+    "parser_worker.mjs": "e6a3d9de400a17906853946198f42a769229717bb5c46d19efa6cbec42253731",
+    "ordered_parser_bridge.py": "49497975b73b6ac62a5cf4036af9f8e842b12e2156f82835935f539184660758",
+    "driver.py": "6db2664cfa50e7670980e6d0e9f0257816ac42259ca786c90f5d599b83241077",
+    "channel.py": "9bc8d4bdbc4ed51ca0bfc627681ccee673654d38d1bcd668b5636742ebffba95",
+    "live.py": "795a4b01d0fbc09abbb7a809b4b44fe0bd3a1049e77e2dfe37d26616beef83fb",
+    "observer_settings.py": "840b6c78c6d4a5f5b60ba886656c195d645e061cd6b96e747d26f7ce4292c8f2",
+    "build_parser.mjs": "1f9f0a15c681ef1c078091c6c84d041c784eb4a11c2982e86bb0c906527da833",
+    "verify_cohesive_parser.mjs": "0c2935d362e3dad64ef7f1b1bc6b977f7999171b77400ed3d7c5a50a59ea4a78"
+  }
+}

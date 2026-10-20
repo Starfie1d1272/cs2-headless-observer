@@ -35,10 +35,13 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force .agent-tmp/observer-build | Out-Null
           node client/build_parser.mjs .agent-tmp/observer-parser-source .agent-tmp/observer-build/parser_worker.mjs
-      - name: Verify online entity state with synthetic binary messages
+      - name: Verify cohesive observer with synthetic inputs
         shell: pwsh
         run: |
-          pnpm exec tsx client/verify_online_entities.mjs "$env:GITHUB_WORKSPACE/.agent-tmp/observer-parser-source"
+          node client/verify_cohesive_parser.mjs "$env:GITHUB_WORKSPACE/.agent-tmp/observer-parser-source"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:GOTV_ORDERED_WORKER = "$env:GITHUB_WORKSPACE/.agent-tmp/observer-build/parser_worker.mjs"
+          python -m unittest discover -s client -p "test_*.py" -v
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Fetch pinned official SDK headers and portable runtimes
         shell: pwsh

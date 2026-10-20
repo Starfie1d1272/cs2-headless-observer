@@ -271,3 +271,37 @@ class UnreliableFeedback:
             tuple(self.history.get(n, self.UNKNOWN) for n in range(self.received, self.received - 3, -1)))
         self.sequence += 1
         return packet
+
+
+class ReliableMessageFilter:
+    """Fixed engine08b010 application marker, separate from GNS and net sequence.
+
+    Clear/world-reset retains both fields. Replacing the game-client owner resets
+    its marker but does not infer removal of the retained channel's filter.
+    """
+    def __init__(self):
+        self.last_tick = 0
+        self.filtered = False
+
+    def replace_client_owner(self):
+        self.last_tick = 0
+
+    def accept(self, message_id, body):
+        if message_id != 61:
+            return not self.filtered
+        from wire import fields, scalar
+        values = fields(body)
+        state = scalar(values, 3)
+        if state not in (None, 0, 1):
+            raise ProbeError('reliable-marker-state')
+        tick = scalar(values, 1) or 0
+        tick &= 0xffffffff
+        if tick & 0x80000000:
+            tick -= 0x100000000
+        if not state:
+            self.filtered = False
+        elif tick <= self.last_tick:
+            self.filtered = True
+        else:
+            self.last_tick = tick
+        return True

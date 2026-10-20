@@ -45,8 +45,22 @@ class LiveTest(unittest.TestCase):
         d.consume(4, number(1, 60))
         d.consume(207, number(2, 17))
         self.assertEqual((output[-1]['tick'], output[-1]['tick_source']), (60, 'net_Tick'))
-        with self.assertRaisesRegex(ValueError, 'tick-regressed'):
-            d.consume(4, number(1, 59))
+        d.consume(4, number(1, 59))
+        d.consume(207, number(2, 17))
+        self.assertEqual(output[-1]['tick'], 59)
+        self.assertIn(17, d.descriptors)
+
+    def test_unknown_group_creation_advances_global_without_inventing_group(self):
+        d = LiveDecoder(lambda _: None)
+        d.consume(11, number(1, 99) + number(2, 3) + number(3, 8))
+        self.assertEqual(d.max_creation_sequence, 8)
+        self.assertEqual(d.spawn_groups, {})
+        d.consume(12, number(1, 99) + number(3, 5))
+        self.assertEqual(d.spawn_groups, {})
+        d.consume(51, b'')
+        self.assertEqual(d.max_creation_sequence, 0)
+        self.assertIsNone(d.server)
+        self.assertIsNone(d.tick)
 
     def test_serverinfo_and_table_presence_never_unlock_initialization(self):
         d = LiveDecoder(lambda _: None)

@@ -62,7 +62,8 @@ class DriverTest(unittest.TestCase):
         self.assertEqual(ack.reliable_tick_hint, 0)
         decoded, _ = messages(ack.body)
         self.assertEqual([(m.message_id, m.body) for m in decoded],
-                         [(7, bytes.fromhex('08 02 10 ff ff ff ff 0f 18 00'))])
+                         [(6, driver.settings.userinfo()),
+                          (7, bytes.fromhex('08 02 10 ff ff ff ff 0f 18 00'))])
         return driver, port, output, sample
 
     def test_challenge_retries_at_official_default_without_extending_deadline(self):
@@ -129,6 +130,29 @@ class DriverTest(unittest.TestCase):
         driver._recovery_pending = True
         driver.step(510)
         self.assertEqual(decode_frame(port.sent[-1][0], gns_reliable=False).body, b'')
+        driver.close()
+
+    def test_missing_challenge_identity_uses_trusted_peer_without_skipping_ticket(self):
+        port = Port()
+        driver = ObserverDriver(port, host_version=14191, password=bytearray(), emit=lambda _: None)
+        driver.step(1)
+        packet = b'\xff\xff\xff\xffA' + struct.pack('<IIHQB', 7, 3, 0, 0, 1) + b'connect0x00000000\0'
+        port.incoming.append((packet, False))
+        driver.step(2)
+        self.assertTrue(port.ticket_requested)
+        self.assertEqual(driver.phase, 'ticket')
+        self.assertEqual(len(port.sent), 1)
+        driver.close()
+
+    def test_conflicting_challenge_identity_still_rejected(self):
+        port = Port()
+        driver = ObserverDriver(port, host_version=14191, password=bytearray(), emit=lambda _: None)
+        driver.step(1)
+        packet = b'\xff\xff\xff\xffA' + struct.pack('<IIHQB', 7, 3, 0, 999, 1) + b'connect0x00000000\0'
+        port.incoming.append((packet, False))
+        with self.assertRaisesRegex(DriverError, 'challenge-peer-mismatch'):
+            driver.step(2)
+        self.assertFalse(port.ticket_requested)
         driver.close()
 
     def test_auth3_duplicate_challenge_waits_for_same_ticket_and_rejects_downgrade(self):

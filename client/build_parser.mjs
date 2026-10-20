@@ -77,6 +77,7 @@ await esbuild.build({
   outfile: resolve(outputArg),
   alias: {
     cs2parser: resolve(source, 'src/index.ts'),
+    'cs2parser/observer-core': resolve(source, 'src/parser/entities/nativeObserverCore.ts'),
   },
   nodePaths: [protobufModules],
 });

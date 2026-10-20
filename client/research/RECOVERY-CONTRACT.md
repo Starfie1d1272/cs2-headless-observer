@@ -68,3 +68,57 @@ FinishChangeLevel08aab0 can transfer an existing channel from its transition obj
 
 ## Lightweight frame/state separation
 Pinned SDK CClientFrame exposes transmit/nontransmit/out-of-PVS sets separately from its snapshot pointer. Fixed receive046a00 resolves the existing client entity, builds a field-decode work item and applies changed fields; it does not restore every current property from an arbitrary historical property clone before each delta. The forward observer should retain bounded frame membership/dormancy plus the two explicit baseline banks and current per-entity state. Transaction rollback can copy only affected entities/metadata; cloning all entities for every tick would add memory and CPU without a demonstrated requirement. Historical rewind reconstruction remains outside the forward receiver scope.
+
+## Cohesive snapshot-owner application cross-check (2026-10-20)
+
+047960 has two distinct non-delta effects: frame history removal is conditional
+on a full snapshot going backward, whereas both instance-baseline banks are
+cleared on EVERY non-delta snapshot. The transactional owner must not clear
+committed banks during begin/decode; it stages that reset and publishes only
+when the whole packet succeeds. This rollback discipline is an observer design
+choice, not a claim that native code uses an immutable transaction.
+
+The apply work-item path045730→044f10 distinguishes update and create. Update
+applies an alternate baseline when present, then changed fields. Create first
+selects the same-class instance baseline only for delta packets; otherwise it
+uses088f00 class baseline resolution. The alternate index is consumed by the
+update branch, not the inspected create branch. With update_baseline it merges
+the baseline and incoming serialized fields into the opposite bank through
+088620 and serializer slot58, then applies the merged result. Without it, it
+applies baseline followed by incoming fields. Same-class/same-serial object
+reuse does not itself clear all omitted logical fields. A sparse baseline must
+therefore be applied to that existing logical object rather than substituting
+an arbitrary historical whole-object property clone. Newly created identities
+start empty. Renderer callbacks and native job parallelism are not replicated.
+
+08b660 also retains a trailing-delete compatibility branch when the
+non_transmitted_entities presence bit is absent and its packet context is delta;
+this must not be guessed from legacy_is_delta. Native presence-bit provenance
+and exact branch selection remain the authority when connecting the wire
+adapter. The cohesive adapter now follows these distinctions and is connected
+to the local ordered worker/driver; its synthetic integration evidence is in
+cohesive-offline-integration.json, not a real server acceptance result.
+
+088f00 resolves the decimal class key in instancebaseline and delegates to
+088bf0 by the resolved string-table entry index. 088bf0 requires a registered
+baseline handle, nonempty user data and successful field decoding; missing or
+empty data does not become an empty successful baseline. It caches decoded
+serialized data by entry index, not by entity ID. The observer can cache by
+world/schema/table-entry revision to avoid stale index reuse after updates.
+These functions have now been inspected directly for the wire adapter.
+
+Out-of-PVS fields update the new frame's separate+1020 bitset. 08b110's
+nontransmitted reconciliation tests transmitted+20, dormant+820 and already
+scheduled deletions(context+e0), not that out-of-PVS bitset. Consequently the
+observer must not use an out-of-PVS update alone as a permanent retention grant
+when an explicit nontransmitted reconciliation is present. Directed adapter
+cases now cover out-of-PVS data with dormant retention and with authoritative
+dormant removal. These are synthetic source-conformance checks, not live tests.
+
+The fixed ordinary iterator is constructor103ce0's vtable556bf8→103800.
+044b10 reads the increasing UBitVar entity index and dispatches that iterator;
+103800 consumes exactly two command bits (update/create/leave/delete). It does
+not consult has_pvs_vis_bits_deprecated or consume a second old-demo PVS pair.
+The out-of-PVS iterator547df8→077630 consumes one bit (update/create), and the
+nontransmitted iterator547e08→0775b0 consumes one dormant bit. The fixed-profile
+adapter deliberately does not inherit the frozen legacy demo PVS branch.

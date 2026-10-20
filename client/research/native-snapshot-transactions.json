@@ -1,0 +1,5 @@
+{
+  "scope": "Isolated forward snapshot transaction owner; no wire/runtime/live acceptance",
+  "checks": 34,
+  "passed": true
+}

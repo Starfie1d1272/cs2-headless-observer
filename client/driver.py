@@ -15,12 +15,13 @@ from pathlib import Path
 import struct
 import sys
 import time
-from channel import decode_frame, messages, UnreliableOrder, UnreliableFeedback, encode_message, reliable_frame
+from channel import decode_frame, messages, UnreliableOrder, UnreliableFeedback, encode_message, reliable_frame, ReliableMessageFilter, join_messages
 from handshake import (SignonSequence, connect_inner_message, connect_payload,
                        initial_challenge_request, parse_challenge_body, parse_connection_inner, uint, number)
 from live import LiveDecoder, client_info
+from observer_settings import ObserverSettings
 from password import transform_password
-from wire import ProbeError
+from wire import ProbeError, fields, scalar
 
 MAGIC = b'MZRCS2\x01\0'
 
@@ -47,6 +48,9 @@ class ObserverDriver:
         self._challenge_requests = 0
         self.challenge_metadata = None
         self._account_id = None
+        self.settings = ObserverSettings()
+        self._query_window_ms = now_ms
+        self._query_count = 0
         self._new_sent = False
         self.parser, self.emit = parser, emit
         self._parser_sequence = 0
@@ -59,12 +63,14 @@ class ObserverDriver:
         self._full_update_outstanding = False
         self._recovery_requests = 0
         self._baseline_ack_count = 0
+        self._event_subscription_pending = None
         self._processed_entity_tick = None
         self._ack_tick = None
         self._last_receipt_ms = now_ms
         self.decoder, self.signon = LiveDecoder((lambda _: None) if parser else emit), SignonSequence()
         self.order = UnreliableOrder(initial=0)
         self.feedback = UnreliableFeedback()
+        self.reliable_filter = ReliableMessageFilter()
         self._last_feedback_ms = now_ms
         self._feedback_sent = 0
         self.capture = capture
@@ -105,7 +111,10 @@ class ObserverDriver:
             self.stages.append({'stage': self.phase, 'elapsed_ms': now_ms - self.start_ms})
         if self.parser is not None:
             self.parser.poll(self.emit)
+        pumped_bytes = 0
         for _ in range(128):  # Bound work per callback pump; do not starve deadlines.
+            if pumped_bytes >= 8 * 1024**2:
+                break
             if self.parser is not None:
                 processed = self.parser.checkpoint['sequence'] if self.parser.checkpoint else 0
                 if self._parser_sequence - processed >= 4:
@@ -114,6 +123,7 @@ class ObserverDriver:
             if message is None:
                 break
             self.received += 1
+            pumped_bytes += len(message[0])
             self.receive(*message, now_ms)
             if self.done:
                 break
@@ -173,8 +183,10 @@ class ObserverDriver:
                     'context_sha256': hashlib.sha256(body[19:]).hexdigest()}
             challenge = parse_challenge_body(body)
             peer = self.port.remote_id()
-            if (not peer or challenge.server_steam_id not in (0, peer)
-                or (challenge.auth_protocol == 3 and not challenge.server_steam_id)):
+            # Fixed engine057cb0 fills a missing challenge ID from the actual
+            # authenticated GNS peer for BOTH supported auth protocols. A Steam
+            # challenge still waits for its real SDK ticket callback below.
+            if not peer or challenge.server_steam_id not in (0, peer):
                 raise DriverError('challenge-peer-mismatch')
             if challenge.context not in self._challenge_contexts:
                 raise DriverError('challenge-context-mismatch')
@@ -218,7 +230,8 @@ class ObserverDriver:
             # Official Connect queues CONNECTED/-1 before ServerInfo; otherwise
             # both peers wait. A fresh channel's reliable tick context is zero.
             message_id, payload = self.signon.acknowledgement()
-            encoded, _ = encode_message(message_id, payload)
+            encoded, _ = join_messages([encode_message(6, self.settings.userinfo()),
+                                        encode_message(message_id, payload)])
             self.port.send(reliable_frame(encoded, 0), 8)
             self.stages.append({'stage': 'sent-signon', 'value': 2, 'elapsed_ms': now_ms - self.start_ms})
             self.phase, self.deadline = 'channel', now_ms + 15000
@@ -242,27 +255,94 @@ class ObserverDriver:
         self.feedback.observe(frame)
         if not reliable and not self.order.accept(frame)['accepted']:
             return
-        decoded, _ = messages(frame.body)
-        for message in decoded:
+        received_messages, _ = messages(frame.body)
+        decoded, actions = [], []
+        for message in received_messages:
+            if not self.reliable_filter.accept(message.message_id, message.body):
+                continue
+            decoded.append(message)
+            if message.message_id == 58:
+                if now_ms - self._query_window_ms >= 1000:
+                    self._query_window_ms, self._query_count = now_ms, 0
+                self._query_count += 1
+                if self._query_count > 32:
+                    raise DriverError('observer-cvar-query-rate-budget')
+                encoded, _ = encode_message(25, self.settings.query(message.body))
+                self.port.send(reliable_frame(encoded, 0), 8)
             if message.message_id == 7:
+                state = scalar(fields(message.body), 1)
+                if state == 2:
+                    self._reset_world_protocol(now_ms)
+                    actions.extend([('reset',), ('admit', 0)])
                 self.signon.receive(message.body)
                 self.stages.append({'stage': 'received-signon', 'value': self.signon.state, 'elapsed_ms': now_ms - self.start_ms})
+                actions.append(('message', 7, message.body))
+                if state == 7:
+                    self._reset_world_protocol(now_ms, replace_client=True)
+                    actions.extend([('reset',), ('admit', 0)])
+                if state in (2, 7):
+                    self._send_connected_ack(now_ms)
             else:
                 self.decoder.consume(message.message_id, message.body)
+                actions.append(('message', message.message_id, message.body))
                 if message.message_id == 40:
                     self.signon.server_info(self.decoder.server['server_count'])
+                elif message.message_id == 11:
+                    actions.append(('admit', self.decoder.max_creation_sequence))
+                elif message.message_id == 51:
+                    self._reset_world_protocol(now_ms)
+                    actions.append(('admit', 0))
         if self.parser is not None:
-            self._parser_sequence = self.parser.submit(frame.body)
-            if any(message.message_id == 55 for message in decoded):
-                if self.decoder.tick is None:
-                    raise DriverError('entity-packet-without-tick')
+            if getattr(self.parser, 'ordered', False):
+                self._parser_sequence = self.parser.submit_batch(actions)
+            else:
+                if any(action[0] == 'reset' or (action[0] == 'message' and action[1] == 51) for action in actions):
+                    raise DriverError('legacy-parser-cannot-cross-world-boundary')
+                accepted_body, _ = join_messages([encode_message(message.message_id, message.body) for message in decoded])
+                self._parser_sequence = self.parser.submit(accepted_body)
 
         self._advance_initialization(now_ms)
+
+    def _reset_world_protocol(self, now_ms, replace_client=False):
+        # Preserve the actual SDK channel, transport counters and callback loop.
+        self.decoder.reset_world()
+        self.signon = SignonSequence()
+        self._new_sent = self._prespawn_sent = self._spawn_sent = False
+        self._full_snapshot_processed = self._full_sent = False
+        self._recovery_pending = self._request_full_update = self._full_update_outstanding = False
+        self._processed_entity_tick = self._ack_tick = None
+        self._last_receipt_ms = now_ms
+        self._event_subscription_pending = None
+        if replace_client:
+            self.reliable_filter.replace_client_owner()
+        self.stages.append({'stage': 'world-reset', 'replaced_client_owner': replace_client,
+                            'elapsed_ms': now_ms - self.start_ms})
+
+    def _send_connected_ack(self, now_ms):
+        message_id, payload = self.signon.acknowledgement()
+        encoded, _ = join_messages([encode_message(6, self.settings.userinfo()), encode_message(message_id, payload)])
+        self.port.send(reliable_frame(encoded, 0), 8)
+        self.stages.append({'stage': 'sent-signon', 'value': 2, 'elapsed_ms': now_ms - self.start_ms})
 
     def _advance_initialization(self, now_ms):
         checkpoint = self.parser.checkpoint if self.parser else None
         if self.parser and (not checkpoint or checkpoint['sequence'] < self._parser_sequence):
             return
+        if getattr(self.parser, 'ordered', False):
+            subscriptions = self.parser.pop_subscriptions()
+            if subscriptions is not None:
+                self._event_subscription_pending = subscriptions
+            if self.signon.state > 3 and self._event_subscription_pending is not None and self.decoder.server:
+                words = [0] * 16
+                for event_id in self._event_subscription_pending['ids']:
+                    if type(event_id) is not int or not 0 <= event_id < 512:
+                        raise DriverError('event-subscription-id')
+                    words[event_id // 32] |= 1 << (event_id % 32)
+                slot = self.decoder.server['player_slot']
+                payload = number(1, slot & 0xffffffff) + b''.join(number(2, word) for word in words)
+                encoded, _ = encode_message(206, payload)
+                self.port.send(reliable_frame(encoded, 0), 8)
+                self._event_subscription_pending = None
         if self.signon.state == 3 and not self._new_sent:
             if self.decoder.server is None:
                 raise DriverError('new-before-serverinfo')
@@ -309,8 +389,6 @@ class ObserverDriver:
             self._spawn_sent = True
             self.stages.append({'stage': 'sent-spawn', 'elapsed_ms': now_ms - self.start_ms})
         self._acknowledge_full(now_ms)
-        if self.signon.state == 7:
-            self.phase, self.reason = 'blocked', 'changelevel-new-instance-required'
 
     def _acknowledge_full(self, now_ms):
         if self.signon.state == 6 and not self._full_sent and self._full_snapshot_processed:
@@ -427,7 +505,9 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--native', type=Path, required=True)
     ap.add_argument('--steam-api', type=Path)
-    ap.add_argument('--node', default='node', help='Node runtime for the existing entity parser')
+    ap.add_argument('--node', default='node', help='Node runtime for the ordered entity parser')
+    ap.add_argument('--parser-worker', type=Path, default=Path(__file__).with_name('parser_worker.mjs'))
+    ap.add_argument('--source-role', choices=('ahead', 'delayed'), default='ahead')
     ap.add_argument('--host-version', type=int, required=True)
     ap.add_argument('--output', type=Path, required=True)
     ap.add_argument('--seconds', type=int, default=300, choices=range(1, 14401), metavar='1..14400')
@@ -460,8 +540,10 @@ def main():
         from sdk import NativePort, NativeStartError
         events = private_file(args.output / 'events.jsonl', 'w')
         samples = private_file(args.output / 'channel.frames', 'wb')
-        from parser_bridge import ParserBridge
-        parser = ParserBridge(args.node)
+        from ordered_parser_bridge import OrderedParserBridge
+        from uuid import uuid4
+        parser = OrderedParserBridge(source=args.source_role + ':' + uuid4().hex, channel=1, world=1,
+                                     node=args.node, worker=args.parser_worker)
         native = NativePort(args.native, endpoint, clock(), steam_api=args.steam_api)
         del endpoint
         driver = ObserverDriver(native, host_version=args.host_version, password=password,

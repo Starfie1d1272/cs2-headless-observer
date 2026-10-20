@@ -2,5 +2,5 @@
   "opcodeCases": 5582,
   "listAndBoundaryCases": 56,
   "passed": true,
-  "scope": "New ordinary-viewer path-reader component versus retained fixed-native evidence; not yet wired into the observer runtime."
+  "scope": "New ordinary-viewer path-reader component versus retained fixed-native evidence; component checks only; integrated driver evidence is separate; no live acceptance."
 }

@@ -1,6 +1,6 @@
 # Required-module closure inventory
 
-Updated: 2026-10-20 13:41 Asia/Shanghai.
+Updated: 2026-10-20 14:50 Asia/Shanghai.
 
 ## Counting rules
 
@@ -67,8 +67,9 @@ Do not resurrect optional InstantReplay backfill as a live prerequisite.
 This period removed superseded general wording from the recovery table,
 separated optional replay assembly from ordinary entity receipt, and aligned
 the clear/changelevel row with retained-channel ownership. Static clear/world,
-reliable-marker and entity-create anchors passed. Implementation still needs
-the directed generation/receipt tests; those are not claimed here.
+reliable-marker and entity-create anchors passed. Directed generation/receipt
+checks are now recorded separately in cohesive-offline-integration.json; they
+use synthetic inputs and do not establish live behavior.
 
 ## Client.dll
 
@@ -140,17 +141,25 @@ successful coverage.
 
 ## Implementation/live work is not counted as an unread DLL
 
-The runtime has not been integrated with these isolated models. Generation
-fences, bounded queues, failure recovery, two independent instances, Windows
-startup and authorized live observation remain implementation/acceptance work.
+The cohesive decoder is now connected to the Python driver through an actual
+local Node worker and generation-fenced bounded pipe. Synthetic end-to-end
+checks cover initialization, full/delta recovery, clear/changelevel, subscriptions
+and two independent processes. This is local runtime integration, not real
+source acceptance. Windows SDK startup, current-build source replay, Mizar
+consumer acceptance and authorized live observation remain separate work.
 Do not describe these as additional unknown binary files, and do not describe
 source-contract closure as successful deployment.
 
 ## Next work
 
-Proceed with one cohesive implementation against these reconciled contracts:
-schema/codec/path reader, transactional entities/string tables, raw event
-projection, and driver/process generation ownership. Preserve existing SDK
+Continue the same cohesive implementation through consumer integration and
+full review. Schema/codec/path reader, transactional entities/string tables,
+raw event projection, and driver/process generation ownership are connected
+in the local implementation; see cohesive-offline-integration.json. The
+integration cross-check directly revisited engine047960,044f10,088bf0,088f00,
+044b10,103800,077630 and0775b0, and closed the newly identified distinctions
+between baseline resets, sparse application, header formats and dormant
+reconciliation. No additional unresolved required DLL path is currently listed. Preserve existing SDK
 authentication and ordinary observer permissions. Do not produce an
 intermediate user package. Full offline integration and authorized Windows/live
 acceptance remain separate gates. This inventory is not an instruction to stop.
