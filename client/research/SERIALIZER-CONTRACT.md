@@ -160,3 +160,39 @@ Custom serializer names use a case-insensitive native symbol table: network0ddc3
 The pointer-name compatibility set deliberately differs: clientb6c860 hashes the exact supplied field-name bytes through9ea690, then9b8430 checks length and calls1a57460, whose byte/word comparator is a raw memcmp with no case folding. Preserve case-sensitive pointer-name matching. This closes the distinction rather than applying the custom-serializer lookup normalization to all metadata names.
 
 CUtlBinaryBlock is category6 with catalog dimension0, unlike the fixed scalar families. Native0dcd80 ignores aggregate dimension, reads a varuint byte length through1bf770, then copies that many bytes through1bf2d0 and returns category6/count. Seventy-two native cases with dimension0 cover lengths0,1,2,7,31,127,128,257,1024 at every bit alignment, using preallocated output and no allocator/import hooks. The unintegrated local codec originally rejected dimension0 in its generic scalar guard; the profile-construction audit found and corrected that model error. All32 primitive default configurations now construct, and the binary model matches all72 native byte/cursor observations. This does not authorize arbitrary unbounded allocation: length/decompression budgets remain observer policy.
+
+## Explicit custom wire authority and lookup-specific case rules
+
+The full old fixture schema exposed a local model defect: 212 of 213 class
+graphs constructed, while CCSPlayerPawn failed on m_hItem/CEntityHandle despite
+that field explicitly advertising var_serializer=ehandle. The fixed client
+constructor 0873eb0 marks the field atomic and a CHandle, and sets its type
+override at +128 to ehandle; its caller 0894b10 supplies m_hItem. Both fixed
+client/server registration inventories assign ehandle unsigned category 2,
+dimension 1. The real compiled-field selector network0eb600 resolves a known
+custom serializer before primitive fallback and returns that registered group.
+
+This must be distinguished from network0779c0's fake-field construction order,
+which checks the raw/aliased primitive first. A headless wire-only model can
+accept an explicitly recognized, fixed-profile custom serializer even when it
+does not otherwise know the original C++ type. This is a deliberate observer
+construction choice supported by the advertised wire category, not proof that
+native fake-field lookup accepts every such raw type. It neither adds a blanket
+CEntityHandle-to-integer alias nor silently assigns unsigned to unknown types.
+An unknown type without a recognized serializer still fails.
+
+The primitive registry, enum dictionary and boxed-type dictionary use
+network0922c0, whose comparisons call V_stricmp_fast. The primitive initializer
+0e9820 also identifies its dictionary comparator as CDefFastCaselessStringLess.
+Thus those specific lookups are case-insensitive. Resource alias callback
+clientb77f10 is different: a prefix rule uses V_strnicmp_fast, while an exact
+rule calls CUtlString::IsEqual_CaseSensitive. Pointer-name matching remains
+case-sensitive as documented above. Do not apply one normalization rule to
+every metadata string.
+
+The isolated local model now passes ten targeted positive/negative authority
+and case tests, 25 existing graph tests, and constructs all 213 class roots
+from the old fixture's 268 serializers/1592 fields. These results establish
+schema construction only: they do not validate an entire stream, current live
+schema delivery, callbacks, Windows startup, or GOTV acceptance. The observer
+runtime remains unchanged.

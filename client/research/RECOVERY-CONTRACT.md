@@ -13,16 +13,14 @@ Fixed manifest: 8766757721818354077. This records verified control flow and prop
 | Successful first full in SPAWN | 06a960 calls 047960 first, then 086220 advances 5→6 | Only successful entity application receipt permits FULL and updated acknowledged tick |
 | Non-delta snapshot goes backward | 047960 removes frame history and clears dual baseline sets | Start new snapshot epoch, fence stale decode receipts; retain connection identity unless actual reconnect occurs |
 | ForceFullUpdate | vtable100→07f1e0 clears dual baselines and sets last_tick_recv=-1 when previous value positive | Represent resynchronization distinctly; subsequent outgoing acknowledgment reflects absence of valid delta base |
-| FullFrameSplit same tick, unexpected chunk index | 04ca50 clears pending assembly | Drop incomplete assembly; no partial state application |
-| FullFrameSplit different tick | 04ca50 only replaces old assembly with chunk0; other indices ignored | Fence assembly by session generation and full-frame tick; never concatenate different frames |
-| FullFrameSplit complete | 04ca50 concatenates sequential chunks, decompresses, parses PacketEntities;04e8c0 attaches replacement to existing queued tick containing a delta | Validate budgets; preserve queued tick/source ordering and replacement ownership; do not immediately replay it as an unrelated new tick |
+| FullFrameSplit on ordinary forward receive | The ordinary message70 handler is021ba0, a successful no-op; optional CInstantReplay interception is separate | Do not block normal entities, replace live state, or add an independent ACK requirement |
 | New event descriptor list | client9f9580 invalidates previous IDs and sets subscription dirty | Replace event schema generation; rebuild206 subscriptions from received IDs |
-| CHANGELEVEL / reconnect | 060310 /07e800 distinguish states, counts and callbacks | Clear connection/world/schema/queued-event ownership at explicit boundary, not every clock change |
+| CHANGELEVEL / reconnect | 060310 /07e800 distinguish states, counts and callbacks;08aab0 can restore an existing channel | Fence world/schema/queued-event ownership at the explicit boundary; retain authenticated channel and its counters when transferred, not on every clock change |
 
 ## Cross-contract reconciliation
 
 - Outgoing ACK cadence and pre-FULL scheduling are resolved in TRANSPORT-CONTRACT.md; retain 061960 connection-problem resync handling.
-- Full-frame attachment/cleanup behavior is resolved below; reconcile queued replacement consumption and reliable ordering. Allocation/lifetime caps remain explicit observer bounds, not guessed native wire limits.
+- Optional replay full-frame attachment/cleanup behavior is resolved below. Ordinary forward receive does not use that replacement queue. Allocation/lifetime caps remain explicit observer bounds, not guessed native wire limits.
 - Identity reuse and world unload are established below and in WORLD-LIFECYCLE-CONTRACT.md. GENERATION-TRANSACTION-CONTRACT.md defines the observer's cross-process fences and explicitly includes ClearAllStringTables as an engine Clear boundary.
 - EVENT-LIFECYCLE-CONTRACT.md and GENERATION-TRANSACTION-CONTRACT.md define forward-event ordering and downstream discontinuities; interactive rewind remains outside the requested ordinary forward observer.
 
@@ -42,7 +40,13 @@ The frozen OnlineEntityState.begin currently derives delta solely fromlegacy_is_
 Native103b20 decodes PacketEntities.serialized_entities(field13) as a byte stream of unsigned varints into a vector.104100 also copies the repeated(entity_index,baseline_index) override pairs. On entity creation0464f0, a nonempty length vector supplies the next field-bit-length; the engine records the current bit cursor and cursor+length, copies bounded readers into a work item, advances the main cursor bylength, then046120 can schedule parallel field decoding. Without lengths it directly runs ReadFields to discover consumed length. The bytes are not an alternative entity snapshot to parse as another protobuf. A lightweight sequential observer can use the normal field decoder while checking declared lengths against actual consumption and packet bounds; it need not replicate native parallel jobs. It must still consume exactly one length per applicable entity work item, including update paths, and not conflate the vector index with entity ID. Native046a00 confirms the same cursor/vector-index operation for updates. Preserve/leave/delete paths do not consume these field-length entries.
 
 
-## Full-frame assembly cleanup and entity identity
+## Optional replay assembly cleanup and ordinary entity identity
+
+The assembly paragraphs in this section describe CInstantReplay only.
+Same-tick unexpected chunk indices clear its assembly; different-tick input
+replaces it only when the new chunk index is zero. A complete optional assembly
+is attached to an eligible queued replay tick, not committed as a new live
+snapshot. The entity create/preserve rules below are ordinary receive rules.
 04ca50 releases all retained fragment message objects and clears its vector before decompression/PacketEntities parsing. Decompression failure or protobuf parse failure therefore leaves no complete pending fragment assembly; neither calls 04e8c0 nor applies entities. The handler returns handled=1 even on these failures, which must not be mistaken for a committed snapshot. Different-tick nonzero chunks are ignored while an assembly exists; same-tick unexpected index clears it. The inspected function has no wall-clock deadline. Observer memory/time budgets are deliberate resilience policy.
 
 04e8c0 attaches a cloned full PacketEntities only to an existing queued matching tick containing a delta (field6 presence). Missing tick or eligible delta is a no-op; replacing an attached full destroys its prior clone. The clone receives queued tick and message context field+1c. Source event ordering must remain associated with that queued tick.
@@ -51,7 +55,7 @@ Native103b20 decodes PacketEntities.serialized_entities(field13) as a byte strea
 
 
 ## Scope correction: FullFrameSplit is intercepted replay buffering
-RTTI identifies 04d5b0 as CInstantReplay's message interception vtable entry (539018), not the ordinary CNetworkGameClient handler. Its initial guards require client HLTV-related state, replay buffering configuration and a valid entity system. The ordinary inbound registry maps message70 to021ba0 (shared no-op handler). Accordingly 04ca50/04e8c0 describe the replay buffer's optional full-frame backfill, not an unconditional requirement to replace every live received delta. Preserve this distinction in the unified design; the prior table describes this optional interception path only. The headless event receiver does not need to simulate interactive rewind merely because the server sends a split full frame. Determine source-side dependency/ACK consequences before choosing whether to retain optional backfill.
+RTTI identifies 04d5b0 as CInstantReplay's message interception vtable entry (539018), not the ordinary CNetworkGameClient handler. Its initial guards require client HLTV-related state, replay buffering configuration and a valid entity system. The ordinary inbound registry maps message70 to021ba0 (shared no-op handler). Accordingly 04ca50/04e8c0 describe the replay buffer's optional full-frame backfill, not an unconditional requirement to replace every live received delta. The headless event receiver does not need to simulate interactive rewind merely because the server sends a split full frame. The source-side ACK consequence was resolved by the ordinary snapshot and sender checks in the following paragraph; it is not an outstanding prerequisite for forward observation.
 
 04d1d0 limits stored replay history using configured duration converted to ticks, selects an eligible full checkpoint and releases older attachment/message records; it preserves message45 string-table updates. This is history retention, not a per-fragment wall-clock timeout. Native replay playback and live entity receipt therefore have different ownership and ordering requirements.
 

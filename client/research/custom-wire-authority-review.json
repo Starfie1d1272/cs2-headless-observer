@@ -1,0 +1,53 @@
+{
+  "checked_at": "2026-10-20T05:27:00Z",
+  "manifest": "8766757721818354077",
+  "native_facts": {
+    "client_field_constructor": "client+0x873eb0 sets atomic/CHandle flags and +0x128=ehandle; caller0x894b10 names m_hItem",
+    "compiled_selector": "networksystem+0xeb600 selects a recognized custom serializer before primitive fallback",
+    "fake_selector_boundary": "networksystem+0x779c0 has a prior primitive lookup; successful fake construction for unknown raw CEntityHandle is NOT claimed",
+    "registered_ehandle": {
+      "client_and_server_category": 2,
+      "dimensions": 1
+    },
+    "dictionary_lookup": "networksystem+0x922c0 calls V_stricmp_fast; primitive/enum/boxed dictionaries use it",
+    "resource_alias_lookup": "client+0xb77f10 uses V_strnicmp_fast for prefix rules and CUtlString::IsEqual_CaseSensitive for exact rules"
+  },
+  "observer_choice": "Use an explicitly recognized custom serializer wire category even if the original C++ type is otherwise unknown. Never invent a generic integer category for an unknown type. This is a wire-only observer construction choice, not exact native fake-error emulation.",
+  "isolated_model": {
+    "before_targeted": {
+      "passed": 3,
+      "failed": 3,
+      "cases": 6
+    },
+    "after_targeted": {
+      "passed": 10,
+      "failed": 0,
+      "cases": 10
+    },
+    "existing_graph_checks": 25,
+    "typescript_strict": "passed",
+    "schema_fixture": {
+      "sourceBuild": "14178/10896 old fixture",
+      "modelBuild": "14191/10924 fixed profile",
+      "scope": "schema construction only; not native compatibility or full trace acceptance",
+      "classes": 213,
+      "serializers": 268,
+      "fields": 1592,
+      "passed": 213,
+      "failed": []
+    },
+    "source_sha256": {
+      "nativeSchema.ts": "4e01bca5a988f989439145313a50987df90f89b461f1f0f07eeb0c7fb1475a85",
+      "nativeSchemaProfile.ts": "6b3edd2873d584a9748cfe97525961a01b81633ba8e6fb6ecdd27efc0203e14b",
+      "nativeFieldCodec.ts": "b2e3fdb3c10b471ac643278b1e785be270b7dbede5fa8e2cd7ed82e1e8403b49",
+      "nativeQuantizedFloat.ts": "f202b45998fa8781ba2ca50c34b32a42dd8153eeda5f2195275959a523193188"
+    },
+    "integrated_into_runtime": false
+  },
+  "boundaries": [
+    "schema construction only, not full stream verification",
+    "old fixture14178/10896 differs from fixed profile14191/10924",
+    "no game DLL executed as an OS module",
+    "no online,Windows,release or new client artifact"
+  ]
+}
