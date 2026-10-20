@@ -1,0 +1,5 @@
+{
+  "checks": 46,
+  "passed": true,
+  "scope": "Transactional logical fields, array shrink and pointer lifetime in a new isolated component. Not packet/snapshot commit, runtime integration or live acceptance."
+}

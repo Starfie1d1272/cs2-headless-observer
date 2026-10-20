@@ -196,3 +196,35 @@ from the old fixture's 268 serializers/1592 fields. These results establish
 schema construction only: they do not validate an entire stream, current live
 schema delivery, callbacks, Windows startup, or GOTV acceptance. The observer
 runtime remains unchanged.
+
+## Actual Huffman codebook, not only opcode behavior
+
+Final reconciliation found that the earlier opcode probes and the synthetic
+two-leaf termination test did not establish the real Huffman code assignment.
+The fixed constructor1d71a0's 40 frequency stores were extracted from machine
+instructions and agree with the pinned parser's frequency vector. Native
+builder1d7440 clamps each leaf weight to at least1, assigns monotonically
+increasing sequence IDs, and makes the first/second popped nodes its left/right
+children. Native heap insertion1d7da0 and sift1d80a0 prioritize smaller weights,
+then larger sequence IDs on a tie. Its sequence IDs start at1 rather than the
+reference's0, a constant offset that does not alter ordering.
+
+An isolated harness executes the real heap operations on preallocated memory,
+then the real recursive tree-table builder1d7030, with no allocator hooks or
+operating-system imports. Reversal/reindexing follows1d6de0. The resulting
+table agrees for all40 codewords with an independent reference construction,
+and its maximum code length is17. The actual pinned TypeScript
+fillHuffmanTables output then matches that native-derived table for every
+17-bit prefix. This validates reuse of the existing Huffman codebook; it does
+not validate the old reader's depth limit or opcode-only termination rule.
+
+The whole-list reader10eba0 was also exercised with this actual table for
+finish, PlusN-to-root-sentinel, truncated PlusN and truncated long-code cases
+at all eight bit alignments. All32 boundary cases returned the expected
+success/overflow and zero-field behavior. This replaces the old synthetic
+table as evidence for those boundaries, while the synthetic test remains a
+useful narrower historical check.
+
+Evidence: huffman-codebook-authority.json, huffman-reference-comparison.json,
+field-path-codebook-boundaries.json and their saved tools. This is fixed-build
+offline evidence, not a completed snapshot decoder or live connection.

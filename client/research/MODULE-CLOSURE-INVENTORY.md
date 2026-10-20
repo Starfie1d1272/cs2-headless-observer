@@ -1,6 +1,6 @@
 # Required-module closure inventory
 
-Updated: 2026-10-20 13:26 Asia/Shanghai.
+Updated: 2026-10-20 13:41 Asia/Shanghai.
 
 ## Counting rules
 
@@ -14,10 +14,12 @@ States below are deliberately conservative. An indexed source contract is not
 automatically a completed final review. A discovered gap must retain its exact
 scope, rather than reclassify an entire previously studied DLL as unexplored.
 
-Current bounded count: six studied DLLs; three necessary-path evidence reviews
-reconciled (engine2, schemasystem, tier0); three final cross-module reviews
-active (networksystem, client, server). No DLL is being counted as completely
-reverse engineered. All six matching hashes and six relevant static
+Current bounded count: six studied DLLs; six necessary-path source reviews
+reconciled; zero currently identified binary-research blockers in this defined
+ordinary forward-observer scope. This is not a claim that an entire DLL was
+reverse engineered, that every future source/plugin is supported, or that no
+new discrepancy can arise during implementation. Any such discrepancy reopens
+its specific evidence item. All six matching hashes and six relevant static
 dispatch/identity validators were checked again in this period. Those checks
 verify retained evidence, not live behavior.
 
@@ -33,12 +35,15 @@ Required paths:
 - Compression boundaries are specific to transport, manifests and string
   tables; Snappy raw fallback must not leak into the other two policies.
 
-Current review: active.
+Current review: necessary-path source evidence reconciled for this scope.
 This period closed two isolated model gaps: explicit recognized custom wire
 authority and lookup-specific case behavior. All old fixture class roots now
 construct, but that is not a full stream replay or live schema test.
-Remaining final review: reconcile codec selection and graph/metadata authority
-with the complete directed construction matrix.
+Final review reconciled codec selection, graph/metadata authority and the
+directed construction matrix. It additionally found and closed the actual
+Huffman-codebook evidence gap: native heap ordering/table construction now
+matches the pinned implementation, and actual-table termination/truncation
+boundaries were checked. Direct opcode probes alone had not established that.
 Transport compression review is reconciled with CHANNEL-EVIDENCE and
 INITIALIZATION-EVIDENCE: channel tags 3/4 use bounded raw LZ4, logical manifests
 use their LZSS envelope, and string-table compression has its own Snappy/raw
@@ -76,12 +81,13 @@ Required paths:
 
 Evidence: SERIALIZER, EVENT-LIFECYCLE, WORLD-LIFECYCLE and INBOUND-CONTROL
 contracts, plus the fixed-hash identity/registration records.
-Current review: active with networksystem.
+Current review: necessary-path source evidence reconciled for this scope.
 This period traced m_hItem to its current CEntityHandle/ehandle constructor.
 This supports the custom wire category; it does not invent a generic integer
 alias or claim the native fake-field path accepts unknown raw types.
-Remaining final review: align exact/prefix aliases, primitive/enum/boxed
-dictionaries and pointer-name compatibility without indiscriminate case folding.
+Final review aligned exact/prefix aliases, primitive/enum/boxed dictionaries
+and pointer-name compatibility without indiscriminate case folding. The
+unintegrated graph model and explicit negative cases agree with those decisions.
 
 ## Server.dll
 
@@ -93,9 +99,13 @@ Required paths:
 Evidence: matching fixed client/server catalogs, EVENT-LIFECYCLE and
 INBOUND-CONTROL contracts. HLTV transport/send/ACK ownership implemented in
 engine2 is attributed to engine2, not counted again as server.dll code.
-Current review: supporting cross-check pending final sign-off.
-Remaining final review: ensure the explicit custom-category construction
-decision is supported by the actual sender registration, not only the parser.
+Current review: necessary-path sender cross-check reconciled for this scope.
+The20 named scalar registrations agree between client and server, including
+ehandle's category/dimension. The two broader scan candidates retained as
+unresolved in the raw report were independently identified as event-manager
+FreeEvent calls, not network serializer registrations. This is not a blanket
+claim that all arbitrary plugin callbacks were enumerated. Explicit custom
+metadata is preserved by the inspected writer0ab720, not invented by the parser.
 
 ## Schemasystem.dll
 
@@ -135,3 +145,12 @@ fences, bounded queues, failure recovery, two independent instances, Windows
 startup and authorized live observation remain implementation/acceptance work.
 Do not describe these as additional unknown binary files, and do not describe
 source-contract closure as successful deployment.
+
+## Next work
+
+Proceed with one cohesive implementation against these reconciled contracts:
+schema/codec/path reader, transactional entities/string tables, raw event
+projection, and driver/process generation ownership. Preserve existing SDK
+authentication and ordinary observer permissions. Do not produce an
+intermediate user package. Full offline integration and authorized Windows/live
+acceptance remain separate gates. This inventory is not an instruction to stop.

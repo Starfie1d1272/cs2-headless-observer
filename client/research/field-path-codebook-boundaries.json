@@ -1,0 +1,330 @@
+{
+  "manifest": "8766757721818354077",
+  "module_sha256": "be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec",
+  "method": "Real whole-list10eba0 and opcode handlers with the actual fixed-build Huffman table derived by verify-huffman-codebook.py; isolated Unicorn, no imports or allocator hooks.",
+  "cases": 32,
+  "passed": 32,
+  "rows": [
+    {
+      "name": "finish-opcode",
+      "start_bit": 0,
+      "valid_bits": 2,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 2,
+      "overflow": 0
+    },
+    {
+      "name": "plusN-root-sentinel",
+      "start_bit": 0,
+      "valid_bits": 26,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 26,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-plusN",
+      "start_bit": 0,
+      "valid_bits": 6,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 6,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-long-code",
+      "start_bit": 0,
+      "valid_bits": 16,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 16,
+      "overflow": 1
+    },
+    {
+      "name": "finish-opcode",
+      "start_bit": 1,
+      "valid_bits": 3,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 3,
+      "overflow": 0
+    },
+    {
+      "name": "plusN-root-sentinel",
+      "start_bit": 1,
+      "valid_bits": 27,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 27,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-plusN",
+      "start_bit": 1,
+      "valid_bits": 7,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 7,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-long-code",
+      "start_bit": 1,
+      "valid_bits": 17,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 17,
+      "overflow": 1
+    },
+    {
+      "name": "finish-opcode",
+      "start_bit": 2,
+      "valid_bits": 4,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 4,
+      "overflow": 0
+    },
+    {
+      "name": "plusN-root-sentinel",
+      "start_bit": 2,
+      "valid_bits": 28,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 28,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-plusN",
+      "start_bit": 2,
+      "valid_bits": 8,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 8,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-long-code",
+      "start_bit": 2,
+      "valid_bits": 18,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 18,
+      "overflow": 1
+    },
+    {
+      "name": "finish-opcode",
+      "start_bit": 3,
+      "valid_bits": 5,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 5,
+      "overflow": 0
+    },
+    {
+      "name": "plusN-root-sentinel",
+      "start_bit": 3,
+      "valid_bits": 29,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 29,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-plusN",
+      "start_bit": 3,
+      "valid_bits": 9,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 9,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-long-code",
+      "start_bit": 3,
+      "valid_bits": 19,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 19,
+      "overflow": 1
+    },
+    {
+      "name": "finish-opcode",
+      "start_bit": 4,
+      "valid_bits": 6,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 6,
+      "overflow": 0
+    },
+    {
+      "name": "plusN-root-sentinel",
+      "start_bit": 4,
+      "valid_bits": 30,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 30,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-plusN",
+      "start_bit": 4,
+      "valid_bits": 10,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 10,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-long-code",
+      "start_bit": 4,
+      "valid_bits": 20,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 20,
+      "overflow": 1
+    },
+    {
+      "name": "finish-opcode",
+      "start_bit": 5,
+      "valid_bits": 7,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 7,
+      "overflow": 0
+    },
+    {
+      "name": "plusN-root-sentinel",
+      "start_bit": 5,
+      "valid_bits": 31,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 31,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-plusN",
+      "start_bit": 5,
+      "valid_bits": 11,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 11,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-long-code",
+      "start_bit": 5,
+      "valid_bits": 21,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 21,
+      "overflow": 1
+    },
+    {
+      "name": "finish-opcode",
+      "start_bit": 6,
+      "valid_bits": 8,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 8,
+      "overflow": 0
+    },
+    {
+      "name": "plusN-root-sentinel",
+      "start_bit": 6,
+      "valid_bits": 32,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 32,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-plusN",
+      "start_bit": 6,
+      "valid_bits": 12,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 12,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-long-code",
+      "start_bit": 6,
+      "valid_bits": 22,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 22,
+      "overflow": 1
+    },
+    {
+      "name": "finish-opcode",
+      "start_bit": 7,
+      "valid_bits": 9,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 9,
+      "overflow": 0
+    },
+    {
+      "name": "plusN-root-sentinel",
+      "start_bit": 7,
+      "valid_bits": 33,
+      "returned": true,
+      "success": 1,
+      "fields": 0,
+      "end_bit": 33,
+      "overflow": 0
+    },
+    {
+      "name": "truncated-plusN",
+      "start_bit": 7,
+      "valid_bits": 13,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 13,
+      "overflow": 1
+    },
+    {
+      "name": "truncated-long-code",
+      "start_bit": 7,
+      "valid_bits": 23,
+      "returned": true,
+      "success": 0,
+      "fields": 0,
+      "end_bit": 23,
+      "overflow": 1
+    }
+  ],
+  "scope": "Actual-codebook termination/truncation boundaries at all byte alignments; complements the separately verified 40 opcode semantics, not a live stream."
+}
