@@ -143,6 +143,11 @@ SDK 头文件来源：ValveSoftware/Proton，bc896217ffcd67f892f952b010f898fe7bd
             '不绑定调用应用、Node 小版本或 Node 二进制哈希。\n'
             '组件保留 Python、原生桥、worker、合成样例、重建源码与许可。\n'
             '完整交互包请使用 standalone-research。\n', encoding='utf-8')
+    with (out / 'README.txt').open('a', encoding='utf-8') as readme:
+        readme.write('\n已知连接限制：同一 Steam 账号重复连接同一 GOTV IP、端口，可能替换已有连接；'
+            '游戏客户端也占用该端点，不应依赖额外观众与其稳定共存。不同端点可以并行。\n'
+            '1000 是通用关闭码，不应单凭该数字认定账号冲突或盲目重连争抢连接。'
+            '完整范围见 docs/compatibility.md。\n')
     files = {p.relative_to(out).as_posix(): digest(p) for p in sorted(out.rglob('*')) if p.is_file()}
     (out / 'manifest.json').write_text(json.dumps({'schema': 'cs2-headless-observer-package/4',
         'distribution': args.kind, 'componentId': contract['componentId'], 'componentVersion': contract['componentVersion'],
