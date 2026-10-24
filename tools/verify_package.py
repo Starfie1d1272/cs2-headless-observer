@@ -25,6 +25,10 @@ def main():
         path=(root/name).resolve();assert root in path.parents,name
         assert hashlib.sha256(path.read_bytes()).hexdigest()==digest,name
     assert not any(Path(name).name.lower()=='steam_api64.dll' for name in actual),'Steam API must come from local CS2'
+    # Compare license text across Windows checkout and git snapshot line endings.
+    for name, source in [('LICENSE-STEAMWORKS-EXCEPTION.txt', 'LICENSE-STEAMWORKS-EXCEPTION.txt'),
+                         ('Steamworks-SDK.txt', 'licenses/Steamworks-SDK.txt')]:
+        assert (root/'licenses'/name).read_text(encoding='utf-8') == (root/'source/project'/source).read_text(encoding='utf-8'), name
     python=root/'runtime/python/python.exe'
     component=manifest.get('distribution')=='external-node'
     node=args.node.resolve(strict=True) if args.node else (Path(__import__('shutil').which('node') or 'node') if component else root/'runtime/node.exe')

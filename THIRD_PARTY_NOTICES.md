@@ -1,6 +1,6 @@
 # 第三方来源与分发清单
 
-本仓库根 LICENSE 保留 AGPL-3.0 文本；迁自 Mizar 的代码保留原来源。下表用于追踪构建和拟分发资产，不表示所有组合的许可审查已自动完成。
+本仓库根 LICENSE 保留 AGPL-3.0 文本；迁自 Mizar 的代码保留原来源。项目自有代码附[Steamworks SDK 链接例外](LICENSE-STEAMWORKS-EXCEPTION.txt)，第三方代码不因该例外更换许可。下表追踪构建和分发资产。
 
 | 组件 | 固定来源 | 使用与保留材料 |
 | --- | --- | --- |
@@ -8,7 +8,7 @@
 | @bufbuild/protobuf | pnpm-lock.yaml 的精确版本 | Apache-2.0 声明；varint 文件内 BSD 通知；随包保留相关源码和通知 |
 | Node.js | Windows 24.22.0 ZIP及脚本固定摘要 | 随运行时提供原始 LICENSE，含其第三方声明 |
 | Python | Windows embeddable 3.14.8 ZIP及脚本固定摘要 | 随运行时提供原始 LICENSE.txt |
-| Steamworks SDK 头文件 | ValveSoftware/Proton bc896217ffcd67f892f952b010f898fe7bd0f0a1 / steamworks_sdk_165 | 仅作编译输入；其来源及权利边界需在正式分发前核对 |
+| Steamworks SDK 头文件 | ValveSoftware/Proton bc896217ffcd67f892f952b010f898fe7bd0f0a1 / steamworks_sdk_165 | 仅作编译输入；固定归档中的完整许可保留于 licenses/Steamworks-SDK.txt |
 | Steam API | 用户本机 CS2 安装 | 不随本包复制，不分发账号、票据或游戏 DLL |
 | ICE 独立对照 | verify_password.py 指定的外部源码 | 仅可选合成测试；不进入运行包，使用前核对该输入的原始许可 |
 
@@ -18,4 +18,4 @@
 
 external-node不携带Node，调用方提供满足最低要求的运行时；其分发通知由运行时提供方保留。独立包附带固定Node与原始通知。两种包继续提供Python许可、修改解析器源码、补丁和依赖声明。
 
-原生桥编译使用Valve保留权利的SDK头文件，包内不附SDK头文件或Steam/CS2 DLL。现有AGPL来源与Steamworks SDK组合的二进制公开分发权利尚需明确；公开SDK说明主要针对Steam分发，不能据此直接认定GitHub分发已获许可。候选技术验证不等于这一审查项已关闭。
+原生桥编译使用 Valve 保留权利的 SDK 头文件，包内不附 SDK 头文件或 Steam/CS2 DLL。[SDK 许可](licenses/Steamworks-SDK.txt)来自上述固定输入归档；其开发使用及可再分发部分受该协议约束。项目权利人已为有权授权的项目代码授予限定链接例外；这不授予 Valve 材料的权利，也不免除 SDK 协议义务。
