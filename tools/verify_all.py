@@ -81,7 +81,8 @@ def main():
         run('native-session', [executable])
         run('parser-components', [node, ROOT/'tools/verification/verify_cohesive_parser.mjs', source, out/'components'])
         run('python', [sys.executable, ROOT/'tools/run_python_tests.py'])
-        pnpm = shutil.which('pnpm.cmd' if os.name == 'nt' else 'pnpm')
+        # Windows runners may provide pnpm.exe instead of a .cmd shim.
+        pnpm = shutil.which('pnpm')
         if not pnpm: raise RuntimeError('pnpm is required')
         run('events', [pnpm, 'test:events'])
         run('typecheck', [pnpm, 'typecheck'])
