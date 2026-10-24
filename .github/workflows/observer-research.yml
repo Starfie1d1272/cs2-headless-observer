@@ -28,26 +28,24 @@ jobs:
         with:
           repository: osztenkurden/cs2parser
           ref: deced963b86d3ec26b28a225824130fdf9fe3167
-          path: .agent-tmp/observer-parser-source
+          path: work/parser
           persist-credentials: false
       - name: Build parser using the locked workspace toolchain
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force .agent-tmp/observer-build | Out-Null
-          node client/build_parser.mjs .agent-tmp/observer-parser-source .agent-tmp/observer-build/parser_worker.mjs
-      - name: Verify cohesive observer with synthetic inputs
+          New-Item -ItemType Directory -Force work/package-build | Out-Null
+          node tools/build_parser.mjs work/parser work/package-build/parser_worker.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Run required offline verification
         shell: pwsh
         run: |
-          node client/verify_cohesive_parser.mjs "$env:GITHUB_WORKSPACE/.agent-tmp/observer-parser-source"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $env:GOTV_ORDERED_WORKER = "$env:GITHUB_WORKSPACE/.agent-tmp/observer-build/parser_worker.mjs"
-          python -m unittest discover -s client -p "test_*.py" -v
+          python tools/verify_all.py --parser-source work/parser --worker work/package-build/parser_worker.mjs --output work/verification/package-ci
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Fetch pinned official SDK headers and portable runtimes
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $root = '.agent-tmp/observer-build'
+          $root = 'work/package-build'
           $files = @(
             @('https://codeload.github.com/ValveSoftware/Proton/tar.gz/bc896217ffcd67f892f952b010f898fe7bd0f0a1', 'sdk.tar.gz', 'be18d77ae5f9e5ce21318d151c692648e5cb7c5ffa50dea2dcac6c408966b077'),
             @('https://nodejs.org/dist/v24.22.0/node-v24.22.0-win-x64.zip', 'node-v24.22.0-win-x64.zip', 'f9683a19877e12a9b167305c8db71040d812876359de21f0d2e97c3f321f80c3'),
@@ -61,31 +59,47 @@ jobs:
           New-Item -ItemType Directory -Force "$root/sdk/steam" | Out-Null
           tar -xzf "$root/sdk.tar.gz" -C "$root/sdk/steam" --strip-components=3 'Proton-bc896217ffcd67f892f952b010f898fe7bd0f0a1/lsteamclient/steamworks_sdk_165'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Compile the native bridge with the Windows toolchain
-        shell: cmd
+      - name: Compile the native bridge without loading Steam
+        shell: pwsh
         run: |
-          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do call "%%i\VC\Auxiliary\Build\vcvars64.bat"
-          lib /nologo /machine:x64 /def:client\native\steam_api64.def /out:.agent-tmp\observer-build\steam_api64.lib
-          if errorlevel 1 exit /b %errorlevel%
-          cl /nologo /std:c++20 /EHsc /O2 /MT /LD /I.agent-tmp\observer-build\sdk /I.agent-tmp\observer-build\sdk\steam client\native\sdk_host.cpp /Fo.agent-tmp\observer-build\sdk_host.obj /link .agent-tmp\observer-build\steam_api64.lib /OUT:.agent-tmp\observer-build\mizar_observer.dll
-          if errorlevel 1 exit /b %errorlevel%
-          dumpbin /exports .agent-tmp\observer-build\mizar_observer.dll > .agent-tmp\observer-build\exports.txt
-      - name: Assemble portable client and verify bundled runtimes
+          python tools/build_native.py --sdk work/package-build/sdk --output work/package-build/native
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Fetch a test-only external Node baseline
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          python client/package_windows.py --runtimes .agent-tmp/observer-build --native .agent-tmp/observer-build/mizar_observer.dll --parser-bundle .agent-tmp/observer-build/parser_worker.mjs --parser-source .agent-tmp/observer-parser-source --output .agent-tmp/observer-build/client --source-sha $env:SOURCE_SHA
+          $name = 'node-v24.0.0-win-x64'
+          $zip = 'work/package-build/external-node.zip'
+          $sums = (Invoke-WebRequest -Uri 'https://nodejs.org/dist/v24.0.0/SHASUMS256.txt').Content
+          $expected = (($sums -split "`n" | Where-Object { $_.Trim().EndsWith("$name.zip") }) -split '\s+')[0]
+          Invoke-WebRequest -Uri "https://nodejs.org/dist/v24.0.0/$name.zip" -OutFile $zip -TimeoutSec 180
+          if ((Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw 'External test Node digest mismatch' }
+          Expand-Archive -LiteralPath $zip -DestinationPath work/package-build/external-node
+          "OBSERVER_TEST_NODE=$env:GITHUB_WORKSPACE/work/package-build/external-node/$name/node.exe" >> $env:GITHUB_ENV
+      - name: Verify the full observer at minimum Node version
+        shell: pwsh
+        run: |
+          python tools/verify_all.py --parser-source work/parser --worker work/package-build/parser_worker.mjs --node $env:OBSERVER_TEST_NODE --output work/verification/minimum-node-ci
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & .agent-tmp/observer-build/client/runtime/python/python.exe .agent-tmp/observer-build/client/client/driver.py --help
+      - name: Assemble and verify the portable package
+        shell: pwsh
+        run: |
+          python tools/package_windows.py --runtimes work/package-build --native work/package-build/native/cs2_observer.dll --parser-bundle work/package-build/parser_worker.mjs --parser-source work/parser --output dist/observer --source-sha $env:SOURCE_SHA
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & .agent-tmp/observer-build/client/runtime/node.exe --version
+          python tools/verify_package.py dist/observer
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -c "import pathlib; s=pathlib.Path('.agent-tmp/observer-build/exports.txt').read_text(); assert all(n in s for n in ['observer_create','observer_send','observer_receive','observer_auth','observer_close','observer_abi_version','observer_local_id','observer_accept_server_auth2','observer_remote_end_reason'])"
+          python tools/package_windows.py --kind external-node --runtimes work/package-build --native work/package-build/native/cs2_observer.dll --parser-bundle work/package-build/parser_worker.mjs --parser-source work/parser --output dist/observer-component --source-sha $env:SOURCE_SHA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/verify_package.py dist/observer-component --node $env:OBSERVER_TEST_NODE
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: mizar-observer-windows-${{ env.SOURCE_SHA }}
-          path: .agent-tmp/observer-build/client.zip
+          name: cs2-headless-observer-windows-${{ env.SOURCE_SHA }}
+          path: |
+            dist/observer.zip
+            dist/observer-component.zip
           retention-days: 7
           if-no-files-found: error
 

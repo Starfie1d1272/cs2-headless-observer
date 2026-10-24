@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import struct
 import sys
+sys.dont_write_bytecode = True  # Installed component files stay immutable across launches.
 import time
 from channel import decode_frame, messages, UnreliableOrder, UnreliableFeedback, encode_message, reliable_frame, ReliableMessageFilter, join_messages
 from handshake import (SignonSequence, connect_inner_message, connect_payload,
@@ -175,7 +176,7 @@ class ObserverDriver:
         if not self._account_id:
             raise DriverError('local-account-id-missing')
         payload = connect_payload(host_version=self.host_version, challenge=self._challenge,
-            auth_steam=auth, player_name='Mizar observer',
+            auth_steam=auth, player_name='CS2 Headless Observer',
             encrypted_password=transform_password(bytes(self._password), self._challenge.number),
             reservation_cookie=0, low_violence=False)
         self.port.send(connect_inner_message(payload), 5)
@@ -607,6 +608,11 @@ def main():
     ap.add_argument('--seconds', type=int, default=300, choices=range(1, 14401), metavar='1..14400')
     ap.add_argument('--offset', type=int, default=120, choices=range(0, 3601), metavar='0..3600')
     args = ap.parse_args()
+    from node_runtime import inspect_node
+    try:
+        inspect_node(args.node)
+    except ValueError as error:
+        raise SystemExit(str(error)) from None
     # The managed owner supplies secrets through stdin, never process arguments.
     try:
         if args.managed:

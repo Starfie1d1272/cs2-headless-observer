@@ -10,7 +10,7 @@ def main():
     base = Path(__file__).resolve().parent
     if os.name != 'nt':
         raise SystemExit('This entry point requires Windows x64.')
-    print('Mizar ordinary GOTV viewer — connection research build')
+    print('CS2 Headless Observer')
     print('Use your logged-in Steam account and an authorized test match.')
     game = Path(input('CS2 installation folder: ').strip().strip('"')).resolve(strict=True)
     api = game / 'game/bin/win64/steam_api64.dll'
@@ -33,7 +33,7 @@ def main():
     runs = base.parent / 'runs'
     runs.mkdir(exist_ok=True)
     output = runs / datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S-%fZ')
-    sys.argv = [str(base / 'driver.py'), '--native', str(base / 'mizar_observer.dll'),
+    sys.argv = [str(base / 'driver.py'), '--native', str(base / 'cs2_observer.dll'),
         '--steam-api', str(api), '--node', str(base.parent / 'runtime/node.exe'),
         '--host-version', version, '--output', str(output), '--seconds', '300']
     import driver
