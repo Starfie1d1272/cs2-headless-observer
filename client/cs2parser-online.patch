@@ -1880,7 +1880,7 @@ new file mode 100644
 index 0000000..fdb70cb
 --- /dev/null
 +++ b/src/parser/entities/nativeSnapshotState.ts
-@@ -0,0 +1,115 @@
+@@ -0,0 +1,120 @@
 +import type {NativeEntityFields} from './nativeEntityFields.js';
 +
 +export type NativeEntity = Readonly<{id:number;classId:number;serial:number;fields:NativeEntityFields}>;
@@ -1908,7 +1908,7 @@ index 0000000..fdb70cb
 + private revision=0;
 + private waiting=true;
 + private active=false;
-+ constructor(readonly maxFrames=128){if(!Number.isInteger(maxFrames)||maxFrames<1||maxFrames>65536)throw new Error('Invalid frame budget');}
++ constructor(readonly maxFrames=512){if(!Number.isInteger(maxFrames)||maxFrames<1||maxFrames>65536)throw new Error('Invalid frame budget');}
 + get lastTick(){return this.latest;}
 + get epoch(){return this.generation;}
 + get waitingFull(){return this.waiting;}
@@ -1950,7 +1950,12 @@ index 0000000..fdb70cb
 +   const frames=restart?new Map<number,Frame>():new Map(this.frames);
 +   frames.set(tick,{members:state.members,dormant:state.dormant,outside:state.outside});
 +   if(delta)for(const old of frames.keys())if(old<deltaFrom!)frames.delete(old);
-+   while(frames.size>this.maxFrames)frames.delete(frames.keys().next().value!);
++   // A still-referenced base must survive a long chain of forward deltas.
++   // Keep the same bounded history budget; retire unreferenced frames first.
++   while(frames.size>this.maxFrames){
++    const old=[...frames.keys()].find(value=>value!==tick&&(!delta||this.maxFrames===1||value!==deltaFrom));
++    if(old===undefined)throw new Error('Snapshot frame budget cannot retain active base');frames.delete(old);
++   }
 +   if(next)banks[baseline===0?1:0]=next;
 +   this.entities=entities;this.frames=frames;this.banks=banks;
 +   this.latest=tick;this.generation=epoch;this.waiting=false;this.revision++;
