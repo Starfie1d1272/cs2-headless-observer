@@ -78,6 +78,8 @@ def main():
     shutil.copyfile(args.native, client / 'cs2_observer.dll')
     shutil.copyfile(args.parser_bundle, client / 'parser_worker.mjs')
     shutil.copyfile(repo / 'LICENSE', licenses / 'cs2-headless-observer-AGPL-3.0.txt')
+    shutil.copyfile(repo / 'LICENSE-STEAMWORKS-EXCEPTION.txt', licenses / 'LICENSE-STEAMWORKS-EXCEPTION.txt')
+    shutil.copyfile(repo / 'licenses/Steamworks-SDK.txt', licenses / 'Steamworks-SDK.txt')
     parser = repo / 'node_modules/cs2parser'
     shutil.copyfile(parser / 'LICENSE', licenses / 'cs2parser.txt')
     shutil.copyfile(parser / 'ACKNOWLEDGEMENTS', licenses / 'cs2parser-acknowledgements.txt')

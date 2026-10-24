@@ -35,3 +35,7 @@ external-node包使用调用方提供或PATH中的Node.js 24.0.0及以上版本�
 - [第三方来源](THIRD_PARTY_NOTICES.md)、[许可证](LICENSE)
 
 真实比赛捕获、玩家资料、认证信息和游戏二进制不作为公开示例。仓库样例由合成字节生成。
+
+## 许可
+
+项目自有代码采用 AGPL-3.0，并附[限定的 Steamworks SDK 链接例外](LICENSE-STEAMWORKS-EXCEPTION.txt)，允许与 Steamworks SDK、Steam API 库链接及分发组合产物；项目代码及对应源码的其他 AGPL 义务继续适用。第三方组件各自遵循原许可证，例外不替 Valve 授权，详见[第三方来源](THIRD_PARTY_NOTICES.md)。

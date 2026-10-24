@@ -1,0 +1,10 @@
+Steamworks SDK linking exception
+Additional permission under section 7 of the GNU Affero General Public License, version 3
+
+Copyright holder granting this permission: Xinyu Du
+
+For portions of this project for which the granting copyright holder has authority to provide this permission, that holder additionally permits combining or linking those portions with the Valve Steamworks SDK and Steam API libraries, and conveying the resulting work. The GNU Affero General Public License, version 3, continues to apply to the covered project code and its Corresponding Source.
+
+This additional permission does not relicense any third-party material, grant rights to Valve materials, or waive any obligations under the applicable Steamworks SDK agreement. Third-party components remain subject to their respective licenses.
+
+The text of the GNU Affero General Public License, version 3, is provided in LICENSE. This exception does not change that license text or exempt the covered project code from its other requirements.
