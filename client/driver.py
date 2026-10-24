@@ -253,11 +253,11 @@ class ObserverDriver:
             self.first_channel_ms = now_ms
         self.last_channel_ms, self.deadline = now_ms, now_ms + 15000
         self.feedback.observe(frame)
-        if not reliable and not self.order.accept(frame)['accepted']:
+        if not frame.reliable and not self.order.accept(frame)['accepted']:
             return
         received_messages, _ = messages(frame.body)
         decoded, actions = [], []
-        context_tick = int32(frame.reliable_tick_hint) if reliable else 0
+        context_tick = int32(frame.reliable_tick_hint) if frame.reliable else 0
         if context_tick is None:
             context_tick = 0
         for message in received_messages:
@@ -297,7 +297,7 @@ class ObserverDriver:
                 actions.append(('message', message.message_id, message.body, context_tick))
                 if message.message_id == 40:
                     self.signon.server_info(self.decoder.server['server_count'])
-                elif message.message_id == 11:
+                elif message.message_id in (8, 11):
                     actions.append(('admit', self.decoder.max_creation_sequence))
                 elif message.message_id == 51:
                     self._reset_world_protocol(now_ms)

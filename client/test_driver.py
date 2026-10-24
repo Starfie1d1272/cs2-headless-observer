@@ -2,7 +2,7 @@
 import io
 import struct
 import unittest
-from channel import encode_message, join_messages, reliable_frame, decode_frame, messages
+from channel import encode_message, join_messages, reliable_frame, decode_frame, messages, unreliable_frame
 from driver import ObserverDriver, DriverError, SampleWriter
 from handshake import blob, number, initial_challenge_request
 from replay import replay
@@ -27,6 +27,15 @@ class Port:
 
 
 class DriverTest(unittest.TestCase):
+    def test_promoted_delivery_keeps_application_sequence_filter(self):
+        driver = ObserverDriver(Port(), host_version=14191, password=bytearray(), emit=lambda _: None)
+        driver.phase = 'channel'
+        for tick in (100, 200):
+            encoded, _ = encode_message(4, number(1, tick))
+            driver.receive(unreliable_frame(encoded, 1, 0, (0, 0, 0)), True, tick)
+        self.assertEqual(driver.decoder.tick, 100)
+        driver.close()
+
     def ready(self):
         port, output, sample, password = Port(), [], io.BytesIO(), bytearray(b'unit-only')
         driver = ObserverDriver(port, host_version=14191, password=password, emit=output.append,

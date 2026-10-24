@@ -18,6 +18,15 @@ def event(tick=42, weapon=b'weapon_awp'):
 
 
 class LiveTest(unittest.TestCase):
+    def test_initial_load_creation_sequence_does_not_require_later_update(self):
+        d = LiveDecoder(lambda _: None)
+        d.consume(8, blob(1, b'world') + number(4, 1) + number(10, 71) + number(16, 10))
+        self.assertEqual(d.max_creation_sequence, 10)
+        self.assertEqual(d.spawn_groups[1]['creation_sequence'], 10)
+        self.assertEqual(d.ready_spawn_groups, set())
+        d.consume(51, b'')
+        self.assertEqual(d.max_creation_sequence, 0)
+
     def test_descriptor_driven_event_retains_raw_weapon_and_event_tick(self):
         output = []
         d = LiveDecoder(output.append)

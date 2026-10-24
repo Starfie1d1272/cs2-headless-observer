@@ -6,7 +6,9 @@ from wire import fields, scalar, ProbeError
 class ObserverSettings:
     def __init__(self):
         # This program is an ordinary viewer, not a GOTV relay or game renderer.
-        self.values = {b'name': b'Mizar observer', b'tv_relay': b'0'}
+        # Advertise this receiver's bandwidth budget before CONNECTED. Omitting
+        # rate can leave an ordinary GOTV viewer stalled after its first snapshot.
+        self.values = {b'name': b'Mizar observer', b'tv_relay': b'0', b'rate': b'786432'}
 
     def userinfo(self):
         entries = b''.join(blob(1, blob(1, name) + blob(2, value))

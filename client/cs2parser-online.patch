@@ -593,7 +593,7 @@ new file mode 100644
 index 0000000..d523281
 --- /dev/null
 +++ b/src/parser/entities/nativeEventProjection.ts
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,62 @@
 +import {CMsgPlayerInfo} from '../../ts-proto/networkbasetypes.js';
 +import type {NativeSnapshotState,NativeEntity} from './nativeSnapshotState.js';
 +import type {NativeStringTables} from './nativeStringTables.js';
@@ -605,6 +605,7 @@ index 0000000..d523281
 + for(const record of entity.fields.entries())if(record.field.name===name&&record.operation==='value'){found=record.value;count++;}
 + return count===1?found:undefined;
 +};
++const uint32Value=(v:NativeWireValue)=>typeof v==='bigint'&&v>=0n&&v<=0xffffffffn?Number(v):typeof v==='number'&&Number.isInteger(v)&&v>=0&&v<=0xffffffff?v:undefined;
 +export interface NativePlayerIdentity {
 + readonly domain:'player-controller-slot';
 + readonly slot:number;
@@ -632,7 +633,7 @@ index 0000000..d523281
 +   const pawn=snapshots.getEntity(handle&0x7fff);
 +   if(!pawn||pawn.serial!==(handle>>>15))return null;
 +   // Controller's field uses the DIFFERENT compressed14/10-bit handle domain.
-+   const linked=field(controller,'m_hPlayerPawn')??field(controller,'m_hPawn');
++   const linked=uint32Value(field(controller,'m_hPlayerPawn')??field(controller,'m_hPawn'));
 +   if(typeof linked!=='number'||(linked&0x3fff)!==pawn.id||((linked>>>14)&0x3ff)!==(pawn.serial&0x3ff))return null;
 +  }
 +  return Object.freeze({domain:'player-controller-slot' as const,slot,steamId:id,
@@ -642,7 +643,7 @@ index 0000000..d523281
 + let warmup:boolean|null=null,round:number|null=null;
 + if(schema&&!snapshots.waitingFull){
 +  for(const entity of snapshots.entries())if(schema.getClass(entity.classId).name==='CCSGameRulesProxy'){
-+   const w=field(entity,'m_bWarmupPeriod'),r=field(entity,'m_totalRoundsPlayed');
++   const w=field(entity,'m_bWarmupPeriod'),r=uint32Value(field(entity,'m_totalRoundsPlayed'));
 +   warmup=typeof w==='boolean'?w:null;round=typeof r==='number'&&Number.isInteger(r)?r:null;break;
 +  }
 + }

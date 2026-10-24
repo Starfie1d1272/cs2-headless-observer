@@ -146,6 +146,11 @@ class LiveDecoder:
                 'manifest_incomplete': bool(scalar(f, 11)),
                 'manifest_fragments': [self._manifest_fragment(scalar(f, 8, 2) or b'')],
             }
+            # An initial Load already carries an authoritative creation sequence;
+            # a later SetCreationTick message need not repeat it for a joining viewer.
+            sequence = scalar(f, 16) or 0
+            uint(sequence)
+            self.max_creation_sequence = max(self.max_creation_sequence, sequence)
         elif message_id == 9:
             group = self.spawn_groups.get(scalar(f, 1))
             if group is None or not group['manifest_incomplete']:

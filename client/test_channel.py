@@ -46,6 +46,9 @@ class ChannelTest(unittest.TestCase):
         self.assertFalse(order.accept(incoming(11))['accepted'])
         self.assertFalse(order.accept(incoming(12))['accepted'])
         self.assertEqual(incoming(12).history_raw, (1, 0xfffd, 0xffff))
+        promoted = decode_frame(bytes([2, 12, 4]) + struct.pack('<3H', 1, 0xfffd, 0xffff), gns_reliable=True)
+        self.assertFalse(promoted.reliable)
+        self.assertEqual(promoted.sequence, 12)
         with self.assertRaisesRegex(ValueError, 'bit-underflow'):
             decode_frame(b'\x02\x01\x01', gns_reliable=False)
 
@@ -74,6 +77,9 @@ class ChannelTest(unittest.TestCase):
         self.assertEqual(decode_frame(b'\x03\x11\x05' + block, gns_reliable=True).body, b'hello')
         header = b'\x04\x01\x01' + bytes(6)
         self.assertEqual(decode_frame(header + b'\x05' + block, gns_reliable=False).body, b'hello')
+        promoted = decode_frame(header + b'\x05' + block, gns_reliable=True)
+        self.assertFalse(promoted.reliable)
+        self.assertEqual(promoted.body, b'hello')
         for bad, size in [(b'', 0), (b'\xf0', 15), (b'\x50hi', 5),
                           (b'\x10a\0\0', 5), (b'\x10a\x02\0', 5),
                           (b'\x10a\x01\0', 5), (block, 4), (block, 6)]:
