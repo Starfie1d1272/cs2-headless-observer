@@ -122,6 +122,27 @@ class OrderedDriverTests(unittest.TestCase):
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
         self.assertEqual([r for r in self.output if r['kind'] == 'round_start'][-1]['tick'], 0)
 
+    def test_source_lifecycle_events_are_forwarded_without_synthesizing_round_start(self):
+        self.initialize()
+        self.send([(4, number(1, 100)), (55, full(100))])
+        self.until(lambda: self.driver._full_sent)
+        names = ('round_prestart', 'round_poststart', 'round_freeze_end',
+                 'round_officially_ended', 'round_announce_warmup', 'begin_new_match',
+                 'round_announce_match_start', 'cs_win_panel_round', 'cs_win_panel_match',
+                 'player_sound')
+        descriptors = b''.join(blob(1, number(1, index) + blob(2, name.encode()))
+                               for index, name in enumerate(names, 17))
+        self.send([(205, descriptors)] + [(207, number(2, index) + number(4, 123))
+                                         for index in range(17, 17 + len(names))], hint=120)
+        self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
+        lifecycle = [row for row in self.output if row.get('type') == 'raw-event']
+        self.assertEqual([row['name'] for row in lifecycle], list(names[:-1]))
+        for row in lifecycle:
+            self.assertEqual((row['tick'], row['eventServerTick'], row['committedTick']), (120, 123, 100))
+            self.assertEqual(row['fields'], {})
+            self.assertEqual((row['source'], row['world']), ('ahead', 1))
+        self.assertFalse(any(row['kind'] == 'round_start' for row in self.output))
+
     def test_event_subscription_and_changelevel_keep_channel(self):
         self.initialize()
         descriptor = blob(1, number(1, 17) + blob(2, b'round_start'))
