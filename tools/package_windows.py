@@ -143,7 +143,7 @@ def main():
     if not component:
         (out / 'Start.cmd').write_bytes(b'@echo off\r\ncd /d "%~dp0"\r\n"runtime\\python\\python.exe" -B "client\\launcher.py"\r\npause\r\n')
         (out / 'Replay.cmd').write_bytes(b'@echo off\r\ncd /d "%~dp0"\r\n"runtime\\python\\python.exe" -B "tools\\replay_example.py"\r\npause\r\n')
-    (out / 'README.txt').write_text('''CS2 Headless Observer 1.0.0
+    (out / 'README.txt').write_text('CS2 Headless Observer ' + contract['componentVersion'] + '''
 
 1. 解压到可写目录，运行 Replay.cmd 完成本地解析与输出自检。
 2. 登录自己的 Steam 账号。需要同时使用游戏时，先启动 CS2。
@@ -166,7 +166,7 @@ Python 3.14.8：https://www.python.org/ftp/python/3.14.8/
 SDK 构建输入：ValveSoftware/Proton bc896217ffcd67f892f952b010f898fe7bd0f0a1 / steamworks_sdk_165。
 ''', encoding='utf8')
     if component:
-        (out / 'README.txt').write_text('CS2 Headless Observer 1.0.0 — external-node\n'
+        (out / 'README.txt').write_text('CS2 Headless Observer ' + contract['componentVersion'] + ' — external-node\n'
             '使用调用方或 PATH 中的 Node.js 24.0.0 及以上版本，通过 --node 选择运行时。\n'
             '按 manifest.json 的 entrypoints 定位包内 Python、driver、原生桥与 worker。\n'
             '应用以 --managed 启动，写入一行私有配置后保持 stdin 开放并持续消费 stdout。\n'
