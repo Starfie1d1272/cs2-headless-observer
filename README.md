@@ -2,7 +2,7 @@
 
 以普通 Steam 观众身份连接获授权的 GOTV 源，在后台接收比赛数据，输出逐行 JSON 事件。运行时不启动游戏画面；Steam 认证及可靠传输使用本机官方接口。
 
-这是独立的 Windows x64 接收程序。可以交互运行，也可以由任意应用以子进程方式管理。当前候选版本为1.0.0-rc.1。
+这是独立的 Windows x64 接收程序。可以交互运行，也可以由任意应用以子进程方式管理。当前版本为1.0.0。
 
 本组件为 [Mizar](https://github.com/Starfie1d1272/Mizar) 的 Lookahead 功能提供底层观战数据。
 
@@ -14,7 +14,7 @@ Windows 便携包解压到可写目录后：
 - `Replay.cmd`：运行包内完全合成的离线样例，无需 Steam、CS2 或网络。
 - 应用集成：按[托管接口](docs/managed-interface.md)启动 `client/driver.py --managed`，通过 stdin 传入配置，从 stdout 消费 JSON。
 
-external-node包使用调用方提供或PATH中的Node.js 24.0.0及以上版本，不绑定Node小版本。项目尚未提供稳定发行版；便携包的实际验证范围由制品 manifest 及验证报告说明。源码使用者见[构建步骤](docs/build.md)。
+external-node包使用调用方提供或PATH中的Node.js 24.0.0及以上版本，不绑定Node小版本。便携包的实际验证范围由制品 manifest 及验证报告说明。源码使用者见[构建步骤](docs/build.md)。
 
 ## 支持范围
 
