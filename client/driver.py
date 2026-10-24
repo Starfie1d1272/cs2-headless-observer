@@ -681,6 +681,9 @@ def main():
             report['reason'] = failure
     finally:
         password[:] = bytes(len(password))
+        # Retire public delivery before joining parser pipes on owner cancellation.
+        # Normal source completion still flushes the accepted final records below.
+        output_closed = writer.abort() if writer and (failure or owner.is_set()) else None
         for stage, action in [('close-session', driver.close if driver else native.close if native else None),
                 ('close-parser', parser.close if parser else None), ('close-events', events.close if events else None),
                 ('close-samples', samples.close if samples else None)]:
@@ -688,7 +691,7 @@ def main():
                 try: action()
                 except BaseException: finalization.append(stage)
         if writer:
-            completed = writer.abort() if failure or owner.is_set() else writer.finish()
+            completed = output_closed if output_closed is not None else writer.finish()
             if not completed:
                 finalization.append('close-output')
         if not owner.close():
