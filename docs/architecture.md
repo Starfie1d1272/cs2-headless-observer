@@ -1,23 +1,29 @@
 # 架构
 
+每个观察器进程拥有一个来源会话，以来源、通道和世界代际隔离解析状态。
+
 ```text
-交互启动器 / 应用进程拥有者
-  -> Python driver
-     -> ctypes SDK 端口 -> 原生桥 -> 本机 Steam API / GOTV
-     -> 应用帧、顺序、消息上下文和初始化控制
-     -> OrderedParserBridge -> Node worker -> 固定解析器 NativeObserverCore
-     <- 检查点、完整快照回执、恢复、事件
-  <- JSON 事件 / 报告 / 退出状态
+交互启动器 / 消费应用
+  → Python driver：会话、初始化控制、顺序、ACK、进程与输出
+    → C++ 原生桥：官方 Steamworks API、认证、回调与网络收发
+    → Node worker：schema、字符串表、实体事务、身份与事件
+  ← JSON 记录、运行报告、退出状态
 ```
 
-驱动拥有 SDK 会话，Python 桥拥有解析子进程。回执等待实际解析完成；收到网络消息不等于已提交实体快照。资源、队列和快照缓存有界。
+## 所有权与提交
 
-来源、通道和世界代际随消息与回执传递；清表和恢复撤销旧就绪状态。控制器身份与 pawn 证明分开。网络时间、事件 server tick、提交 tick、接收时间和画面时间各有含义。
+Python 驱动拥有 SDK 会话及解析子进程，C++ 桥管理官方接口的句柄和票据。Node 数据面统一解释 schema、类表、字符串表、实体与事件；驱动从实际解析完成的 checkpoint 和 receipt 推进初始化及 ACK。
 
-client/replay_ordered.py 复用同一个 ObserverDriver 和 OrderedParserBridge，替换网络端口为不发包的离线端口。它不会重现 Steam 认证或 SDK 原生断开通知。
+实体更新以事务提交，来源代际、快照 epoch 与完整 serial 参与身份判定。控制器身份和 pawn 身份分别证明；未知值保留明确状态。世界重置撤销旧就绪、身份与待交付记录。
 
-tools/demo/ 是辅助文件解析路线，使用发布版解析器；archive/parser-v1/ 保留退出默认流程的 Demo 包装 IPC 原型。不能把两者当成当前有序 worker 的输入格式。
+## 输入、输出与停止
 
-协议规则见[契约索引](protocol/README.md)，上游改动见[补丁说明](../patches/README.md)。
+同一输入读取者处理私有配置和停止信号。公共记录由统一出口分配连续序号，经有界、可取消的写入队列交付。正常来源结束依次排空已接收数据和解析结果，再发布终态；owner 取消先撤销旧来源交付，再清理资源。
 
-生产驱动只解析初始化和传输所需控制消息；schema、类表、字符串表、实体与事件由唯一 Node 数据面解释器拥有。旧 Python 消息级解释器位于 tools/diagnostics/，不在运行时模块清单。公共序号由驱动在最终输出边界分配，与内部解析回执序号分离。输入由同一读取线程处理配置和停止；输出有界、可取消，不能因消费者不读管道阻塞 SDK 清理。
+Windows 驱动持有解析器 Job，随驱动退出回收其自有 worker。消费应用负责驱动本身的生命周期、重试和应用级退出回收。
+
+## 回放与辅助工具
+
+`client/replay_ordered.py` 复用驱动和有序解析器，以本地帧文件替代网络端口。`tools/demo/` 提供 Demo 文件辅助解析，`tools/diagnostics/` 提供消息级研究工具。历史 Demo 包装器保存在 `archive/parser-v1/`。
+
+公开进程接口见[托管接口](managed-interface.md)，固定构建依据见[协议契约](protocol/README.md)，解析器源码组织见[构建](build.md)。

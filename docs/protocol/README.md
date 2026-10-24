@@ -1,6 +1,6 @@
 # 协议契约
 
-以下为固定构建研究与当前实现的规则依据。它们保留各自证据范围；当前支持状态以[兼容性](../compatibility.md)为准，历史阶段措辞不作为当前待办。
+本目录面向解析器维护者，记录固定构建的原生依据、内部状态规则和实现约束。公开进程接口见[托管接口](../managed-interface.md)，运行平台与验证范围见[兼容性](../compatibility.md)。
 
 - [传输](TRANSPORT-CONTRACT.md)
 - [恢复](RECOVERY-CONTRACT.md)
@@ -11,4 +11,4 @@
 - [来源代际与事务](GENERATION-TRANSACTION-CONTRACT.md)
 - [事件生命周期](EVENT-LIFECYCLE-CONTRACT.md)
 
-知识库记录版本、来源和摘要；目录迁移的来源映射见 archive/migration.json。文档相对链接的结构性修正单独记录，原始研究数据不重新生成。
+各页保留固定模块的地址、摘要和研究时间范围，阶段描述用于追溯当时的结论。文中证据文件按 `research/data/` 查找，原生核对工具位于 `research/tools/`，阶段实现记录位于 `archive/research-notes/`。知识条目与来源索引见[知识库](../../research/knowledge/README.md)。

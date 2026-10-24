@@ -146,15 +146,15 @@ def main():
     (out / 'README.txt').write_text('''CS2 Headless Observer
 
 解压到可写目录，保持 Steam 已登录自己的账号，双击 Start.cmd。
-填写 CS2 安装目录，核对当前游戏协议版本，再输入获授权测试赛的普通观战地址和密码。
-默认持续至来源结束或主动停止。报告位于 runs 子目录；原始捕获须显式开启并受总预算限制。密码和票据只在进程中使用。
-无需安装 Python、Node 或额外游戏组件；使用本机 CS2 已有 steam_api64.dll。
+填写 CS2 安装目录，核对来源 host 版本，再输入获授权的普通观战地址和密码。
+会话持续至来源结束或主动停止。报告位于 runs 子目录；独立驱动可显式开启有界采集，凭据留在会话内存。
+运行时随包提供；Steam API 使用本机 CS2 安装中的 steam_api64.dll。
 
-双击 Replay.cmd 可在无 Steam、无网络时重放五帧完全合成样例；它不是实际比赛或在线认证证明。
-当前接口为原生 ABI 3、有序解析 IPC 3，已验证 host 为 14191/14192，并非允许列表；版本和真实验收边界见 docs/compatibility.md。
-托管消费者见 docs/managed-interface.md。每个新构建需独立验证；不自动继承历史在线验收。
-报告中的 FULL 是协议状态；成功验收还需连续收数、实际事件与游戏对照。
-只分享 report.json 即可；channel.frames 和 events.jsonl 默认保留本机。
+先运行 Replay.cmd 完成五帧合成样例的本地解析与输出自检，再登录 Steam 运行 Start.cmd。
+接口为原生 ABI 3、有序解析 IPC 3，版本与验证范围见 docs/compatibility.md。
+应用集成见 docs/managed-interface.md，构建与验证见 docs/build.md、docs/verification.md。
+报告记录协议状态和收尾结果；事件时间、身份与来源代际按托管接口消费。
+报告按需私下分享，原始比赛采集保存在本机。
 
 源代码：https://github.com/Starfie1d1272/cs2-headless-observer/tree/''' + args.source_sha + '''
 cs2parser 2.7.2（MPL-2.0）：https://github.com/osztenkurden/cs2parser/tree/deced963b86d3ec26b28a225824130fdf9fe3167
@@ -166,13 +166,13 @@ SDK 头文件来源：ValveSoftware/Proton，bc896217ffcd67f892f952b010f898fe7bd
     if component:
         (out / 'README.txt').write_text('CS2 Headless Observer — external Node package\n'
             '提供 Node.js 24 或更高版本，可通过 --node 指定，或从 PATH 查找。\n'
-            '不绑定调用应用、Node 小版本或 Node 二进制哈希。\n'
+            '由应用托管子进程，保持配置 stdin 开放并持续消费 stdout。\n'
             '组件保留 Python、原生桥、worker、合成样例、重建源码与许可。\n'
             '完整交互包请使用 standalone。\n', encoding='utf-8')
     with (out / 'README.txt').open('a', encoding='utf-8') as readme:
-        readme.write('\n已知连接限制：同一 Steam 账号重复连接同一 GOTV IP、端口，可能替换已有连接；'
-            '游戏客户端也占用该端点，不应依赖额外观众与其稳定共存。不同端点可以并行。\n'
-            '1000 是通用关闭码，不应单凭该数字认定账号冲突或盲目重连争抢连接。'
+        readme.write('\n连接共存：同一账号的并行客户端使用不同 GOTV 端点；相同端点的新连接可能替换已有连接。'
+            '游戏客户端也占用连接端点。需要共用账号时先启动游戏，再启动观察器。\n'
+            '重启游戏前先停止观察器并等待退出。1000 的原因结合端点、操作时间和完整回执判断。'
             '完整范围见 docs/compatibility.md。\n')
     files = {p.relative_to(out).as_posix(): digest(p) for p in sorted(out.rglob('*')) if p.is_file()}
     (out / 'manifest.json').write_text(json.dumps({'schema': 'cs2-headless-observer-package/4',

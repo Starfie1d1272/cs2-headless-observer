@@ -1,29 +1,39 @@
 # 验证
 
-字段读取与GameRules扫描的离线profiling结果见[性能检查](performance.md)。局部采样变化与整体回放耗时分开记录，不以合成启动或局部基准代替实际制播负载。
+## 默认离线检查
 
-先按[构建步骤](build.md)从固定干净上游生成 worker，再执行：
+按[构建步骤](build.md)从固定上游生成 worker 后运行：
 
 ```powershell
 python tools/verify_all.py --parser-source work/parser --worker work/build/parser_worker.mjs
 ```
 
-验证指定共享运行时可追加 `--node <absolute-node.exe>`。该路径传给解析组件、Python 子进程和离线样例，报告记录实际 Node 版本与可执行文件摘要。外部Node的版本和摘要仅作为测试来源记录，不是运行准入条件。
+可追加 `--node <absolute-node.exe>` 选择共享运行时。报告记录实际 Node 版本、可执行文件和 worker 摘要。
 
-默认检查包括：合成原生 ABI、10 项会话生命周期、七个解析组件、Python 测试、TS 事件测试、仓库类型检查、四项旧解析路径 codec 回归、知识库、目录和链接、合成通道重放。
-Windows 自动发现本机 MSVC；Linux 需要 g++。默认检查不登录 Steam、不使用游戏 DLL、不连接观战源。
+检查覆盖原生 ABI、会话生命周期、七个解析组件、Python 与事件测试、类型、codec 对照、知识库、仓库链接、公开契约及合成回放。Windows 使用本机 MSVC，Linux 源码检查使用 g++；在线客户端的发布平台见[兼容性](compatibility.md)。
 
-每轮生成 work/verification/<UTC时间>/verification.json 和各项日志。必需测试跳过会失败；无 GOTV_ORDERED_WORKER 或 ABI 编译工具不能当成完整通过。
-research/data、research/evidence 与协议文档只读；检查前后摘要必须一致。
+结果写入 `work/verification/<UTC时间>/verification.json` 与分项日志。完整通过要求所有必需项实际执行，并保持研究证据和协议材料的原始摘要。
 
-## 其他验证层级
+## 真实捕获与性能
 
-- tools/verification/verify.py 是 Linux 专用的公开 Demo 增长文件/停止/截断对照，需要外部固定 fixture；不属于 Windows 默认检查。
-- verify_channel.py、verify_password.py 与 verify_live.py 需要明确的独立 oracle 或系统库输入，按各脚本 --help 使用。
-- research/tools 中的原生模拟需要独立研究环境、固定模块和摘要，详见[研究说明](../research/README.md)。
-- 实际 SDK 编译和便携包验证由手动打包流程完成；验证包内 runtime、导出、哈希和合成重放不等于在线验收。
-- 本机真实捕获可用 client/replay_ordered.py 做回归，不提交原始素材，也不将离线结果称为新在线连接。
+`client/replay_ordered.py` 重放本机授权通道，用同一份输入比较事件字段、顺序、代际和身份。样例及操作见[使用说明](usage.md)。
 
-公开 Demo fixture 的固定来源、SHA-256 和历史 oracle 说明保留在[历史客户端说明](../archive/docs/client-README.md)。本轮不把网络下载作为默认回归前置条件。
+[性能检查](performance.md)记录投影字段与 GameRules 的采样方法、局部成本和总体回放耗时。实际制播负载按对应硬件、游戏与消费应用组合测量。
 
-默认验证还覆盖托管 JSON Schema、消费者世界代际、缓冲配置后立即停止、输出管道堵塞与关闭、驱动强杀后的解析器回收。需要本机合法 Steam 和游戏 DLL 时，可运行 `python tools/verify_sdk_drain.py --help`，以官方 SDK 本地 socket pair 检查关闭后尾消息仍可读取；该测试不连接比赛，不等同 GOTV 在线验收。
+## SDK 与在线层级
+
+`python tools/verify_sdk_drain.py --help` 提供 Windows 官方 SDK 本地 socket pair 检查，使用合法 Steam 上下文和本机游戏 DLL，覆盖连接关闭后的尾消息读取。
+
+授权 GOTV 验证记录实际 build/host、握手、FULL、连续事件、来源结束和清理。首个 FULL 恢复与远程 1038 尾队列的补验范围集中在[兼容性](compatibility.md#验证证据)。
+
+## 制品检查
+
+手动 Windows 打包流程从固定输入编译原生桥，生成独立包和 external-node 包。`tools/verify_package.py` 核对清单、摘要、文档链接、WASM 源码、合成回放、启动失败清理及执行后的文件状态。
+
+正式发布为源码和两类包固定同一提交，提供版本化资产、SHA256SUMS 与验证摘要。原始捕获保存在本机，公开样例采用合成输入。
+
+## 研究工具
+
+`tools/verification/verify.py` 提供 Linux Demo 增长文件、停止与截断对照，使用固定外部 fixture；来源和摘要见[历史客户端记录](../archive/docs/client-README.md)。`verify_channel.py`、`verify_password.py`、`verify_live.py` 的参数与 oracle 输入见各自 `--help`。
+
+原生函数模拟的模块、工具链与固定输入见[研究配方](../research/tools/TYPE-PROFILE-REPRODUCTION.md)。
