@@ -8,6 +8,8 @@ import hashlib
 import json
 from pathlib import Path
 import struct
+import sys
+sys.dont_write_bytecode = True  # Replays must not add caches to a verified component.
 import time
 from driver import MAGIC, ObserverDriver
 from ordered_parser_bridge import OrderedParserBridge
@@ -29,6 +31,8 @@ def main():
     ap.add_argument('--host-version', type=int, required=True)
     ap.add_argument('--output', type=Path, required=True)
     args = ap.parse_args()
+    from node_runtime import inspect_node
+    inspect_node(args.node)
     args.output.mkdir(parents=True, exist_ok=False)
     parser = OrderedParserBridge(source='offline:channel-replay', channel=1, world=1,
                                  worker=args.worker, node=args.node)

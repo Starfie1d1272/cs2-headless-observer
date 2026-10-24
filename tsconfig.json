@@ -12,6 +12,7 @@
     ]
   },
   "include": [
-    "client/*.ts"
+    "tools/demo/*.ts",
+    "tests/demo/*.ts"
   ]
 }

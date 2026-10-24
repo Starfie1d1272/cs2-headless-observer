@@ -1,0 +1,2486 @@
+{
+  "baseline": "0da25d0b51082979e50a47182bcb442abce7ae31",
+  "files": [
+    {
+      "from": ".gitattributes",
+      "to": ".gitattributes",
+      "originalSha256": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
+      "decision": "保留",
+      "currentSha256": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c"
+    },
+    {
+      "from": ".github/workflows/observer-research.yml",
+      "to": ".github/workflows/observer-research.yml",
+      "originalSha256": "426259c3d4c92e3aa321b86d66db184e8b9d109b7673b263451e404a1f5bc443",
+      "decision": "保留并精简",
+      "currentSha256": "6683304224a9cfb2eea8e7a52db1a553d71a3d2511b19432d25749e597ce5116",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": ".github/workflows/observer-verification.yml",
+      "to": ".github/workflows/observer-verification.yml",
+      "originalSha256": "4af9433290cb02a1e403aba63ec093660831e364be338bb7cd7fef5da34dbb86",
+      "decision": "保留并精简",
+      "currentSha256": "e89b53e5586edc43fa293d9667702d3a4529774885f0a6d4a520365795b81a5f",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": ".gitignore",
+      "to": ".gitignore",
+      "originalSha256": "6d0083cffc855b1b46936a868a85c3cd00a55fad9e9892c1bbc018559e791ade",
+      "decision": "保留并精简",
+      "currentSha256": "6c3b7927d85ece8676074a9922c5d122fe32a109074bd676eb5cbbd73fff139c",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "LICENSE",
+      "to": "LICENSE",
+      "originalSha256": "d8a6cc31abc16b6748c7a21f21611f5a1ec33f67d22ca23d7da1c19b95496bee",
+      "decision": "保留",
+      "currentSha256": "d8a6cc31abc16b6748c7a21f21611f5a1ec33f67d22ca23d7da1c19b95496bee"
+    },
+    {
+      "from": "README.md",
+      "to": "README.md",
+      "originalSha256": "3b42278171eccf676a1baee2acbf89fc9217f1cdfcbf06ee67d3c05fe652c23c",
+      "decision": "保留并精简",
+      "currentSha256": "77c966b928a910895140ff3c499ec92a80af07e60fec9b6a6bf8c282726801eb",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/.gitignore",
+      "to": ".gitignore",
+      "originalSha256": "650a58218a435c354fa7689b756caf5fbd1c22e18471ce4e6c9b41cc35f52140",
+      "decision": "合并配置",
+      "currentSha256": "6c3b7927d85ece8676074a9922c5d122fe32a109074bd676eb5cbbd73fff139c",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/AUTH-PROTOCOL-EVIDENCE.md",
+      "to": "archive/docs/AUTH-PROTOCOL-EVIDENCE.md",
+      "originalSha256": "8f20ba2e9e79c75d52ab1317e5a5c1fe946ef18d129a9464b9cc6dd1cc1e1bef",
+      "decision": "提炼后归档",
+      "currentSha256": "8f20ba2e9e79c75d52ab1317e5a5c1fe946ef18d129a9464b9cc6dd1cc1e1bef"
+    },
+    {
+      "from": "client/CHANNEL-EVIDENCE.md",
+      "to": "archive/docs/CHANNEL-EVIDENCE.md",
+      "originalSha256": "899184900ad0d58a1ab9906cb81d159c83a0a940cfc315529319dd3e1fd8b506",
+      "decision": "提炼后归档",
+      "currentSha256": "899184900ad0d58a1ab9906cb81d159c83a0a940cfc315529319dd3e1fd8b506"
+    },
+    {
+      "from": "client/DESIGN.md",
+      "to": "archive/docs/DESIGN.md",
+      "originalSha256": "c61ff16e62eb7fd8076fcdd8dc245de02dc1459f893c5e8bc406b1741a3662e8",
+      "decision": "提炼后归档",
+      "currentSha256": "c61ff16e62eb7fd8076fcdd8dc245de02dc1459f893c5e8bc406b1741a3662e8"
+    },
+    {
+      "from": "client/EVIDENCE.md",
+      "to": "archive/docs/EVIDENCE.md",
+      "originalSha256": "52b25e55ac436503a96ec591621c46d92617fb3a64cd5926b662c4eaa32c8c4d",
+      "decision": "提炼后归档",
+      "currentSha256": "52b25e55ac436503a96ec591621c46d92617fb3a64cd5926b662c4eaa32c8c4d"
+    },
+    {
+      "from": "client/HANDSHAKE-EVIDENCE.md",
+      "to": "archive/docs/HANDSHAKE-EVIDENCE.md",
+      "originalSha256": "95434ffc211f760a4acac7bc473bd08aaf1267637a39ba26d3e38db3fafdc24a",
+      "decision": "提炼后归档",
+      "currentSha256": "95434ffc211f760a4acac7bc473bd08aaf1267637a39ba26d3e38db3fafdc24a"
+    },
+    {
+      "from": "client/INITIALIZATION-EVIDENCE.md",
+      "to": "archive/docs/INITIALIZATION-EVIDENCE.md",
+      "originalSha256": "d99ec45c3e558bc9391b57ffb67b23e372b23a1a3c815d187ffe04006b883989",
+      "decision": "提炼后归档",
+      "currentSha256": "d99ec45c3e558bc9391b57ffb67b23e372b23a1a3c815d187ffe04006b883989"
+    },
+    {
+      "from": "client/LIVE-2026-10-24.md",
+      "to": "archive/docs/LIVE-2026-10-24.md",
+      "originalSha256": "797ffbedac74372de969a2d247151fc5cd4a8861e3dbabb11c7c389c21596dbc",
+      "decision": "提炼后归档",
+      "currentSha256": "797ffbedac74372de969a2d247151fc5cd4a8861e3dbabb11c7c389c21596dbc"
+    },
+    {
+      "from": "client/PACKAGE-EVIDENCE.md",
+      "to": "archive/docs/PACKAGE-EVIDENCE.md",
+      "originalSha256": "320307dad21c06566ff34509634f22bd137473fd2a4e4b6d9f081ee73563c9d8",
+      "decision": "提炼后归档",
+      "currentSha256": "320307dad21c06566ff34509634f22bd137473fd2a4e4b6d9f081ee73563c9d8"
+    },
+    {
+      "from": "client/PASSWORD-EVIDENCE.md",
+      "to": "archive/docs/PASSWORD-EVIDENCE.md",
+      "originalSha256": "298c4a755833fe2d64af8083dd463b12896e66baa5cd5ac1c275fffa4c18a1bd",
+      "decision": "提炼后归档",
+      "currentSha256": "298c4a755833fe2d64af8083dd463b12896e66baa5cd5ac1c275fffa4c18a1bd"
+    },
+    {
+      "from": "client/PHASE4-WIP.md",
+      "to": "archive/docs/PHASE4-WIP.md",
+      "originalSha256": "c77cf85acd8e787cd65e596dd51402c22121aed42d4d116a7bf9e592efddf530",
+      "decision": "提炼后归档",
+      "currentSha256": "c77cf85acd8e787cd65e596dd51402c22121aed42d4d116a7bf9e592efddf530"
+    },
+    {
+      "from": "client/PHASE5-HANDOFF.md",
+      "to": "archive/docs/PHASE5-HANDOFF.md",
+      "originalSha256": "fec0c3215ee616ffc8f015895146073744a1531edb85010923e147222a2f9791",
+      "decision": "提炼后归档",
+      "currentSha256": "fec0c3215ee616ffc8f015895146073744a1531edb85010923e147222a2f9791"
+    },
+    {
+      "from": "client/PROTOCOL-COVERAGE.md",
+      "to": "archive/docs/PROTOCOL-COVERAGE.md",
+      "originalSha256": "84d81ede9b2acdcf208d81a15f35399d6e55aa046ffe6642e471342e00d10cc5",
+      "decision": "提炼后归档",
+      "currentSha256": "84d81ede9b2acdcf208d81a15f35399d6e55aa046ffe6642e471342e00d10cc5"
+    },
+    {
+      "from": "client/README.md",
+      "to": "archive/docs/client-README.md",
+      "originalSha256": "f8021875992205dc54cba3ee32893b8f1f63ec8ba4ccc771cfef26c5e09f0bcd",
+      "decision": "提炼后归档",
+      "currentSha256": "f8021875992205dc54cba3ee32893b8f1f63ec8ba4ccc771cfef26c5e09f0bcd"
+    },
+    {
+      "from": "client/REFERENCE-BASIS.md",
+      "to": "research/references/REFERENCE-BASIS.md",
+      "originalSha256": "dace468b756005eab95a95afbb6196fe3fa1670f064b3bc5766f5d4c0744e195",
+      "decision": "保留研究参考",
+      "currentSha256": "dace468b756005eab95a95afbb6196fe3fa1670f064b3bc5766f5d4c0744e195"
+    },
+    {
+      "from": "client/RESEARCH-2026-10-19.md",
+      "to": "archive/docs/RESEARCH-2026-10-19.md",
+      "originalSha256": "2a6b2a88c23ba450a7227b123234ca22188a838439864443aa02edfb17473afb",
+      "decision": "提炼后归档",
+      "currentSha256": "2a6b2a88c23ba450a7227b123234ca22188a838439864443aa02edfb17473afb"
+    },
+    {
+      "from": "client/USERCOMMAND-EVIDENCE.md",
+      "to": "archive/docs/USERCOMMAND-EVIDENCE.md",
+      "originalSha256": "db2c9fd72581a9913cfe596d29b8ceb43863c7ebb25f4e9b9053689ad3ce47a6",
+      "decision": "提炼后归档",
+      "currentSha256": "db2c9fd72581a9913cfe596d29b8ceb43863c7ebb25f4e9b9053689ad3ce47a6"
+    },
+    {
+      "from": "client/WINDOWS-TEST.md",
+      "to": "archive/docs/WINDOWS-TEST.md",
+      "originalSha256": "e12b3450b38814cd86bd1bc1a76cda2935e1924b3444e7ede8cade4682d1f4cd",
+      "decision": "提炼后归档",
+      "currentSha256": "e12b3450b38814cd86bd1bc1a76cda2935e1924b3444e7ede8cade4682d1f4cd"
+    },
+    {
+      "from": "client/build_parser.mjs",
+      "to": "tools/build_parser.mjs",
+      "originalSha256": "a6c8ae9dbe38afc39e86ea39e72cc44dd0bde0e437b49b869f5f41abc53a0d66",
+      "decision": "精简并保留",
+      "currentSha256": "2a44689248d22d7397347a74e51f591e6724adf8f4a4a444b7e69a1a76c19b32",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/capture.py",
+      "to": "tools/diagnostics/capture.py",
+      "originalSha256": "151d201792d0127cd5c16ce5f74b215ddc7f3ce991079b68c976efd93ede830c",
+      "decision": "保留诊断工具",
+      "currentSha256": "ef6edb9936fd3f599d112c7b6da1c7e0cff155d275e2d338627c63af7d6b69b8",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/channel.py",
+      "to": "client/channel.py",
+      "originalSha256": "c6ea64f291bf455cd295b8727ca91799d939e9b3a23d6e99208947ce0c89d610",
+      "decision": "保留运行核心",
+      "currentSha256": "c6ea64f291bf455cd295b8727ca91799d939e9b3a23d6e99208947ce0c89d610"
+    },
+    {
+      "from": "client/cs2parser-online.patch",
+      "to": "patches/cs2parser-online.patch",
+      "originalSha256": "249bf8a8c141cc56d303d70fca44cee358da34fec22c3ec9901e2078ccdca77e",
+      "decision": "preserve fixed upstream patch",
+      "currentSha256": "249bf8a8c141cc56d303d70fca44cee358da34fec22c3ec9901e2078ccdca77e"
+    },
+    {
+      "from": "client/decode.test.ts",
+      "to": "tests/demo/decode.test.ts",
+      "originalSha256": "35f88cf4bf4384dcae7179f3f9dc5cc71e2ad67b45c464824efcfa40c7f5af21",
+      "decision": "保留现行测试",
+      "currentSha256": "1699f459cdf3d4e684fe6c6ddc0509a1accf5409bdd5ea3afa7fea072f478adb",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/decode.ts",
+      "to": "tools/demo/decode.ts",
+      "originalSha256": "b1458af6eb3338826f0b37a99b43ed20d858f4e8f4b5ba6b53588baee369d00a",
+      "decision": "保留辅助功能",
+      "currentSha256": "b1458af6eb3338826f0b37a99b43ed20d858f4e8f4b5ba6b53588baee369d00a"
+    },
+    {
+      "from": "client/driver.py",
+      "to": "client/driver.py",
+      "originalSha256": "318e65dc8bdedb2d61022418cde6ba623e9b87fad83e6ef09011817e1d412180",
+      "decision": "保留运行核心",
+      "currentSha256": "318e65dc8bdedb2d61022418cde6ba623e9b87fad83e6ef09011817e1d412180"
+    },
+    {
+      "from": "client/evidence/angle-decoder-audit.json",
+      "to": "research/evidence/angle-decoder-audit.json",
+      "originalSha256": "2fc5609ab7f461aef475cfc4b83e80d6ba1c2838b6c1343e4fadd33fec77e910",
+      "decision": "保留历史证据",
+      "currentSha256": "2fc5609ab7f461aef475cfc4b83e80d6ba1c2838b6c1343e4fadd33fec77e910"
+    },
+    {
+      "from": "client/evidence/angle-decoder-full-replay.json",
+      "to": "research/evidence/angle-decoder-full-replay.json",
+      "originalSha256": "69235ef823f6fc3ccef574cfea5ec0e83e03b1fdb0944931179ad79a90f424bd",
+      "decision": "保留历史证据",
+      "currentSha256": "69235ef823f6fc3ccef574cfea5ec0e83e03b1fdb0944931179ad79a90f424bd"
+    },
+    {
+      "from": "client/evidence/architecture.txt",
+      "to": "research/evidence/architecture.txt",
+      "originalSha256": "f9f8907f8f29b55861f0578a00fcc4251eebc8b2eb37c11ffd4e45647d4db738",
+      "decision": "保留历史证据",
+      "currentSha256": "f9f8907f8f29b55861f0578a00fcc4251eebc8b2eb37c11ffd4e45647d4db738"
+    },
+    {
+      "from": "client/evidence/binary-identity.json",
+      "to": "research/evidence/binary-identity.json",
+      "originalSha256": "bb5f2c07105ba0e777acb408f526445a09f8e416aaf4f791ffee5a3056eb7efe",
+      "decision": "保留历史证据",
+      "currentSha256": "bb5f2c07105ba0e777acb408f526445a09f8e416aaf4f791ffee5a3056eb7efe"
+    },
+    {
+      "from": "client/evidence/channel-evidence-index.json",
+      "to": "research/evidence/channel-evidence-index.json",
+      "originalSha256": "e2b1700ea415d60d597cd8508e85c7a841002d8996b29865eb7025c056722b04",
+      "decision": "保留历史证据",
+      "currentSha256": "e2b1700ea415d60d597cd8508e85c7a841002d8996b29865eb7025c056722b04"
+    },
+    {
+      "from": "client/evidence/channel-oracle.json",
+      "to": "research/evidence/channel-oracle.json",
+      "originalSha256": "661e46f4c9fecd08887fd132c9ced225d9fb7b545312f2a0afa5280ee26260ad",
+      "decision": "保留历史证据",
+      "currentSha256": "661e46f4c9fecd08887fd132c9ced225d9fb7b545312f2a0afa5280ee26260ad"
+    },
+    {
+      "from": "client/evidence/channel-queries.json",
+      "to": "research/evidence/channel-queries.json",
+      "originalSha256": "18e3c55b3c1bff0f3e02418f9fbe543130e5c02f5ccd1143d5f12ca4bd7882c6",
+      "decision": "保留历史证据",
+      "currentSha256": "18e3c55b3c1bff0f3e02418f9fbe543130e5c02f5ccd1143d5f12ca4bd7882c6"
+    },
+    {
+      "from": "client/evidence/channel-tests.txt",
+      "to": "research/evidence/channel-tests.txt",
+      "originalSha256": "4d352cc1dde65c3923a4cc3535ba1a970915baf23b7c93554fa87ca305327ce2",
+      "decision": "保留历史证据",
+      "currentSha256": "4d352cc1dde65c3923a4cc3535ba1a970915baf23b7c93554fa87ca305327ce2"
+    },
+    {
+      "from": "client/evidence/continuity-regression.txt",
+      "to": "research/evidence/continuity-regression.txt",
+      "originalSha256": "b86328699295dd6a21815eb13195cb7d1769026d05b81d9c559e9d107c79ff6f",
+      "decision": "保留历史证据",
+      "currentSha256": "b86328699295dd6a21815eb13195cb7d1769026d05b81d9c559e9d107c79ff6f"
+    },
+    {
+      "from": "client/evidence/coordinate-profile-audit.json",
+      "to": "research/evidence/coordinate-profile-audit.json",
+      "originalSha256": "4cd135776496b17fc02226220f88e675e8be159e11c8412373024fa7d5a40088",
+      "decision": "保留历史证据",
+      "currentSha256": "4cd135776496b17fc02226220f88e675e8be159e11c8412373024fa7d5a40088"
+    },
+    {
+      "from": "client/evidence/coordinate-profile-first-full.json",
+      "to": "research/evidence/coordinate-profile-first-full.json",
+      "originalSha256": "3076ec8cfc1cff3960465d87457397973d2679b4083bc704a5624e71d8580b23",
+      "decision": "保留历史证据",
+      "currentSha256": "3076ec8cfc1cff3960465d87457397973d2679b4083bc704a5624e71d8580b23"
+    },
+    {
+      "from": "client/evidence/current-schema-comparison.json",
+      "to": "research/evidence/current-schema-comparison.json",
+      "originalSha256": "9e3354100f5936bd825834e0c7e5f49e83d5f1f30f903c0eb128d6c7100f804f",
+      "decision": "保留历史证据",
+      "currentSha256": "9e3354100f5936bd825834e0c7e5f49e83d5f1f30f903c0eb128d6c7100f804f"
+    },
+    {
+      "from": "client/evidence/engine2-queries.json",
+      "to": "research/evidence/engine2-queries.json",
+      "originalSha256": "18deebd2b1cab61e58a42e763344a2d9458918dbd1a8f44779b2a22d48b25de8",
+      "decision": "保留历史证据",
+      "currentSha256": "18deebd2b1cab61e58a42e763344a2d9458918dbd1a8f44779b2a22d48b25de8"
+    },
+    {
+      "from": "client/evidence/first-full-snapshot.json",
+      "to": "research/evidence/first-full-snapshot.json",
+      "originalSha256": "a830d73c70737a78ed1d7ae0e9889454839f698e541c68a24ebe80f6979f1245",
+      "decision": "保留历史证据",
+      "currentSha256": "a830d73c70737a78ed1d7ae0e9889454839f698e541c68a24ebe80f6979f1245"
+    },
+    {
+      "from": "client/evidence/handshake-evidence-index.json",
+      "to": "research/evidence/handshake-evidence-index.json",
+      "originalSha256": "12a663cbd76ab66c4f7232843cb5c69bcda7ea50e0fd9a584e286307756295b4",
+      "decision": "保留历史证据",
+      "currentSha256": "12a663cbd76ab66c4f7232843cb5c69bcda7ea50e0fd9a584e286307756295b4"
+    },
+    {
+      "from": "client/evidence/handshake-tests.txt",
+      "to": "research/evidence/handshake-tests.txt",
+      "originalSha256": "da759caa11280ec97e71aa446cc85ecfeeac96665c8b24fcac67565eae7a798b",
+      "decision": "保留历史证据",
+      "currentSha256": "da759caa11280ec97e71aa446cc85ecfeeac96665c8b24fcac67565eae7a798b"
+    },
+    {
+      "from": "client/evidence/initialization-static-index.json",
+      "to": "research/evidence/initialization-static-index.json",
+      "originalSha256": "4d0109510135ed17db4373422bdb5452f427118bbc355c4c892d5bac952012d9",
+      "decision": "保留历史证据",
+      "currentSha256": "4d0109510135ed17db4373422bdb5452f427118bbc355c4c892d5bac952012d9"
+    },
+    {
+      "from": "client/evidence/integral-coordinate-audit.json",
+      "to": "research/evidence/integral-coordinate-audit.json",
+      "originalSha256": "1812a5bcca15a683c19b0c0ab9eb1c12a91c5aa5c789552e1f4ebaa943779ab9",
+      "decision": "保留历史证据",
+      "currentSha256": "1812a5bcca15a683c19b0c0ab9eb1c12a91c5aa5c789552e1f4ebaa943779ab9"
+    },
+    {
+      "from": "client/evidence/integral-coordinate-full-replay.json",
+      "to": "research/evidence/integral-coordinate-full-replay.json",
+      "originalSha256": "0e149ff9597139d1f918e7987d53c8af1b14579c63a5d0b1f41ebc149c522463",
+      "decision": "保留历史证据",
+      "currentSha256": "0e149ff9597139d1f918e7987d53c8af1b14579c63a5d0b1f41ebc149c522463"
+    },
+    {
+      "from": "client/evidence/live-oracle-phase4-wip.json",
+      "to": "research/evidence/live-oracle-phase4-wip.json",
+      "originalSha256": "341ca0215bd5658280a1c60e4085f540d0ee00c4c03cb4c8671c9b82077d0cb8",
+      "decision": "保留历史证据",
+      "currentSha256": "341ca0215bd5658280a1c60e4085f540d0ee00c4c03cb4c8671c9b82077d0cb8"
+    },
+    {
+      "from": "client/evidence/live-oracle-phase5.json",
+      "to": "research/evidence/live-oracle-phase5.json",
+      "originalSha256": "f0a3fe75138deab1b1a7b2a91e6700efe22611f0dffa31b48af6f59aaaca0409",
+      "decision": "保留历史证据",
+      "currentSha256": "f0a3fe75138deab1b1a7b2a91e6700efe22611f0dffa31b48af6f59aaaca0409"
+    },
+    {
+      "from": "client/evidence/native-sdk-compile.json",
+      "to": "research/evidence/native-sdk-compile.json",
+      "originalSha256": "1d469187f5ace1dbff70d5868d69c2ba0337462c09e99557ff84d3eb1b42ac76",
+      "decision": "保留历史证据",
+      "currentSha256": "1d469187f5ace1dbff70d5868d69c2ba0337462c09e99557ff84d3eb1b42ac76"
+    },
+    {
+      "from": "client/evidence/native-sdk-undefined-symbols.txt",
+      "to": "research/evidence/native-sdk-undefined-symbols.txt",
+      "originalSha256": "b9ca4880501e3f2eb81dc002591efec88601a6cfdba33f45142a604e5178d353",
+      "decision": "保留历史证据",
+      "currentSha256": "b9ca4880501e3f2eb81dc002591efec88601a6cfdba33f45142a604e5178d353"
+    },
+    {
+      "from": "client/evidence/native-session-tests.txt",
+      "to": "research/evidence/native-session-tests.txt",
+      "originalSha256": "6b904727a42ae6bd6c43dd565ccde3a1ce64bc65f869a3ddf62ce83f01800ff3",
+      "decision": "保留历史证据",
+      "currentSha256": "6b904727a42ae6bd6c43dd565ccde3a1ce64bc65f869a3ddf62ce83f01800ff3"
+    },
+    {
+      "from": "client/evidence/network-vtable-slots.json",
+      "to": "research/evidence/network-vtable-slots.json",
+      "originalSha256": "8e3b30e9867fe01426d4fb9b5a08ffebc5f7434408248f2d4d26d85e749b4a8c",
+      "decision": "保留历史证据",
+      "currentSha256": "8e3b30e9867fe01426d4fb9b5a08ffebc5f7434408248f2d4d26d85e749b4a8c"
+    },
+    {
+      "from": "client/evidence/networksystem-queries.json",
+      "to": "research/evidence/networksystem-queries.json",
+      "originalSha256": "0ee9d73596e10a8462653ebe44ba6e9f069b6616d2edbf481e12f97107efb4a1",
+      "decision": "保留历史证据",
+      "currentSha256": "0ee9d73596e10a8462653ebe44ba6e9f069b6616d2edbf481e12f97107efb4a1"
+    },
+    {
+      "from": "client/evidence/normal-decoder-audit.json",
+      "to": "research/evidence/normal-decoder-audit.json",
+      "originalSha256": "96f63bbb5e949f1cfb2d78a16f773fdea5d2d4b084a7fe9903882b9ed55e6abd",
+      "decision": "保留历史证据",
+      "currentSha256": "96f63bbb5e949f1cfb2d78a16f773fdea5d2d4b084a7fe9903882b9ed55e6abd"
+    },
+    {
+      "from": "client/evidence/normal-decoder-full-replay.json",
+      "to": "research/evidence/normal-decoder-full-replay.json",
+      "originalSha256": "2e586d3f94b2739e9fa17c02efa8739465080b37621b93e7d6bd307ca22b20b4",
+      "decision": "保留历史证据",
+      "currentSha256": "2e586d3f94b2739e9fa17c02efa8739465080b37621b93e7d6bd307ca22b20b4"
+    },
+    {
+      "from": "client/evidence/offline-verification-phase2.json",
+      "to": "research/evidence/offline-verification-phase2.json",
+      "originalSha256": "2528bbf25470e1948c0fb91753c4e7c84aff7322224e4ec9dec4d94d059e5104",
+      "decision": "保留历史证据",
+      "currentSha256": "2528bbf25470e1948c0fb91753c4e7c84aff7322224e4ec9dec4d94d059e5104"
+    },
+    {
+      "from": "client/evidence/offline-verification-phase3.json",
+      "to": "research/evidence/offline-verification-phase3.json",
+      "originalSha256": "7cc77f01fcc5f9726ecef8670afee2c8455eed83940802d7625cfe489f982318",
+      "decision": "保留历史证据",
+      "currentSha256": "7cc77f01fcc5f9726ecef8670afee2c8455eed83940802d7625cfe489f982318"
+    },
+    {
+      "from": "client/evidence/offline-verification.json",
+      "to": "research/evidence/offline-verification.json",
+      "originalSha256": "1a18b19d2724211035ef6b18c7891027a2b57160fa120390d8b884ec3214c6b0",
+      "decision": "保留历史证据",
+      "currentSha256": "1a18b19d2724211035ef6b18c7891027a2b57160fa120390d8b884ec3214c6b0"
+    },
+    {
+      "from": "client/evidence/online-baseline-static.json",
+      "to": "research/evidence/online-baseline-static.json",
+      "originalSha256": "66fd17d4eceb0b0b4df1672df11babb4171a9842449914cfac011d2ad0619408",
+      "decision": "保留历史证据",
+      "currentSha256": "66fd17d4eceb0b0b4df1672df11babb4171a9842449914cfac011d2ad0619408"
+    },
+    {
+      "from": "client/evidence/online-buffered-frame.json",
+      "to": "research/evidence/online-buffered-frame.json",
+      "originalSha256": "761b0fcacb71304fbf4c79fe54fb25fb0429790d2910bda830a3cd987a9a337f",
+      "decision": "保留历史证据",
+      "currentSha256": "761b0fcacb71304fbf4c79fe54fb25fb0429790d2910bda830a3cd987a9a337f"
+    },
+    {
+      "from": "client/evidence/online-parser-offline.json",
+      "to": "research/evidence/online-parser-offline.json",
+      "originalSha256": "8b5c5b147baf0aebfde29f96b1e02b0ac24c7da06e9e938e8d327bcba2a8c9ff",
+      "decision": "保留历史证据",
+      "currentSha256": "8b5c5b147baf0aebfde29f96b1e02b0ac24c7da06e9e938e8d327bcba2a8c9ff"
+    },
+    {
+      "from": "client/evidence/online-pending-frame.json",
+      "to": "research/evidence/online-pending-frame.json",
+      "originalSha256": "aa9cb1eb9601060f1ced728c359e613d43605bd701c16aac73899b3e1e898061",
+      "decision": "保留历史证据",
+      "currentSha256": "aa9cb1eb9601060f1ced728c359e613d43605bd701c16aac73899b3e1e898061"
+    },
+    {
+      "from": "client/evidence/online-split-recovery.json",
+      "to": "research/evidence/online-split-recovery.json",
+      "originalSha256": "15844c4e57b3a9a57b636cee59a8f6f174b4ba616ecd584c9bbb916b06cfdd22",
+      "decision": "保留历史证据",
+      "currentSha256": "15844c4e57b3a9a57b636cee59a8f6f174b4ba616ecd584c9bbb916b06cfdd22"
+    },
+    {
+      "from": "client/evidence/online-table-callback.json",
+      "to": "research/evidence/online-table-callback.json",
+      "originalSha256": "4e089a7b9332b2ad4041e61aac697fc8fb395e903ef1bd48b16da273cc246dde",
+      "decision": "保留历史证据",
+      "currentSha256": "4e089a7b9332b2ad4041e61aac697fc8fb395e903ef1bd48b16da273cc246dde"
+    },
+    {
+      "from": "client/evidence/online-world-recovery.json",
+      "to": "research/evidence/online-world-recovery.json",
+      "originalSha256": "737b22fb7cd1d8dd751657135978252e4d27f942b486bbba291cc659f3a5a5c2",
+      "decision": "保留历史证据",
+      "currentSha256": "737b22fb7cd1d8dd751657135978252e4d27f942b486bbba291cc659f3a5a5c2"
+    },
+    {
+      "from": "client/evidence/parser-stream-offline.json",
+      "to": "research/evidence/parser-stream-offline.json",
+      "originalSha256": "9463a5c7082a20219f82fddbd1aa2379b548ef8fb12e6e0107247dc2627b8b1b",
+      "decision": "保留历史证据",
+      "currentSha256": "9463a5c7082a20219f82fddbd1aa2379b548ef8fb12e6e0107247dc2627b8b1b"
+    },
+    {
+      "from": "client/evidence/parser-worker-offline.json",
+      "to": "research/evidence/parser-worker-offline.json",
+      "originalSha256": "79a3959b736bc13dff3f34f53a8ef00406138811a42abc642cba7a0a5b9156d0",
+      "decision": "保留历史证据",
+      "currentSha256": "79a3959b736bc13dff3f34f53a8ef00406138811a42abc642cba7a0a5b9156d0"
+    },
+    {
+      "from": "client/evidence/password-evidence-index.json",
+      "to": "research/evidence/password-evidence-index.json",
+      "originalSha256": "f026cf64a6dc1b86fba76ba792b701d898937a9ebad2d0f2d903f1b55682e2e9",
+      "decision": "保留历史证据",
+      "currentSha256": "f026cf64a6dc1b86fba76ba792b701d898937a9ebad2d0f2d903f1b55682e2e9"
+    },
+    {
+      "from": "client/evidence/password-oracle.json",
+      "to": "tests/fixtures/password-oracle.json",
+      "originalSha256": "6cbf50fa32b943d68a5562846ac5b148fbc450ed1da023b99edf4b6c322545a2",
+      "decision": "保留为测试夹具",
+      "currentSha256": "6cbf50fa32b943d68a5562846ac5b148fbc450ed1da023b99edf4b6c322545a2"
+    },
+    {
+      "from": "client/evidence/password-queries.json",
+      "to": "research/evidence/password-queries.json",
+      "originalSha256": "73209c6abdd63160224ba0cf5b7f044e88045571ad993cee3fb2ed5a936996fc",
+      "decision": "保留历史证据",
+      "currentSha256": "73209c6abdd63160224ba0cf5b7f044e88045571ad993cee3fb2ed5a936996fc"
+    },
+    {
+      "from": "client/evidence/password-tests.txt",
+      "to": "research/evidence/password-tests.txt",
+      "originalSha256": "6285cfeab32ceefe7b09e300ac7f0bdf12c96d1625370a241999ac3a096bec8c",
+      "decision": "保留历史证据",
+      "currentSha256": "6285cfeab32ceefe7b09e300ac7f0bdf12c96d1625370a241999ac3a096bec8c"
+    },
+    {
+      "from": "client/evidence/phase4-wip-index.json",
+      "to": "research/evidence/phase4-wip-index.json",
+      "originalSha256": "927118d1dc28093fd6cd4ada8c8dca27e3e0f8c99580f5600ada30678a6507b5",
+      "decision": "保留历史证据",
+      "currentSha256": "927118d1dc28093fd6cd4ada8c8dca27e3e0f8c99580f5600ada30678a6507b5"
+    },
+    {
+      "from": "client/evidence/phase5-abi-tests.txt",
+      "to": "research/evidence/phase5-abi-tests.txt",
+      "originalSha256": "420e59f75d952733bfa9b019515ce092db903ee8261a1ee01efb79914a574421",
+      "decision": "保留历史证据",
+      "currentSha256": "420e59f75d952733bfa9b019515ce092db903ee8261a1ee01efb79914a574421"
+    },
+    {
+      "from": "client/evidence/phase5-python-tests.txt",
+      "to": "research/evidence/phase5-python-tests.txt",
+      "originalSha256": "52cfcb28306d3e66b5ad312b64332318167774280ceb0aa8c10da0143ddf3dc4",
+      "decision": "保留历史证据",
+      "currentSha256": "52cfcb28306d3e66b5ad312b64332318167774280ceb0aa8c10da0143ddf3dc4"
+    },
+    {
+      "from": "client/evidence/phase5-static-index.json",
+      "to": "research/evidence/phase5-static-index.json",
+      "originalSha256": "834dc95a0608a823aa0be2360227505bfdc40aac1169689c20905fb81867a4d6",
+      "decision": "保留历史证据",
+      "currentSha256": "834dc95a0608a823aa0be2360227505bfdc40aac1169689c20905fb81867a4d6"
+    },
+    {
+      "from": "client/evidence/protocol-control-audit.json",
+      "to": "research/evidence/protocol-control-audit.json",
+      "originalSha256": "39d6638d3b125034331425e35125281af63efb89886bf99a9787b5bd0357db63",
+      "decision": "保留历史证据",
+      "currentSha256": "39d6638d3b125034331425e35125281af63efb89886bf99a9787b5bd0357db63"
+    },
+    {
+      "from": "client/evidence/protocol-control-full-replay.json",
+      "to": "research/evidence/protocol-control-full-replay.json",
+      "originalSha256": "4e31a7490e73c6fe2d46c2649d940e68f59049c61fed1851c396ac26822dfde9",
+      "decision": "保留历史证据",
+      "currentSha256": "4e31a7490e73c6fe2d46c2649d940e68f59049c61fed1851c396ac26822dfde9"
+    },
+    {
+      "from": "client/evidence/protocol-message-audit.json",
+      "to": "research/evidence/protocol-message-audit.json",
+      "originalSha256": "2c94c2ad9702a88133e7d90cc6ea8598d447d79816f49d8c2824e5720d51ad1b",
+      "decision": "保留历史证据",
+      "currentSha256": "2c94c2ad9702a88133e7d90cc6ea8598d447d79816f49d8c2824e5720d51ad1b"
+    },
+    {
+      "from": "client/evidence/provenance.json",
+      "to": "research/evidence/provenance.json",
+      "originalSha256": "65f746af58afbd789f1c83cb60af424d2943b57635043ea7f29b6e8c14d596f0",
+      "decision": "保留历史证据",
+      "currentSha256": "65f746af58afbd789f1c83cb60af424d2943b57635043ea7f29b6e8c14d596f0"
+    },
+    {
+      "from": "client/evidence/rea-health.json",
+      "to": "research/evidence/rea-health.json",
+      "originalSha256": "8e7ffe1205290f4993b3961d8e6ea87153c6885a70bbe22db3e1fd583d2d1713",
+      "decision": "保留历史证据",
+      "currentSha256": "8e7ffe1205290f4993b3961d8e6ea87153c6885a70bbe22db3e1fd583d2d1713"
+    },
+    {
+      "from": "client/evidence/rea-reproduction.json",
+      "to": "research/evidence/rea-reproduction.json",
+      "originalSha256": "b670ad57e5313326cb0d73f4dfd18f29b0376ae694484c82a4331e7b22d42e8a",
+      "decision": "保留历史证据",
+      "currentSha256": "b670ad57e5313326cb0d73f4dfd18f29b0376ae694484c82a4331e7b22d42e8a"
+    },
+    {
+      "from": "client/evidence/resource-manifest-offline.json",
+      "to": "research/evidence/resource-manifest-offline.json",
+      "originalSha256": "5006ad97af399fd33dcbe31abdb48ffbc4431e2f1efb994f04dde11f4d2cd8f1",
+      "decision": "保留历史证据",
+      "currentSha256": "5006ad97af399fd33dcbe31abdb48ffbc4431e2f1efb994f04dde11f4d2cd8f1"
+    },
+    {
+      "from": "client/evidence/static-checks.json",
+      "to": "research/evidence/static-checks.json",
+      "originalSha256": "34f59564ce336869ed7d60ba1cd16a43638c8b482313aa44ea3a5c2700afc653",
+      "decision": "保留历史证据",
+      "currentSha256": "34f59564ce336869ed7d60ba1cd16a43638c8b482313aa44ea3a5c2700afc653"
+    },
+    {
+      "from": "client/evidence/ticket-vtables.json",
+      "to": "research/evidence/ticket-vtables.json",
+      "originalSha256": "6f3163a4fe24e7bfbed69e68a7444f3f4c4e1600c50ffa956b7b38546ed65a2e",
+      "decision": "保留历史证据",
+      "currentSha256": "6f3163a4fe24e7bfbed69e68a7444f3f4c4e1600c50ffa956b7b38546ed65a2e"
+    },
+    {
+      "from": "client/evidence/windows-native-abi3-build.json",
+      "to": "research/evidence/windows-native-abi3-build.json",
+      "originalSha256": "3042c277e23f57fb574c29ef78f5e615780e61e8c27cbfee225c68ee552bcc07",
+      "decision": "保留历史证据",
+      "currentSha256": "3042c277e23f57fb574c29ef78f5e615780e61e8c27cbfee225c68ee552bcc07"
+    },
+    {
+      "from": "client/evidence/windows-native-build.json",
+      "to": "research/evidence/windows-native-build.json",
+      "originalSha256": "8de31cbf75790f4589af73934bcc0494475f489bba84bc933e6debcaa50d00af",
+      "decision": "保留历史证据",
+      "currentSha256": "8de31cbf75790f4589af73934bcc0494475f489bba84bc933e6debcaa50d00af"
+    },
+    {
+      "from": "client/evidence/wire-tests-first.txt",
+      "to": "research/evidence/wire-tests-first.txt",
+      "originalSha256": "f28c4717668198265631eb4ce2ac920d03701c72e8a77f0d09fee06a5dbd9aaa",
+      "decision": "保留历史证据",
+      "currentSha256": "f28c4717668198265631eb4ce2ac920d03701c72e8a77f0d09fee06a5dbd9aaa"
+    },
+    {
+      "from": "client/evidence/wire-tests.txt",
+      "to": "research/evidence/wire-tests.txt",
+      "originalSha256": "a749b5a7b21ead032796388fc2c1634b3fac29e3f24c11b78e9c5c82d2b11ccd",
+      "decision": "保留历史证据",
+      "currentSha256": "a749b5a7b21ead032796388fc2c1634b3fac29e3f24c11b78e9c5c82d2b11ccd"
+    },
+    {
+      "from": "client/evidence/world-driver-offline.json",
+      "to": "research/evidence/world-driver-offline.json",
+      "originalSha256": "55bcac49c9d6fabc031be144544134ad4ee8b7cdc90888aeb86dff71000a06c7",
+      "decision": "保留历史证据",
+      "currentSha256": "55bcac49c9d6fabc031be144544134ad4ee8b7cdc90888aeb86dff71000a06c7"
+    },
+    {
+      "from": "client/evidence/world-receipt-offline.json",
+      "to": "research/evidence/world-receipt-offline.json",
+      "originalSha256": "387b0de1e207dd78f5c73aacd1a37d89c196bf5bfd07804ef38283890a7071be",
+      "decision": "保留历史证据",
+      "currentSha256": "387b0de1e207dd78f5c73aacd1a37d89c196bf5bfd07804ef38283890a7071be"
+    },
+    {
+      "from": "client/evidence/write-failure-regression.txt",
+      "to": "research/evidence/write-failure-regression.txt",
+      "originalSha256": "fee31131a64313b0e51d37fb943adea097dce1ad719e5d5c24a63ef711a0396f",
+      "decision": "保留历史证据",
+      "currentSha256": "fee31131a64313b0e51d37fb943adea097dce1ad719e5d5c24a63ef711a0396f"
+    },
+    {
+      "from": "client/failure.test.ts",
+      "to": "tests/demo/failure.test.ts",
+      "originalSha256": "7d2624c03fa5d3c9e8323d1fbd72e8447e0c77898141accd0851a76415dd2b7f",
+      "decision": "保留现行测试",
+      "currentSha256": "d795e8667b475ca0a0169906f6f38445e5909de426202d28ae08b5cd6b780040",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/failure.ts",
+      "to": "tools/demo/failure.ts",
+      "originalSha256": "57c87aea8fb327daba6452059c66313aa3229b3c3cb6ce846eed908b22e012dc",
+      "decision": "保留辅助功能",
+      "currentSha256": "57c87aea8fb327daba6452059c66313aa3229b3c3cb6ce846eed908b22e012dc"
+    },
+    {
+      "from": "client/follow.ts",
+      "to": "tools/demo/follow.ts",
+      "originalSha256": "bfebc41fb8815ee924b7d7e8e0b5af2758422198207402404e637767549760be",
+      "decision": "保留辅助功能",
+      "currentSha256": "bfebc41fb8815ee924b7d7e8e0b5af2758422198207402404e637767549760be"
+    },
+    {
+      "from": "client/handshake.py",
+      "to": "client/handshake.py",
+      "originalSha256": "8ab7e19f2813782f78ce432fd026c93eb6c508c43b00254dd4c8201dad329ea4",
+      "decision": "保留运行核心",
+      "currentSha256": "8ab7e19f2813782f78ce432fd026c93eb6c508c43b00254dd4c8201dad329ea4"
+    },
+    {
+      "from": "client/launcher.py",
+      "to": "client/launcher.py",
+      "originalSha256": "95eba84ae0065ac4298fabe2f074b73b1ddc829fc8ca5d02e3f81d7d0dc2af8d",
+      "decision": "保留运行核心",
+      "currentSha256": "95eba84ae0065ac4298fabe2f074b73b1ddc829fc8ca5d02e3f81d7d0dc2af8d"
+    },
+    {
+      "from": "client/licenses/protobuf-es-Apache-2.0.txt",
+      "to": "licenses/protobuf-es-Apache-2.0.txt",
+      "originalSha256": "c04b4216f1cd4c5a4f7fb2f2a1b0ae70d847e9e0cac7c9dee9bf8cc03177c449",
+      "decision": "保留许可",
+      "currentSha256": "c04b4216f1cd4c5a4f7fb2f2a1b0ae70d847e9e0cac7c9dee9bf8cc03177c449"
+    },
+    {
+      "from": "client/live.py",
+      "to": "client/live.py",
+      "originalSha256": "587625b287b789d7b7c570e06ceeb0a371cec0e51c99e7319e946f554a27af8e",
+      "decision": "保留运行核心",
+      "currentSha256": "587625b287b789d7b7c570e06ceeb0a371cec0e51c99e7319e946f554a27af8e"
+    },
+    {
+      "from": "client/native/abi_fixture.cpp",
+      "to": "tests/native/abi_fixture.cpp",
+      "originalSha256": "6add62926bfdc49bda48fca0ad72e21333cfbfa30189297d9496f0a389d70dae",
+      "decision": "保留为现行测试",
+      "currentSha256": "6add62926bfdc49bda48fca0ad72e21333cfbfa30189297d9496f0a389d70dae"
+    },
+    {
+      "from": "client/native/compile_sdk.cpp",
+      "to": "tests/native/compile_sdk.cpp",
+      "originalSha256": "ece0c3050ace1f8a94b90a9d264970119d14275ca372afd0341b9ba19b0d7ca7",
+      "decision": "保留为现行测试",
+      "currentSha256": "ece0c3050ace1f8a94b90a9d264970119d14275ca372afd0341b9ba19b0d7ca7"
+    },
+    {
+      "from": "client/native/ice_oracle.cpp",
+      "to": "research/tools/native/ice_oracle.cpp",
+      "originalSha256": "ef4bde8e5507a36d81f04aa02a27bfc250df4471b4e352a9cd0cb8e8f3710014",
+      "decision": "保留可选独立对照",
+      "currentSha256": "ef4bde8e5507a36d81f04aa02a27bfc250df4471b4e352a9cd0cb8e8f3710014"
+    },
+    {
+      "from": "client/native/sdk_host.cpp",
+      "to": "native/sdk_host.cpp",
+      "originalSha256": "898295f99e4a95916bd03c30f434288bfb4b6d63553cee4f9af182d6c334cf1e",
+      "decision": "保留运行核心",
+      "currentSha256": "898295f99e4a95916bd03c30f434288bfb4b6d63553cee4f9af182d6c334cf1e"
+    },
+    {
+      "from": "client/native/session.hpp",
+      "to": "native/session.hpp",
+      "originalSha256": "d346f3ba27d83a73c82acb21a7af666dc01fa8fbd6c3df20f169bee1139d38b9",
+      "decision": "保留运行核心",
+      "currentSha256": "d346f3ba27d83a73c82acb21a7af666dc01fa8fbd6c3df20f169bee1139d38b9"
+    },
+    {
+      "from": "client/native/session_test.cpp",
+      "to": "tests/native/session_test.cpp",
+      "originalSha256": "619d21dc208bb771e29ad3c3106ad6243ffea5cbe1897e54f685f3b86b470f5b",
+      "decision": "保留为现行测试",
+      "currentSha256": "619d21dc208bb771e29ad3c3106ad6243ffea5cbe1897e54f685f3b86b470f5b"
+    },
+    {
+      "from": "client/native/steam_api64.def",
+      "to": "native/steam_api64.def",
+      "originalSha256": "92a7293f24c19977c1cb7522cf84901a69e97d9a654efa3670db8146d1f7a931",
+      "decision": "保留运行核心",
+      "currentSha256": "92a7293f24c19977c1cb7522cf84901a69e97d9a654efa3670db8146d1f7a931"
+    },
+    {
+      "from": "client/native/steam_bridge.hpp",
+      "to": "native/steam_bridge.hpp",
+      "originalSha256": "a1c027fb45e7393237073dc05ee90e7f7474fad2d1bc53bc3f2bb314f59a18ef",
+      "decision": "保留运行核心",
+      "currentSha256": "a1c027fb45e7393237073dc05ee90e7f7474fad2d1bc53bc3f2bb314f59a18ef"
+    },
+    {
+      "from": "client/observer_settings.py",
+      "to": "client/observer_settings.py",
+      "originalSha256": "39363316dc30076f9388f1c1cd40fa2b42b1e4ffaf90b54eef410ab129164326",
+      "decision": "保留运行核心",
+      "currentSha256": "39363316dc30076f9388f1c1cd40fa2b42b1e4ffaf90b54eef410ab129164326"
+    },
+    {
+      "from": "client/ordered_parser_bridge.py",
+      "to": "client/ordered_parser_bridge.py",
+      "originalSha256": "3c09748ed33b28e144533de2fe297ffff7fcfa9253923d01815d59ee03fde9af",
+      "decision": "保留运行核心",
+      "currentSha256": "3c09748ed33b28e144533de2fe297ffff7fcfa9253923d01815d59ee03fde9af"
+    },
+    {
+      "from": "client/package_windows.py",
+      "to": "tools/package_windows.py",
+      "originalSha256": "2cafdf186b19aa247f9c3fd09ecfa913053f8ea70b82d86518554dc6f1b49912",
+      "decision": "精简并保留",
+      "currentSha256": "ea8f5c33ccdc0b39c1641c5e8aa8c672b5d4ab52f4b27c4218a76e1768e01d55",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/parser_bridge.py",
+      "to": "archive/parser-v1/parser_bridge.py",
+      "originalSha256": "1c8f3b3974902030d20c6ca5dbdefe41b1a8c6f54a0bed43ee728da5932497d3",
+      "decision": "成组归档",
+      "currentSha256": "1c8f3b3974902030d20c6ca5dbdefe41b1a8c6f54a0bed43ee728da5932497d3"
+    },
+    {
+      "from": "client/parser_stream.py",
+      "to": "archive/parser-v1/parser_stream.py",
+      "originalSha256": "464feefa793b0f727c449a8375614a4dc941378d7e373415a301555cb735f0fd",
+      "decision": "成组归档",
+      "currentSha256": "464feefa793b0f727c449a8375614a4dc941378d7e373415a301555cb735f0fd"
+    },
+    {
+      "from": "client/parser_worker.mjs",
+      "to": "client/parser_worker.mjs",
+      "originalSha256": "bb43319964f95039011335cdbff1a26c88638c6185d5194446bc6b8d10b7ad89",
+      "decision": "保留运行核心",
+      "currentSha256": "bb43319964f95039011335cdbff1a26c88638c6185d5194446bc6b8d10b7ad89"
+    },
+    {
+      "from": "client/password.py",
+      "to": "client/password.py",
+      "originalSha256": "b9eb2926fb1769c8f181240303c1531230b1b45cada3ee7dd58ae5edeb0b2fec",
+      "decision": "保留运行核心",
+      "currentSha256": "b9eb2926fb1769c8f181240303c1531230b1b45cada3ee7dd58ae5edeb0b2fec"
+    },
+    {
+      "from": "client/rea_session.py",
+      "to": "research/tools/rea_session.py",
+      "originalSha256": "f7a91ff46d026d4ce66f010ad72d572ec31643c77e4f54d2161cf55c6d3b1858",
+      "decision": "保留可选研究工具",
+      "currentSha256": "f7a91ff46d026d4ce66f010ad72d572ec31643c77e4f54d2161cf55c6d3b1858"
+    },
+    {
+      "from": "client/replay.py",
+      "to": "tools/diagnostics/replay.py",
+      "originalSha256": "f51d9817fdbdf7b89c36db74808dbf3cfe3c33fbe4aac0ea676f1821da98d91a",
+      "decision": "保留诊断工具",
+      "currentSha256": "86a2b7dfeefb73e4388f9bb102971d6567ef347de4b21fcf725615233ed6aa1e",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/replay_ordered.py",
+      "to": "client/replay_ordered.py",
+      "originalSha256": "708e6c4b6ac286738133dce7fde004a2086a7ef4ba1ffaf3b63428148b22d6f8",
+      "decision": "保留运行核心",
+      "currentSha256": "708e6c4b6ac286738133dce7fde004a2086a7ef4ba1ffaf3b63428148b22d6f8"
+    },
+    {
+      "from": "client/research/COHESIVE-IMPLEMENTATION.md",
+      "to": "archive/research-notes/COHESIVE-IMPLEMENTATION.md",
+      "originalSha256": "23a357f6793b742ee28d6b4db8662d199c9574c4b0e38886e1e90ec5b13313d4",
+      "decision": "提炼后归档",
+      "currentSha256": "23a357f6793b742ee28d6b4db8662d199c9574c4b0e38886e1e90ec5b13313d4"
+    },
+    {
+      "from": "client/research/DESIGN-GATES.md",
+      "to": "archive/research-notes/DESIGN-GATES.md",
+      "originalSha256": "cb2001246b014431f20308f6380f47fed07a4a483b5dc91e134a9f8bfa06b523",
+      "decision": "提炼后归档",
+      "currentSha256": "cb2001246b014431f20308f6380f47fed07a4a483b5dc91e134a9f8bfa06b523"
+    },
+    {
+      "from": "client/research/EVENT-LIFECYCLE-CONTRACT.md",
+      "to": "docs/protocol/EVENT-LIFECYCLE-CONTRACT.md",
+      "originalSha256": "00c15d9716d34a18221cace0aeef00593fc97cc71b9968ac2ea3a33f76ff2d4c",
+      "decision": "保留为协议规范",
+      "currentSha256": "00c15d9716d34a18221cace0aeef00593fc97cc71b9968ac2ea3a33f76ff2d4c"
+    },
+    {
+      "from": "client/research/GENERATION-TRANSACTION-CONTRACT.md",
+      "to": "docs/protocol/GENERATION-TRANSACTION-CONTRACT.md",
+      "originalSha256": "10b4d4fbf6d7ec2556bba25818085625a8eea9f6a6301640175b6112724374cc",
+      "decision": "保留为协议规范",
+      "currentSha256": "10b4d4fbf6d7ec2556bba25818085625a8eea9f6a6301640175b6112724374cc"
+    },
+    {
+      "from": "client/research/INBOUND-CONTROL-CONTRACT.md",
+      "to": "docs/protocol/INBOUND-CONTROL-CONTRACT.md",
+      "originalSha256": "c5f687ff1b3047eacb90d7ff13f539db85d3f62cc8080d53f6f64cd36a918ebf",
+      "decision": "保留为协议规范",
+      "currentSha256": "c5f687ff1b3047eacb90d7ff13f539db85d3f62cc8080d53f6f64cd36a918ebf"
+    },
+    {
+      "from": "client/research/MODULE-CLOSURE-INVENTORY.md",
+      "to": "research/references/MODULE-CLOSURE-INVENTORY.md",
+      "originalSha256": "42cd9034276a882c64f04606aa71069c70c808703d1804e2395190008a00153c",
+      "decision": "保留研究参考",
+      "currentSha256": "42cd9034276a882c64f04606aa71069c70c808703d1804e2395190008a00153c"
+    },
+    {
+      "from": "client/research/PROTOCOL-RESEARCH.md",
+      "to": "archive/research-notes/PROTOCOL-RESEARCH.md",
+      "originalSha256": "08d2b070c75b995ef309b1b54131193d4c79ac46c694868a4acede256250ff6e",
+      "decision": "提炼后归档",
+      "currentSha256": "08d2b070c75b995ef309b1b54131193d4c79ac46c694868a4acede256250ff6e"
+    },
+    {
+      "from": "client/research/README.md",
+      "to": "research/README.md",
+      "originalSha256": "93034f22a5441fc66e3cc2cca00bfd788e8b88a1b06021e52a23176843fdb3af",
+      "decision": "重写索引",
+      "currentSha256": "9b8f14a0a513371e22a0f402f22ef9b2fb405f1b0ec3a6ad9955bba3a512f30f",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/RECOVERY-CONTRACT.md",
+      "to": "docs/protocol/RECOVERY-CONTRACT.md",
+      "originalSha256": "6ad696c95cd1c655b47c63e4f466f9ef1912a5fc9430b76c9a96a2951e40d5b2",
+      "decision": "保留为协议规范",
+      "currentSha256": "6ad696c95cd1c655b47c63e4f466f9ef1912a5fc9430b76c9a96a2951e40d5b2"
+    },
+    {
+      "from": "client/research/SERIALIZER-CONTRACT.md",
+      "to": "docs/protocol/SERIALIZER-CONTRACT.md",
+      "originalSha256": "8fcf2ec9370a054957179cdea2f36b1e99857264806b6af8ea5d9126d8c68432",
+      "decision": "保留为协议规范",
+      "currentSha256": "8fcf2ec9370a054957179cdea2f36b1e99857264806b6af8ea5d9126d8c68432"
+    },
+    {
+      "from": "client/research/STRINGTABLE-CONTRACT.md",
+      "to": "docs/protocol/STRINGTABLE-CONTRACT.md",
+      "originalSha256": "996a15aa2cb38fe7ab82354d952c10150a6acfc1bf5b042c0f75405eece5d0c8",
+      "decision": "保留为协议规范",
+      "currentSha256": "996a15aa2cb38fe7ab82354d952c10150a6acfc1bf5b042c0f75405eece5d0c8"
+    },
+    {
+      "from": "client/research/TRANSPORT-CONTRACT.md",
+      "to": "docs/protocol/TRANSPORT-CONTRACT.md",
+      "originalSha256": "a7745de0abafe3eeab3f61f29a45850b2530ef34c2be0103d7e9e849a960e29d",
+      "decision": "保留为协议规范",
+      "currentSha256": "a7745de0abafe3eeab3f61f29a45850b2530ef34c2be0103d7e9e849a960e29d"
+    },
+    {
+      "from": "client/research/UNIFIED-DESIGN.md",
+      "to": "archive/research-notes/UNIFIED-DESIGN.md",
+      "originalSha256": "9394570b6dfbc5e930e990a50a39ef50a2752799314403044b7b8d0f1292560f",
+      "decision": "提炼后归档",
+      "currentSha256": "9394570b6dfbc5e930e990a50a39ef50a2752799314403044b7b8d0f1292560f"
+    },
+    {
+      "from": "client/research/WORLD-LIFECYCLE-CONTRACT.md",
+      "to": "docs/protocol/WORLD-LIFECYCLE-CONTRACT.md",
+      "originalSha256": "75deae8a831c5352ac3d120aafeddb144ca584dc287923cec239d056698ab338",
+      "decision": "保留为协议规范",
+      "currentSha256": "75deae8a831c5352ac3d120aafeddb144ca584dc287923cec239d056698ab338"
+    },
+    {
+      "from": "client/research/aggregate-codec-emulation.json",
+      "to": "research/data/aggregate-codec-emulation.json",
+      "originalSha256": "c9a9c4f31df40d2006af202ca98e729fe017dfb3474b6e8318c11f1967433dad",
+      "decision": "保留研究证据",
+      "currentSha256": "c9a9c4f31df40d2006af202ca98e729fe017dfb3474b6e8318c11f1967433dad"
+    },
+    {
+      "from": "client/research/angle-bitcount-emulation.json",
+      "to": "research/data/angle-bitcount-emulation.json",
+      "originalSha256": "bf06dffd50f99d3b6c7064d6b89b1b8ca0e0af72fda980023059c087b03ddf30",
+      "decision": "保留研究证据",
+      "currentSha256": "bf06dffd50f99d3b6c7064d6b89b1b8ca0e0af72fda980023059c087b03ddf30"
+    },
+    {
+      "from": "client/research/angle-zero-config-emulation.json",
+      "to": "research/data/angle-zero-config-emulation.json",
+      "originalSha256": "131869ff833f2bdd7f40b01177eb217585b7f408698b1fd8b5455d2c4559c84b",
+      "decision": "保留研究证据",
+      "currentSha256": "131869ff833f2bdd7f40b01177eb217585b7f408698b1fd8b5455d2c4559c84b"
+    },
+    {
+      "from": "client/research/binary-field-emulation.json",
+      "to": "research/data/binary-field-emulation.json",
+      "originalSha256": "19bf7c555de2f555e789d45d6e358b2b13c9ef19b80c80a858e0ef8ffc157588",
+      "decision": "保留研究证据",
+      "currentSha256": "19bf7c555de2f555e789d45d6e358b2b13c9ef19b80c80a858e0ef8ffc157588"
+    },
+    {
+      "from": "client/research/boxed-type-authority.json",
+      "to": "research/data/boxed-type-authority.json",
+      "originalSha256": "91f9ba79852a06c631927ff38bae53b9a2ea63031a6478ab96807bc5c7000aee",
+      "decision": "保留研究证据",
+      "currentSha256": "91f9ba79852a06c631927ff38bae53b9a2ea63031a6478ab96807bc5c7000aee"
+    },
+    {
+      "from": "client/research/clear-world-dispatch.json",
+      "to": "research/data/clear-world-dispatch.json",
+      "originalSha256": "7a350e49aafc07c8c44bcb829ef112bf30d933fdc58d873c89ef9d4e7cba637c",
+      "decision": "保留研究证据",
+      "currentSha256": "7a350e49aafc07c8c44bcb829ef112bf30d933fdc58d873c89ef9d4e7cba637c"
+    },
+    {
+      "from": "client/research/client-boxed-registration-evidence.json",
+      "to": "research/data/client-boxed-registration-evidence.json",
+      "originalSha256": "ef6a74df070f9a3597132c1786a2737ccb364484eaf3479d3939b71c9b57b0c7",
+      "decision": "保留研究证据",
+      "currentSha256": "ef6a74df070f9a3597132c1786a2737ccb364484eaf3479d3939b71c9b57b0c7"
+    },
+    {
+      "from": "client/research/client-chat-descriptor.json",
+      "to": "research/data/client-chat-descriptor.json",
+      "originalSha256": "4aad73682e195576c51118f3b8d1290858601768d998c6c292f055df4c94c3bc",
+      "decision": "保留研究证据",
+      "currentSha256": "4aad73682e195576c51118f3b8d1290858601768d998c6c292f055df4c94c3bc"
+    },
+    {
+      "from": "client/research/client-custom-type-candidates.json",
+      "to": "research/data/client-custom-type-candidates.json",
+      "originalSha256": "340df553ffeb41300784400469c41637fc202b3ee7838bbb6d5325f39bf603f7",
+      "decision": "保留研究证据",
+      "currentSha256": "340df553ffeb41300784400469c41637fc202b3ee7838bbb6d5325f39bf603f7"
+    },
+    {
+      "from": "client/research/client-enum-registration-evidence.json",
+      "to": "research/data/client-enum-registration-evidence.json",
+      "originalSha256": "8496da29ee94088830add49535cf99c6f2d0a9996e96db96a9762090348015f4",
+      "decision": "保留研究证据",
+      "currentSha256": "8496da29ee94088830add49535cf99c6f2d0a9996e96db96a9762090348015f4"
+    },
+    {
+      "from": "client/research/client-event-graph.tsv",
+      "to": "research/data/client-event-graph.tsv",
+      "originalSha256": "4ecb864ebad793ad7ab26d01f737cfa05f0a1b26d5e7780b42e7c6e612204c08",
+      "decision": "保留研究证据",
+      "currentSha256": "4ecb864ebad793ad7ab26d01f737cfa05f0a1b26d5e7780b42e7c6e612204c08"
+    },
+    {
+      "from": "client/research/cohesive-offline-integration.json",
+      "to": "research/data/cohesive-offline-integration.json",
+      "originalSha256": "215b5106d9c11da96ec2de8364226567186154100c99cb40c13b70f68fc680a7",
+      "decision": "保留研究证据",
+      "currentSha256": "215b5106d9c11da96ec2de8364226567186154100c99cb40c13b70f68fc680a7"
+    },
+    {
+      "from": "client/research/container-codec-emulation.json",
+      "to": "research/data/container-codec-emulation.json",
+      "originalSha256": "484dac625d615faf4bb9649e3bcb314a75296e8b64874bce736a3329b835d466",
+      "decision": "保留研究证据",
+      "currentSha256": "484dac625d615faf4bb9649e3bcb314a75296e8b64874bce736a3329b835d466"
+    },
+    {
+      "from": "client/research/control-flow-recovery-notes.md",
+      "to": "archive/research-notes/control-flow-recovery-notes.md",
+      "originalSha256": "428a2d63ac3084439c76e4d5a35f38a03bbd4318c434ca9af544beae9a68b159",
+      "decision": "提炼后归档",
+      "currentSha256": "428a2d63ac3084439c76e4d5a35f38a03bbd4318c434ca9af544beae9a68b159"
+    },
+    {
+      "from": "client/research/coordinate-codec-emulation.json",
+      "to": "research/data/coordinate-codec-emulation.json",
+      "originalSha256": "5baab4832a58a519b3e7a863772f12c3151752295045e9fe1a09acf2bd30ac20",
+      "decision": "保留研究证据",
+      "currentSha256": "5baab4832a58a519b3e7a863772f12c3151752295045e9fe1a09acf2bd30ac20"
+    },
+    {
+      "from": "client/research/coordinate-default-profile.json",
+      "to": "research/data/coordinate-default-profile.json",
+      "originalSha256": "dd2e971121e4dda8705fbe110d89ccc32b601ccd324851cc924b03702d0f0701",
+      "decision": "保留研究证据",
+      "currentSha256": "dd2e971121e4dda8705fbe110d89ccc32b601ccd324851cc924b03702d0f0701"
+    },
+    {
+      "from": "client/research/current-module-manifest.json",
+      "to": "research/data/current-module-manifest.json",
+      "originalSha256": "4a004e2019d185d521f7474f6dd1d326fb095324a409d02ddd858d7ee58a4bf7",
+      "decision": "保留研究证据",
+      "currentSha256": "4a004e2019d185d521f7474f6dd1d326fb095324a409d02ddd858d7ee58a4bf7"
+    },
+    {
+      "from": "client/research/custom-registration-exclusions.json",
+      "to": "research/data/custom-registration-exclusions.json",
+      "originalSha256": "2b1bb88fa30cc7631f06d501a7722c364346b0ee19dc58651320967c0bf874dd",
+      "decision": "保留研究证据",
+      "currentSha256": "2b1bb88fa30cc7631f06d501a7722c364346b0ee19dc58651320967c0bf874dd"
+    },
+    {
+      "from": "client/research/custom-wire-authority-review.json",
+      "to": "research/data/custom-wire-authority-review.json",
+      "originalSha256": "73f4aeecf4be4ebc254ec046dbd35733e6e0213e3d8419901e00ec18e71a1fb9",
+      "decision": "保留研究证据",
+      "currentSha256": "73f4aeecf4be4ebc254ec046dbd35733e6e0213e3d8419901e00ec18e71a1fb9"
+    },
+    {
+      "from": "client/research/delta-classification-sites.json",
+      "to": "research/data/delta-classification-sites.json",
+      "originalSha256": "51c7d94837735640a174c686d9a3081c72cb22a1bb5b02af4610216327458b38",
+      "decision": "保留研究证据",
+      "currentSha256": "51c7d94837735640a174c686d9a3081c72cb22a1bb5b02af4610216327458b38"
+    },
+    {
+      "from": "client/research/encoder-family-catalog.json",
+      "to": "research/data/encoder-family-catalog.json",
+      "originalSha256": "32eb6debdfb9fb3a7078d42f44af5076d6e97067552cf1ab87d784e4b3478f0d",
+      "decision": "保留研究证据",
+      "currentSha256": "32eb6debdfb9fb3a7078d42f44af5076d6e97067552cf1ab87d784e4b3478f0d"
+    },
+    {
+      "from": "client/research/engine-inbound-bindings.json",
+      "to": "research/data/engine-inbound-bindings.json",
+      "originalSha256": "025898ffac72fca72c22651a4a6f6a7f78ca1301626ed16b5586cad5113155d5",
+      "decision": "保留研究证据",
+      "currentSha256": "025898ffac72fca72c22651a4a6f6a7f78ca1301626ed16b5586cad5113155d5"
+    },
+    {
+      "from": "client/research/entity-create-identity.json",
+      "to": "research/data/entity-create-identity.json",
+      "originalSha256": "b0b716090873b0726772b08d9c39582ccf30399c81f4917f961372f2506ebdbe",
+      "decision": "保留研究证据",
+      "currentSha256": "b0b716090873b0726772b08d9c39582ccf30399c81f4917f961372f2506ebdbe"
+    },
+    {
+      "from": "client/research/event-identity-layout.json",
+      "to": "research/data/event-identity-layout.json",
+      "originalSha256": "b8278e103b8f52219bf59ddea46a911765d9d254a94eb98ccbbcba209ef328b4",
+      "decision": "保留研究证据",
+      "currentSha256": "b8278e103b8f52219bf59ddea46a911765d9d254a94eb98ccbbcba209ef328b4"
+    },
+    {
+      "from": "client/research/field-construction-notes.md",
+      "to": "archive/research-notes/field-construction-notes.md",
+      "originalSha256": "fe09857b90fbe1c8ae079140fca9bc66010d2ebb01ffa007d25d6605f26a0774",
+      "decision": "提炼后归档",
+      "currentSha256": "fe09857b90fbe1c8ae079140fca9bc66010d2ebb01ffa007d25d6605f26a0774"
+    },
+    {
+      "from": "client/research/field-path-codebook-boundaries.json",
+      "to": "research/data/field-path-codebook-boundaries.json",
+      "originalSha256": "c6c283d20bac2378032511296bbe67f1230910db97187ee6321a274ebc714102",
+      "decision": "保留研究证据",
+      "currentSha256": "c6c283d20bac2378032511296bbe67f1230910db97187ee6321a274ebc714102"
+    },
+    {
+      "from": "client/research/field-path-depth-emulation.json",
+      "to": "research/data/field-path-depth-emulation.json",
+      "originalSha256": "b0da914f7308993e0df3ea6a69d2017536ad8858c4115c8e6ca49ebbb4e48d31",
+      "decision": "保留研究证据",
+      "currentSha256": "b0da914f7308993e0df3ea6a69d2017536ad8858c4115c8e6ca49ebbb4e48d31"
+    },
+    {
+      "from": "client/research/field-path-depth-limit-probe.json",
+      "to": "research/data/field-path-depth-limit-probe.json",
+      "originalSha256": "f4ad31052e87375d8de472b2ca3b6b2608399d95b71128615cbe3e3d9fe68ca2",
+      "decision": "保留研究证据",
+      "currentSha256": "f4ad31052e87375d8de472b2ca3b6b2608399d95b71128615cbe3e3d9fe68ca2"
+    },
+    {
+      "from": "client/research/field-path-depth-model-cases.json.gz",
+      "to": "research/data/field-path-depth-model-cases.json.gz",
+      "originalSha256": "6db07081408ab0725b4c7af37159f0f9eac86bb29c6a6a10c6a4314a64543327",
+      "decision": "保留研究证据",
+      "currentSha256": "6db07081408ab0725b4c7af37159f0f9eac86bb29c6a6a10c6a4314a64543327"
+    },
+    {
+      "from": "client/research/field-path-emulation.json",
+      "to": "research/data/field-path-emulation.json",
+      "originalSha256": "7c85ddc83bce10d6a1f6fa8c952d235e9008b2e7efa9a883b5240ec898b57e71",
+      "decision": "保留研究证据",
+      "currentSha256": "7c85ddc83bce10d6a1f6fa8c952d235e9008b2e7efa9a883b5240ec898b57e71"
+    },
+    {
+      "from": "client/research/field-path-invalid-probe.json",
+      "to": "research/data/field-path-invalid-probe.json",
+      "originalSha256": "298bb47fc0e839efe99a8c04c93957d1c00d564229863a3a7218ee79995ce803",
+      "decision": "保留研究证据",
+      "currentSha256": "298bb47fc0e839efe99a8c04c93957d1c00d564229863a3a7218ee79995ce803"
+    },
+    {
+      "from": "client/research/field-path-termination-probe.json",
+      "to": "research/data/field-path-termination-probe.json",
+      "originalSha256": "1ad7ea6d55c6720fe3212fcd4e8acaabf7297c4d63346b4ad620e6ea9de2f97b",
+      "decision": "保留研究证据",
+      "currentSha256": "1ad7ea6d55c6720fe3212fcd4e8acaabf7297c4d63346b4ad620e6ea9de2f97b"
+    },
+    {
+      "from": "client/research/field-path-weights.json",
+      "to": "research/data/field-path-weights.json",
+      "originalSha256": "bbaaf3ad40f88bd86329773f74f28a72c34449a23b2e46f70718f3df76091df6",
+      "decision": "保留研究证据",
+      "currentSha256": "bbaaf3ad40f88bd86329773f74f28a72c34449a23b2e46f70718f3df76091df6"
+    },
+    {
+      "from": "client/research/fish-position-callbacks.json",
+      "to": "research/data/fish-position-callbacks.json",
+      "originalSha256": "0def614c07a16382e40168eb2c129b3a95c284ff414d513f9c3099fe0cad51c6",
+      "decision": "保留研究证据",
+      "currentSha256": "0def614c07a16382e40168eb2c129b3a95c284ff414d513f9c3099fe0cad51c6"
+    },
+    {
+      "from": "client/research/fixed-array-boundary-emulation.json",
+      "to": "research/data/fixed-array-boundary-emulation.json",
+      "originalSha256": "138b0ac82cf0d57f930bca9b4f4e30b827c0ee1d7ab853c75f0720dd427e1ecc",
+      "decision": "保留研究证据",
+      "currentSha256": "138b0ac82cf0d57f930bca9b4f4e30b827c0ee1d7ab853c75f0720dd427e1ecc"
+    },
+    {
+      "from": "client/research/fixture-type-authority.json",
+      "to": "research/data/fixture-type-authority.json",
+      "originalSha256": "bd6a5cb30098781c0b39016083ce8f67e2c1c0afb711a3b1548f508e40dfb0fa",
+      "decision": "保留研究证据",
+      "currentSha256": "bd6a5cb30098781c0b39016083ce8f67e2c1c0afb711a3b1548f508e40dfb0fa"
+    },
+    {
+      "from": "client/research/geometry-codec-emulation.json",
+      "to": "research/data/geometry-codec-emulation.json",
+      "originalSha256": "d277d6367d7b471a7c2069c5347062adad39e8e5f9149ea1d819110b7d6736fd",
+      "decision": "保留研究证据",
+      "currentSha256": "d277d6367d7b471a7c2069c5347062adad39e8e5f9149ea1d819110b7d6736fd"
+    },
+    {
+      "from": "client/research/geometry-profile-boundary-emulation.json",
+      "to": "research/data/geometry-profile-boundary-emulation.json",
+      "originalSha256": "0b259dc94838b8a16b9d9a5bcfee5285105fcfc86fb5d86f2b7fd4eb159d9bab",
+      "decision": "保留研究证据",
+      "currentSha256": "0b259dc94838b8a16b9d9a5bcfee5285105fcfc86fb5d86f2b7fd4eb159d9bab"
+    },
+    {
+      "from": "client/research/graceful-owner-stop.json",
+      "to": "research/data/graceful-owner-stop.json",
+      "originalSha256": "eb0eb5bf0423cd797f63cea1ea7f830bb72f3b995b4229729fe3816a098765cb",
+      "decision": "保留研究证据",
+      "currentSha256": "eb0eb5bf0423cd797f63cea1ea7f830bb72f3b995b4229729fe3816a098765cb"
+    },
+    {
+      "from": "client/research/hltv-forwarding-edges.txt",
+      "to": "research/data/hltv-forwarding-edges.txt",
+      "originalSha256": "bdbdf4fefb76249e0cc81625a537109810a04e6ad63ca0cd90f6462f06afada0",
+      "decision": "保留研究证据",
+      "currentSha256": "bdbdf4fefb76249e0cc81625a537109810a04e6ad63ca0cd90f6462f06afada0"
+    },
+    {
+      "from": "client/research/huffman-codebook-authority.json",
+      "to": "research/data/huffman-codebook-authority.json",
+      "originalSha256": "c39a107c83906939ac5cd8a29e6b593816e2f61faa8adde39235ad209f1ce77c",
+      "decision": "保留研究证据",
+      "currentSha256": "c39a107c83906939ac5cd8a29e6b593816e2f61faa8adde39235ad209f1ce77c"
+    },
+    {
+      "from": "client/research/huffman-reference-comparison.json",
+      "to": "research/data/huffman-reference-comparison.json",
+      "originalSha256": "cc4a2c6eeb3f7242b2c722f9f2a9eaabcd40a30dd6859a14a37422c9d72563ec",
+      "decision": "保留研究证据",
+      "currentSha256": "cc4a2c6eeb3f7242b2c722f9f2a9eaabcd40a30dd6859a14a37422c9d72563ec"
+    },
+    {
+      "from": "client/research/integral-coordinate-aggregate-emulation.json",
+      "to": "research/data/integral-coordinate-aggregate-emulation.json",
+      "originalSha256": "5cbc7026045e788e453ea8d2a94312e884494c47db72bea8b8e343f0f2efd480",
+      "decision": "保留研究证据",
+      "currentSha256": "5cbc7026045e788e453ea8d2a94312e884494c47db72bea8b8e343f0f2efd480"
+    },
+    {
+      "from": "client/research/knowledge/README.md",
+      "to": "research/knowledge/README.md",
+      "originalSha256": "1e4484b98d590d9847fff1ad2ff637ff22d043c326132cef4f445bedc29f9455",
+      "decision": "保留并修正路径",
+      "currentSha256": "4788e6c7d572ccd8056719431748b1a9754e8409230e29989b9bc7a462183720",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/knowledge/facts.json",
+      "to": "research/knowledge/facts.json",
+      "originalSha256": "12e6e3dd2d9b1ea25eb3decaa5c8996938b7e860fd47bae3876239121b6c18b3",
+      "decision": "保留并修正路径",
+      "currentSha256": "db5acdc4eb8463ac5a576dcc522faf1de82c0d825d8b523511577a741a6a6f16",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/knowledge/reference.md",
+      "to": "research/knowledge/reference.md",
+      "originalSha256": "5be9e4d2f81ca8e7fc8e901238b03ce8635dd75e2888ffe856bb8727ef754431",
+      "decision": "保留并修正路径",
+      "currentSha256": "cc34424a026172a3261789c59ad84c3fb4f1296d996619ed1cd37800c7954ae8",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/knowledge/reuse.md",
+      "to": "research/knowledge/reuse.md",
+      "originalSha256": "c2c8f22415c413792c0571ee5f64326ca1cc1f8f2e6c87e4554d834200d8b389",
+      "decision": "保留并修正路径",
+      "currentSha256": "c2c8f22415c413792c0571ee5f64326ca1cc1f8f2e6c87e4554d834200d8b389"
+    },
+    {
+      "from": "client/research/knowledge/sources.json",
+      "to": "research/knowledge/sources.json",
+      "originalSha256": "5c7ad08689478636ffdaf7cd49ef14789e333309ecd225709d7fcbd6684277f9",
+      "decision": "保留并修正路径",
+      "currentSha256": "36d1297413a6643379dbbc1f0cd818e9c4de6c322240908f5b8b5a3951007470",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/knowledge/validate.py",
+      "to": "research/knowledge/validate.py",
+      "originalSha256": "f699fd764c190476a9d227413a16b64d852c3385e3306d13d1b31039586bdc4c",
+      "decision": "保留并修正路径",
+      "currentSha256": "56a509bf76787540c7b676cff47e981e05f8016a4b2f3c4bb4c78ef51aeaae46",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/lookup-case-authority.json",
+      "to": "research/data/lookup-case-authority.json",
+      "originalSha256": "b11b5d62c94ce3e9130cbf219ebb496574ac4d430de86322dc99e502d0f14066",
+      "decision": "保留研究证据",
+      "currentSha256": "b11b5d62c94ce3e9130cbf219ebb496574ac4d430de86322dc99e502d0f14066"
+    },
+    {
+      "from": "client/research/managed-observer-integration.json",
+      "to": "research/data/managed-observer-integration.json",
+      "originalSha256": "21228861d48a62854ea29e6d2bfaed523a6742fa6f39c9f544988bd1d8d36864",
+      "decision": "保留研究证据",
+      "currentSha256": "21228861d48a62854ea29e6d2bfaed523a6742fa6f39c9f544988bd1d8d36864"
+    },
+    {
+      "from": "client/research/matrix-coordinate-wire-emulation.json",
+      "to": "research/data/matrix-coordinate-wire-emulation.json",
+      "originalSha256": "97111bea37c037ca5f4f969a509a1bea0944325436f073f70fd76022e9eafff2",
+      "decision": "保留研究证据",
+      "currentSha256": "97111bea37c037ca5f4f969a509a1bea0944325436f073f70fd76022e9eafff2"
+    },
+    {
+      "from": "client/research/message-context-integration.json",
+      "to": "research/data/message-context-integration.json",
+      "originalSha256": "84982919b3524ec16a1bbac2253f4e331350422df794341368cc70221d2ef01d",
+      "decision": "保留研究证据",
+      "currentSha256": "84982919b3524ec16a1bbac2253f4e331350422df794341368cc70221d2ef01d"
+    },
+    {
+      "from": "client/research/metadata-lookup-emulation.json",
+      "to": "research/data/metadata-lookup-emulation.json",
+      "originalSha256": "3c5e1b0cb9a0ad77ab0a6fb6c9adb852d3bd22257b6f359e009b6ef2341a7e14",
+      "decision": "保留研究证据",
+      "currentSha256": "3c5e1b0cb9a0ad77ab0a6fb6c9adb852d3bd22257b6f359e009b6ef2341a7e14"
+    },
+    {
+      "from": "client/research/mizar-observer-source-owner-integration.json",
+      "to": "research/data/mizar-observer-source-owner-integration.json",
+      "originalSha256": "ffb192ea9d316890f9bdb8ad988b1f80301e029f05993a5fb581250dc22e9cf4",
+      "decision": "保留研究证据",
+      "currentSha256": "ffb192ea9d316890f9bdb8ad988b1f80301e029f05993a5fb581250dc22e9cf4"
+    },
+    {
+      "from": "client/research/module-manifest.json",
+      "to": "research/data/module-manifest.json",
+      "originalSha256": "a5d169b5ee2224dcb3f563942b15615a93c437cad3c92f116ce7aff1b24f0ac7",
+      "decision": "保留研究证据",
+      "currentSha256": "a5d169b5ee2224dcb3f563942b15615a93c437cad3c92f116ce7aff1b24f0ac7"
+    },
+    {
+      "from": "client/research/native-boxed-type-profile.json",
+      "to": "research/data/native-boxed-type-profile.json",
+      "originalSha256": "9c71929c036e3f90c6fd6037a27c99eb950ade7ea09a0941af9eb5bb98e06605",
+      "decision": "保留研究证据",
+      "currentSha256": "9c71929c036e3f90c6fd6037a27c99eb950ade7ea09a0941af9eb5bb98e06605"
+    },
+    {
+      "from": "client/research/native-entity-fields-comparison.json",
+      "to": "research/data/native-entity-fields-comparison.json",
+      "originalSha256": "d5622dfc9a42219fe30a39f89ddaa019acc34fe0e7dcc33028928baea68ca4ad",
+      "decision": "保留研究证据",
+      "currentSha256": "d5622dfc9a42219fe30a39f89ddaa019acc34fe0e7dcc33028928baea68ca4ad"
+    },
+    {
+      "from": "client/research/native-enum-type-profile.json",
+      "to": "research/data/native-enum-type-profile.json",
+      "originalSha256": "b16bcb9e464fc72632e082f2aece3dd7943f1b33e70abd5aac9eba65fab97a32",
+      "decision": "保留研究证据",
+      "currentSha256": "b16bcb9e464fc72632e082f2aece3dd7943f1b33e70abd5aac9eba65fab97a32"
+    },
+    {
+      "from": "client/research/native-event-projection-comparison.json",
+      "to": "research/data/native-event-projection-comparison.json",
+      "originalSha256": "94c824a857662c38f315c8e15ce9f49c429009ed48d69afc808fb95a59ccbe2e",
+      "decision": "保留研究证据",
+      "currentSha256": "94c824a857662c38f315c8e15ce9f49c429009ed48d69afc808fb95a59ccbe2e"
+    },
+    {
+      "from": "client/research/native-observer-core-comparison.json",
+      "to": "research/data/native-observer-core-comparison.json",
+      "originalSha256": "a71dbf120e4dcc9459cb95b4eea4e35ef764573c96e9c77040589c16121970d2",
+      "decision": "保留研究证据",
+      "currentSha256": "a71dbf120e4dcc9459cb95b4eea4e35ef764573c96e9c77040589c16121970d2"
+    },
+    {
+      "from": "client/research/native-packet-entities-comparison.json",
+      "to": "research/data/native-packet-entities-comparison.json",
+      "originalSha256": "3dddcefdd17b29a2b151d5fe6e2e71a24b8e73a4e41e57959e7feae57445f69e",
+      "decision": "保留研究证据",
+      "currentSha256": "3dddcefdd17b29a2b151d5fe6e2e71a24b8e73a4e41e57959e7feae57445f69e"
+    },
+    {
+      "from": "client/research/native-path-reader-comparison.json",
+      "to": "research/data/native-path-reader-comparison.json",
+      "originalSha256": "dbc8d890e891f9b1dcd1e788237322df64457549973d823870b094ac2871378a",
+      "decision": "保留研究证据",
+      "currentSha256": "dbc8d890e891f9b1dcd1e788237322df64457549973d823870b094ac2871378a"
+    },
+    {
+      "from": "client/research/native-snapshot-transactions.json",
+      "to": "research/data/native-snapshot-transactions.json",
+      "originalSha256": "177b1c522e29138b2c65c8b699204d3ed294c01729e9ef78089b3e5020a571bd",
+      "decision": "保留研究证据",
+      "currentSha256": "177b1c522e29138b2c65c8b699204d3ed294c01729e9ef78089b3e5020a571bd"
+    },
+    {
+      "from": "client/research/native-string-tables-comparison.json",
+      "to": "research/data/native-string-tables-comparison.json",
+      "originalSha256": "abe22a6a10e830e83633347ebc244347388c5ed8a56063919fe29317b18cb857",
+      "decision": "保留研究证据",
+      "currentSha256": "abe22a6a10e830e83633347ebc244347388c5ed8a56063919fe29317b18cb857"
+    },
+    {
+      "from": "client/research/native-type-selection-emulation.json",
+      "to": "research/data/native-type-selection-emulation.json",
+      "originalSha256": "f9e7ffd03f90ddf2930e5e91ca2ccd753dfb131d9e2b61f96a3067e4e09f2eb2",
+      "decision": "保留研究证据",
+      "currentSha256": "f9e7ffd03f90ddf2930e5e91ca2ccd753dfb131d9e2b61f96a3067e4e09f2eb2"
+    },
+    {
+      "from": "client/research/origin-cell-native-configurations.json",
+      "to": "research/data/origin-cell-native-configurations.json",
+      "originalSha256": "521614b113064b5fd845751aecb3b481c9c528cd2705d04da6a60b90ef43da96",
+      "decision": "保留研究证据",
+      "currentSha256": "521614b113064b5fd845751aecb3b481c9c528cd2705d04da6a60b90ef43da96"
+    },
+    {
+      "from": "client/research/origin-cell-width-comparison.json",
+      "to": "research/data/origin-cell-width-comparison.json",
+      "originalSha256": "f8ace54e1fafda0c1b7806192b5a15dbb207a169f806f48fe14e8a7b43fbab21",
+      "decision": "保留研究证据",
+      "currentSha256": "f8ace54e1fafda0c1b7806192b5a15dbb207a169f806f48fe14e8a7b43fbab21"
+    },
+    {
+      "from": "client/research/origin-tier0-profile.json",
+      "to": "research/data/origin-tier0-profile.json",
+      "originalSha256": "f70edf1d4cea8f60d915218cdd052bf47281510e9b38a44dfbab853d9b3eff49",
+      "decision": "保留研究证据",
+      "currentSha256": "f70edf1d4cea8f60d915218cdd052bf47281510e9b38a44dfbab853d9b3eff49"
+    },
+    {
+      "from": "client/research/packet-entities-native-layout.json",
+      "to": "research/data/packet-entities-native-layout.json",
+      "originalSha256": "1fd925ebb42d6d8afb96737496c6979d1a642d4b6a49d9b2c51b321a9617dc82",
+      "decision": "保留研究证据",
+      "currentSha256": "1fd925ebb42d6d8afb96737496c6979d1a642d4b6a49d9b2c51b321a9617dc82"
+    },
+    {
+      "from": "client/research/pointer-compat-dispatch.json",
+      "to": "research/data/pointer-compat-dispatch.json",
+      "originalSha256": "beb073e7cab4fcac365c719febd94851da496dd52433c8c182a83334a6260ad8",
+      "decision": "保留研究证据",
+      "currentSha256": "beb073e7cab4fcac365c719febd94851da496dd52433c8c182a83334a6260ad8"
+    },
+    {
+      "from": "client/research/primitive-type-catalog.json",
+      "to": "research/data/primitive-type-catalog.json",
+      "originalSha256": "241a2ef8fe3cef2694e15e563f26d2806ccf8eca9879691848200df548ce0e16",
+      "decision": "保留研究证据",
+      "currentSha256": "241a2ef8fe3cef2694e15e563f26d2806ccf8eca9879691848200df548ce0e16"
+    },
+    {
+      "from": "client/research/qangle-zero-emulation.json",
+      "to": "research/data/qangle-zero-emulation.json",
+      "originalSha256": "cc209083e64f8f17527444266ad3232f6c7fafe6827c06d877ca7c892d466ded",
+      "decision": "保留研究证据",
+      "currentSha256": "cc209083e64f8f17527444266ad3232f6c7fafe6827c06d877ca7c892d466ded"
+    },
+    {
+      "from": "client/research/quantized-configured-read-comparison.json",
+      "to": "research/data/quantized-configured-read-comparison.json",
+      "originalSha256": "43a32704521e71aaf393333aae0796dda283837f528bf32e5e10a44ef9a7aed1",
+      "decision": "保留研究证据",
+      "currentSha256": "43a32704521e71aaf393333aae0796dda283837f528bf32e5e10a44ef9a7aed1"
+    },
+    {
+      "from": "client/research/quantized-configured-read-summary.json",
+      "to": "research/data/quantized-configured-read-summary.json",
+      "originalSha256": "116bb8c4c93a5679ac8df6d817c1754223f35ad712fcf500b374c4a94b45eb6f",
+      "decision": "保留研究证据",
+      "currentSha256": "116bb8c4c93a5679ac8df6d817c1754223f35ad712fcf500b374c4a94b45eb6f"
+    },
+    {
+      "from": "client/research/quantized-flags-emulation.json",
+      "to": "research/data/quantized-flags-emulation.json",
+      "originalSha256": "9fa28c36c630a447c980b925758799feb7484fbb8789017323003b0cea1ded19",
+      "decision": "保留研究证据",
+      "currentSha256": "9fa28c36c630a447c980b925758799feb7484fbb8789017323003b0cea1ded19"
+    },
+    {
+      "from": "client/research/quantizer-default-bounds-comparison.json",
+      "to": "research/data/quantizer-default-bounds-comparison.json",
+      "originalSha256": "11c64212d03ee8963feb13f0802b79902ac1c017bb5c23bf5bc8df71a7620f3b",
+      "decision": "保留研究证据",
+      "currentSha256": "11c64212d03ee8963feb13f0802b79902ac1c017bb5c23bf5bc8df71a7620f3b"
+    },
+    {
+      "from": "client/research/quantizer-javascript-model-comparison.json",
+      "to": "research/data/quantizer-javascript-model-comparison.json",
+      "originalSha256": "2015e531325b60c3f5b7165e705e7956cf3d54ed2fc5d3046042035dfae4a9f3",
+      "decision": "保留研究证据",
+      "currentSha256": "2015e531325b60c3f5b7165e705e7956cf3d54ed2fc5d3046042035dfae4a9f3"
+    },
+    {
+      "from": "client/research/quantizer-matrix-summary.json",
+      "to": "research/data/quantizer-matrix-summary.json",
+      "originalSha256": "035e116ee208e2a67ec5fad3eb957a6102cf0900fffd4fba00637607e12f181b",
+      "decision": "保留研究证据",
+      "currentSha256": "035e116ee208e2a67ec5fad3eb957a6102cf0900fffd4fba00637607e12f181b"
+    },
+    {
+      "from": "client/research/quantizer-native-default-bounds-initial.json",
+      "to": "research/data/quantizer-native-default-bounds-initial.json",
+      "originalSha256": "dc51924258bcd8e2ab6acfd78e88e9afda324b0a6791f580b5fd7dee95bf603f",
+      "decision": "保留研究证据",
+      "currentSha256": "dc51924258bcd8e2ab6acfd78e88e9afda324b0a6791f580b5fd7dee95bf603f"
+    },
+    {
+      "from": "client/research/quantizer-native-default-bounds.json",
+      "to": "research/data/quantizer-native-default-bounds.json",
+      "originalSha256": "58de0c85326a5102f8159816743a996c459cdc8688ecf98068efbbdd388c0897",
+      "decision": "保留研究证据",
+      "currentSha256": "58de0c85326a5102f8159816743a996c459cdc8688ecf98068efbbdd388c0897"
+    },
+    {
+      "from": "client/research/quantizer-research-model-comparison.json",
+      "to": "research/data/quantizer-research-model-comparison.json",
+      "originalSha256": "2a513ba7e73c3d8b61928330895a99a9268ca71af51f6e07611092841b349872",
+      "decision": "保留研究证据",
+      "currentSha256": "2a513ba7e73c3d8b61928330895a99a9268ca71af51f6e07611092841b349872"
+    },
+    {
+      "from": "client/research/reliable-boundary-state-references.json",
+      "to": "research/data/reliable-boundary-state-references.json",
+      "originalSha256": "0bcac9a4087f728300596b3599462ef725fc8beed7074999e7ce5e739a5057e7",
+      "decision": "保留研究证据",
+      "currentSha256": "0bcac9a4087f728300596b3599462ef725fc8beed7074999e7ce5e739a5057e7"
+    },
+    {
+      "from": "client/research/reliable-marker-ownership.json",
+      "to": "research/data/reliable-marker-ownership.json",
+      "originalSha256": "472195c992b29abec94643915d3353d710c44912e387c9948555ad0ebd8c8000",
+      "decision": "保留研究证据",
+      "currentSha256": "472195c992b29abec94643915d3353d710c44912e387c9948555ad0ebd8c8000"
+    },
+    {
+      "from": "client/research/replay-compat-resource-profile.json",
+      "to": "research/data/replay-compat-resource-profile.json",
+      "originalSha256": "eff1a04fec26fb7d96bce740177785137d180966ddd7e9b642c1c3f024fd43bd",
+      "decision": "保留研究证据",
+      "currentSha256": "eff1a04fec26fb7d96bce740177785137d180966ddd7e9b642c1c3f024fd43bd"
+    },
+    {
+      "from": "client/research/scalar-codec-emulation.json",
+      "to": "research/data/scalar-codec-emulation.json",
+      "originalSha256": "2a863dfea420c879160a0e8ab00990f1fadf4db236ffc221ad5e23f7da208a1a",
+      "decision": "保留研究证据",
+      "currentSha256": "2a863dfea420c879160a0e8ab00990f1fadf4db236ffc221ad5e23f7da208a1a"
+    },
+    {
+      "from": "client/research/server-boxed-registration-evidence.json",
+      "to": "research/data/server-boxed-registration-evidence.json",
+      "originalSha256": "5de447f7193a0fc4460f8a6581da7ce5aa83a50c6a137ac21f3190098879eb53",
+      "decision": "保留研究证据",
+      "currentSha256": "5de447f7193a0fc4460f8a6581da7ce5aa83a50c6a137ac21f3190098879eb53"
+    },
+    {
+      "from": "client/research/server-chat-descriptor.json",
+      "to": "research/data/server-chat-descriptor.json",
+      "originalSha256": "a89468b50e88de045f580320e8d244e380588de8693212bcb2046338f7b91ceb",
+      "decision": "保留研究证据",
+      "currentSha256": "a89468b50e88de045f580320e8d244e380588de8693212bcb2046338f7b91ceb"
+    },
+    {
+      "from": "client/research/server-client-handler-comparison.json",
+      "to": "research/data/server-client-handler-comparison.json",
+      "originalSha256": "f6d2715b1aa147beae4562023d6d17b34494dc0ce7fcd20b98d2eed601dbc832",
+      "decision": "保留研究证据",
+      "currentSha256": "f6d2715b1aa147beae4562023d6d17b34494dc0ce7fcd20b98d2eed601dbc832"
+    },
+    {
+      "from": "client/research/server-custom-type-candidates.json",
+      "to": "research/data/server-custom-type-candidates.json",
+      "originalSha256": "79cbfc9b99a3df1f604ac911cb6496b14e35e0f7cfc2c9792838f2492220ef6c",
+      "decision": "保留研究证据",
+      "currentSha256": "79cbfc9b99a3df1f604ac911cb6496b14e35e0f7cfc2c9792838f2492220ef6c"
+    },
+    {
+      "from": "client/research/server-enum-registration-evidence.json",
+      "to": "research/data/server-enum-registration-evidence.json",
+      "originalSha256": "6f2bd325e45b4b6ae81136176a2b6f5355eab9d5eaea43f4d897f131ed36f639",
+      "decision": "保留研究证据",
+      "currentSha256": "6f2bd325e45b4b6ae81136176a2b6f5355eab9d5eaea43f4d897f131ed36f639"
+    },
+    {
+      "from": "client/research/stringtable-clear-emulation.json",
+      "to": "research/data/stringtable-clear-emulation.json",
+      "originalSha256": "8f8533e2e285cf717e03d737cb95d7565dd063b37966dca802c5a9e4f52da502",
+      "decision": "保留研究证据",
+      "currentSha256": "8f8533e2e285cf717e03d737cb95d7565dd063b37966dca802c5a9e4f52da502"
+    },
+    {
+      "from": "client/research/table-decompression-emulation.json",
+      "to": "research/data/table-decompression-emulation.json",
+      "originalSha256": "f43430009ab85a468dbd83393e342a06d01c24d0deafe60fb699f1bc81c21b80",
+      "decision": "保留研究证据",
+      "currentSha256": "f43430009ab85a468dbd83393e342a06d01c24d0deafe60fb699f1bc81c21b80"
+    },
+    {
+      "from": "client/research/tools/TYPE-PROFILE-REPRODUCTION.md",
+      "to": "research/tools/TYPE-PROFILE-REPRODUCTION.md",
+      "originalSha256": "a3446b701c8095d7d3faaece1c3cf367bc272ee19f3793989e47f0dfe2a430e5",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "a3446b701c8095d7d3faaece1c3cf367bc272ee19f3793989e47f0dfe2a430e5"
+    },
+    {
+      "from": "client/research/tools/classify-generated-type-builders.py",
+      "to": "research/tools/classify-generated-type-builders.py",
+      "originalSha256": "8d740b5a34bfa27c7c9b3482d3522557509273233406e25f4f71896acc1cf7d8",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "8d740b5a34bfa27c7c9b3482d3522557509273233406e25f4f71896acc1cf7d8"
+    },
+    {
+      "from": "client/research/tools/emulate-type-selection.py",
+      "to": "research/tools/emulate-type-selection.py",
+      "originalSha256": "3c6cceb55c2ef6224970b0f1d5763d72ececb117883d4f72e7dbba3f9fec9e97",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "3c6cceb55c2ef6224970b0f1d5763d72ececb117883d4f72e7dbba3f9fec9e97"
+    },
+    {
+      "from": "client/research/tools/export-observer-game-event.py",
+      "to": "tests/fixtures/generate_observer_event.py",
+      "originalSha256": "176cc7b78defc0dd7704f61eff3271ea2b8ea17e01f50c3b7f10fb69671823a4",
+      "decision": "精简并保留",
+      "currentSha256": "dac8355aaa3ff3e4df086d4c3615b58f9d7b1be1e970bb004a52d383edfe4dd7",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/tools/extract-boxed-profile.py",
+      "to": "research/tools/extract-boxed-profile.py",
+      "originalSha256": "cac4058da2907fa1ec6b31a273744a279a18529e100dee49003548c18422f3ae",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "cac4058da2907fa1ec6b31a273744a279a18529e100dee49003548c18422f3ae"
+    },
+    {
+      "from": "client/research/tools/extract-enum-profile.py",
+      "to": "research/tools/extract-enum-profile.py",
+      "originalSha256": "f75d136069b604bb0936d1c5ea38fad0b0d32ea5c5cac35c63ecd49cb4b59b02",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "f75d136069b604bb0936d1c5ea38fad0b0d32ea5c5cac35c63ecd49cb4b59b02"
+    },
+    {
+      "from": "client/research/tools/find-generated-type-calls.py",
+      "to": "research/tools/find-generated-type-calls.py",
+      "originalSha256": "deda0154962c8df89ebf58a19ff57b3dec5a4a3f0702543913124e1abe6492d5",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "deda0154962c8df89ebf58a19ff57b3dec5a4a3f0702543913124e1abe6492d5"
+    },
+    {
+      "from": "client/research/tools/find-reliable-boundary-state.py",
+      "to": "research/tools/find-reliable-boundary-state.py",
+      "originalSha256": "cbe1b255268a8a404f00ff6dbb633521cc7307ae44af6d98c14e63dcbe5c0ae1",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "cbe1b255268a8a404f00ff6dbb633521cc7307ae44af6d98c14e63dcbe5c0ae1"
+    },
+    {
+      "from": "client/research/tools/gotv-compare-quantizer-matrix.mjs",
+      "to": "archive/research-tools/gotv-compare-quantizer-matrix.mjs",
+      "originalSha256": "7cc45c2eb9bae44b41a17afab1705f7d6ba9b1a0e10ab3b2eef707ae9d1965bf",
+      "decision": "归档",
+      "currentSha256": "7cc45c2eb9bae44b41a17afab1705f7d6ba9b1a0e10ab3b2eef707ae9d1965bf"
+    },
+    {
+      "from": "client/research/tools/gotv-compare-quantizer.mjs",
+      "to": "archive/research-tools/gotv-compare-quantizer.mjs",
+      "originalSha256": "4ab5a79fa5ed66797b04016d20ab0b7507f1854e91f7f0c88f3c4145a748c859",
+      "decision": "归档",
+      "currentSha256": "4ab5a79fa5ed66797b04016d20ab0b7507f1854e91f7f0c88f3c4145a748c859"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-aggregate.py",
+      "to": "research/tools/gotv-emulate-aggregate.py",
+      "originalSha256": "eb3a551cb661f5839ef18c41cfca19e2bccc27415a7e18d2382f5e658ae173d8",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "eb3a551cb661f5839ef18c41cfca19e2bccc27415a7e18d2382f5e658ae173d8"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-angle-bitcounts.py",
+      "to": "research/tools/gotv-emulate-angle-bitcounts.py",
+      "originalSha256": "e4c5551bc1e8c35d5499bc736d54107d0d0a4b6def205ba50dc12a6a13316d3b",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "e4c5551bc1e8c35d5499bc736d54107d0d0a4b6def205ba50dc12a6a13316d3b"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-angle-zero-config.py",
+      "to": "research/tools/gotv-emulate-angle-zero-config.py",
+      "originalSha256": "7dcd27674a6aec935857e6a67b8717302b88e9e5eef06834b301b8a28a2abd54",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "7dcd27674a6aec935857e6a67b8717302b88e9e5eef06834b301b8a28a2abd54"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-binary-field.py",
+      "to": "research/tools/gotv-emulate-binary-field.py",
+      "originalSha256": "534625ece4b7a8921c7f44ae60c2d82c5df4947259111b1a23e169d686895c5e",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "534625ece4b7a8921c7f44ae60c2d82c5df4947259111b1a23e169d686895c5e"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-containers.py",
+      "to": "research/tools/gotv-emulate-containers.py",
+      "originalSha256": "5f766f1cd9c31c2f9ca2dc11ee90f11ce547539ccf32aad2fa69a81e68ca5da6",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "5f766f1cd9c31c2f9ca2dc11ee90f11ce547539ccf32aad2fa69a81e68ca5da6"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-coordinates.py",
+      "to": "research/tools/gotv-emulate-coordinates.py",
+      "originalSha256": "429f92baf407e20ffdadb7d5561aa762b79d80b915b61fc8eb3de08c3a71a8b6",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "429f92baf407e20ffdadb7d5561aa762b79d80b915b61fc8eb3de08c3a71a8b6"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-fieldpath-codebook-boundaries.py",
+      "to": "research/tools/gotv-emulate-fieldpath-codebook-boundaries.py",
+      "originalSha256": "33fa2d64fa79e512fa8fa71bd8c54b74a3bb2682a5eaa383b6d3bd62f12579ed",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "33fa2d64fa79e512fa8fa71bd8c54b74a3bb2682a5eaa383b6d3bd62f12579ed"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-fieldpath-depth-limits.py",
+      "to": "research/tools/gotv-emulate-fieldpath-depth-limits.py",
+      "originalSha256": "71ec5d71ae5ce99c8fa82a151badc8ed0c480ed6e06f2ea1cf6e57bbcd4bd1c0",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "71ec5d71ae5ce99c8fa82a151badc8ed0c480ed6e06f2ea1cf6e57bbcd4bd1c0"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-fieldpath-depths.py",
+      "to": "research/tools/gotv-emulate-fieldpath-depths.py",
+      "originalSha256": "071565f13b5f931a6fd47df4e4d90b26f89bfe2ac568eb3af971b37273a25b95",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "071565f13b5f931a6fd47df4e4d90b26f89bfe2ac568eb3af971b37273a25b95"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-fieldpath-invalid.py",
+      "to": "research/tools/gotv-emulate-fieldpath-invalid.py",
+      "originalSha256": "8f2ff0f43df9accb5a7626c9003c219b81624d2edee6bd63d70b53f7d4ece690",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "8f2ff0f43df9accb5a7626c9003c219b81624d2edee6bd63d70b53f7d4ece690"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-fieldpath-termination.py",
+      "to": "research/tools/gotv-emulate-fieldpath-termination.py",
+      "originalSha256": "23130d58bd44ebf3eec7637c0e9b837585c231e8be5544fb3b757cde20e51fa5",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "23130d58bd44ebf3eec7637c0e9b837585c231e8be5544fb3b757cde20e51fa5"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-fieldpaths.py",
+      "to": "research/tools/gotv-emulate-fieldpaths.py",
+      "originalSha256": "8bcab264a279a2b73a6b118345b50f5178cabc3b102811318b0c6cf683f6409b",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "8bcab264a279a2b73a6b118345b50f5178cabc3b102811318b0c6cf683f6409b"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-fixed-array-boundary.py",
+      "to": "research/tools/gotv-emulate-fixed-array-boundary.py",
+      "originalSha256": "2ee92071bcdc21adf1c718f2f20f6ac031f0634f4af529ad0f7870f4ef818072",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "2ee92071bcdc21adf1c718f2f20f6ac031f0634f4af529ad0f7870f4ef818072"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-geometry-profile-boundaries.py",
+      "to": "research/tools/gotv-emulate-geometry-profile-boundaries.py",
+      "originalSha256": "2a059d81eb7cc2794cde7bfe76a95b8c0244c61e51f6fa045d028e08fdec3e27",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "2a059d81eb7cc2794cde7bfe76a95b8c0244c61e51f6fa045d028e08fdec3e27"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-geometry.py",
+      "to": "research/tools/gotv-emulate-geometry.py",
+      "originalSha256": "a9fe12f37c4ccaf1f0af2043c0a7d8642db019f901942d5518ae95cfbb4b760a",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "a9fe12f37c4ccaf1f0af2043c0a7d8642db019f901942d5518ae95cfbb4b760a"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-integral-coordinate-aggregate.py",
+      "to": "research/tools/gotv-emulate-integral-coordinate-aggregate.py",
+      "originalSha256": "3ba1d060e72fd1b4b20bd1f428687801c88b70e2897273109dcc3c8a0e89807f",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "3ba1d060e72fd1b4b20bd1f428687801c88b70e2897273109dcc3c8a0e89807f"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-integral-coordinates.py",
+      "to": "research/tools/gotv-emulate-integral-coordinates.py",
+      "originalSha256": "b1773a1536a1c583a9456f3cc57dfbb1e9e69adf8ce09facf3b14e135e0fff12",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "b1773a1536a1c583a9456f3cc57dfbb1e9e69adf8ce09facf3b14e135e0fff12"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-matrix-coordinate-wire.py",
+      "to": "research/tools/gotv-emulate-matrix-coordinate-wire.py",
+      "originalSha256": "e01740add5435be11439d745f48a7e6c03bd7f53684dc7e00b6bc749a2ab37b9",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "e01740add5435be11439d745f48a7e6c03bd7f53684dc7e00b6bc749a2ab37b9"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-metadata-lookup.py",
+      "to": "research/tools/gotv-emulate-metadata-lookup.py",
+      "originalSha256": "8806af749f78a24b012a311f26f4c346d0fceacb5075d3662ea2fe8a2f0ca5d1",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "8806af749f78a24b012a311f26f4c346d0fceacb5075d3662ea2fe8a2f0ca5d1"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-origin-cell-config.py",
+      "to": "research/tools/gotv-emulate-origin-cell-config.py",
+      "originalSha256": "d3b331ddfaba5627128a8e6c99287ca1a4ff3401962d37a5d943bfce15314f71",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "d3b331ddfaba5627128a8e6c99287ca1a4ff3401962d37a5d943bfce15314f71"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-qangle-zero.py",
+      "to": "research/tools/gotv-emulate-qangle-zero.py",
+      "originalSha256": "cc4b64d6403fd22f3af2463be40e3e5927605a86fc5336816c5507cd7af34047",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "cc4b64d6403fd22f3af2463be40e3e5927605a86fc5336816c5507cd7af34047"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-quantflags.py",
+      "to": "research/tools/gotv-emulate-quantflags.py",
+      "originalSha256": "71d9fc95084681d7d277dbffe0d70b321aec17fc4889b3ff7bc264fac535171c",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "71d9fc95084681d7d277dbffe0d70b321aec17fc4889b3ff7bc264fac535171c"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-quantinit-matrix-warning.py",
+      "to": "research/tools/gotv-emulate-quantinit-matrix-warning.py",
+      "originalSha256": "4e22607e7fb7ddbdac65c5f349f02d83275de5e8294fcc68e9527f17e0054399",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "4e22607e7fb7ddbdac65c5f349f02d83275de5e8294fcc68e9527f17e0054399"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-quantinit-matrix.py",
+      "to": "research/tools/gotv-emulate-quantinit-matrix.py",
+      "originalSha256": "6032f4582d2e6c69c0304e391afe5ca44dad1878f6cc5b04128868f22c760bd4",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "6032f4582d2e6c69c0304e391afe5ca44dad1878f6cc5b04128868f22c760bd4"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-quantinit.py",
+      "to": "research/tools/gotv-emulate-quantinit.py",
+      "originalSha256": "d771c295ba772253aed9714e428dc99a31a9c762d099ff1eb6be67bb02227aa4",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "d771c295ba772253aed9714e428dc99a31a9c762d099ff1eb6be67bb02227aa4"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-quantized-configured-read.py",
+      "to": "research/tools/gotv-emulate-quantized-configured-read.py",
+      "originalSha256": "be8f9d18f911547a4c6ade5b71c4c70202203961bd3edf7ff0c0dbf27c674663",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "be8f9d18f911547a4c6ade5b71c4c70202203961bd3edf7ff0c0dbf27c674663"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-quantizer-default-bounds.py",
+      "to": "research/tools/gotv-emulate-quantizer-default-bounds.py",
+      "originalSha256": "ea76efa1a4a66864f967b9afbe42a49df7561472fd0c0733ab4577826d9e96b4",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "ea76efa1a4a66864f967b9afbe42a49df7561472fd0c0733ab4577826d9e96b4"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-scalars.py",
+      "to": "research/tools/gotv-emulate-scalars.py",
+      "originalSha256": "324045687b12715f33af3ae0d72e01bba6ee3861d3cee814e9855700cbbbc82d",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "324045687b12715f33af3ae0d72e01bba6ee3861d3cee814e9855700cbbbc82d"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-stringtable-clear.py",
+      "to": "research/tools/gotv-emulate-stringtable-clear.py",
+      "originalSha256": "b51cdcc734d78fd37873131bc42b1719c4c98c73fa01cb7e745fc38ad8937b6d",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "b51cdcc734d78fd37873131bc42b1719c4c98c73fa01cb7e745fc38ad8937b6d"
+    },
+    {
+      "from": "client/research/tools/gotv-emulate-table-decompression.py",
+      "to": "research/tools/gotv-emulate-table-decompression.py",
+      "originalSha256": "33cfb127bc2e25afebc8392168f6212190974399f0b6f680dd81aa8f43a35322",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "33cfb127bc2e25afebc8392168f6212190974399f0b6f680dd81aa8f43a35322"
+    },
+    {
+      "from": "client/research/tools/gotv-fieldpath-depth-model.mjs",
+      "to": "research/tools/gotv-fieldpath-depth-model.mjs",
+      "originalSha256": "eebf7276f35dd780132e62ddc48cc9c5f6db917abeb41ad273e508005cf2fb0b",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "eebf7276f35dd780132e62ddc48cc9c5f6db917abeb41ad273e508005cf2fb0b"
+    },
+    {
+      "from": "client/research/tools/gotv-fieldpath-model.mjs",
+      "to": "research/tools/gotv-fieldpath-model.mjs",
+      "originalSha256": "10956a9b637ace4af835855f5870421354072f3c3c6e411be1e7d4a559d9e3e7",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "10956a9b637ace4af835855f5870421354072f3c3c6e411be1e7d4a559d9e3e7"
+    },
+    {
+      "from": "client/research/tools/gotv-quantizer-research-model.py",
+      "to": "research/tools/gotv-quantizer-research-model.py",
+      "originalSha256": "78c308f8bd60ae0db22fb243dee9d4718e1e950ee64a38848c1427911e6efae2",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "78c308f8bd60ae0db22fb243dee9d4718e1e950ee64a38848c1427911e6efae2"
+    },
+    {
+      "from": "client/research/tools/native-quantized-model.ts",
+      "to": "research/tools/native-quantized-model.ts",
+      "originalSha256": "ac05098c3aa54bd749c870d4c623035ced080d75eae48fc96370927fc902b336",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "ac05098c3aa54bd749c870d4c623035ced080d75eae48fc96370927fc902b336"
+    },
+    {
+      "from": "client/research/tools/quantizer-field-defaults.mjs",
+      "to": "research/tools/quantizer-field-defaults.mjs",
+      "originalSha256": "ebe7ae0e07897a9fba8434956c3ce019277c189d7d17d017b5bb88927f450cc6",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "ebe7ae0e07897a9fba8434956c3ce019277c189d7d17d017b5bb88927f450cc6"
+    },
+    {
+      "from": "client/research/tools/quantizer-model.mjs",
+      "to": "research/tools/quantizer-model.mjs",
+      "originalSha256": "5e5f751f32feb65794dd76805cc5619befeb4bc984ba5a26d33eda011d90ee01",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "5e5f751f32feb65794dd76805cc5619befeb4bc984ba5a26d33eda011d90ee01"
+    },
+    {
+      "from": "client/research/tools/read-vpk-resource.py",
+      "to": "research/tools/read-vpk-resource.py",
+      "originalSha256": "8553040bf2dcb333d57e8e5985febab4ecf987fa3270c745301127d731cc1af4",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "8553040bf2dcb333d57e8e5985febab4ecf987fa3270c745301127d731cc1af4"
+    },
+    {
+      "from": "client/research/tools/verify-boxed-profile.py",
+      "to": "research/tools/verify-boxed-profile.py",
+      "originalSha256": "525bc74ccec8740557b1824642b79d1d569904cba2d50266a5e2d018f882054b",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "525bc74ccec8740557b1824642b79d1d569904cba2d50266a5e2d018f882054b"
+    },
+    {
+      "from": "client/research/tools/verify-chat-wire-descriptor.py",
+      "to": "research/tools/verify-chat-wire-descriptor.py",
+      "originalSha256": "c0bbf62b9dc2ae081d9bdaec2f42a1021e222dd6eaa56169a356d477a4341355",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "c0bbf62b9dc2ae081d9bdaec2f42a1021e222dd6eaa56169a356d477a4341355"
+    },
+    {
+      "from": "client/research/tools/verify-clear-world-dispatch.py",
+      "to": "research/tools/verify-clear-world-dispatch.py",
+      "originalSha256": "2db7025e7622837f669ad3b8462d0951235fddb4ab44aa92c71225531ee1f59a",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "2db7025e7622837f669ad3b8462d0951235fddb4ab44aa92c71225531ee1f59a"
+    },
+    {
+      "from": "client/research/tools/verify-coordinate-default-profile.py",
+      "to": "research/tools/verify-coordinate-default-profile.py",
+      "originalSha256": "f53cd65eb791daf19da92edb20a6b1a3f698dbf70057a1ff1f70ed21bef1cad6",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "f53cd65eb791daf19da92edb20a6b1a3f698dbf70057a1ff1f70ed21bef1cad6"
+    },
+    {
+      "from": "client/research/tools/verify-custom-registration-exclusions.py",
+      "to": "research/tools/verify-custom-registration-exclusions.py",
+      "originalSha256": "9dd89b8243aac1b548b81a6c50d26cc27b61ad21079875a71b707de69fe39477",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "9dd89b8243aac1b548b81a6c50d26cc27b61ad21079875a71b707de69fe39477"
+    },
+    {
+      "from": "client/research/tools/verify-entity-create-identity.py",
+      "to": "research/tools/verify-entity-create-identity.py",
+      "originalSha256": "bd0bbfebc7ed0e086b295235565c5df94d6f380ad7233555a83ce7cbbeaddfd5",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "bd0bbfebc7ed0e086b295235565c5df94d6f380ad7233555a83ce7cbbeaddfd5"
+    },
+    {
+      "from": "client/research/tools/verify-event-identity-layout.py",
+      "to": "research/tools/verify-event-identity-layout.py",
+      "originalSha256": "5ff7d6cdd7e90dd170b2c8c57b8e249cfdad20529e6e75dbcd0661c8975d8774",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "5ff7d6cdd7e90dd170b2c8c57b8e249cfdad20529e6e75dbcd0661c8975d8774"
+    },
+    {
+      "from": "client/research/tools/verify-fish-position-callbacks.py",
+      "to": "research/tools/verify-fish-position-callbacks.py",
+      "originalSha256": "c937671a073cddbf3f5ae8a6e79c5fa899c7fb82a15a7b6320c439145cfef82d",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "c937671a073cddbf3f5ae8a6e79c5fa899c7fb82a15a7b6320c439145cfef82d"
+    },
+    {
+      "from": "client/research/tools/verify-huffman-codebook.py",
+      "to": "research/tools/verify-huffman-codebook.py",
+      "originalSha256": "7a6bec9466c1237f1d7b5b5345ca4c062de1d76322a64b60cb3472cc2510dc08",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "7a6bec9466c1237f1d7b5b5345ca4c062de1d76322a64b60cb3472cc2510dc08"
+    },
+    {
+      "from": "client/research/tools/verify-huffman-reference.mjs",
+      "to": "research/tools/verify-huffman-reference.mjs",
+      "originalSha256": "a5a1574c7a60388b0d461e91a56aaa90f8bb19f058ce01f4de4726da47ad11b0",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "a5a1574c7a60388b0d461e91a56aaa90f8bb19f058ce01f4de4726da47ad11b0"
+    },
+    {
+      "from": "client/research/tools/verify-native-core.mjs",
+      "to": "tests/parser/verify-native-core.mjs",
+      "originalSha256": "ab24e7487ef144285b6053f28ed6252b96a5cc70681cc8ba92e7825cec358f52",
+      "decision": "保留为现行测试",
+      "currentSha256": "56a401757242270714803d01e2fccfd8473dffb077a6d57e4ee846b8a1bfdf92",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/tools/verify-native-entity-fields.mjs",
+      "to": "tests/parser/verify-native-entity-fields.mjs",
+      "originalSha256": "73a8cc3ad48a8136b30e5181772b29922d5668d19112658ad06dabf9e0bcc98d",
+      "decision": "保留为现行测试",
+      "currentSha256": "374e9b1daad71d2733837b4aca33c91578a8861d19a2870a57d3f1f6943f9073",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/tools/verify-native-packets.mjs",
+      "to": "tests/parser/verify-native-packets.mjs",
+      "originalSha256": "ee56e4f36caffffec6d81d9e50235033d5352aa9e36a3924cbcf5ad28821feef",
+      "decision": "保留为现行测试",
+      "currentSha256": "e7b8c8315335290f2ab1f3ff12a07b48403d27537b01f58122734e8a64707822",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/tools/verify-native-path-reader.mjs",
+      "to": "tests/parser/verify-native-path-reader.mjs",
+      "originalSha256": "75a254042d2d4cc0365b882cff00931419cb35ea75fd0c14e287c646b14c9bf2",
+      "decision": "保留为现行测试",
+      "currentSha256": "ae24f1935dddaf5946db65bf628194c416cc6bb40009fc7ed395bbb7da17b06a",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/tools/verify-native-projection.mjs",
+      "to": "tests/parser/verify-native-projection.mjs",
+      "originalSha256": "3c283ad09f29fe688cff333bad5a983f5735a3bccf172e9e0bb6a4e2e404e09c",
+      "decision": "保留为现行测试",
+      "currentSha256": "f6f7ae283ccde45ffe2975370a22ce52fb47246b9780a35135a259ccee817cdc",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/tools/verify-native-snapshots.mjs",
+      "to": "tests/parser/verify-native-snapshots.mjs",
+      "originalSha256": "e0dcd9df2659a2ea2b1e3b9e82609e578721c9ce5b1deb918eee2d2284a8238a",
+      "decision": "保留为现行测试",
+      "currentSha256": "49e840f3150684523b36eb70d0af2fc468a8ac48eba6517a243847493a1585b7",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/tools/verify-native-tables.mjs",
+      "to": "tests/parser/verify-native-tables.mjs",
+      "originalSha256": "bfa10f0983dcfc9241d43c35522f8a1f9549b6d3d00dccec3988f7564dad4b0e",
+      "decision": "保留为现行测试",
+      "currentSha256": "69b33e2ede39dde5fa052f178cccfef59c93fbebc533997a8e3fd35928fdc42f",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/research/tools/verify-origin-cell-width.mjs",
+      "to": "research/tools/verify-origin-cell-width.mjs",
+      "originalSha256": "edf9e4769e5097903c2020391914c47db966c8863b34f1a18d7d9b7f250100a1",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "edf9e4769e5097903c2020391914c47db966c8863b34f1a18d7d9b7f250100a1"
+    },
+    {
+      "from": "client/research/tools/verify-origin-tier0-profile.py",
+      "to": "research/tools/verify-origin-tier0-profile.py",
+      "originalSha256": "be313f9f2a34d1956c295fa0bb5e544c68369b8cb3578d1744ef205c94f646f2",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "be313f9f2a34d1956c295fa0bb5e544c68369b8cb3578d1744ef205c94f646f2"
+    },
+    {
+      "from": "client/research/tools/verify-pointer-compat-dispatch.py",
+      "to": "research/tools/verify-pointer-compat-dispatch.py",
+      "originalSha256": "8ef489f5cfff4779e4c0bacad65652a4ebea6f0bde7eb4c2331dafead319152d",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "8ef489f5cfff4779e4c0bacad65652a4ebea6f0bde7eb4c2331dafead319152d"
+    },
+    {
+      "from": "client/research/tools/verify-quantized-configured-read.mjs",
+      "to": "research/tools/verify-quantized-configured-read.mjs",
+      "originalSha256": "33e56b04f5c22ce008054225f4d1aa4d750c9cbfb917832b10e1deda79d2547d",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "33e56b04f5c22ce008054225f4d1aa4d750c9cbfb917832b10e1deda79d2547d"
+    },
+    {
+      "from": "client/research/tools/verify-quantizer-default-bounds.mjs",
+      "to": "research/tools/verify-quantizer-default-bounds.mjs",
+      "originalSha256": "6b85defe816c9c1c1f3ccd9349df0ce99ba780aa9a80abc9f036843a72da8e33",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "6b85defe816c9c1c1f3ccd9349df0ce99ba780aa9a80abc9f036843a72da8e33"
+    },
+    {
+      "from": "client/research/tools/verify-reliable-marker-ownership.py",
+      "to": "research/tools/verify-reliable-marker-ownership.py",
+      "originalSha256": "a16c881c97c5266c4af02c6b13c85fdf183b75ce6c9c8ec8c552717efd737a5e",
+      "decision": "保留为可选研究工具",
+      "currentSha256": "a16c881c97c5266c4af02c6b13c85fdf183b75ce6c9c8ec8c552717efd737a5e"
+    },
+    {
+      "from": "client/resource_manifest.py",
+      "to": "client/resource_manifest.py",
+      "originalSha256": "c2638c2c9b9153b231a143bdb333fa9fa013604570454174f66bdf5d17402b43",
+      "decision": "保留运行核心",
+      "currentSha256": "c2638c2c9b9153b231a143bdb333fa9fa013604570454174f66bdf5d17402b43"
+    },
+    {
+      "from": "client/sdk.py",
+      "to": "client/sdk.py",
+      "originalSha256": "1b9d769d634a6e076e8ee8744e3a374b35bb18e35bb4f15c53d95700aa5f176c",
+      "decision": "保留运行核心",
+      "currentSha256": "1b9d769d634a6e076e8ee8744e3a374b35bb18e35bb4f15c53d95700aa5f176c"
+    },
+    {
+      "from": "client/test_capture.py",
+      "to": "tests/python/test_capture.py",
+      "originalSha256": "9738189e6ed2ce2ae2adbf747f10c0ed6634b3739da19504fbb555ebc9384e71",
+      "decision": "保留现行测试",
+      "currentSha256": "9738189e6ed2ce2ae2adbf747f10c0ed6634b3739da19504fbb555ebc9384e71"
+    },
+    {
+      "from": "client/test_channel.py",
+      "to": "tests/python/test_channel.py",
+      "originalSha256": "0fe14953023e42859d590dbdb8e0eb245764399e4930ec4f8141fb4569b30ae5",
+      "decision": "保留现行测试",
+      "currentSha256": "0fe14953023e42859d590dbdb8e0eb245764399e4930ec4f8141fb4569b30ae5"
+    },
+    {
+      "from": "client/test_driver.py",
+      "to": "tests/python/test_driver.py",
+      "originalSha256": "42af6476edeae8e8b287a39dde0660f5eae75150f64123bd2a595d23a178e547",
+      "decision": "保留现行测试",
+      "currentSha256": "9e343e308b44f5d5772cee22f9a539f61c5d684a414952975bf8f577596f162e",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/test_handshake.py",
+      "to": "tests/python/test_handshake.py",
+      "originalSha256": "4e8671a38cfb9d27275b58d79c8bf4dd6d47c23bc3a3f5caa492fe5e6f82a880",
+      "decision": "保留现行测试",
+      "currentSha256": "4e8671a38cfb9d27275b58d79c8bf4dd6d47c23bc3a3f5caa492fe5e6f82a880"
+    },
+    {
+      "from": "client/test_live.py",
+      "to": "tests/python/test_live.py",
+      "originalSha256": "3beb27a88faeb90636988035d7bc729472f6d1d84e54e308cb163652a91cffca",
+      "decision": "保留现行测试",
+      "currentSha256": "3beb27a88faeb90636988035d7bc729472f6d1d84e54e308cb163652a91cffca"
+    },
+    {
+      "from": "client/test_managed_connection.py",
+      "to": "tests/python/test_managed_connection.py",
+      "originalSha256": "dc92958700a26843deca6d78197963820ffc7a689c33151cafab7b3ad0328d66",
+      "decision": "保留现行测试",
+      "currentSha256": "82b3adc129ae1a649dab251ab7ac84e096bbd641525238806742e6945d449351",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/test_observer_settings.py",
+      "to": "tests/python/test_observer_settings.py",
+      "originalSha256": "119f924ec5774369bc8a78e48d6fc11d6d04e695180830c6f8c08b21c7202e43",
+      "decision": "保留现行测试",
+      "currentSha256": "119f924ec5774369bc8a78e48d6fc11d6d04e695180830c6f8c08b21c7202e43"
+    },
+    {
+      "from": "client/test_ordered_driver.py",
+      "to": "tests/python/test_ordered_driver.py",
+      "originalSha256": "38d063ae0b5daa613e9a81128a4fb470338f6d5ef5c2741fd97634c35f720af0",
+      "decision": "保留现行测试",
+      "currentSha256": "50b774060cbb5bdd33536966778d96c037f579d67c077d6b6a6e7e02fe5f023a",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/test_ordered_parser.py",
+      "to": "tests/python/test_ordered_parser.py",
+      "originalSha256": "6cd8ac5665972ee49f53774c4f12889118a627d3cd30789cc94bfce602d127e6",
+      "decision": "保留现行测试",
+      "currentSha256": "6cd8ac5665972ee49f53774c4f12889118a627d3cd30789cc94bfce602d127e6"
+    },
+    {
+      "from": "client/test_password.py",
+      "to": "tests/python/test_password.py",
+      "originalSha256": "acaabb0472f67688071d0b8ca7c000eb4da00fbb52284074988a15868a6adab2",
+      "decision": "保留现行测试",
+      "currentSha256": "8d9080b4837140978aa13ac082cb21bb4ef421d3432895a186600cb4ecf9061a",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/test_reliable_marker.py",
+      "to": "tests/python/test_reliable_marker.py",
+      "originalSha256": "731902dd9121e1eda758cc7cebbd62ed35edbf735f8e2cc6a60fbaefac4eaeb7",
+      "decision": "保留现行测试",
+      "currentSha256": "731902dd9121e1eda758cc7cebbd62ed35edbf735f8e2cc6a60fbaefac4eaeb7"
+    },
+    {
+      "from": "client/test_sdk.py",
+      "to": "tests/python/test_sdk.py",
+      "originalSha256": "41f6dc5d4b9bc64e773a62685519ddb7a29c7d0552cc01b55d3c4024a1be5a04",
+      "decision": "保留现行测试",
+      "currentSha256": "e70a70973f7323cdad23e3ceac8a7e1c6d688a649a38f253925cd8f896f1441c",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/test_wire.py",
+      "to": "tests/python/test_wire.py",
+      "originalSha256": "8f3c849882bd706e84263b5d6cd90cbcc0a4abca5e8d6f0661435b066901c183",
+      "decision": "保留现行测试",
+      "currentSha256": "8f3c849882bd706e84263b5d6cd90cbcc0a4abca5e8d6f0661435b066901c183"
+    },
+    {
+      "from": "client/verify.py",
+      "to": "tools/verification/verify.py",
+      "originalSha256": "218795a42f3c5a78389c0cefba03dbe208ae955496185abf37ef0d761628fabb",
+      "decision": "保留可选验证",
+      "currentSha256": "80105c84f4c2709155c63d83580faaa15c4f23e779c6ad5c8c3726460dfb6fcf",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/verify_angle_codecs.mjs",
+      "to": "tools/verification/verify_angle_codecs.mjs",
+      "originalSha256": "dfc6f628d43151826a894968d7bad9d472b20290bb307add1593d4e8f48d48b8",
+      "decision": "保留可选验证",
+      "currentSha256": "dfc6f628d43151826a894968d7bad9d472b20290bb307add1593d4e8f48d48b8"
+    },
+    {
+      "from": "client/verify_channel.py",
+      "to": "tools/verification/verify_channel.py",
+      "originalSha256": "2485dad5e1b936360f4a895e43d6fdabd2d703788c1252a2ee09cdd1668d9c2f",
+      "decision": "保留可选验证",
+      "currentSha256": "54044d4ec75c2c42619904cee8f4ee36f3a197d74d97d3490f97caf3c56680fd",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/verify_cohesive_parser.mjs",
+      "to": "tools/verification/verify_cohesive_parser.mjs",
+      "originalSha256": "0c2935d362e3dad64ef7f1b1bc6b977f7999171b77400ed3d7c5a50a59ea4a78",
+      "decision": "保留可选验证",
+      "currentSha256": "27fe2b03c52b39c5ebc07f2b194074ecb7673a2b42e9059076919d2f55a937d9",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/verify_control_replay.py",
+      "to": "archive/parser-v1/verify_control_replay.py",
+      "originalSha256": "a62657eea06cfca53a6b0a94ab60ced21b44f7e4b32c5a3b07349407ad1fcb50",
+      "decision": "成组归档",
+      "currentSha256": "a62657eea06cfca53a6b0a94ab60ced21b44f7e4b32c5a3b07349407ad1fcb50"
+    },
+    {
+      "from": "client/verify_coordinate_profile.mjs",
+      "to": "tools/verification/verify_coordinate_profile.mjs",
+      "originalSha256": "d7e00af460b5d533a570df32ef393cc14713355960f2e14c24af961059fd1c14",
+      "decision": "保留可选验证",
+      "currentSha256": "d7e00af460b5d533a570df32ef393cc14713355960f2e14c24af961059fd1c14"
+    },
+    {
+      "from": "client/verify_first_full.py",
+      "to": "archive/parser-v1/verify_first_full.py",
+      "originalSha256": "41febb29adbdf551443b24f0b719a04f6ab053ab72c3c5357e0a9d3856227757",
+      "decision": "成组归档",
+      "currentSha256": "41febb29adbdf551443b24f0b719a04f6ab053ab72c3c5357e0a9d3856227757"
+    },
+    {
+      "from": "client/verify_integral_coordinates.mjs",
+      "to": "tools/verification/verify_integral_coordinates.mjs",
+      "originalSha256": "cefebebef06c15f8888c10da9e45ab43c693ce1639ec34ba1bd869d8fe448e7f",
+      "decision": "保留可选验证",
+      "currentSha256": "cefebebef06c15f8888c10da9e45ab43c693ce1639ec34ba1bd869d8fe448e7f"
+    },
+    {
+      "from": "client/verify_live.py",
+      "to": "tools/verification/verify_live.py",
+      "originalSha256": "24f7c9e49f727b8fc6e30725065fdeba636e899752dbde66076c5cbeb20fc013",
+      "decision": "保留可选验证",
+      "currentSha256": "b2a84dcf1913505cfdf8d2c65000c52ef0f1f94efbf316fa31413559e6e29fb1",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/verify_online_entities.mjs",
+      "to": "tools/verification/verify_online_entities.mjs",
+      "originalSha256": "4b3ba0f4a23a7f4253b45af6f4d8881e12086db89a95fb745fa505b8ca18c5b6",
+      "decision": "保留可选验证",
+      "currentSha256": "4b3ba0f4a23a7f4253b45af6f4d8881e12086db89a95fb745fa505b8ca18c5b6"
+    },
+    {
+      "from": "client/verify_password.py",
+      "to": "tools/verification/verify_password.py",
+      "originalSha256": "47e204073fdc8b2fcfea42e7fc2f987254ea3c2c50dce2c81845b97604e009b1",
+      "decision": "保留可选验证",
+      "currentSha256": "df3bfe86d537a15e8ca9ad64b49fac27299004db3305ec9f4d54800b8ba6c2d0",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "client/viewer-research.ts",
+      "to": "tools/demo/viewer-research.ts",
+      "originalSha256": "894668e7d60919d3845a907769c5eefd2ddf7036d100bb8a7f11b7a452171a61",
+      "decision": "保留辅助功能",
+      "currentSha256": "894668e7d60919d3845a907769c5eefd2ddf7036d100bb8a7f11b7a452171a61"
+    },
+    {
+      "from": "client/wire.py",
+      "to": "client/wire.py",
+      "originalSha256": "b01a85f932c9c34b0ce5a4836e479884a72e1d7f61dc65493eada1688a2d8645",
+      "decision": "保留运行核心",
+      "currentSha256": "b01a85f932c9c34b0ce5a4836e479884a72e1d7f61dc65493eada1688a2d8645"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/README.md",
+      "to": "archive/legacy/408/apps/companion/research/observer/README.md",
+      "originalSha256": "4096508ea16df41a9209455f51050f82c23e6a671e45ef54e91c6c372644fa2c",
+      "decision": "归档",
+      "currentSha256": "4096508ea16df41a9209455f51050f82c23e6a671e45ef54e91c6c372644fa2c"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/assist.ts",
+      "to": "archive/legacy/408/apps/companion/research/observer/assist.ts",
+      "originalSha256": "919bc3a00b4f80c1038ea44ca8411e9c3af9354dba6639920cb0468de1e522bb",
+      "decision": "归档",
+      "currentSha256": "919bc3a00b4f80c1038ea44ca8411e9c3af9354dba6639920cb0468de1e522bb"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/cli.ts",
+      "to": "archive/legacy/408/apps/companion/research/observer/cli.ts",
+      "originalSha256": "bf5f1a9d9961913a45f181850f6eaa46fcf06e998dc4b263fd8846227cc2136b",
+      "decision": "归档",
+      "currentSha256": "bf5f1a9d9961913a45f181850f6eaa46fcf06e998dc4b263fd8846227cc2136b"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/dak-oracle.py",
+      "to": "archive/legacy/408/apps/companion/research/observer/dak-oracle.py",
+      "originalSha256": "5de950fd4b6f6dd8cd4fb102eec2ef8a385ca1d4cc670d9421844858a3e7be30",
+      "decision": "归档",
+      "currentSha256": "5de950fd4b6f6dd8cd4fb102eec2ef8a385ca1d4cc670d9421844858a3e7be30"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/evidence/README.md",
+      "to": "archive/legacy/408/apps/companion/research/observer/evidence/README.md",
+      "originalSha256": "311ff6d83a41ec48bef64e3eb282517f14220badc7a4ef7bc10c5bc06d165c40",
+      "decision": "归档",
+      "currentSha256": "311ff6d83a41ec48bef64e3eb282517f14220badc7a4ef7bc10c5bc06d165c40"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/evidence/cli.json",
+      "to": "archive/legacy/408/apps/companion/research/observer/evidence/cli.json",
+      "originalSha256": "1d14d35f55232ee113d14bf9e364d3d191d021812fa6efb0c67ab6b42ccef400",
+      "decision": "归档",
+      "currentSha256": "1d14d35f55232ee113d14bf9e364d3d191d021812fa6efb0c67ab6b42ccef400"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/evidence/demo.json",
+      "to": "archive/legacy/408/apps/companion/research/observer/evidence/demo.json",
+      "originalSha256": "5a86856acc03dbc521cd1b80816f0ee33aebe2898b7ab793e03071c0cae6c18c",
+      "decision": "归档",
+      "currentSha256": "5a86856acc03dbc521cd1b80816f0ee33aebe2898b7ab793e03071c0cae6c18c"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/evidence/validation.json",
+      "to": "archive/legacy/408/apps/companion/research/observer/evidence/validation.json",
+      "originalSha256": "72fb14a56bc12ece027a1dd78c750db91cb02c919181a7a8bc87d0e8a9553bd7",
+      "decision": "归档",
+      "currentSha256": "72fb14a56bc12ece027a1dd78c750db91cb02c919181a7a8bc87d0e8a9553bd7"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/follow.ts",
+      "to": "archive/legacy/408/apps/companion/research/observer/follow.ts",
+      "originalSha256": "d8099858e0c194e696d4e22fcf84d44209d9a6c470edfccf266777001493d561",
+      "decision": "归档",
+      "currentSha256": "d8099858e0c194e696d4e22fcf84d44209d9a6c470edfccf266777001493d561"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/observer.test.ts",
+      "to": "archive/legacy/408/apps/companion/research/observer/observer.test.ts",
+      "originalSha256": "3932454394c580e4e463b92e494b449e03cb03c99e4b682904d802232bc6e0fa",
+      "decision": "归档",
+      "currentSha256": "3932454394c580e4e463b92e494b449e03cb03c99e4b682904d802232bc6e0fa"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/report.ts",
+      "to": "archive/legacy/408/apps/companion/research/observer/report.ts",
+      "originalSha256": "e6d692efacffcb4531cefd85477150d40ef2817b59721b74d31ccbe71d1ece12",
+      "decision": "归档",
+      "currentSha256": "e6d692efacffcb4531cefd85477150d40ef2817b59721b74d31ccbe71d1ece12"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/tsconfig.json",
+      "to": "archive/legacy/408/apps/companion/research/observer/tsconfig.json",
+      "originalSha256": "4ae5087078fc95965f892a2b6ee57ac4b0e19164e62525b391b79df16c65b104",
+      "decision": "归档",
+      "currentSha256": "4ae5087078fc95965f892a2b6ee57ac4b0e19164e62525b391b79df16c65b104"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/verify-cli.ts",
+      "to": "archive/legacy/408/apps/companion/research/observer/verify-cli.ts",
+      "originalSha256": "290a7973a7c7f8169ed14cab9128e6fb35f586a6fdfc600b5ff58e4943035ce6",
+      "decision": "归档",
+      "currentSha256": "290a7973a7c7f8169ed14cab9128e6fb35f586a6fdfc600b5ff58e4943035ce6"
+    },
+    {
+      "from": "legacy/408/apps/companion/research/observer/verify-demo.ts",
+      "to": "archive/legacy/408/apps/companion/research/observer/verify-demo.ts",
+      "originalSha256": "9823b7123c751134782f951d7d2cfd4d4650b7797061a1d73580eddac45c7c4a",
+      "decision": "归档",
+      "currentSha256": "9823b7123c751134782f951d7d2cfd4d4650b7797061a1d73580eddac45c7c4a"
+    },
+    {
+      "from": "legacy/408/docs/reference/telemetry.md",
+      "to": "archive/legacy/408/docs/reference/telemetry.md",
+      "originalSha256": "2fbf99dc5cacdc97380e76776552665c9d6e5eab0dfdc65a7e60e0514482674d",
+      "decision": "归档",
+      "currentSha256": "2fbf99dc5cacdc97380e76776552665c9d6e5eab0dfdc65a7e60e0514482674d"
+    },
+    {
+      "from": "legacy/408/packages/telemetry-cstv/package.json",
+      "to": "archive/legacy/408/packages/telemetry-cstv/package.json",
+      "originalSha256": "b1d1bbfa2c899d193f6538dad169092497a3dc41d1a88e0072e40db640983b74",
+      "decision": "归档",
+      "currentSha256": "b1d1bbfa2c899d193f6538dad169092497a3dc41d1a88e0072e40db640983b74"
+    },
+    {
+      "from": "legacy/408/packages/telemetry-cstv/src/research.ts",
+      "to": "archive/legacy/408/packages/telemetry-cstv/src/research.ts",
+      "originalSha256": "cc337d015d4c38debcf09c1c211968f19a5f331f6b3253f326cf37e2d25f5cd0",
+      "decision": "归档",
+      "currentSha256": "cc337d015d4c38debcf09c1c211968f19a5f331f6b3253f326cf37e2d25f5cd0"
+    },
+    {
+      "from": "legacy/409/apps/companion/research/observer/README.md",
+      "to": "archive/legacy/409/apps/companion/research/observer/README.md",
+      "originalSha256": "8f165570203269577f8af432d191a247e76b634f5b9aa870f152df9af85b4097",
+      "decision": "归档",
+      "currentSha256": "8f165570203269577f8af432d191a247e76b634f5b9aa870f152df9af85b4097"
+    },
+    {
+      "from": "legacy/409/apps/companion/research/observer/WINDOWS-TEST.md",
+      "to": "archive/legacy/409/apps/companion/research/observer/WINDOWS-TEST.md",
+      "originalSha256": "2db7a553f946f1ee0217da42dd60eecde239c64a304a55e545fb783e850b7052",
+      "decision": "归档",
+      "currentSha256": "2db7a553f946f1ee0217da42dd60eecde239c64a304a55e545fb783e850b7052"
+    },
+    {
+      "from": "legacy/README.md",
+      "to": "archive/legacy/README.md",
+      "originalSha256": "f8e30c79034c8f6925af2966cdd3504ccb51a2d21e4d954eaada0be921828d04",
+      "decision": "归档",
+      "currentSha256": "f8e30c79034c8f6925af2966cdd3504ccb51a2d21e4d954eaada0be921828d04"
+    },
+    {
+      "from": "package.json",
+      "to": "package.json",
+      "originalSha256": "aafea63eca54b7df6b32c23cccf4f002c072e2dcb07549bea72e293fc02eeacb",
+      "decision": "保留并精简",
+      "currentSha256": "1977a3062d50d332d9c4ed0eca8f35a63ed1c2cea27eb26ab8481a29f4eab183",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    },
+    {
+      "from": "pnpm-lock.yaml",
+      "to": "pnpm-lock.yaml",
+      "originalSha256": "e79c88652295432a9b7cbf195402d117f59be72092b511ded7c16e213c6fe732",
+      "decision": "保留",
+      "currentSha256": "e79c88652295432a9b7cbf195402d117f59be72092b511ded7c16e213c6fe732"
+    },
+    {
+      "from": "pnpm-workspace.yaml",
+      "to": "pnpm-workspace.yaml",
+      "originalSha256": "e4025590afcb0a904a1a1c9c4f55b6bcc00c47ba1851811b8142b07945050cd1",
+      "decision": "保留",
+      "currentSha256": "e4025590afcb0a904a1a1c9c4f55b6bcc00c47ba1851811b8142b07945050cd1"
+    },
+    {
+      "from": "tsconfig.json",
+      "to": "tsconfig.json",
+      "originalSha256": "6fae5c4fe3a734169c3043bbc889ab08a7c216124af263ad384610d4e67c1033",
+      "decision": "保留并精简",
+      "currentSha256": "afd21bdd477fb95ad69b83c64c00dd29b30a36a34764fefb8b1d87da8299209e",
+      "changeReason": "Maintained source, test, index or configuration updated for repository organization"
+    }
+  ],
+  "purpose": "Path migration and original byte identity; historical files remain immutable. Current source changes are listed separately from preserved evidence."
+}

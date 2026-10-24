@@ -1,0 +1,33 @@
+{
+  "schema": "cs2-observer-synthetic-channel/1",
+  "provenance": "WHOLLY_SYNTHETIC_NO_MATCH_NO_PLAYER_DATA",
+  "hostVersion": 14191,
+  "expectedEvent": "round_freeze_end",
+  "frames": [
+    {
+      "elapsedMs": 10,
+      "reliable": true,
+      "bodyBase64": "AWSYXCC8u0EcYAWAAbQBAADy6B2QlX3Rlc3RHQQIAxAH"
+    },
+    {
+      "elapsedMs": 20,
+      "reliable": true,
+      "bodyBase64": "AWSZtCgYIABAAGAASBBIvb3RSRTYhbHVlUkY1KW50c3ISBiYpeGVkeFoGCAIQARADWiiIIGAAKBBIPX2RsdJhwJEmtscXZjbWJlY2FwZW5pbGUSAzsFgAAoAUAHAQYBAAHEA"
+    },
+    {
+      "elapsedMs": 30,
+      "reliable": true,
+      "bodyBase64": "AWQHAUIBxAE="
+    },
+    {
+      "elapsedMs": 40,
+      "reliable": true,
+      "bodyBase64": "AWSEAALZNREQAVAAYGQ6BoACAAAoAZoBAA=="
+    },
+    {
+      "elapsedMs": 50,
+      "reliable": true,
+      "bodyBase64": "AWQdWyhQIERIQMi91bmRfZnJlZXplX2VuZF9LAARAQ=="
+    }
+  ]
+}

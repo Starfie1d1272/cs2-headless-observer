@@ -2,13 +2,14 @@
   "name": "cs2-headless-observer",
   "private": true,
   "type": "module",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "packageManager": "pnpm@12.9.1",
   "scripts": {
-    "build:parser": "node client/build_parser.mjs",
-    "test": "python -m unittest discover -s client -p \"test_*.py\"",
-    "test:events": "vitest run client/decode.test.ts client/failure.test.ts",
-    "typecheck": "tsc6 -p tsconfig.json --noEmit"
+    "build:parser": "node tools/build_parser.mjs",
+    "test": "python tools/run_python_tests.py",
+    "test:events": "vitest run tests/demo/decode.test.ts tests/demo/failure.test.ts",
+    "typecheck": "tsc6 -p tsconfig.json --noEmit",
+    "verify": "python tools/verify_all.py"
   },
   "dependencies": {
     "cs2parser": "2.7.2"
@@ -19,5 +20,8 @@
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "@types/node": "26.6.4",
     "vitest": "5.0.3"
+  },
+  "engines": {
+    "node": ">=24.0.0"
   }
 }

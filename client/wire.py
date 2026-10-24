@@ -235,7 +235,7 @@ def main():
         with os.fdopen(os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'w', encoding='utf8') as output:
             def write(row):
                 output.write(json.dumps(row, separators=(',', ':')) + '\n')
-            write({'kind': 'metadata', 'schema': 'mizar.viewer.wire.v1', 'protocol_snapshot': PIN,
+            write({'kind': 'metadata', 'schema': 'cs2.observer.wire.v1', 'protocol_snapshot': PIN,
                    'configured_offset_seconds': 120, 'offset_verified': False})
             if args.mode == 'pcap':
                 write(inspect_pcap(args.input, server, write))
