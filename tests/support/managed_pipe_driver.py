@@ -1,5 +1,6 @@
 """Synthetic SDK port with the real driver, worker and process pipes; no network or Steam."""
-import base64,json,sys
+import base64,json,sys,faulthandler
+faulthandler.dump_traceback_later(8)  # Synthetic fixture only: expose a stalled cleanup in CI.
 from pathlib import Path
 from support.sdk_port import Port
 from handshake import number,blob

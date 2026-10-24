@@ -42,6 +42,7 @@ class OrderedParserBridge:
         self._lock = threading.Lock()
         self._input = queue.Queue(maxsize=16)
         self._output = queue.Queue(maxsize=4096)
+        self._available = threading.Event()
         from process_job import ParserJob
         self._job = ParserJob()
         try:
@@ -118,6 +119,7 @@ class OrderedParserBridge:
                         'checkpoint', 'receipt', 'cursor', 'raw-event', 'gap', 'recovery', 'blocked', 'event-subscriptions', 'diagnostic'}:
                     raise ValueError('record-type')
                 self._output.put_nowait(row)
+                self._available.set()
         except Exception as error:
             if not self._closed:
                 self._failure = 'ordered-parser-output-failed: ' + type(error).__name__
@@ -175,6 +177,13 @@ class OrderedParserBridge:
             raise ProbeError(self._failure)
         if self._closed or self.process.poll() is not None:
             raise ProbeError('ordered-parser-not-running')
+
+    def wait_for_progress(self, timeout=.1):
+        """Offline consumers can sleep on a receipt instead of Windows timer quanta."""
+        self._available.clear()
+        if self._output.empty():
+            self._available.wait(timeout)
+        self.check()
 
     def poll(self, emit=None):
         self.check()

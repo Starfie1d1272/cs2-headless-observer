@@ -64,7 +64,11 @@ class ManagedConnectionTests(unittest.TestCase):
                     while not marker.with_suffix('.progress').exists() and child.poll() is None and time.monotonic()<deadline:
                         time.sleep(.01)
                     child.stdin.close()
-                    child.wait(timeout=12)
+                    try:
+                        child.wait(timeout=12)
+                    except subprocess.TimeoutExpired:
+                        child.kill(); child.wait(timeout=5)
+                        self.fail('Synthetic cleanup stalled:\n' + child.stderr.read().decode('utf-8', errors='replace'))
                     self.assertIn(child.returncode,(1,2))
                     self.assertEqual(json.loads(marker.read_text())['closed'],1)
                     report=json.loads((output/'report.json').read_text(encoding='utf-8'))

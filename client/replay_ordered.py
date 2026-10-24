@@ -73,7 +73,8 @@ def main():
                         parser.poll(driver.emit)
                         if time.monotonic() >= deadline:
                             raise TimeoutError('replay-parser-timeout')
-                        time.sleep(.0005)
+                        if parser.completed_sequence < driver._parser_sequence:
+                            parser.wait_for_progress()
                     driver._advance_initialization(elapsed)
                     driver._send_processed_tick(elapsed)
                     frames += 1
