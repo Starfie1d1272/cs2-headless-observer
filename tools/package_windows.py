@@ -143,37 +143,43 @@ def main():
     if not component:
         (out / 'Start.cmd').write_bytes(b'@echo off\r\ncd /d "%~dp0"\r\n"runtime\\python\\python.exe" -B "client\\launcher.py"\r\npause\r\n')
         (out / 'Replay.cmd').write_bytes(b'@echo off\r\ncd /d "%~dp0"\r\n"runtime\\python\\python.exe" -B "tools\\replay_example.py"\r\npause\r\n')
-    (out / 'README.txt').write_text('''CS2 Headless Observer
+    (out / 'README.txt').write_text('''CS2 Headless Observer 1.0.0
 
-解压到可写目录，保持 Steam 已登录自己的账号，双击 Start.cmd。
-填写 CS2 安装目录，核对来源 host 版本，再输入获授权的普通观战地址和密码。
-会话持续至来源结束或主动停止。报告位于 runs 子目录；独立驱动可显式开启有界采集，凭据留在会话内存。
-运行时随包提供；Steam API 使用本机 CS2 安装中的 steam_api64.dll。
+1. 解压到可写目录，运行 Replay.cmd 完成本地解析与输出自检。
+2. 登录自己的 Steam 账号。需要同时使用游戏时，先启动 CS2。
+3. 运行 Start.cmd，填写 CS2 安装目录、来源 host 和获授权的观战地址、密码。
 
-先运行 Replay.cmd 完成五帧合成样例的本地解析与输出自检，再登录 Steam 运行 Start.cmd。
-接口为原生 ABI 3、有序解析 IPC 3，版本与验证范围见 docs/compatibility.md。
-应用集成见 docs/managed-interface.md，构建与验证见 docs/build.md、docs/verification.md。
-报告记录协议状态和收尾结果；事件时间、身份与来源代际按托管接口消费。
-报告按需私下分享，原始比赛采集保存在本机。
+会话持续至来源结束或主动停止。Ctrl+C 请求清理，等待进程退出后开始新会话。
+报告保存在 runs 子目录，原始采集由独立驱动参数选择并受容量预算管理。
+Python、Node 随包提供；Steam API 使用本机 CS2 的 steam_api64.dll。
+
+运行与故障处理：docs/usage.md
+应用集成：docs/managed-interface.md
+平台与验证范围：docs/compatibility.md
+构建与对应源码：docs/build.md、source/
+许可与第三方材料：licenses/
 
 源代码：https://github.com/Starfie1d1272/cs2-headless-observer/tree/''' + args.source_sha + '''
-cs2parser 2.7.2（MPL-2.0）：https://github.com/osztenkurden/cs2parser/tree/deced963b86d3ec26b28a225824130fdf9fe3167
+cs2parser 2.7.2：https://github.com/osztenkurden/cs2parser/tree/deced963b86d3ec26b28a225824130fdf9fe3167
 Node.js 24.22.0：https://nodejs.org/dist/v24.22.0/
 Python 3.14.8：https://www.python.org/ftp/python/3.14.8/
-SDK 头文件来源：ValveSoftware/Proton，bc896217ffcd67f892f952b010f898fe7bd0f0a1，steamworks_sdk_165。
-第三方许可证、解析器修改源码及补丁保存在 licenses 和 source 目录。
+SDK 构建输入：ValveSoftware/Proton bc896217ffcd67f892f952b010f898fe7bd0f0a1 / steamworks_sdk_165。
 ''', encoding='utf8')
     if component:
-        (out / 'README.txt').write_text('CS2 Headless Observer — external Node package\n'
-            '提供 Node.js 24 或更高版本，可通过 --node 指定，或从 PATH 查找。\n'
-            '由应用托管子进程，保持配置 stdin 开放并持续消费 stdout。\n'
-            '组件保留 Python、原生桥、worker、合成样例、重建源码与许可。\n'
-            '完整交互包请使用 standalone。\n', encoding='utf-8')
+        (out / 'README.txt').write_text('CS2 Headless Observer 1.0.0 — external-node\n'
+            '使用调用方或 PATH 中的 Node.js 24.0.0 及以上版本，通过 --node 选择运行时。\n'
+            '按 manifest.json 的 entrypoints 定位包内 Python、driver、原生桥与 worker。\n'
+            '应用以 --managed 启动，写入一行私有配置后保持 stdin 开放并持续消费 stdout。\n'
+            '关闭 stdin 请求停止，等待进程退出后以新来源身份重试。\n'
+            '运行报告位于调用方选择的输出目录。\n'
+            '接口与示例：docs/managed-interface.md、examples/、schemas/。\n'
+            '平台与验证范围：docs/compatibility.md。\n'
+            '对应源码与许可：source/、licenses/。\n'
+            '源代码：https://github.com/Starfie1d1272/cs2-headless-observer/tree/' + args.source_sha + '\n', encoding='utf-8')
     with (out / 'README.txt').open('a', encoding='utf-8') as readme:
-        readme.write('\n连接共存：同一账号的并行客户端使用不同 GOTV 端点；相同端点的新连接可能替换已有连接。'
-            '游戏客户端也占用连接端点。需要共用账号时先启动游戏，再启动观察器。\n'
-            '重启游戏前先停止观察器并等待退出。1000 的原因结合端点、操作时间和完整回执判断。'
-            '完整范围见 docs/compatibility.md。\n')
+        readme.write('\n连接共存：同一账号的并行客户端使用不同 GOTV 端点。相同端点的新连接可能替换已有连接，游戏客户端也占用端点。\n'
+            'Steam 通过 App730 管理观众会话，重启游戏前先停止观察器并等待退出。\n'
+            '1000 的原因结合端点、操作时间和完整回执判断，完整条件见 docs/compatibility.md。\n')
     files = {p.relative_to(out).as_posix(): digest(p) for p in sorted(out.rglob('*')) if p.is_file()}
     (out / 'manifest.json').write_text(json.dumps({'schema': 'cs2-headless-observer-package/4',
         'distribution': args.kind, 'componentId': contract['componentId'], 'componentVersion': contract['componentVersion'],
