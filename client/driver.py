@@ -80,6 +80,7 @@ class ObserverDriver:
         self.first_channel_ms = self.last_channel_ms = None
         self.stages = [{'stage': 'transport', 'elapsed_ms': 0}]
         self.native_state = None
+        self.initialization_deadline = now_ms + 30000
 
     @property
     def done(self):
@@ -98,7 +99,18 @@ class ObserverDriver:
             self.native_state = self.port.state
             self.stages.append({'stage': 'sdk-state', 'value': self.native_state, 'elapsed_ms': now_ms - self.start_ms})
         if self.port.state == 6:
+            if getattr(self.port, 'remote_end_reason', None) == 1038 and self._full_sent:
+                self.phase, self.reason = 'closed', 'source-hltv-stop'
+                self._processed_entity_tick = None
+                self.stages.append({'stage': 'source-ended', 'remote_end_reason': 1038,
+                                    'elapsed_ms': now_ms - self.start_ms})
+                identity = self.parser.identity if self.parser is not None else {}
+                self.emit(dict(kind='discontinuity', reason=self.reason, **identity,
+                               **({'sequence': self._parser_sequence} if self.parser is not None else {})))
+                return
             raise DriverError('native-session-closed')
+        if self.phase == 'channel' and not self._full_sent and now_ms >= self.initialization_deadline:
+            raise DriverError('initialization-timeout')
         if self.phase == 'transport' and self.port.state == 3:
             if not self.port.remote_id():
                 raise DriverError('trusted-peer-missing')
@@ -316,6 +328,7 @@ class ObserverDriver:
     def _reset_world_protocol(self, now_ms, replace_client=False):
         # Preserve the actual SDK channel, transport counters and callback loop.
         self.decoder.reset_world()
+        self.initialization_deadline = now_ms + 30000
         self.signon = SignonSequence()
         self._new_sent = self._prespawn_sent = self._spawn_sent = False
         self._full_snapshot_processed = self._full_sent = False
@@ -468,6 +481,8 @@ class ObserverDriver:
                 'host_version': self.host_version, 'native_state': self.port.state,
                 'native_failure': getattr(self.port, 'failure', None),
                 'remote_end_reason': getattr(self.port, 'remote_end_reason', None),
+                'world_creation_watermark': self.decoder.max_creation_sequence,
+                'world_creation_sequences': sorted(group['creation_sequence'] or 0 for group in self.decoder.spawn_groups.values()),
                 'challenge_metadata': self.challenge_metadata, 'challenge_requests': self._challenge_requests,
                 'outgoing_channel_feedback_frames': self._feedback_sent,
                 'last_received_channel_sequence': self.feedback.received,
@@ -587,7 +602,7 @@ def main():
     from uuid import UUID
     ap.add_argument('--source-id', type=lambda value: UUID(value).hex)
     ap.add_argument('--managed', action='store_true', help='Private stdin connection; event-only stdout; no channel/event capture')
-    ap.add_argument('--host-version', type=int, required=True, choices=(14191,), help='Fixed researched protocol profile')
+    ap.add_argument('--host-version', type=int, required=True, choices=(14191, 14192), help='Explicit verified protocol profile')
     ap.add_argument('--output', type=Path, required=True)
     ap.add_argument('--seconds', type=int, default=300, choices=range(1, 14401), metavar='1..14400')
     ap.add_argument('--offset', type=int, default=120, choices=range(0, 3601), metavar='0..3600')
@@ -658,7 +673,8 @@ def main():
                 try: action()
                 except BaseException: finalization.append(stage)
         report['finalization_failures'] = finalization
-        report['outcome'] = 'failed' if failure or finalization else 'incomplete'
+        report['outcome'] = ('failed' if failure or finalization else
+                             'closed' if report.get('reason') == 'source-hltv-stop' else 'incomplete')
         report['report_written'] = False
         try:
             with private_file(args.output / 'report.json', 'w') as handle:
@@ -669,7 +685,7 @@ def main():
             report['finalization_failures'].append('write-report')
             report['outcome'] = 'failed'
         print(json.dumps(report), file=sys.stderr if args.managed or report['outcome'] == 'failed' else sys.stdout)
-    return 1 if report['outcome'] == 'failed' else 2
+    return 1 if report['outcome'] == 'failed' else 0 if report['outcome'] == 'closed' else 2
 
 
 if __name__ == '__main__':

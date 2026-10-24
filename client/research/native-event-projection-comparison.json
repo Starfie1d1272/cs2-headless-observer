@@ -1,5 +1,5 @@
 {
-  "checks": 20,
+  "checks": 30,
   "passed": true,
-  "scope": "Strict native event identity, distinct17/10-bit serial domains and unknown fallback; synthetic fixtures only"
+  "scope": "Independent controller and strict full native pawn identity; distinct17/10-bit serial domains and unknown fallback; synthetic fixtures only"
 }
