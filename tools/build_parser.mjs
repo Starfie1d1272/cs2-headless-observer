@@ -4,6 +4,7 @@ import { basename, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import {
+  cpSync,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -31,6 +32,8 @@ if (execFileSync('git', ['-C', source, 'status', '--porcelain'], { encoding: 'ut
 const patch = readFileSync(resolve(repo, 'patches/cs2parser-online.patch'), 'utf8').replaceAll('\r\n', '\n');
 execFileSync('git', ['-C', source, 'apply', '--check', '--unidiff-zero', '-'], { input: patch });
 execFileSync('git', ['-C', source, 'apply', '--unidiff-zero', '-'], { input: patch });
+// Project-owned parser sources have one editable owner; only upstream edits stay in the patch.
+cpSync(resolve(repo, 'parser/src'), resolve(source, 'src'), { recursive: true });
 if (!readFileSync(resolve(source, 'src/index.ts'), 'utf8').includes('ordinaryViewerProtocol = 2')) {
   throw new Error('Online parser capability is missing');
 }
