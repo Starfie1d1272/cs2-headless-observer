@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Starfie1d1272/cs2-headless-observer/schemas/managed-event.schema.json",
+  "title": "CS2 observer managed JSON record, contract 1",
+  "type": "object",
+  "required": [
+    "kind",
+    "source",
+    "channel",
+    "world",
+    "sequence"
+  ],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "channel": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "world": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "cursor"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "tick",
+          "tickInterval",
+          "map"
+        ],
+        "properties": {
+          "tick": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "tickInterval": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "map": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "discontinuity"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "raw-event"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "name",
+          "fields",
+          "players",
+          "pawns",
+          "committedTick",
+          "eventServerTick",
+          "identityResolved"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "object"
+          },
+          "players": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/player"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "pawns": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/entityHandle"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "committedTick": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "eventServerTick": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "identityResolved": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "entityHandle": {
+      "type": "object",
+      "required": [
+        "index",
+        "serial"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "serial": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "player": {
+      "type": "object",
+      "required": [
+        "domain",
+        "slot",
+        "steamId",
+        "userId",
+        "controller"
+      ],
+      "properties": {
+        "domain": {
+          "const": "player-controller-slot"
+        },
+        "slot": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "steamId": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,19}$"
+        },
+        "userId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "controller": {
+          "$ref": "#/$defs/entityHandle"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -18,7 +18,7 @@ external-node包使用调用方提供或PATH中的Node.js 24.0.0及以上版本�
 
 ## 支持范围
 
-原生桥 ABI 3、有序解析 IPC 3；显式支持 host 14191、14192。真实普通观众接入已在 CS2 build 10955 / host 14192 验证。其他 build 和来源需要单独验证。
+原生桥 ABI 3、有序解析 IPC 3；已验证 host 14191、14192。真实普通观众接入已在 CS2 build 10955 / host 14192 验证。其他 build 和来源需要单独验证。
 
 身份缺失保留未知；控制器 Steam 身份与可选 pawn 证明分别输出。事件接收时间不是画面时间。换图使用新 GOTV 地址和新来源实例。项目不承诺固定提前量，也不提供渲染或完整游戏模拟。
 
@@ -30,7 +30,7 @@ external-node包使用调用方提供或PATH中的Node.js 24.0.0及以上版本�
 
 - [构建](docs/build.md)、[验证](docs/verification.md)、[贡献说明](CONTRIBUTING.md)
 - [架构](docs/architecture.md)、[托管接口](docs/managed-interface.md)、[协议契约](docs/protocol/README.md)
-- [通用外部Node组件与独立研究包](docs/component-distribution.md)：共享运行时、随包安装及独立更新方案
+- [通用外部Node组件与独立包](docs/component-distribution.md)：共享运行时、随包安装及独立更新方案
 - [研究知识库与证据](research/README.md)、[历史归档](archive/README.md)
 - [第三方来源](THIRD_PARTY_NOTICES.md)、[许可证](LICENSE)
 

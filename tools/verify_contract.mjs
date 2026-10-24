@@ -1,0 +1,20 @@
+// Contract checks use actual exported synthetic records; no SDK or network.
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import Ajv2020 from 'ajv/dist/2020.js';
+import {Consumer} from '../examples/managed_consumer.mjs';
+const schema=JSON.parse(fs.readFileSync(new URL('../schemas/managed-event.schema.json',import.meta.url),'utf8'));
+const fixture=JSON.parse(fs.readFileSync(new URL('../examples/managed-events.json',import.meta.url),'utf8'));
+const validate=new Ajv2020({strict:false}).compile(schema);
+for(const row of fixture.records)assert.ok(validate(row),JSON.stringify(validate.errors));
+const cursor=fixture.records.find(x=>x.kind==='cursor');assert.ok(cursor);
+assert.equal(validate({...cursor,sequence:null}),false);
+assert.equal(validate({...cursor,tickInterval:0}),false);
+assert.equal(validate({...cursor,extraFutureField:true}),true);
+const owner=new Consumer(cursor.source);
+for(const row of fixture.records)owner.accept(row);
+owner.accept({kind:'discontinuity',source:cursor.source,channel:1,world:cursor.world+1,sequence:owner.sequence+1,reason:'synthetic-reset'});
+assert.equal(owner.ready,false);
+owner.accept({...cursor,sequence:owner.sequence+1});assert.equal(owner.ready,false);
+owner.accept({...cursor,world:cursor.world+1,sequence:owner.sequence+1});assert.equal(owner.ready,true);
+console.log(JSON.stringify({schemaFixtureRecords:fixture.records.length,passed:true}));

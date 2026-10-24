@@ -7,7 +7,9 @@
 
 启动器从 steam.inf 提供版本建议，实际填写值以游戏 version 输出为准。支持范围见[兼容性](compatibility.md)。密码当前只支持不含 NUL 的 ASCII 字节，最长 95 字节；空密码可以显式输入。
 
-Start.cmd 默认运行 300 秒。运行结果位于 runs/<UTC时间>/：report.json、events.jsonl 和 channel.frames。后两项含源数据，默认留本机。channel.frames 是应用通道记录，不是游戏原生 Demo。
+Start.cmd 默认持续运行，直到 Ctrl+C、来源结束或失败；不再有五分钟默认停止或四小时上限。运行结果位于 runs/<UTC时间>/，默认只保存 report.json，事件由 stdout 输出。需要限定诊断时长时显式传入 --seconds <正整数>。
+
+源码交互驱动可用 --capture 选择本机原始采集，events.jsonl 与 channel.frames 合计默认最多 256 MiB，可用 --capture-budget-mib 调整。达到预算后停止写入采集文件，观战继续，report.capture.truncated 为 true。采集是完整记录边界上的前缀，不是滚动录像；channel.frames 是应用通道记录，不是游戏原生 Demo。托管模式禁止原始采集。
 
 Ctrl+C 请求清理。由应用托管时通过关闭 stdin 请求停止，详见[托管接口](managed-interface.md)。
 
@@ -19,8 +21,7 @@ Ctrl+C 请求清理。由应用托管时通过关闭 stdin 请求停止，详见
 | 1 | 失败，包括清理或报告写入失败 |
 | 2 | 已启动会话的不完整停止；也可能是参数用法错误，需结合报告和stderr判断 |
 
-FULL 只表示处理过符合条件的完整快照；不代表任意赛事功能或任意来源验收通过。检查 reason、outcome、finalization_failures、解析检查点和实际事件。现有 online_success=INCONCLUSIVE 字段不代替独立验收记录。
-report.json 内 report_written 可能仍为 false；进程最后输出的报告才记录写入完成状态。
+FULL 只表示处理过符合条件的完整快照；不代表任意赛事功能或任意来源验收通过。检查 reason、outcome、finalization_failures、解析检查点和实际事件。报告 schema 为 cs2-observer-report/1：reachedFull 表示本次运行曾到达 FULL，lastProcessedSequence 是内部已处理消息序号，lastOutputSequence 是公共输出序号；drainCompleted 表示正常来源结束的尾队列已排空，cleanupCompleted 表示各项清理完成。报告原子写入，reportWritten 表示写入成功；写入失败只可能在最终 stderr 报告中说明。不要用单一字段代替验收。
 
 ## 离线重放
 

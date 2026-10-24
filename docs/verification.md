@@ -23,3 +23,5 @@ research/data、research/evidence 与协议文档只读；检查前后摘要必�
 - 本机真实捕获可用 client/replay_ordered.py 做回归，不提交原始素材，也不将离线结果称为新在线连接。
 
 公开 Demo fixture 的固定来源、SHA-256 和历史 oracle 说明保留在[历史客户端说明](../archive/docs/client-README.md)。本轮不把网络下载作为默认回归前置条件。
+
+默认验证还覆盖托管 JSON Schema、消费者世界代际、缓冲配置后立即停止、输出管道堵塞与关闭、驱动强杀后的解析器回收。需要本机合法 Steam 和游戏 DLL 时，可运行 `python tools/verify_sdk_drain.py --help`，以官方 SDK 本地 socket pair 检查关闭后尾消息仍可读取；该测试不连接比赛，不等同 GOTV 在线验收。

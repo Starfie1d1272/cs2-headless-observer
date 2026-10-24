@@ -1,0 +1,49 @@
+{
+  "provenance": "WHOLLY_SYNTHETIC_NO_MATCH_NO_PLAYER_DATA",
+  "records": [
+    {
+      "kind": "cursor",
+      "tick": 100,
+      "tickInterval": 0.015625,
+      "map": "de_test",
+      "warmup": null,
+      "round": null,
+      "weapon": null,
+      "actor": null,
+      "target": null,
+      "source": "offline:channel-replay",
+      "channel": 1,
+      "world": 1,
+      "sequence": 1,
+      "descriptorGeneration": null,
+      "eventServerTick": null,
+      "networkTick": 100,
+      "identityResolved": false
+    },
+    {
+      "kind": "round_freeze_end",
+      "type": "raw-event",
+      "name": "round_freeze_end",
+      "fields": {},
+      "players": {},
+      "pawns": {},
+      "committedTick": 100,
+      "tick": 100,
+      "tickInterval": 0.015625,
+      "map": "de_test",
+      "warmup": null,
+      "round": null,
+      "weapon": null,
+      "actor": null,
+      "target": null,
+      "source": "offline:channel-replay",
+      "channel": 1,
+      "world": 1,
+      "sequence": 2,
+      "descriptorGeneration": 1,
+      "eventServerTick": null,
+      "networkTick": 100,
+      "identityResolved": false
+    }
+  ]
+}

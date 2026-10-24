@@ -4,7 +4,7 @@
 
 | 包 | 使用方式 |
 | --- | --- |
-| standalone-research | 自带Python、Node和交互入口，解压运行Start.cmd；Replay.cmd执行完全合成的离线自检 |
+| standalone | 自带Python、Node和交互入口，解压运行Start.cmd；Replay.cmd执行完全合成的离线自检 |
 | external-node | 自带Python、原生桥和worker，由任意应用托管；调用方提供Node，或使用PATH |
 
 最低外部运行要求为Node.js 24.0.0；不绑定小版本、安装来源或二进制哈希。启动前检查版本和必要能力；包验证还执行实际worker的离线自检。当前验证过的运行时写入验证报告，测试清单不作为允许列表。未来版本仍需满足接口和能力要求。
@@ -21,12 +21,12 @@ python tools/verify_package.py dist/observer-external-node --node <node.exe> --r
 ```
 
 external-node组装不需要安装Node，也不读取Node归档。验证可用--node选择运行时，省略时从PATH查找。
-省略--kind生成独立研究包，此时需要固定Python和Node归档。两种包都使用client/cs2_observer.dll，运行接口见[托管协议](managed-interface.md)。
+省略--kind生成独立包，此时需要固定Python和Node归档。两种包都使用client/cs2_observer.dll，运行接口见[托管协议](managed-interface.md)。
 
 ## 文件和版本
 
-manifest.json包含包格式、发行版本、源码提交、平台、ABI3、内部IPC3、托管JSON契约1、支持host、最低Node要求及全文件摘要。
-源码、接口、CS2兼容与运行时版本独立表达。未知CS2 host仍拒绝；Node的小版本变化不直接要求观察器更新。
+manifest.json包含包格式、发行版本、源码提交、平台、ABI3、内部IPC3、托管JSON契约1、已验证host、最低Node要求及全文件摘要。
+源码、接口、CS2兼容与运行时版本独立表达。host版本接受非零uint32，清单validatedHostVersions记录实测范围；Node的小版本变化不直接要求观察器更新。
 若解码编码、初始化或身份规则变化，按实际受影响部分适配并验证。收到动态schema不等于支持所有未来协议。
 
 文件布局：

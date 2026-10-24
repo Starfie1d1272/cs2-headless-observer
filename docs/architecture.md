@@ -19,3 +19,5 @@ client/replay_ordered.py 复用同一个 ObserverDriver 和 OrderedParserBridge�
 tools/demo/ 是辅助文件解析路线，使用发布版解析器；archive/parser-v1/ 保留退出默认流程的 Demo 包装 IPC 原型。不能把两者当成当前有序 worker 的输入格式。
 
 协议规则见[契约索引](protocol/README.md)，上游改动见[补丁说明](../patches/README.md)。
+
+生产驱动只解析初始化和传输所需控制消息；schema、类表、字符串表、实体与事件由唯一 Node 数据面解释器拥有。旧 Python 消息级解释器位于 tools/diagnostics/，不在运行时模块清单。公共序号由驱动在最终输出边界分配，与内部解析回执序号分离。输入由同一读取线程处理配置和停止；输出有界、可取消，不能因消费者不读管道阻塞 SDK 清理。

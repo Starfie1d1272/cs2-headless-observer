@@ -48,7 +48,7 @@ def main():
     with (args.output / 'events.jsonl').open('x', encoding='utf8') as events:
         def emit(row):
             counts[row['kind']] = counts.get(row['kind'], 0) + 1
-            events.write(json.dumps(row) + '\n')
+            events.write(__import__('process_io').encode_record(row).decode('utf-8'))
 
         driver = ObserverDriver(OfflinePort(), host_version=args.host_version,
                                 password=bytearray(), emit=emit, parser=parser)
@@ -70,10 +70,11 @@ def main():
                     driver.receive(body, bool(reliable), elapsed)
                     deadline = time.monotonic() + 15
                     while parser.completed_sequence < driver._parser_sequence:
-                        parser.poll(emit)
+                        parser.poll(driver.emit)
                         if time.monotonic() >= deadline:
                             raise TimeoutError('replay-parser-timeout')
-                        time.sleep(.0005)
+                        if parser.completed_sequence < driver._parser_sequence:
+                            parser.wait_for_progress()
                     driver._advance_initialization(elapsed)
                     driver._send_processed_tick(elapsed)
                     frames += 1

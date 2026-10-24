@@ -6,6 +6,7 @@ user ticket -> known-password connect -> channel receive -> live message consume
 Requests full schema at NEW and initializes the event-only network world before SPAWN.
 """
 import argparse
+from collections import deque
 import getpass
 import hashlib
 import ipaddress
@@ -19,10 +20,11 @@ import time
 from channel import decode_frame, messages, UnreliableOrder, UnreliableFeedback, encode_message, reliable_frame, ReliableMessageFilter, join_messages
 from handshake import (SignonSequence, connect_inner_message, connect_payload,
                        initial_challenge_request, parse_challenge_body, parse_connection_inner, uint, number)
-from live import LiveDecoder, client_info, int32
+from control import ControlDecoder, client_info, int32
 from observer_settings import ObserverSettings
 from password import transform_password
 from wire import ProbeError, fields, scalar
+from process_io import PublicRecords, ManagedOwner, OutputWriter, encode_record
 
 MAGIC = b'MZRCS2\x01\0'
 
@@ -53,12 +55,13 @@ class ObserverDriver:
         self._query_window_ms = now_ms
         self._query_count = 0
         self._new_sent = False
-        self.parser, self.emit = parser, emit
+        self.parser, self.emit = parser, PublicRecords(emit)
         self._parser_sequence = 0
         self._prespawn_sent = False
         self._spawn_sent = False
         self._full_snapshot_processed = False
         self._full_sent = False
+        self._ever_full = False
         self._recovery_pending = False
         self._request_full_update = False
         self._full_update_outstanding = False
@@ -68,7 +71,7 @@ class ObserverDriver:
         self._processed_entity_tick = None
         self._ack_tick = None
         self._last_receipt_ms = now_ms
-        self.decoder, self.signon = LiveDecoder((lambda _: None) if parser else emit), SignonSequence()
+        self.decoder, self.signon = ControlDecoder(), SignonSequence()
         self.order = UnreliableOrder(initial=0)
         self.feedback = UnreliableFeedback()
         self.reliable_filter = ReliableMessageFilter()
@@ -79,7 +82,9 @@ class ObserverDriver:
         self.start_ms, self.last_ms, self.deadline = now_ms, now_ms, now_ms + 30000
         self.received, self.channel_frames, self.channel_bytes = 0, 0, 0
         self.first_channel_ms = self.last_channel_ms = None
-        self.stages = [{'stage': 'transport', 'elapsed_ms': 0}]
+        self.stages = deque([{'stage': 'transport', 'elapsed_ms': 0}], maxlen=512)
+        self._drain_deadline = None
+        self.drain_completed = False
         self.native_state = None
         self.initialization_deadline = now_ms + 30000
 
@@ -93,23 +98,23 @@ class ObserverDriver:
         if now_ms < self.last_ms:
             raise DriverError('monotonic-clock-regressed')
         self.last_ms = now_ms
-        if now_ms >= self.deadline:
+        if self._drain_deadline is not None and now_ms >= self._drain_deadline:
+            raise DriverError('source-drain-timeout')
+        if self._drain_deadline is None and now_ms >= self.deadline:
             raise DriverError('phase-timeout')
         self.port.pump(now_ms)
+        if self._drain_deadline is not None and getattr(self.port, 'failure', 7) != 7:
+            raise DriverError('source-drain-native-failed')
         if self.port.state != self.native_state:
             self.native_state = self.port.state
             self.stages.append({'stage': 'sdk-state', 'value': self.native_state, 'elapsed_ms': now_ms - self.start_ms})
-        if self.port.state == 6:
-            if getattr(self.port, 'remote_end_reason', None) == 1038 and self._full_sent:
-                self.phase, self.reason = 'closed', 'source-hltv-stop'
-                self._processed_entity_tick = None
-                self.stages.append({'stage': 'source-ended', 'remote_end_reason': 1038,
-                                    'elapsed_ms': now_ms - self.start_ms})
-                identity = self.parser.identity if self.parser is not None else {}
-                self.emit(dict(kind='discontinuity', reason=self.reason, **identity,
-                               **({'sequence': self._parser_sequence} if self.parser is not None else {})))
-                return
-            raise DriverError('native-session-closed')
+        if self.port.state == 6 and self._drain_deadline is None:
+            if (getattr(self.port, 'remote_end_reason', None) == 1038 and self._full_sent
+                    and getattr(self.port, 'failure', 7) == 7):
+                self.phase = 'draining'
+                self._drain_deadline = now_ms + 5000
+            else:
+                raise DriverError('native-session-closed')
         if self.phase == 'channel' and not self._full_sent and now_ms >= self.initialization_deadline:
             raise DriverError('initialization-timeout')
         if self.phase == 'transport' and self.port.state == 3:
@@ -124,16 +129,18 @@ class ObserverDriver:
             self.stages.append({'stage': self.phase, 'elapsed_ms': now_ms - self.start_ms})
         if self.parser is not None:
             self.parser.poll(self.emit)
+        transport_empty = False
         pumped_bytes = 0
         for _ in range(128):  # Bound work per callback pump; do not starve deadlines.
             if pumped_bytes >= 8 * 1024**2:
                 break
             if self.parser is not None:
-                processed = self.parser.checkpoint['sequence'] if self.parser.checkpoint else 0
+                processed = self.parser.completed_sequence
                 if self._parser_sequence - processed >= 4:
                     break  # Leave transport messages queued while the parser catches up.
             message = self.port.receive()
             if message is None:
+                transport_empty = True
                 break
             self.received += 1
             pumped_bytes += len(message[0])
@@ -142,8 +149,14 @@ class ObserverDriver:
                 break
         if self.parser is not None and not self.done:
             self.parser.poll(self.emit)
-            self._advance_initialization(now_ms)
-            self._send_processed_tick(now_ms)
+            if self._drain_deadline is None:
+                self._advance_initialization(now_ms)
+                self._send_processed_tick(now_ms)
+            elif transport_empty and self.parser.completed_sequence >= self._parser_sequence:
+                self.drain_completed = True
+                self._processed_entity_tick = None
+                self.phase, self.reason = 'closed', 'source-hltv-stop'
+                self.emit(dict(kind='discontinuity', reason=self.reason, **self.parser.identity))
         if self.phase == 'channel' and now_ms - self._last_feedback_ms >= 100:
             encoded = b''
             if self._full_sent and not self._recovery_pending and self._processed_entity_tick is not None:
@@ -251,7 +264,7 @@ class ObserverDriver:
             self.stages.append({'stage': self.phase, 'elapsed_ms': now_ms - self.start_ms})
             self._challenge = None
             return
-        if self.phase != 'channel':
+        if self.phase not in ('channel', 'draining'):
             raise DriverError('unexpected-protocol-phase')
         if not reliable and data.startswith((b'\xff\xff\xff\xffA', b'\xff\xff\xff\xffB')):
             return  # Late handshake response on this already-authenticated connection.
@@ -284,7 +297,7 @@ class ObserverDriver:
             if not self.reliable_filter.accept(message.message_id, message.body):
                 continue
             decoded.append(message)
-            if message.message_id == 58:
+            if message.message_id == 58 and self._drain_deadline is None:
                 if now_ms - self._query_window_ms >= 1000:
                     self._query_window_ms, self._query_count = now_ms, 0
                 self._query_count += 1
@@ -303,7 +316,7 @@ class ObserverDriver:
                 if state == 7:
                     self._reset_world_protocol(now_ms, replace_client=True)
                     actions.extend([('reset',), ('admit', 0)])
-                if state in (2, 7):
+                if state in (2, 7) and self._drain_deadline is None:
                     self._send_connected_ack(now_ms)
             else:
                 self.decoder.consume(message.message_id, message.body)
@@ -319,12 +332,10 @@ class ObserverDriver:
             if getattr(self.parser, 'ordered', False):
                 self._parser_sequence = self.parser.submit_batch(actions)
             else:
-                if any(action[0] == 'reset' or (action[0] == 'message' and action[1] == 51) for action in actions):
-                    raise DriverError('legacy-parser-cannot-cross-world-boundary')
-                accepted_body, _ = join_messages([encode_message(message.message_id, message.body) for message in decoded])
-                self._parser_sequence = self.parser.submit(accepted_body)
+                raise DriverError('ordered-parser-required')
 
-        self._advance_initialization(now_ms)
+        if self._drain_deadline is None:
+            self._advance_initialization(now_ms)
 
     def _reset_world_protocol(self, now_ms, replace_client=False):
         # Preserve the actual SDK channel, transport counters and callback loop.
@@ -350,7 +361,7 @@ class ObserverDriver:
 
     def _advance_initialization(self, now_ms):
         checkpoint = self.parser.checkpoint if self.parser else None
-        if self.parser and (not checkpoint or checkpoint['sequence'] < self._parser_sequence):
+        if self.parser and self.parser.completed_sequence < self._parser_sequence:
             return
         if getattr(self.parser, 'ordered', False):
             subscriptions = self.parser.pop_subscriptions()
@@ -372,7 +383,7 @@ class ObserverDriver:
                 raise DriverError('new-before-serverinfo')
             # Empty-table NEW can request the full schema immediately. Existing
             # tables need their callbacks consumed before this transition.
-            if self.decoder.tables and (not checkpoint or checkpoint['stringTables'] != len(self.decoder.tables)):
+            if self.parser and not checkpoint:
                 self.phase, self.reason = 'blocked', 'new-string-table-callbacks-required'
                 return
             info = client_info(server_count=self.signon.spawn_count,
@@ -388,7 +399,7 @@ class ObserverDriver:
                                 'elapsed_ms': now_ms - self.start_ms})
         elif self.signon.state == 4 and not self._prespawn_sent:
             if (not checkpoint or not checkpoint['serverInfo'] or checkpoint['schemaFields'] == 0
-                or not self.decoder.classes):
+                or not checkpoint.get('classCount')):
                 self.phase, self.reason = 'blocked', 'prespawn-initialization-required'
                 return
             message_id, payload = self.signon.acknowledgement()
@@ -422,6 +433,7 @@ class ObserverDriver:
             encoded, _ = encode_message(message_id, payload)
             self.port.send(reliable_frame(encoded, 0), 8)
             self._full_sent = True
+            self._ever_full = True
             self.stages.append({'stage': 'sent-full', 'source': 'processed-full-snapshot', 'elapsed_ms': now_ms - self.start_ms})
 
     def _send_processed_tick(self, now_ms):
@@ -451,8 +463,6 @@ class ObserverDriver:
             if self.signon.state == 5:
                 self.signon.finish_full_snapshot()
             self._acknowledge_full(now_ms)
-        if not self._full_sent:
-            return
         if self._recovery_pending:
             if self._request_full_update and not self._full_update_outstanding:
                 encoded, _ = encode_message(4, number(1, 0xffffffff))
@@ -491,17 +501,19 @@ class ObserverDriver:
                 'channel_receive_span_ms': span, 'received_signon_state': self.signon.received_state,
                 'effective_signon_state': self.signon.state,
                 'full_snapshot_processed': self._full_snapshot_processed,
-                'stages': self.stages,
+                'stages': list(self.stages), 'reachedFull': self._ever_full,
+                'lastProcessedSequence': self.parser.completed_sequence if self.parser else 0,
+                'lastOutputSequence': self.emit.sequence, 'drainCompleted': self.drain_completed,
                 'parser_checkpoint': self.parser.checkpoint if self.parser else None,
                 'parser_failure': getattr(self.parser, 'failure_details', None),
+                'parserDiagnostics': list(getattr(self.parser, 'diagnostics', [])),
                 'last_processed_entity_tick': self._processed_entity_tick,
                 'last_acknowledged_entity_tick': self._ack_tick,
                 'full_update_requests': self._recovery_requests, 'baseline_ack_count': self._baseline_ack_count,
                 'net_message_counts': self.decoder.counts,
                 'initialization_blockers': ([] if self._full_sent else
                     [self.reason or 'signon-in-progress']),
-                'ordinary_viewer_handshake': 'INCONCLUSIVE', 'live_continuous_receipt': 'INCONCLUSIVE',
-                'online_success': 'INCONCLUSIVE'}
+}
 
     def close(self):
         self._password[:] = bytes(len(self._password))
@@ -513,18 +525,33 @@ class ObserverDriver:
 
 def private_file(path, mode):
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    return os.fdopen(fd, mode)
+    return os.fdopen(fd, mode, **({'encoding': 'utf-8', 'newline': '\n'} if 'b' not in mode else {}))
+
+
+class CaptureBudget:
+    def __init__(self, maximum=256 * 1024**2):
+        self.maximum, self.written, self.truncated = maximum, 0, False
+
+    def claim(self, size):
+        if self.truncated or self.written + size > self.maximum:
+            self.truncated = True
+            return False
+        self.written += size
+        return True
 
 
 class SampleWriter:
-    """Private local channel sample, no endpoint/handshake/auth or packet printouts."""
-    def __init__(self, handle):
-        self.handle = handle
-        handle.write(MAGIC)
+    """Opt-in bounded channel capture; no endpoint, handshake or authentication bytes."""
+    def __init__(self, handle, budget=None):
+        self.handle, self.budget = handle, budget or CaptureBudget()
+        if self.budget.claim(len(MAGIC)):
+            handle.write(MAGIC)
 
     def __call__(self, data, reliable, elapsed_ms):
-        decode_frame(data, gns_reliable=reliable)  # Reject all connectionless/auth inputs.
-        self.handle.write(struct.pack('<IQB', len(data), elapsed_ms, int(reliable)) + data)
+        decode_frame(data, gns_reliable=reliable)
+        frame = struct.pack('<IQB', len(data), elapsed_ms, int(reliable)) + data
+        if self.budget.claim(len(frame)):
+            self.handle.write(frame)
 
 
 def connection_values(endpoint, supplied):
@@ -558,142 +585,141 @@ def read_managed_connection(stream):
         raise ValueError('configuration-boundary') from None
 
 
-class ManagedOwner:
-    """Poll only the owned stdin pipe; never leave a blocking reader at exit."""
-    def __init__(self, fd):
-        self.fd = fd
-        self.stopped = False
-        self.peek = None
-        if fd is not None and os.name == 'nt':
-            import ctypes
-            import msvcrt
-            from ctypes import wintypes
-            self.handle = msvcrt.get_osfhandle(fd)
-            self.available = wintypes.DWORD()
-            self.peek = ctypes.WinDLL('kernel32', use_last_error=True).PeekNamedPipe
-            self.peek.argtypes = [wintypes.HANDLE, wintypes.LPVOID, wintypes.DWORD,
-                                  wintypes.LPVOID, ctypes.POINTER(wintypes.DWORD), wintypes.LPVOID]
-            self.peek.restype = wintypes.BOOL
-
-    def is_set(self):
-        if self.stopped or self.fd is None:
-            return self.stopped
-        try:
-            if self.peek is not None:
-                import ctypes
-                # No concurrent reader and no consuming read on this synchronous pipe.
-                ok = self.peek(self.handle, None, 0, None, ctypes.byref(self.available), None)
-                self.stopped = not ok or self.available.value != 0
-            else:
-                import select
-                # After the single configuration line, EOF or extra input both stop.
-                self.stopped = bool(select.select([self.fd], [], [], 0)[0])
-        except OSError:
-            self.stopped = True
-        return self.stopped
-
 
 def main():
+    from host_version import host_version, discover_host
+    def positive(value):
+        result = int(value)
+        if result < 1:
+            raise ValueError('positive-integer-required')
+        return result
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--native', type=Path, required=True)
     ap.add_argument('--steam-api', type=Path)
-    ap.add_argument('--node', default='node', help='Node runtime for the ordered entity parser')
+    ap.add_argument('--node', default='node')
     ap.add_argument('--parser-worker', type=Path, default=Path(__file__).with_name('parser_worker.mjs'))
     ap.add_argument('--source-role', choices=('ahead', 'delayed'), default='ahead')
-    from uuid import UUID
+    from uuid import UUID, uuid4
     ap.add_argument('--source-id', type=lambda value: UUID(value).hex)
-    ap.add_argument('--managed', action='store_true', help='Private stdin connection; event-only stdout; no channel/event capture')
-    ap.add_argument('--host-version', type=int, required=True, choices=(14191, 14192), help='Explicit verified protocol profile')
+    ap.add_argument('--managed', action='store_true')
+    ap.add_argument('--host-version', type=host_version, help='Actual source host; otherwise suggest from local steam.inf')
     ap.add_argument('--output', type=Path, required=True)
-    ap.add_argument('--seconds', type=int, default=300, choices=range(1, 14401), metavar='1..14400')
-    ap.add_argument('--offset', type=int, default=120, choices=range(0, 3601), metavar='0..3600')
+    ap.add_argument('--seconds', type=positive, help='Explicit diagnostic duration; default runs until stop/source end')
+    ap.add_argument('--capture', action='store_true', help='Opt in to private raw/event capture; unavailable in managed mode')
+    ap.add_argument('--capture-budget-mib', type=positive, default=256)
     args = ap.parse_args()
+    if args.managed and args.capture:
+        ap.error('Managed mode never captures raw traffic or event files')
+    if args.host_version is None:
+        try:
+            args.host_version = discover_host(args.steam_api.resolve().parents[2] / 'csgo/steam.inf')
+        except (ValueError, OSError, AttributeError, IndexError):
+            ap.error('Supply the actual source --host-version; local version discovery unavailable')
     from node_runtime import inspect_node
-    try:
-        inspect_node(args.node)
-    except ValueError as error:
-        raise SystemExit(str(error)) from None
-    # The managed owner supplies secrets through stdin, never process arguments.
+    inspect_node(args.node)
+    owner = ManagedOwner(stream=sys.stdin.buffer, configuration_reader=read_managed_connection) if args.managed else ManagedOwner()
+    password = bytearray()
     try:
         if args.managed:
-            endpoint, password = read_managed_connection(sys.stdin.buffer)
+            endpoint, password = owner.configuration()
         else:
-            endpoint, password = connection_values(
-                getpass.getpass('Authorized GOTV numeric IP:port (hidden): '),
-                getpass.getpass('Existing ordinary spectator password (ASCII subset, hidden): '))
+            endpoint, password = connection_values(getpass.getpass('Authorized GOTV numeric IP:port: '),
+                getpass.getpass('Ordinary spectator password: '))
     except ValueError:
+        owner.close()
         raise SystemExit('configuration-boundary') from None
-    if not 0 < args.host_version <= 0xffffffff or len(password) > 95 or 0 in password:
+    try:
+        args.output.mkdir(mode=0o700)
+    except OSError:
         password[:] = bytes(len(password))
-        raise SystemExit('configuration-boundary')
-    args.output.mkdir(mode=0o700)
-    owner_stopped = ManagedOwner(sys.stdin.fileno() if args.managed else None)
-    driver = native = events = samples = parser = None
-    report, failure = {'online_success': 'INCONCLUSIVE', 'offset_seconds': args.offset}, None
-    finalization = []
+        owner.close()
+        raise SystemExit('output-directory-unavailable') from None
+    driver = native = parser = samples = events = writer = None
+    budget = CaptureBudget(args.capture_budget_mib * 1024**2)
+    report, failure, finalization = {'schema': 'cs2-observer-report/1', 'reachedFull': False, 'drainCompleted': False, 'lastProcessedSequence': 0}, None, []
     def clock(): return time.monotonic_ns() // 1000000
     try:
-        from sdk import NativePort, NativeStartError
-        events = sys.stdout if args.managed else private_file(args.output / 'events.jsonl', 'w')
-        samples = None if args.managed else private_file(args.output / 'channel.frames', 'wb')
+        from sdk import NativePort
         from ordered_parser_bridge import OrderedParserBridge
-        from uuid import uuid4
-        parser = OrderedParserBridge(source=args.source_role + ':' + (args.source_id or uuid4().hex), channel=1, world=1,
-                                     node=args.node, worker=args.parser_worker)
-        if owner_stopped.is_set():
+        writer = OutputWriter(sys.stdout.fileno())
+        if args.capture:
+            events = private_file(args.output / 'events.jsonl', 'wb')
+            samples = private_file(args.output / 'channel.frames', 'wb')
+        parser = OrderedParserBridge(source=args.source_role + ':' + (args.source_id or uuid4().hex),
+            channel=1, world=1, node=args.node, worker=args.parser_worker)
+        if owner.is_set():
             raise KeyboardInterrupt()
         native = NativePort(args.native, endpoint, clock(), steam_api=args.steam_api)
         del endpoint
         def emit_event(event):
-            events.write(json.dumps(event) + '\n')
-            if args.managed:
-                events.flush()
-        driver = ObserverDriver(native, host_version=args.host_version, password=password,
-            emit=emit_event, capture=SampleWriter(samples) if samples else None, now_ms=clock(), parser=parser)
-        stop = clock() + args.seconds * 1000
-        while not driver.done and clock() < stop and not owner_stopped.is_set():
+            writer.emit(event)
+            if events:
+                data = encode_record(event)
+                if budget.claim(len(data)):
+                    events.write(data)
+        driver = ObserverDriver(native, host_version=args.host_version, password=password, emit=emit_event,
+            capture=SampleWriter(samples, budget) if samples else None, now_ms=clock(), parser=parser)
+        stop = clock() + args.seconds * 1000 if args.seconds else None
+        while not driver.done and (stop is None or clock() < stop) and not owner.is_set():
+            writer.check()
             driver.step(clock())
             time.sleep(.01)
         if not driver.done:
-            driver.reason = 'owner-stopped' if owner_stopped.is_set() else 'duration-limit-incomplete'
+            driver.reason = 'owner-stopped' if owner.is_set() else 'duration-limit-incomplete'
         report.update(driver.report())
     except BaseException as error:
-        if isinstance(error, KeyboardInterrupt) and owner_stopped.is_set():
+        if driver is not None:
+            report.update(driver.report())
+        if isinstance(error, KeyboardInterrupt):
+            owner.stopped.set()
             report['reason'] = 'owner-stopped'
         else:
-            # Never print exception text/tracebacks: SDK/source/password data may be present.
             failure = str(error) if isinstance(error, (DriverError, ProbeError)) else 'interrupted' if isinstance(error, KeyboardInterrupt) else 'operation-failed-details-omitted'
             if type(error).__name__ == 'NativeStartError':
                 failure = 'native-start-failed'
                 report['native_boot_code'], report['steam_init_result'] = error.boot_code, error.init_result
-            if driver is not None:
-                report.update(driver.report())
-            report.update(outcome='failed', reason=failure)
+            report['reason'] = failure
     finally:
         password[:] = bytes(len(password))
         for stage, action in [('close-session', driver.close if driver else native.close if native else None),
-                              ('close-parser', parser.close if parser else None),
-                              ('close-events', events.close if events and events is not sys.stdout else None),
-                              ('close-samples', samples.close if samples else None)]:
+                ('close-parser', parser.close if parser else None), ('close-events', events.close if events else None),
+                ('close-samples', samples.close if samples else None)]:
             if action:
                 try: action()
                 except BaseException: finalization.append(stage)
-        report['finalization_failures'] = finalization
-        report['outcome'] = ('failed' if failure or finalization else
-                             'closed' if report.get('reason') == 'source-hltv-stop' else 'incomplete')
-        report['report_written'] = False
+        if writer:
+            completed = writer.abort() if failure or owner.is_set() else writer.finish()
+            if not completed:
+                finalization.append('close-output')
+        if not owner.close():
+            finalization.append('close-input')
+        report.update(finalization_failures=finalization, cleanupCompleted=not finalization,
+            capture={'enabled': args.capture, 'bytes': budget.written, 'budget': budget.maximum, 'truncated': budget.truncated})
+        report['outcome'] = 'failed' if failure or finalization else 'closed' if report.get('reason') == 'source-hltv-stop' else 'incomplete'
+        if len(json.dumps(report).encode()) > 30000:
+            report['stages'] = report.get('stages', [])[-32:]
+            report['net_message_counts'] = dict(list(report.get('net_message_counts', {}).items())[:128])
+            report['diagnosticTruncated'] = True
+        report['reportWritten'] = True
+        temporary = args.output / 'report.json.tmp'
         try:
-            with private_file(args.output / 'report.json', 'w') as handle:
-                # stdout is the final authority for report-written status after close.
-                json.dump(report, handle, indent=2); handle.write('\n')
-            report['report_written'] = True
+            with private_file(temporary, 'w') as handle:
+                json.dump(report, handle, indent=2, ensure_ascii=False)
+                handle.write('\n')
+            temporary.replace(args.output / 'report.json')
         except BaseException:
-            report['finalization_failures'].append('write-report')
-            report['outcome'] = 'failed'
-        print(json.dumps(report), file=sys.stderr if args.managed or report['outcome'] == 'failed' else sys.stdout)
+            report['reportWritten'] = False
+            finalization.append('write-report')
+            report.update(outcome='failed', cleanupCompleted=False)
+        # A consumer may also abandon stderr; never block process exit on the report pipe.
+        try:
+            terminal = OutputWriter(sys.stderr.fileno())
+            terminal.emit(report)
+            terminal.finish(timeout=1)
+        except (OSError, ProbeError, ValueError):
+            pass
     return 1 if report['outcome'] == 'failed' else 0 if report['outcome'] == 'closed' else 2
 
 
 if __name__ == '__main__':
     raise SystemExit(main())
-

@@ -40,14 +40,74 @@ class OrderedDriverTests(unittest.TestCase):
             self.step()
             if time.monotonic() > limit: self.fail('Expected synthetic transition did not complete')
             time.sleep(.005)
-    def initialize(self):
+    def initialize(self, serialized=None):
         self.send([(40, info()), (7, number(1, 3) + number(2, 7))])
         self.until(lambda: self.driver._new_sent)
-        self.send([(41, schema()), (42, blob(2, number(1, 0) + blob(3, b'Root'))), (44, table()),
+        self.send([(41, serialized if serialized is not None else schema()), (42, blob(2, number(1, 0) + blob(3, b'Root'))), (44, table()),
                    (7, number(1, 4) + number(2, 7))])
         self.until(lambda: self.driver._prespawn_sent)
         self.send([(7, number(1, 5) + number(2, 7))])
         self.until(lambda: self.driver._spawn_sent)
+    def test_normal_close_delivers_worker_tail_before_terminal(self):
+        self.initialize()
+        self.send([(4, number(1, 100)), (55, full(100))])
+        self.until(lambda: self.driver._full_sent)
+        descriptor = blob(1, number(1, 17) + blob(2, b'cs_win_panel_match'))
+        body, _ = join_messages([encode_message(205, descriptor), encode_message(207, number(2, 17))])
+        self.port.incoming.append((reliable_frame(body, 0), True))
+        self.port.state, self.port.remote_end_reason = 6, 1038
+        before = len(self.port.sent)
+        self.until(lambda: self.driver.done)
+        self.assertTrue(self.driver.drain_completed)
+        self.assertEqual(len(self.port.sent), before)
+        kinds = [row['kind'] for row in self.output]
+        self.assertEqual(kinds.count('cs_win_panel_match'), 1)
+        self.assertLess(kinds.index('cs_win_panel_match'), len(kinds) - 1)
+        self.assertEqual(kinds[-1], 'discontinuity')
+        self.assertEqual([r['sequence'] for r in self.output], list(range(1, len(self.output) + 1)))
+
+    def test_reset_at_frame_end_allows_next_serverinfo(self):
+        self.initialize()
+        self.send([(4, number(1, 100)), (55, full(100))])
+        self.until(lambda: self.driver._full_sent)
+        self.send([(7, number(1, 7) + number(2, 7))])
+        self.until(lambda: self.parser.completed_sequence == self.driver._parser_sequence)
+        self.assertIsNone(self.parser.checkpoint)
+        self.send([(40, info()), (7, number(1, 3) + number(2, 7))])
+        self.until(lambda: self.driver._new_sent)
+        self.assertTrue(all(isinstance(r['sequence'], int) for r in self.output))
+        self.assertTrue(any(r['kind'] == 'discontinuity' for r in self.output))
+
+    def test_first_full_waits_for_control_watermark_and_requests_recovery(self):
+        self.initialize()
+        future = full(100).replace(number(10, 0), number(10, 2), 1)
+        self.send([(4, number(1, 100)), (55, future)])
+        self.until(lambda: self.driver._full_update_outstanding)
+        self.assertFalse(self.driver._full_sent)
+        self.send([(11, number(1, 999) + number(3, 2))])
+        self.send([(4, number(1, 101)), (55, full(101).replace(number(10, 0), number(10, 2), 1))])
+        self.until(lambda: self.driver._full_sent)
+        self.assertEqual(self.driver._processed_entity_tick, 101)
+
+    def test_optional_serializer_version_uses_worker_default(self):
+        serialized = schema().replace(blob(1, number(1, 0) + number(2, 0) + number(3, 0)),
+                                      blob(1, number(1, 0) + number(3, 0)), 1)
+        self.initialize(serialized)
+        self.assertTrue(self.driver._spawn_sent)
+
+    def test_optional_event_type_does_not_invoke_legacy_probe(self):
+        self.initialize()
+        self.send([(4, number(1, 100)), (55, full(100))])
+        self.until(lambda: self.driver._full_sent)
+        descriptor = blob(1, number(1, 17) + blob(2, b'weapon_fire') + blob(3, number(1, 1) + blob(2, b'weapon')))
+        event = number(2, 17) + blob(3, blob(2, '中'.encode() * 2000))
+        self.send([(205, descriptor), (207, event)])
+        self.until(lambda: any(r['kind'] == 'weapon_fire' for r in self.output))
+        row = [r for r in self.output if r['kind'] == 'weapon_fire'][-1]
+        from process_io import encode_record
+        self.assertLess(len(encode_record(row)), 65536)
+        self.assertEqual(row['fields']['weapon'], '中' * 2000)
+
     def test_full_recovery_and_world_fencing(self):
         self.initialize()
         self.assertFalse(self.driver._full_sent)

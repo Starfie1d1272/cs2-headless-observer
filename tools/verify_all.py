@@ -90,6 +90,8 @@ def main():
             run(name[:-4], [node, '--import', 'tsx', ROOT/'tools/verification'/name, source])
         run('knowledge', [sys.executable, ROOT/'research/knowledge/validate.py', ROOT])
         run('repository-layout', [sys.executable, ROOT/'tools/check_layout.py'])
+        run('managed-contract', [node, ROOT/'tools/verify_contract.mjs'])
+        run('consumer-example', [sys.executable, ROOT/'examples/managed_consumer.py', '--help'])
         run('synthetic-replay', [sys.executable, ROOT/'tools/replay_example.py', '--worker', worker, '--node', node, '--output', out/'replay'])
     except (RuntimeError, OSError, subprocess.SubprocessError) as error:
         failure = str(error)

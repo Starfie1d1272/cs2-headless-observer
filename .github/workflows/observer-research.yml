@@ -1,4 +1,4 @@
-name: Observer Research Package
+name: Observer Windows Package
 on:
   workflow_dispatch:
 permissions:

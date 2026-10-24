@@ -1,7 +1,8 @@
+from ticket_lease import TicketLease
 """Synthetic protocol/schema and lifecycle tests; no real Steam tickets or GOTV sessions."""
 import struct
 import unittest
-from handshake import connect_inner_message, parse_connection_inner, signon_message_bits, Challenge, TicketLease, SignonSequence, connect_payload, parse_challenge_body, signon_payload
+from handshake import connect_inner_message, parse_connection_inner, signon_message_bits, Challenge, SignonSequence, connect_payload, parse_challenge_body, signon_payload
 from wire import fields, scalar
 
 

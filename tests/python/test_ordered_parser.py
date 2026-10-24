@@ -11,6 +11,39 @@ WORKER = os.environ.get('GOTV_ORDERED_WORKER')
 
 @unittest.skipUnless(WORKER, 'Set GOTV_ORDERED_WORKER to the locally built worker')
 class OrderedParserTests(unittest.TestCase):
+    def test_forced_parent_exit_reaps_the_owned_parser(self):
+        import sys
+        code = "from ordered_parser_bridge import OrderedParserBridge; import os,sys; b=OrderedParserBridge(source='synthetic-owner',channel=1,world=1,worker=os.environ['GOTV_ORDERED_WORKER']); print(b.process.pid,flush=True); sys.stdin.buffer.read()"
+        parent = subprocess.Popen([sys.executable, '-B', '-c', code], stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
+        try:
+            pid = int(parent.stdout.readline())
+            if os.name == 'nt':
+                import ctypes as c
+                from ctypes import wintypes as w
+                k=c.WinDLL('kernel32',use_last_error=True)
+                k.OpenProcess.argtypes=[w.DWORD,w.BOOL,w.DWORD];k.OpenProcess.restype=w.HANDLE
+                k.WaitForSingleObject.argtypes=[w.HANDLE,w.DWORD];k.CloseHandle.argtypes=[w.HANDLE]
+                handle=k.OpenProcess(0x100000,False,pid)
+                self.assertTrue(handle)
+                try:
+                    parent.kill();parent.wait(timeout=5)
+                    self.assertEqual(k.WaitForSingleObject(handle,5000),0)
+                finally:k.CloseHandle(handle)
+            else:
+                parent.kill();parent.wait(timeout=5)
+                # The parser also observes its owned stdin EOF on non-Windows hosts.
+                deadline=time.monotonic()+5
+                while time.monotonic()<deadline:
+                    try:os.kill(pid,0)
+                    except ProcessLookupError:break
+                    time.sleep(.01)
+                else:self.fail('Parser survived its owner')
+        finally:
+            if parent.poll() is None:parent.kill();parent.wait(timeout=5)
+            parent.stdin.close();parent.stdout.close();parent.stderr.close()
+
     def setUp(self):
         self.bridge = OrderedParserBridge(source='ahead', channel=1, world=1, worker=WORKER)
 

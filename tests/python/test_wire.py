@@ -4,7 +4,8 @@ import struct
 import tempfile
 import unittest
 from pathlib import Path
-from wire import fields, gns_metadata, inspect_pcap, payload_metadata
+from wire import fields
+from wire_probe import gns_metadata, inspect_pcap, payload_metadata
 
 
 class WireTest(unittest.TestCase):

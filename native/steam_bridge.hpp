@@ -38,7 +38,7 @@ class SteamBridge final : private Port {
   // GNS owns message ACK/reassembly/encryption; this supplies complete GNS messages,
   // NOT decoded Source 2 netchannel data. The consumer must not retain the span.
   int receive(const std::function<void(std::span<const std::uint8_t>, bool)>& consume) {
-    if (!transport_ready()) return 0;
+    if (!transport_ready() && !(remote_end_reason_ == 1038 && session_.connection())) return 0;
     SteamNetworkingMessage_t* message = nullptr;
     const int count = sockets_.ReceiveMessagesOnConnection(session_.connection(), &message, 1);
     if (count < 0) { session_.close(Failure::disconnected); return count; }
@@ -106,7 +106,8 @@ class SteamBridge final : private Port {
     } else if (callback->m_info.m_eState == k_ESteamNetworkingConnectionState_ClosedByPeer ||
                callback->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally) {
       remote_end_reason_ = callback->m_info.m_eEndReason;
-      session_.disconnected(callback->m_hConn);
+      // Retain queued inbound messages on normal source completion; owner closes after drain.
+      session_.disconnected(callback->m_hConn, remote_end_reason_ == 1038);
     }
   }
   ISteamUser& user_;

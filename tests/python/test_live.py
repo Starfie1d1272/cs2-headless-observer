@@ -2,7 +2,7 @@
 import struct
 import unittest
 from handshake import number, blob
-from live import LiveDecoder, client_info
+from live_probe import LiveDecoder, client_info
 from channel import encode_message, join_messages, messages, unreliable_frame, decode_frame
 from wire import fields, scalar
 

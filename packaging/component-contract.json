@@ -5,7 +5,7 @@
   "nativeAbi": 3,
   "parserIpc": 3,
   "managedProtocol": "cs2-observer-managed-json/1",
-  "supportedHostVersions": [
+  "validatedHostVersions": [
     14191,
     14192
   ],

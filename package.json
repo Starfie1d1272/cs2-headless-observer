@@ -15,10 +15,11 @@
     "cs2parser": "2.7.2"
   },
   "devDependencies": {
+    "@types/node": "26.6.4",
+    "ajv": "8.17.1",
     "esbuild": "0.28.2",
     "tsx": "4.23.15",
     "typescript": "npm:@typescript/typescript6@6.0.2",
-    "@types/node": "26.6.4",
     "vitest": "5.0.3"
   },
   "engines": {
