@@ -27,6 +27,35 @@ class Port:
 
 
 class DriverTest(unittest.TestCase):
+    def test_heartbeats_do_not_extend_first_snapshot_readiness_forever(self):
+        port = Port()
+        driver = ObserverDriver(port, host_version=14191, password=bytearray(), emit=lambda _: None)
+        driver.phase, driver.deadline = 'channel', 100000
+        with self.assertRaisesRegex(DriverError, 'initialization-timeout'):
+            driver.step(30000)
+        driver.close()
+
+    def test_hltv_stop_only_finishes_an_initialized_source(self):
+        for full, reason, normal in ((True, 1038, True), (False, 1038, False),
+                                     (True, 1000, False), (True, 0, False)):
+            with self.subTest(full=full, reason=reason):
+                port, output = Port(), []
+                port.state, port.remote_end_reason = 6, reason
+                driver = ObserverDriver(port, host_version=14191, password=bytearray(), emit=output.append)
+                driver._full_sent, driver._processed_entity_tick = full, 123
+                if normal:
+                    driver.step(1)
+                    self.assertTrue(driver.done)
+                    self.assertEqual(driver.reason, 'source-hltv-stop')
+                    self.assertIsNone(driver._processed_entity_tick)
+                    driver.step(2)
+                    self.assertEqual(output, [{'kind': 'discontinuity', 'reason': 'source-hltv-stop'}])
+                else:
+                    with self.assertRaisesRegex(DriverError, 'native-session-closed'):
+                        driver.step(1)
+                driver.close()
+                self.assertEqual(port.closed, 1)
+
     def test_promoted_delivery_keeps_application_sequence_filter(self):
         driver = ObserverDriver(Port(), host_version=14191, password=bytearray(), emit=lambda _: None)
         driver.phase = 'channel'

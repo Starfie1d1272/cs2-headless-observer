@@ -58,6 +58,14 @@ class OrderedParserTests(unittest.TestCase):
         self.bridge.submit_message(4, b'\x08\x01')
         self.until(lambda _: self.bridge.completed_sequence == 1)
 
+    def test_close_uses_eof_and_normal_worker_exit(self):
+        self.bridge.submit_message(4, b'\x08\x0a')
+        self.until(lambda _: self.bridge.completed_sequence == 1)
+        self.bridge.close()
+        self.assertEqual(self.bridge.process.returncode, 0)
+        self.assertFalse(self.bridge._writer.is_alive())
+        self.assertFalse(self.bridge._reader.is_alive())
+
     def test_explicit_reset_preserves_message_sequence(self):
         self.bridge.submit_message(4, b'\x08\x03')
         self.until(lambda _: self.bridge.completed_sequence == 1)

@@ -17,6 +17,7 @@ const project=()=>projectNativeEvent(schema,snapshots,tables,'weapon_fire',field
 let checks=0;const check=f=>{f();checks++;};
 check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().warmup,true));check(()=>assert.equal(project().round,3));
 check(()=>assert.equal(project().identityResolved,true));
+check(()=>assert.deepEqual(project().pawns.userid,{index:pawn,serial}));
 check(()=>assert.deepEqual(project().players.userid,{domain:'player-controller-slot',slot:0,steamId:steam,userId:null,controller:{index:1,serial:1}}));
 info=Uint8Array.of(17,...fixed64(steam),24,42);
 check(()=>assert.equal(project().players.userid.userId,42));
@@ -27,18 +28,18 @@ entities.get(1).fields=values({m_steamID:BigInt(steam),m_hPlayerPawn:BigInt(pawn
 entities.get(10).fields=values({m_bWarmupPeriod:true,m_totalRoundsPlayed:3n});
 check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().round,3));
 entities.get(1).fields=values({m_steamID:BigInt(steam),m_hPlayerPawn:0x100000000n});
-check(()=>assert.equal(project().actor,null));
+check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().pawns.userid,null));
 entities.get(1).fields=values({m_steamID:BigInt(steam),m_hPlayerPawn:BigInt(pawn|((serial&1023)<<14))});
 info=Uint8Array.of(17,...fixed64(steam));
 const original=fields.userid_pawn;fields.userid_pawn=((serial-1024)*32768+pawn)|0;
-check(()=>assert.equal(project().actor,null));check(()=>assert.equal(project().players.userid,null)); // Same compressed10-bit serial, different native17-bit identity.
+check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().pawns.userid,null)); // Same compressed10-bit serial, different native17-bit identity remains unresolved.
 fields.userid_pawn=original;entities.get(pawn).serial++;
-check(()=>assert.equal(project().actor,null));entities.get(pawn).serial--;
-fields.userid_pawn=-1;check(()=>assert.equal(project().actor,null));fields.userid_pawn=original;
+check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().pawns.userid,null));entities.get(pawn).serial--;
+fields.userid_pawn=-1;check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().pawns.userid,null));fields.userid_pawn=original;
 info=Uint8Array.of(17,...fixed64('76561198000000456'));check(()=>assert.equal(project().actor,null));info=Uint8Array.of(17,...fixed64(steam));
 fields.userid=65535;check(()=>assert.equal(project().actor,null));fields.userid=0;
 types.set('userid',4);check(()=>assert.equal(project().actor,null));types.set('userid',9);
-snapshots.waitingFull=true;check(()=>assert.equal(project().actor,null));check(()=>assert.equal(project().round,null));snapshots.waitingFull=false;
+snapshots.waitingFull=true;check(()=>assert.equal(project().actor,null));check(()=>assert.equal(project().round,null));check(()=>assert.equal(project().pawns.userid,null));snapshots.waitingFull=false;
 const prior=project();entities.get(1).fields=values({m_steamID:123n});check(()=>assert.equal(project().actor,null));check(()=>assert.equal(prior.actor,steam));
-const output={checks,passed:true,scope:'Strict native event identity, distinct17/10-bit serial domains and unknown fallback; synthetic fixtures only'};
+const output={checks,passed:true,scope:'Independent controller and strict full native pawn identity; distinct17/10-bit serial domains and unknown fallback; synthetic fixtures only'};
 fs.writeFileSync((process.env.GOTV_RESEARCH_ROOT??'.agent-tmp/gotv-research-plan/')+'native-event-projection-comparison.json',JSON.stringify(output,null,2)+'\n');console.log(output);

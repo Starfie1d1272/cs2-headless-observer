@@ -75,7 +75,7 @@ class OrderedParserBridge:
                 if data is None:
                     return
                 view = memoryview(data)
-                while view and not self._closed:
+                while view:
                     count = self.process.stdin.write(view)
                     if not count:
                         raise OSError('parser-pipe-closed')
@@ -214,7 +214,7 @@ class OrderedParserBridge:
                           **{key: row.get(key) for key in ('source', 'channel', 'world', 'sequence', 'tick')}))
             if emit is not None and (row['type'] == 'cursor' or (row['type'] == 'raw-event' and row.get('name') in self.FORWARDED_EVENTS)):
                 emit(dict(kind='cursor' if row['type'] == 'cursor' else row['name'],
-                    **({key: row.get(key) for key in ('type', 'name', 'fields', 'players', 'committedTick')} if row['type'] == 'raw-event' else {}),
+                    **({key: row.get(key) for key in ('type', 'name', 'fields', 'players', 'pawns', 'committedTick')} if row['type'] == 'raw-event' else {}),
                     **{key: row.get(key) for key in ('tick', 'tickInterval', 'map',
                     'warmup', 'round', 'weapon', 'actor', 'target', 'source', 'channel', 'world', 'sequence',
                     'descriptorGeneration', 'eventServerTick', 'networkTick', 'identityResolved')}))
@@ -238,13 +238,22 @@ class OrderedParserBridge:
             self._input.put_nowait(None)
         except queue.Full:
             pass
-        if self.process.poll() is None:
-            self.process.terminate()
+        self._writer.join(timeout=1)
+        if not self._writer.is_alive():
             try:
-                self.process.wait(timeout=3)
+                self.process.stdin.close()  # Complete records then EOF; let the worker exit normally.
+            except OSError:
+                pass
+        if self.process.poll() is None:
+            try:
+                self.process.wait(timeout=1)
             except subprocess.TimeoutExpired:
-                self.process.kill()
-                self.process.wait(timeout=3)
+                self.process.terminate()
+                try:
+                    self.process.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    self.process.kill()
+                    self.process.wait(timeout=3)
         self._writer.join(timeout=1)
         self._reader.join(timeout=1)
         self.process.stdin.close()
