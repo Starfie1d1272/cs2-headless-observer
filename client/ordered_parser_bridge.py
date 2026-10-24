@@ -7,6 +7,8 @@ from pathlib import Path
 import queue
 import subprocess
 import threading
+import time
+from process_io import cancel_io
 from wire import ProbeError
 
 
@@ -88,7 +90,7 @@ class OrderedParserBridge:
                 if data is None:
                     return
                 view = memoryview(data)
-                while view:
+                while view and not self._closed:
                     count = self.process.stdin.write(view)
                     if not count:
                         raise OSError('parser-pipe-closed')
@@ -263,6 +265,8 @@ class OrderedParserBridge:
             except queue.Full:
                 pass
             self._writer.join(timeout=1)
+            if self._writer.is_alive():
+                cancel_io(self._writer)
             if not self._writer.is_alive():
                 try:
                     self.process.stdin.close()  # Complete records then EOF; let the worker exit normally.
@@ -278,8 +282,16 @@ class OrderedParserBridge:
                     except subprocess.TimeoutExpired:
                         self.process.kill()
                         self.process.wait(timeout=3)
-            self._writer.join(timeout=1)
-            self._reader.join(timeout=1)
+            # A descendant can retain a pipe handle after the worker exits. Close
+            # the owned Job before touching CRT descriptors held by I/O threads.
+            self._job.close()
+            for thread in (self._writer, self._reader):
+                deadline = time.monotonic() + 1
+                while thread.is_alive() and time.monotonic() < deadline:
+                    cancel_io(thread)
+                    thread.join(timeout=.02)
+                if thread.is_alive():
+                    raise ProbeError('ordered-parser-io-close-timeout')
             self.process.stdin.close()
             self.process.stdout.close()
         finally:
