@@ -18,6 +18,9 @@ class OrderedParserBridge:
         'bomb_beginplant', 'bomb_abortplant', 'bomb_planted', 'bomb_begindefuse',
         'bomb_abortdefuse', 'bomb_defused', 'bomb_exploded', 'bomb_dropped', 'bomb_pickup',
         'round_start', 'round_end',
+        'round_prestart', 'round_poststart', 'round_freeze_end', 'round_officially_ended',
+        'round_announce_warmup', 'begin_new_match', 'round_announce_match_start',
+        'cs_win_panel_round', 'cs_win_panel_match',
     })
 
     def __init__(self, *, source, channel, world, worker, node='node'):
