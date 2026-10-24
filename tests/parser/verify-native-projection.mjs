@@ -17,6 +17,10 @@ const project=()=>projectNativeEvent(schema,snapshots,tables,'weapon_fire',field
 let checks=0;const check=f=>{f();checks++;};
 check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().warmup,true));check(()=>assert.equal(project().round,3));
 check(()=>assert.equal(project().identityResolved,true));
+const originalControllerFields=entities.get(1).fields;
+entities.get(1).fields={*entries(){yield* originalControllerFields.entries();yield {field:{name:'m_steamID'},operation:'value',value:BigInt(steam)};}};
+check(()=>assert.equal(project().actor,null));
+entities.get(1).fields=originalControllerFields;
 check(()=>assert.deepEqual(project().pawns.userid,{index:pawn,serial}));
 check(()=>assert.deepEqual(project().players.userid,{domain:'player-controller-slot',slot:0,steamId:steam,userId:null,controller:{index:1,serial:1}}));
 info=Uint8Array.of(17,...fixed64(steam),24,42);

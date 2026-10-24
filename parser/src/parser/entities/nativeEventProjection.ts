@@ -13,7 +13,7 @@ const steamId=(value:unknown)=>{
 };
 const field=(entity:NativeEntity,name:string):NativeWireValue=>{
  let found:NativeWireValue;let count=0;
- for(const record of entity.fields.entries())if(record.field.name===name&&record.operation==='value'){found=record.value;count++;}
+ for(const record of entity.fields.entries(name))if(record.field.name===name&&record.operation==='value'){found=record.value;count++;}
  return count===1?found:undefined;
 };
 const uint32Value=(v:NativeWireValue)=>typeof v==='bigint'&&v>=0n&&v<=0xffffffffn?Number(v):typeof v==='number'&&Number.isInteger(v)&&v>=0&&v<=0xffffffff?v:undefined;

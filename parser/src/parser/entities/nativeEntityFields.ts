@@ -33,8 +33,10 @@ export class NativeEntityFields {
   const record=this.values.get(key(path));
   return record&&Object.freeze({...record,value:copyValue(record.value)});
  }
- *entries():IterableIterator<NativeFieldRecord> {
-  for(const record of this.values.values())yield Object.freeze({...record,value:copyValue(record.value)});
+ *entries(name?:string):IterableIterator<NativeFieldRecord> {
+  // Name lookup still visits every candidate, but copies only matching values.
+  for(const record of this.values.values())if(name===undefined||record.field.name===name)
+   yield Object.freeze({...record,value:copyValue(record.value)});
  }
 
  /** Apply a stored sparse baseline to an existing logical object. Omitted

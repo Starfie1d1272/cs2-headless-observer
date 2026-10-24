@@ -1,5 +1,7 @@
 # 验证
 
+字段读取与GameRules扫描的离线profiling结果见[性能检查](performance.md)。局部采样变化与整体回放耗时分开记录，不以合成启动或局部基准代替实际制播负载。
+
 先按[构建步骤](build.md)从固定干净上游生成 worker，再执行：
 
 ```powershell
