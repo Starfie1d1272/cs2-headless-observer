@@ -1,9 +1,5 @@
 # 第三轮：GNS 内层通道格式
 
-2026-10-24 运行时修正：下文固定构建历史记录中的“两层可靠性必须相等”推断不成立。
-GNS 可将过大消息升级为可靠传输，tag2/4 的应用头仍按不可靠帧解析、过滤序号。
-tag1/3 仍要求可靠传输。实际失败消息与回归结果见 [Windows 实测](LIVE-2026-10-24.md)。
-
 本批 `channel.py` 只消费**已通过合法 GNS 接收、解密、重组的完整消息**，不会从 PCAP 解密、不会自己处理 Steam 证书、也没有自动发送 ACK 或 sign-on。当前证据支持以下格式实现；尚无真实普通观众互操作。
 
 目标 networksystem SHA-256 仍为 `be7e13ad771b21c986e25d9469993a1225be5649473f3d722ca5eefe375d1bec`。查询、结果 hash 和限制见 [channel-evidence-index.json](evidence/channel-evidence-index.json)，配方见 [channel-queries.json](evidence/channel-queries.json)。地址不可用于其他文件版本。
