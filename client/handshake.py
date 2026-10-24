@@ -143,7 +143,7 @@ class SignonSequence:
             raise ProbeError('spawn-count-mismatch')
         if state == self.state == 6 and self.full_from_entities:
             self.received_state = state
-            return {'received_state': state, 'online_success': 'INCONCLUSIVE'}
+            return {'received_state': state}
         if state < self.state or (state >= 3 and state == self.state):
             raise ProbeError('nonadvancing-signon')
         if state > self.state + 1:
@@ -154,7 +154,7 @@ class SignonSequence:
             self.initialization_blocked = True
         if state == 7:
             self.closed = True
-        return {'received_state': state, 'online_success': 'INCONCLUSIVE'}
+        return {'received_state': state}
 
     def finish_new(self):
         # Driver calls only after its actual ClientInfo send, with installed
@@ -231,8 +231,7 @@ def parse_connection_inner(message: bytes):
         raise ProbeError('connection-inner-padding')
     decoded = fields(message[pos:end])
     addon = scalar(decoded, 1, 2)
-    return {'kind': 'connection-inner', 'addon_name_bytes': None if addon is None else len(addon),
-            'online_success': 'INCONCLUSIVE'}
+    return {'kind': 'connection-inner', 'addon_name_bytes': None if addon is None else len(addon)}
 
 
 def signon_message_bits(state, spawn_count):

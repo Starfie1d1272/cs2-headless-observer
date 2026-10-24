@@ -66,7 +66,7 @@ class HandshakeTest(unittest.TestCase):
     def test_inner_framing_and_bit_alignment(self):
         # Literal wire expectations from the recovered byte/bit layout, not a real capture.
         self.assertEqual(connect_inner_message(bytes.fromhex('08 01')), bytes.fromhex('ff ff ff ff 6b 02 08 01'))
-        self.assertEqual(parse_connection_inner(bytes.fromhex('ff ff ff ff 42 00') + b'0' * 10)['online_success'], 'INCONCLUSIVE')
+        self.assertEqual(parse_connection_inner(bytes.fromhex('ff ff ff ff 42 00') + b'0' * 10), {'kind': 'connection-inner', 'addon_name_bytes': None})
         for bad in [bytes.fromhex('ff ff ff ff 42 01'), bytes.fromhex('ff ff ff ff 42 00 00')]:
             with self.assertRaises(ValueError):
                 parse_connection_inner(bad)
@@ -99,7 +99,7 @@ class HandshakeTest(unittest.TestCase):
         sequence.receive(signon_payload(5, 17))
         with self.assertRaises(ValueError):
             sequence.acknowledgement()
-        self.assertEqual(sequence.receive(signon_payload(6, 17))['online_success'], 'INCONCLUSIVE')
+        self.assertEqual(sequence.receive(signon_payload(6, 17)), {'received_state': 6})
         with self.assertRaises(ValueError):
             sequence.server_info(18)
 
