@@ -8,13 +8,26 @@
 
 ## 使用
 
-Windows 便携包解压到可写目录后：
+发行包从 [Releases](https://github.com/Starfie1d1272/cs2-headless-observer/releases) 获取；没有正式资产时按[构建步骤](docs/build.md)准备。选择 `windows-x64` 独立包，或由应用管理、复用已有 Node 的 `windows-x64-external-node` 包。
+
+独立包三步开始：解压到可写目录，先运行 `Replay.cmd` 自检，再登录 Steam、运行 `Start.cmd` 并填写 CS2 路径与获授权连接。需游戏共存时先启动游戏。
+
+包内入口：
 
 - `Start.cmd`：交互连接，需要本机 Steam 登录、CS2 安装和有效观战授权。
 - `Replay.cmd`：运行包内完全合成的离线样例，无需 Steam、CS2 或网络。
 - 应用集成：按[托管接口](docs/managed-interface.md)启动 `client/driver.py --managed`，通过 stdin 传入配置，从 stdout 消费 JSON。
 
 external-node包使用调用方提供或PATH中的Node.js 24.0.0及以上版本，不绑定Node小版本。便携包的实际验证范围由制品 manifest 及验证报告说明。源码使用者见[构建步骤](docs/build.md)。
+
+合成自检输出先建立 cursor，再输出事件。下面是[实际合成输出](examples/managed-events.json)的字段节选，不是比赛数据或完整契约记录：
+
+```jsonl
+{"kind":"cursor","sequence":1,"world":1,"tick":100,"map":"de_test"}
+{"kind":"round_freeze_end","sequence":2,"world":1,"committedTick":100,"players":{},"identityResolved":false}
+```
+
+集成时保持 stdin 开放、持续读取 stdout；关闭 stdin 请求停止。完整字段和可运行消费者见[托管接口](docs/managed-interface.md)。运行失败时按[使用说明](docs/usage.md)检查报告和下一步操作。
 
 ## 支持范围
 
