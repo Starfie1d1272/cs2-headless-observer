@@ -98,6 +98,10 @@ class ManagedOwner:
 class OutputWriter:
     """SDK pump never waits on stdout. Cancel the owned writer on stop/backpressure."""
     def __init__(self, fd, *, max_bytes=8 * 1024**2, max_records=1024):
+        if os.name == 'nt':
+            import msvcrt
+            # os.write uses the CRT descriptor: preserve UTF-8 bytes and the single LF.
+            msvcrt.setmode(fd, os.O_BINARY)
         self.fd, self.max_bytes = fd, max_bytes
         self.queue = queue.Queue(maxsize=max_records)
         self.lock = threading.Lock()
@@ -135,7 +139,7 @@ class OutputWriter:
                         import select
                         if not select.select([], [self.fd], [], .02)[1]:
                             continue
-                    count = os.write(self.fd, view if os.name == 'nt' else view[:4096])
+                    count = os.write(self.fd, view[:4096])
                     if not count:
                         raise OSError('output-closed')
                     view = view[count:]

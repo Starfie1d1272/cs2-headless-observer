@@ -41,6 +41,24 @@ class ManagedConnectionTests(unittest.TestCase):
         finally:
             os.close(read_fd); os.close(write_fd)
 
+    def test_output_pipe_preserves_utf8_and_one_lf(self):
+        from process_io import OutputWriter, encode_record
+        import os
+        read_fd, write_fd = os.pipe()
+        if os.name == 'nt':
+            import msvcrt
+            msvcrt.setmode(write_fd, os.O_TEXT)  # Inherited stdio need not start in binary mode.
+        writer = OutputWriter(write_fd)
+        row = {'kind': 'synthetic', 'text': '中文\nsecond line'}
+        try:
+            writer.emit(row)
+            self.assertTrue(writer.finish())
+            os.close(write_fd); write_fd = None
+            self.assertEqual(os.read(read_fd, 4096), encode_record(row))
+        finally:
+            os.close(read_fd)
+            if write_fd is not None: os.close(write_fd)
+
     @unittest.skipUnless(__import__('os').environ.get('GOTV_ORDERED_WORKER'), 'Set GOTV_ORDERED_WORKER')
     def test_real_driver_worker_and_abandoned_process_pipes_clean_up(self):
         import os,subprocess,sys,tempfile,time,threading
