@@ -2,6 +2,7 @@
 from collections import deque
 import base64
 import json
+import os
 from pathlib import Path
 import queue
 import subprocess
@@ -29,6 +30,7 @@ class OrderedParserBridge:
             raise ProbeError('ordered-parser-identity')
         self.identity = dict(source=source, channel=channel, world=world)
         self.sequence = 0
+        self.diagnostics = deque(maxlen=32)
         self.completed_sequence = 0
         self.checkpoint = None
         self._pending_controls = deque()
@@ -40,8 +42,18 @@ class OrderedParserBridge:
         self._lock = threading.Lock()
         self._input = queue.Queue(maxsize=16)
         self._output = queue.Queue(maxsize=4096)
-        self.process = subprocess.Popen([node, str(Path(worker))], stdin=subprocess.PIPE,
-                                        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=0)
+        from process_job import ParserJob
+        self._job = ParserJob()
+        try:
+            self.process = subprocess.Popen([node, str(Path(worker))], stdin=subprocess.PIPE,
+                                            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=0,
+                                            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
+            self._job.assign(self.process)
+        except BaseException:
+            if hasattr(self, 'process') and self.process.poll() is None:
+                self.process.kill(); self.process.wait(timeout=3)
+            self._job.close()
+            raise
         self._writer = threading.Thread(target=self._write, daemon=True)
         self._reader = threading.Thread(target=self._read, daemon=True)
         self._writer.start()
@@ -103,7 +115,7 @@ class OrderedParserBridge:
                     self._failure = 'ordered-parser-error: ' + str(row.get('message', 'unknown'))[:1024]
                     return
                 if row.get('type') not in {'initialized', 'world-reset', 'creation-sequence-admitted',
-                        'checkpoint', 'receipt', 'cursor', 'raw-event', 'gap', 'recovery', 'blocked', 'event-subscriptions'}:
+                        'checkpoint', 'receipt', 'cursor', 'raw-event', 'gap', 'recovery', 'blocked', 'event-subscriptions', 'diagnostic'}:
                     raise ValueError('record-type')
                 self._output.put_nowait(row)
         except Exception as error:
@@ -192,6 +204,8 @@ class OrderedParserBridge:
                 if type(row.get('schemaReady')) is not bool or type(row.get('stringTables')) is not int:
                     raise ProbeError('ordered-parser-checkpoint-shape')
                 self.checkpoint = row
+            if row['type'] == 'diagnostic':
+                self.diagnostics.append({key: row.get(key) for key in ('reason', 'eventId')})
             if row['type'] == 'receipt':
                 if (type(row.get('tick')) is not int or row['tick'] < 1 or
                         type(row.get('epoch')) is not int or row['epoch'] < 0 or
@@ -235,26 +249,29 @@ class OrderedParserBridge:
             return
         self._closed = True
         try:
-            self._input.put_nowait(None)
-        except queue.Full:
-            pass
-        self._writer.join(timeout=1)
-        if not self._writer.is_alive():
             try:
-                self.process.stdin.close()  # Complete records then EOF; let the worker exit normally.
-            except OSError:
+                self._input.put_nowait(None)
+            except queue.Full:
                 pass
-        if self.process.poll() is None:
-            try:
-                self.process.wait(timeout=1)
-            except subprocess.TimeoutExpired:
-                self.process.terminate()
+            self._writer.join(timeout=1)
+            if not self._writer.is_alive():
                 try:
-                    self.process.wait(timeout=3)
+                    self.process.stdin.close()  # Complete records then EOF; let the worker exit normally.
+                except OSError:
+                    pass
+            if self.process.poll() is None:
+                try:
+                    self.process.wait(timeout=1)
                 except subprocess.TimeoutExpired:
-                    self.process.kill()
-                    self.process.wait(timeout=3)
-        self._writer.join(timeout=1)
-        self._reader.join(timeout=1)
-        self.process.stdin.close()
-        self.process.stdout.close()
+                    self.process.terminate()
+                    try:
+                        self.process.wait(timeout=3)
+                    except subprocess.TimeoutExpired:
+                        self.process.kill()
+                        self.process.wait(timeout=3)
+            self._writer.join(timeout=1)
+            self._reader.join(timeout=1)
+            self.process.stdin.close()
+            self.process.stdout.close()
+        finally:
+            self._job.close()

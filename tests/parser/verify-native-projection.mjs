@@ -43,5 +43,13 @@ fields.userid=65535;check(()=>assert.equal(project().actor,null));fields.userid=
 types.set('userid',4);check(()=>assert.equal(project().actor,null));types.set('userid',9);
 snapshots.waitingFull=true;check(()=>assert.equal(project().actor,null));check(()=>assert.equal(project().round,null));check(()=>assert.equal(project().pawns.userid,null));snapshots.waitingFull=false;
 const prior=project();entities.get(1).fields=values({m_steamID:123n});check(()=>assert.equal(project().actor,null));check(()=>assert.equal(prior.actor,steam));
+for(const id of ['76561200000000000','76561202255233023']){
+ entities.get(1).fields=values({m_steamID:BigInt(id)});info=Uint8Array.of(17,...fixed64(id));
+ check(()=>assert.equal(project().actor,id));check(()=>assert.equal(project().identityResolved,true));
+}
+for(const id of ['76561197960265728','9007199254740991','18446744073709551616']){
+ entities.get(1).fields=values({m_steamID:BigInt(id)});info=Uint8Array.of(17,...fixed64(id));
+ check(()=>assert.equal(project().actor,null));
+}
 const output={checks,passed:true,scope:'Independent controller and strict full native pawn identity; distinct17/10-bit serial domains and unknown fallback; synthetic fixtures only'};
 fs.writeFileSync(process.env.GOTV_RESULT_ROOT+'native-event-projection-comparison.json',JSON.stringify(output,null,2)+'\n');console.log(output);

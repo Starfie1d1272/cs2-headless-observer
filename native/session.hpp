@@ -86,11 +86,13 @@ class Session {
     // Borrowed sensitive bytes: never persist/log; invalid after close/destruction.
     return std::span(bytes_).first(ticket_size_ + 8);
   }
-  void disconnected(std::uint32_t handle) {
-    if (handle && handle == connection_) close(Failure::disconnected);
+  void disconnected(std::uint32_t handle, bool drain = false) {
+    if (!handle || handle != connection_) return;
+    if (drain) { state_ = State::closed; failure_ = Failure::disconnected; }
+    else close(Failure::disconnected);
   }
   void close(Failure reason = Failure::cancelled) noexcept {
-    if (state_ == State::closed) return;
+    if (state_ == State::closed && !connection_ && !ticket_) return;
     state_ = State::closed;
     failure_ = reason;
     // Invalidate before SDK calls, so reentrant/late callbacks cannot release bytes.

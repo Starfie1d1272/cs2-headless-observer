@@ -59,6 +59,11 @@ check(()=>assert.equal(out[0].tick,9));check(()=>assert.equal(out[0].name,'renam
 check(()=>assert.equal(first.name,'weapon_fire'));check(()=>assert.equal(first.fields.weapon,'ak47'));
 check(()=>assert.equal(core.committedTick,10));
 check(()=>assert.equal(out[0].identityResolved,false));
+out=send(205,L,{descriptors:[{eventid:7,name:'weapon_fire',keys:[{type:1,name:'weapon'}]},
+ {eventid:18,name:'new_cosmetic_event',keys:[{type:10,name:'extension'}]}]});
+check(()=>assert.equal(core.ready,true));
+out=send(207,E,{eventid:18,keys:[{type:10}]});check(()=>assert.equal(out[0].type,'diagnostic'));
+out=send(207,E,event);check(()=>assert.equal(out[0].name,'weapon_fire'));
 const before=core.committedTick;out=send(70,null,null);
 check(()=>assert.equal(core.committedTick,before));check(()=>assert.equal(out.some(r=>r.type==='receipt'),false));
 out=send(55,P,{...packet,delta_from:10,server_tick:11});

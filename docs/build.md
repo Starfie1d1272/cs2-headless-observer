@@ -16,7 +16,7 @@ node tools/build_parser.mjs work/parser work/build/parser_worker.mjs
 python tools/verify_all.py --parser-source work/parser --worker work/build/parser_worker.mjs
 ```
 
-锁定源码、补丁和工具链共同决定 worker。不要把本机诊断候选目录当成生产补丁来源；重复构建使用新的干净 checkout。
+锁定上游源码、patches/ 中的上游接缝修改、parser/src/ 中本项目维护的 TypeScript 源码及工具链共同决定 worker。构建先应用小补丁，再复制本项目解析模块。不要把本机诊断候选目录当成生产补丁来源；重复构建使用新的干净 checkout。
 
 ## 原生桥与便携包
 
@@ -34,4 +34,6 @@ python tools/verify_package.py dist/observer
 
 打包要求干净、已提交的源码；manifest记录固定提交，源码目录保留完整项目快照、修改解析器及依赖材料。制品启动验证和历史在线验收分别记录。候选构建不自动表示公开许可审查已通过。
 
-调用方自带Node时选择 `--kind external-node`；组装时不需要指定Node。独立研究包保持默认。最低运行要求与升级边界见[组件分发](component-distribution.md)。
+调用方自带Node时选择 `--kind external-node`；组装时不需要指定Node。独立包保持默认。最低运行要求与升级边界见[组件分发](component-distribution.md)。
+
+修改后的解析器源快照包含 wasm/ C 源码和 scripts/ 中的生成脚本；普通 worker 构建复用固定上游 WASM。重新生成 WASM 需按上游脚本准备 Bun 和 Clang 20.1.8，不能将预编译字节当作对应源码。

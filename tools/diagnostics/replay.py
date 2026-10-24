@@ -9,7 +9,7 @@ from pathlib import Path
 import struct
 from channel import MAX_BYTES, decode_frame, messages, UnreliableOrder
 from driver import MAGIC
-from live import LiveDecoder
+from live_probe import LiveDecoder
 from wire import ProbeError
 
 

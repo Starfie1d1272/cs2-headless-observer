@@ -13,7 +13,7 @@ client/driver.py --managed
   --node <absolute-runtime/node.exe>
   --parser-worker <absolute-client/parser_worker.mjs>
   --source-role ahead --source-id <new-UUID>
-  --host-version 14192 --seconds 14400 --output <new-local-directory>
+  --host-version 14192 --output <new-local-directory>
 ```
 
 使用绝对路径、shell=false、Windows 隐藏子窗口；进程环境选择 SteamAppId=730，Steam 仍验证真实合法账号上下文。
@@ -25,17 +25,17 @@ source-role 为 ahead 或 delayed，source-id 为 UUID；每个新连接尝试�
 
 ## 输出
 
-stdout 只有逐行 JSON 事件，不含最终报告；单行上限 64 KiB。stderr 可含原生日志及最终报告，不能直接转发到公共日志或当作纯 JSON 流。report.json 位于指定输出目录。
+stdout 只有逐行 JSON 事件，不含最终报告；单行 UTF-8 字节数连同 LF 上限 64 KiB。sequence 是每次进程运行从 1 递增的公共记录序号，换世界不重置，不等同内部消息序号。stderr 可含原生日志及最终报告，不能直接转发到公共日志或当作纯 JSON 流。report.json 位于指定输出目录。
 托管模式不落盘 events.jsonl 或 channel.frames。消费者必须持续读取 stdout，处理 EOF、非法记录、来源代际和有界缓存。
 
 按 kind 区分 cursor、实际游戏事件和 discontinuity。保留 source/channel/world、eventServerTick、committedTick、players、pawns 与 identityResolved 的原始含义。
 row.tick 在部分原始事件中可能为 0；不要据此覆盖非零 eventServerTick。消费归一化需由适配器显式选择和验证。
 
-仅完整快照回执和有效来源检查建立就绪；discontinuity、EOF、错误或来源替换立即撤销旧提示。未知选手保持未知。实际字段以 client/ordered_parser_bridge.py 和协议契约为准。
+仅完整快照回执和有效来源检查建立就绪；discontinuity、EOF、错误或来源替换立即撤销旧提示。未知选手保持未知。字段结构见 [JSON Schema](../schemas/managed-event.schema.json)，可运行消费者见 [Python 示例](../examples/managed_consumer.py) 和 [Node 示例](../examples/managed_consumer.mjs)，[合成输出](../examples/managed-events.json) 不含比赛数据。
 
 ## 停止与重试
 
-先停止事件交付、关闭 stdin，等待旧进程释放 SDK 句柄及解析器退出；仅在超时后终止本应用拥有的子进程。退出码含义见[使用说明](usage.md)。
+默认持续运行；--seconds 只用于显式限定诊断时长，没有四小时上限。先停止事件交付、关闭 stdin，等待旧进程释放 SDK 句柄及解析器退出；建议给予至少 12 秒清理宽限，仅在超时后终止本应用拥有的子进程。Windows 上驱动持有 kill-on-close Job，驱动被强制结束时回收其解析器。应用仍须确保自己异常退出时驱动也被回收，例如使用应用拥有的 Windows Job；仅依靠主动发送停止并不覆盖宿主崩溃。stdout 堵塞由有界队列报 output-backpressure，管道关闭报 output-closed；停止不等待消费者恢复读取。正常 1038 会先排空已接收通道和解析输出，再发布断点并关闭。退出码含义见[使用说明](usage.md)。
 观察器单次运行不重连。消费者决定哪些失败可重试；不能对正常 1038、明确拒绝或清理失败无限循环。
 
 同一消费者应避免对同一账号、同一端点创建重复连接；与游戏客户端共用端点时也需要考虑已有连接被替换。1000 是通用关闭码，不能单凭该数字判定账号冲突；重复连接替换时盲目重连可能互相挤占。具体实测边界见[兼容性](compatibility.md)。

@@ -7,6 +7,7 @@ public fixture used by verify.py. No packet/event bodies are saved in the report
 import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'client'))
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'diagnostics'))
 import argparse
 import collections
 import ctypes
@@ -15,7 +16,7 @@ import hashlib
 import json
 from pathlib import Path
 from channel import messages
-from live import LiveDecoder
+from live_probe import LiveDecoder
 from wire import fields, scalar, varint
 
 PIN = '143eb78444727c7a8afa29d807272076d14044fc9d7c233035d0b9a176e70f60'

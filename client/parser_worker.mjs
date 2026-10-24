@@ -43,14 +43,14 @@ process.once('SIGTERM',()=>{process.stdin.destroy();});
 let pending=Buffer.alloc(0);
 try{
  for await(const chunk of process.stdin){
-  if(pending.length+chunk.length>MAX_LINE)throw new Error('ordered-parser-input-budget');
   pending=Buffer.concat([pending,chunk]);
   let start=0,end;
   while((end=pending.indexOf(10,start))!==-1){
-   const line=pending.subarray(start,end);if(!line.length)throw new Error('ordered-parser-empty-record');
+   const line=pending.subarray(start,end);if(line.length>MAX_LINE)throw new Error('ordered-parser-input-budget');if(!line.length)throw new Error('ordered-parser-empty-record');
    consume(JSON.parse(line.toString('utf8')));start=end+1;
   }
   pending=pending.subarray(start);
+  if(pending.length>MAX_LINE)throw new Error('ordered-parser-input-budget');
  }
  if(pending.length)throw new Error('ordered-parser-truncated-record');
  send({type:'end',status:'complete',...(core?.currentIdentity??{})});

@@ -116,7 +116,7 @@ export class NativeObserverCore {
      for(const d of msg.descriptors){
       if(d.eventid===undefined||d.eventid<0||d.eventid>=512||!d.name||d.name.length>256||next.has(d.eventid)||d.keys.length>256)
        throw new Error('Invalid event descriptor');
-      const names=new Set<string>();for(const k of d.keys){if(!k.name||k.name.length>256||names.has(k.name)||k.type===undefined||k.type<0||k.type>9)throw new Error('Invalid event key descriptor');names.add(k.name);}
+      const names=new Set<string>();for(const k of d.keys){if(!k.name||k.name.length>256||names.has(k.name)||k.type===undefined||k.type<0||!Number.isSafeInteger(k.type))throw new Error('Invalid event key descriptor');names.add(k.name);}
       next.set(d.eventid,d);
      }
      this.descriptors=next;this.descriptorGeneration++;
@@ -124,6 +124,7 @@ export class NativeObserverCore {
     }
     case 207:{
      const msg=CMsgSource1LegacyGameEvent.decode(input.body),d=this.descriptors.get(msg.eventid??-1);
+     if(d?.keys.some(k=>k.type!>9)){record('diagnostic',{reason:'unsupported-event-field-type',eventId:d.eventid});break;}
      if(!d){record('gap',{reason:'event-descriptor-missing'});break;}
      if(msg.keys.length!==d.keys.length)throw new Error('Event key count mismatch');
      const fields:Record<string,unknown>=Object.create(null);
@@ -142,7 +143,7 @@ export class NativeObserverCore {
     }
     default:break; // Control owner handles its registered messages; no commands execute here.
    }
-   record('checkpoint',{schemaReady:this.ready,schemaFields:this.ready?this.serializers!.fields.length:0,serverInfo:!this.halted&&this.server!==undefined,stringTables:this.tables.count,committedTick:this.snapshots.lastTick});
+   record('checkpoint',{classCount:this.classes?.classes.length??0,schemaReady:this.ready,schemaFields:this.ready?this.serializers!.fields.length:0,serverInfo:!this.halted&&this.server!==undefined,stringTables:this.tables.count,committedTick:this.snapshots.lastTick});
   }catch(error){
    // A failed ordered message cannot lead to an ACK from a later unrelated
    // delta. Keep last visible entities but explicitly retire snapshot authority.
@@ -154,7 +155,7 @@ export class NativeObserverCore {
     if(input.messageId!==55)this.halted=true;
     record('recovery',{reason,snapshotEpoch:this.snapshots.epoch,worldReinitialization:this.halted});
    }
-   record('checkpoint',{schemaReady:this.ready,schemaFields:this.ready?this.serializers!.fields.length:0,serverInfo:!this.halted&&this.server!==undefined,stringTables:this.tables.count,committedTick:this.snapshots.lastTick});
+   record('checkpoint',{classCount:this.classes?.classes.length??0,schemaReady:this.ready,schemaFields:this.ready?this.serializers!.fields.length:0,serverInfo:!this.halted&&this.server!==undefined,stringTables:this.tables.count,committedTick:this.snapshots.lastTick});
   }
   return Object.freeze(output);
  }

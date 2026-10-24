@@ -4,6 +4,79 @@ import unittest
 from driver import read_managed_connection, connection_values
 
 class ManagedConnectionTests(unittest.TestCase):
+    def test_buffered_extra_input_is_observed_by_same_reader(self):
+        from process_io import ManagedOwner
+        owner = ManagedOwner(stream=io.BytesIO(b'{"endpoint":"127.0.0.1:27020","password":""}\nSTOP\n'),
+                             configuration_reader=read_managed_connection)
+        try:
+            self.assertEqual(owner.configuration()[0], '127.0.0.1:27020')
+            self.assertTrue(owner.stopped.wait(1))
+        finally:
+            self.assertTrue(owner.close())
+
+    def test_final_unicode_budget_and_output_order(self):
+        from process_io import PublicRecords, encode_record
+        output = []
+        emit = PublicRecords(output.append)
+        emit({'kind': 'weapon_fire', 'fields': {'weapon': '中' * 20000}, 'sequence': None})
+        emit({'kind': 'discontinuity', 'world': 2, 'sequence': None})
+        self.assertLessEqual(len(encode_record(output[0])), 65536)
+        self.assertEqual([r['sequence'] for r in output], [1, 2])
+        from wire import ProbeError
+        with self.assertRaisesRegex(ProbeError, 'output-record-budget'):
+            emit({'kind': 'weapon_fire', 'fields': {'weapon': '中' * 30000}})
+
+    def test_unread_output_pipe_can_be_cancelled_without_waiting_for_consumer(self):
+        from process_io import OutputWriter
+        import os, time
+        read_fd, write_fd = os.pipe()
+        writer = OutputWriter(write_fd)
+        try:
+            for _ in range(32):
+                writer.emit({'kind': 'synthetic', 'value': 'x' * 60000})
+            time.sleep(.02)
+            start = time.monotonic()
+            self.assertTrue(writer.abort())
+            self.assertLess(time.monotonic() - start, 2)
+        finally:
+            os.close(read_fd); os.close(write_fd)
+
+    @unittest.skipUnless(__import__('os').environ.get('GOTV_ORDERED_WORKER'), 'Set GOTV_ORDERED_WORKER')
+    def test_real_driver_worker_and_abandoned_process_pipes_clean_up(self):
+        import os,subprocess,sys,tempfile,time,threading
+        from pathlib import Path
+        for mode in ('unread','closed','slow'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temp:
+                root=Path(temp);marker=root/'sdk-cleanup.json';output=root/'run'
+                helper=Path(__file__).resolve().parents[1]/'support/managed_pipe_driver.py'
+                child=subprocess.Popen([sys.executable,'-B',str(helper),'--managed','--native',str(marker),
+                    '--parser-worker',os.environ['GOTV_ORDERED_WORKER'],'--host-version','14193','--output',str(output)],
+                    stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                reader=None
+                try:
+                    child.stdin.write(b'{"endpoint":"127.0.0.1:27020","password":"synthetic-only"}\n');child.stdin.flush()
+                    if mode=='closed':child.stdout.close()
+                    elif mode=='slow':
+                        def slow():
+                            while child.stdout.read(1024):time.sleep(.005)
+                        reader=threading.Thread(target=slow,daemon=True);reader.start()
+                    deadline=time.monotonic()+5
+                    while not marker.with_suffix('.progress').exists() and child.poll() is None and time.monotonic()<deadline:
+                        time.sleep(.01)
+                    child.stdin.close()
+                    child.wait(timeout=12)
+                    self.assertIn(child.returncode,(1,2))
+                    self.assertEqual(json.loads(marker.read_text())['closed'],1)
+                    report=json.loads((output/'report.json').read_text(encoding='utf-8'))
+                    self.assertTrue(report['cleanupCompleted'])
+                    self.assertIn(report['reason'],('owner-stopped','output-closed','output-backpressure'))
+                finally:
+                    if child.poll() is None:child.kill();child.wait(timeout=5)
+                    if not child.stdin.closed:child.stdin.close()
+                    if reader:reader.join(timeout=2)
+                    if not child.stdout.closed:child.stdout.close()
+                    child.stderr.close()
+
     def test_private_stdin_values(self):
         endpoint, password = read_managed_connection(io.BytesIO(b'{"endpoint":"127.0.0.1:27020","password":"fixture-only"}\n'))
         self.assertEqual(endpoint, '127.0.0.1:27020')
@@ -49,7 +122,8 @@ class ManagedConnectionTests(unittest.TestCase):
             self.assertEqual(sorted(p.name for p in output.iterdir()), ['report.json'])
             report = json.loads((output / 'report.json').read_text())
             self.assertEqual(report['outcome'], 'failed')
-            self.assertEqual(report['online_success'], 'INCONCLUSIVE')
+            self.assertTrue(report['cleanupCompleted'])
+            self.assertTrue(report['reportWritten'])
             self.assertEqual(report['finalization_failures'], [])
 
     def test_owner_eof_is_a_stop_signal_without_blocking_reader(self):
@@ -91,8 +165,9 @@ class ManagedConnectionTests(unittest.TestCase):
                 argv = ['driver.py', '--managed', '--native', str(Path(temp) / 'not-loaded'),
                         '--parser-worker', os.environ['GOTV_ORDERED_WORKER'], '--host-version', '14191',
                         '--output', str(output), '--seconds', '5']
-                with patch.object(sys, 'argv', argv), patch.object(sys, 'stdin', input_stream), \
-                     patch.object(sys, 'stdout', io.StringIO()), patch.object(sys, 'stderr', io.StringIO()), \
+                with tempfile.TemporaryFile(mode='w+') as stdout_file, tempfile.TemporaryFile(mode='w+') as stderr_file, \
+                     patch.object(sys, 'argv', argv), patch.object(sys, 'stdin', input_stream), \
+                     patch.object(sys, 'stdout', stdout_file), patch.object(sys, 'stderr', stderr_file), \
                      patch.object(sdk, 'NativePort', fake_native):
                     result = driver.main()
                 report = json.loads((output / 'report.json').read_text())
@@ -101,7 +176,7 @@ class ManagedConnectionTests(unittest.TestCase):
                 self.assertEqual(port.closed, 1)
                 self.assertFalse(port.ticket_requested)
                 self.assertEqual(report['finalization_failures'], [])
-                self.assertEqual(report['online_success'], 'INCONCLUSIVE')
+                self.assertTrue(report['cleanupCompleted'])
         finally:
             if writer_open:
                 os.close(write_fd)

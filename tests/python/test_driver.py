@@ -28,6 +28,13 @@ class DriverTest(unittest.TestCase):
                 port, output = Port(), []
                 port.state, port.remote_end_reason = 6, reason
                 driver = ObserverDriver(port, host_version=14191, password=bytearray(), emit=output.append)
+                if normal:
+                    class Parser:
+                        completed_sequence = 0
+                        checkpoint = None
+                        identity = {'source': 'synthetic', 'channel': 1, 'world': 1}
+                        def poll(self, emit): return []
+                    driver.parser = Parser()
                 driver._full_sent, driver._processed_entity_tick = full, 123
                 if normal:
                     driver.step(1)
@@ -35,7 +42,9 @@ class DriverTest(unittest.TestCase):
                     self.assertEqual(driver.reason, 'source-hltv-stop')
                     self.assertIsNone(driver._processed_entity_tick)
                     driver.step(2)
-                    self.assertEqual(output, [{'kind': 'discontinuity', 'reason': 'source-hltv-stop'}])
+                    self.assertEqual([r['kind'] for r in output], ['discontinuity'])
+                    self.assertTrue(driver.drain_completed)
+                    self.assertEqual(output[0]['sequence'], 1)
                 else:
                     with self.assertRaisesRegex(DriverError, 'native-session-closed'):
                         driver.step(1)
@@ -220,13 +229,13 @@ class DriverTest(unittest.TestCase):
         ack_messages, _ = messages(decode_frame(port.sent[-1][0], gns_reliable=bool(port.sent[-1][1] & 8)).body)
         self.assertEqual((ack_messages[0].message_id, ack_messages[0].body),
                          (7, bytes.fromhex('08 03 10 07 18 00')))
-        self.assertEqual(output[0]['weapon'], 'weapon_awp')
-        self.assertEqual(driver.report()['online_success'], 'INCONCLUSIVE')
+        self.assertEqual(output, [])  # Control owner no longer interprets event fields.
+        self.assertFalse(driver.report()['reachedFull'])
         self.assertNotIn('SYNTHETIC', str(driver.report()))
         sample.seek(0)
         replayed = []
         report = replay(sample, replayed.append)
-        self.assertEqual(output, replayed)
+        self.assertEqual(replayed[0]['weapon'], 'weapon_awp')
         self.assertEqual(report['frames'], 1)
         # Further traffic must not repeat NEW. PRESPAWN stays explicit until
         # schema/entity initialization is wired to the existing parser.
@@ -241,6 +250,8 @@ class DriverTest(unittest.TestCase):
     def test_full_requires_a_processed_full_snapshot_and_does_not_wait_for_remote_full(self):
         driver, port, _, _ = self.ready()
         class Parser:
+            @property
+            def completed_sequence(self): return self.checkpoint['sequence']
             checkpoint = {'sequence': 1, 'schemaFields': 1, 'serverInfo': True, 'stringTables': 0}
             controls = []
             def pop_receipts(self):
@@ -273,6 +284,8 @@ class DriverTest(unittest.TestCase):
     def test_remote_full_and_delta_receipt_do_not_replace_first_full_snapshot(self):
         driver, port, _, _ = self.ready()
         class Parser:
+            @property
+            def completed_sequence(self): return self.checkpoint['sequence']
             checkpoint = {'sequence': 1, 'schemaFields': 1, 'serverInfo': True, 'stringTables': 0}
             controls = []
             def pop_receipts(self):
@@ -301,6 +314,8 @@ class DriverTest(unittest.TestCase):
     def test_tick_receipt_waits_for_processed_entities_and_is_rate_bounded(self):
         driver, port, _, _ = self.ready()
         class Parser:
+            @property
+            def completed_sequence(self): return self.checkpoint['sequence']
             checkpoint = {'sequence': 0}
             controls = []
             def pop_receipts(self):

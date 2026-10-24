@@ -33,6 +33,14 @@ void not_ready(Session& session) {
 }
 int main() {
   {
+    FakePort port; Session session(port); connect(session); session.accept_server_auth2();
+    session.disconnected(11, true);
+    assert(session.state() == State::closed && session.connection() == 11 && port.closes == 0);
+    session.close(); session.close();
+    assert(session.connection() == 0 && port.closes == 1);
+  }
+
+  {
     FakePort port;
     { Session session(port); connect(session);
       assert(port.requests == 0); // GNS Connected alone does not request a ticket.

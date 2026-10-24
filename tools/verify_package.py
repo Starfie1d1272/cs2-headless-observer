@@ -29,6 +29,15 @@ def main():
     for name, source in [('LICENSE-STEAMWORKS-EXCEPTION.txt', 'LICENSE-STEAMWORKS-EXCEPTION.txt'),
                          ('Steamworks-SDK.txt', 'licenses/Steamworks-SDK.txt')]:
         assert (root/'licenses'/name).read_text(encoding='utf-8') == (root/'source/project'/source).read_text(encoding='utf-8'), name
+    import re
+    for document in (root/'docs').glob('*.md'):
+        for target in re.findall(r'\]\(([^)\s]+)\)', document.read_text(encoding='utf-8')):
+            if '://' not in target and not target.startswith('#'):
+                assert (document.parent/target.split('#')[0]).exists(), (document.name, target)
+    for name in ('snappy.c', 'entities.c'):
+        assert (root/'source/cs2parser-source/wasm'/name).is_file(), name
+    for name in ('build-snappy-wasm.ts', 'build-entities-wasm.ts', 'wasm-clang.ts'):
+        assert (root/'source/cs2parser-source/scripts'/name).is_file(), name
     python=root/'runtime/python/python.exe'
     component=manifest.get('distribution')=='external-node'
     node=args.node.resolve(strict=True) if args.node else (Path(__import__('shutil').which('node') or 'node') if component else root/'runtime/node.exe')
@@ -60,7 +69,7 @@ def main():
     assert after==actual,'Package changed while running; generated cache or capture files are forbidden'
     for name,digest in expected.items():
         assert hashlib.sha256((root/name).read_bytes()).hexdigest()==digest,name
-    report={'passed':True,'files':len(expected),'distribution':manifest.get('distribution','standalone-research'),
+    report={'passed':True,'files':len(expected),'distribution':manifest.get('distribution','standalone'),
             'nodeVersion':subprocess.check_output([str(node),'--version'],text=True).strip(),
             'artifactRuntime':'windows-offline-smoke-pass','managedStartupBoundary':'pass',
             'artifactUnchanged':True,'artifactOnline':'not-tested','workingTreeDirty':manifest['workingTreeDirty']}

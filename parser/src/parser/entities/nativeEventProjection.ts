@@ -3,7 +3,14 @@ import type {NativeSnapshotState,NativeEntity} from './nativeSnapshotState.js';
 import type {NativeStringTables} from './nativeStringTables.js';
 import type {NativeSchema} from './nativeSchema.js';
 import type {NativeWireValue} from './nativeFieldCodec.js';
-const steamId=(value:unknown)=>typeof value==='bigint'||typeof value==='string'?(/^7656119\d{10}$/.test(String(value))?String(value):null):null;
+// Public individual Steam IDs are bit fields, not a fixed decimal prefix.
+const steamId=(value:unknown)=>{
+ if(typeof value!=='bigint'&&typeof value!=='string')return null;
+ const text=String(value);if(!/^[1-9]\d{0,19}$/.test(text))return null;
+ const id=BigInt(text);
+ return id<=0xffffffffffffffffn&&(id>>56n)===1n&&((id>>52n)&15n)===1n&&
+  ((id>>32n)&0xfffffn)<=4n&&(id&0xffffffffn)!==0n?text:null;
+};
 const field=(entity:NativeEntity,name:string):NativeWireValue=>{
  let found:NativeWireValue;let count=0;
  for(const record of entity.fields.entries())if(record.field.name===name&&record.operation==='value'){found=record.value;count++;}
