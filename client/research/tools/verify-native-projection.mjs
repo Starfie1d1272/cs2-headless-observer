@@ -23,6 +23,12 @@ check(()=>assert.equal(project().players.userid.userId,42));
 check(()=>assert.equal(project().players.userid.slot,0));
 check(()=>assert.equal(projectNativeEvent(schema,snapshots,tables,'player_hurt',fields,types).players.userid.steamId,steam));
 check(()=>assert.equal(Object.isFrozen(project().players.userid.controller),true));
+entities.get(1).fields=values({m_steamID:BigInt(steam),m_hPlayerPawn:BigInt(pawn|((serial&1023)<<14))});
+entities.get(10).fields=values({m_bWarmupPeriod:true,m_totalRoundsPlayed:3n});
+check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().round,3));
+entities.get(1).fields=values({m_steamID:BigInt(steam),m_hPlayerPawn:0x100000000n});
+check(()=>assert.equal(project().actor,null));
+entities.get(1).fields=values({m_steamID:BigInt(steam),m_hPlayerPawn:BigInt(pawn|((serial&1023)<<14))});
 info=Uint8Array.of(17,...fixed64(steam));
 const original=fields.userid_pawn;fields.userid_pawn=((serial-1024)*32768+pawn)|0;
 check(()=>assert.equal(project().actor,null));check(()=>assert.equal(project().players.userid,null)); // Same compressed10-bit serial, different native17-bit identity.

@@ -8,7 +8,10 @@ class ObserverSettingsTests(unittest.TestCase):
         settings = ObserverSettings()
         rows = fields(scalar(fields(settings.userinfo()), 1, 2))[1]
         names = [scalar(fields(payload), 1, 2) for wire, payload in rows]
-        self.assertEqual(names, [b'name', b'tv_relay'])
+        self.assertEqual(names, [b'name', b'tv_relay', b'rate'])
+        rate = fields(settings.query(number(1, 8) + blob(2, b'rate')))
+        self.assertEqual(scalar(rate, 2), 0)
+        self.assertEqual(scalar(rate, 4, 2), b'786432')
         result = fields(settings.query(number(1, 7) + blob(2, b'tv_relay')))
         self.assertEqual(scalar(result, 1), 7)
         self.assertEqual(scalar(result, 2), 0)

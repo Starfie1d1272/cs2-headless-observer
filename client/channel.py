@@ -123,7 +123,9 @@ def decode_frame(data: bytes, *, gns_reliable: bool):
     if tag not in (1, 2, 3, 4):
         raise ProbeError('unsupported-channel-tag')
     reliable, compressed = tag in (1, 3), tag in (3, 4)
-    if reliable != gns_reliable:
+    # GNS promotes oversized unreliable messages to reliable delivery. The
+    # application tag still selects its original sequence/ACK header layout.
+    if reliable and not gns_reliable:
         raise ProbeError('channel-reliability-mismatch')
     tick, sequence, ack, history = None, None, None, ()
     if reliable:

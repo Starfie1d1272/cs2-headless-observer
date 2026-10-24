@@ -28,7 +28,7 @@ def replay(handle, emit):
         if first is None: first = elapsed
         frame = decode_frame(data, gns_reliable=bool(reliable))
         frames += 1
-        if not reliable and not order.accept(frame)['accepted']:
+        if not frame.reliable and not order.accept(frame)['accepted']:
             continue
         decoded, _ = messages(frame.body)
         for message in decoded:
