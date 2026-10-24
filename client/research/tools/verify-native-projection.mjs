@@ -37,6 +37,8 @@ fields.userid_pawn=original;entities.get(pawn).serial++;
 check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().pawns.userid,null));entities.get(pawn).serial--;
 fields.userid_pawn=-1;check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().pawns.userid,null));fields.userid_pawn=original;
 info=Uint8Array.of(17,...fixed64('76561198000000456'));check(()=>assert.equal(project().actor,null));info=Uint8Array.of(17,...fixed64(steam));
+info=new Uint8Array();check(()=>assert.equal(project().actor,null));check(()=>assert.equal(project().pawns.userid,null));
+info=Uint8Array.of(17,...fixed64(steam));
 fields.userid=65535;check(()=>assert.equal(project().actor,null));fields.userid=0;
 types.set('userid',4);check(()=>assert.equal(project().actor,null));types.set('userid',9);
 snapshots.waitingFull=true;check(()=>assert.equal(project().actor,null));check(()=>assert.equal(project().round,null));check(()=>assert.equal(project().pawns.userid,null));snapshots.waitingFull=false;
