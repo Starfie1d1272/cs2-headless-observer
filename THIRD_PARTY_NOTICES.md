@@ -1,21 +1,21 @@
-# 第三方来源与分发清单
+# 第三方来源与分发材料
 
-本仓库根 LICENSE 保留 AGPL-3.0 文本；迁自 Mizar 的代码保留原来源。项目自有代码附[Steamworks SDK 链接例外](LICENSE-STEAMWORKS-EXCEPTION.txt)，第三方代码不因该例外更换许可。下表追踪构建和分发资产。
+项目自有代码采用根目录的 AGPL-3.0，并附 [Steamworks SDK 链接例外](LICENSE-STEAMWORKS-EXCEPTION.txt)。迁自 Mizar 的代码保留来源，第三方组件适用各自许可证。
 
-| 组件 | 固定来源 | 使用与保留材料 |
+| 组件 | 固定来源 | 随包材料与使用方式 |
 | --- | --- | --- |
-| cs2parser | 2.7.2；deced963b86d3ec26b28a225824130fdf9fe3167 | MPL-2.0；修改补丁、修改后的源码、LICENSE、ACKNOWLEDGEMENTS |
-| @bufbuild/protobuf | pnpm-lock.yaml 的精确版本 | Apache-2.0 声明；varint 文件内 BSD 通知；随包保留相关源码和通知 |
-| Node.js | Windows 24.22.0 ZIP及脚本固定摘要 | 随运行时提供原始 LICENSE，含其第三方声明 |
-| Python | Windows embeddable 3.14.8 ZIP及脚本固定摘要 | 随运行时提供原始 LICENSE.txt |
-| Steamworks SDK 头文件 | ValveSoftware/Proton bc896217ffcd67f892f952b010f898fe7bd0f0a1 / steamworks_sdk_165 | 仅作编译输入；固定归档中的完整许可保留于 licenses/Steamworks-SDK.txt |
-| Steam API | 用户本机 CS2 安装 | 不随本包复制，不分发账号、票据或游戏 DLL |
-| ICE 独立对照 | verify_password.py 指定的外部源码 | 仅可选合成测试；不进入运行包，使用前核对该输入的原始许可 |
+| cs2parser | 2.7.2，`deced963b86d3ec26b28a225824130fdf9fe3167` | MPL-2.0；修改源码、补丁、LICENSE、ACKNOWLEDGEMENTS |
+| @bufbuild/protobuf | `pnpm-lock.yaml` 的精确版本 | Apache-2.0、varint 内 BSD 通知及对应分发源码 |
+| Node.js | Windows 24.22.0 归档与固定摘要 | 独立包提供原始 LICENSE 及第三方声明 |
+| Python | Windows embeddable 3.14.8 归档与固定摘要 | 两类包提供原始 LICENSE.txt |
+| Steamworks SDK 头文件 | ValveSoftware/Proton `bc896217ffcd67f892f952b010f898fe7bd0f0a1` 的 `steamworks_sdk_165` | 外部编译输入；归档协议见 [Steamworks-SDK.txt](licenses/Steamworks-SDK.txt) |
+| Steam API | 使用者本机 CS2 安装 | 运行时从本机加载 |
+| ICE 独立对照 | `verify_password.py` 指定的外部来源 | 可选测试输入，按该输入原始许可使用 |
 
-其他研究参考在 research/references/REFERENCE-BASIS.md 中固定；参考阅读与直接复制实现分开核对。研究中的 Valve 模块仅保留摘要和观察结果，不附原始模块或完整反编译正文。
+`external-node` 使用调用方提供的 Node，其通知由运行时提供方保留。两个 Windows 包均提供项目、Python、解析器及其余实际分发组件的许可与对应源码材料。
 
-正式制品需核对运行文件、依赖通知、重建源码、构建参数与实际 bundle 一致，尤其是打入 bundle 的间接依赖。手动打包工作流不会自动公开仓库或创建 Release。
+Steamworks SDK 链接例外适用于项目权利人有权授权的代码；Valve 材料的使用和分发遵循 SDK 协议。SDK 头文件作为构建前提准备，账号、票据和游戏模块保存在使用者本机。
 
-external-node不携带Node，调用方提供满足最低要求的运行时；其分发通知由运行时提供方保留。独立包附带固定Node与原始通知。两种包继续提供Python许可、修改解析器源码、补丁和依赖声明。
+研究参考的版本和复用范围见[来源说明](research/references/REFERENCE-BASIS.md)。固定模块研究提供摘要和观察结果，公开示例采用合成输入。
 
-原生桥编译使用 Valve 保留权利的 SDK 头文件，包内不附 SDK 头文件或 Steam/CS2 DLL。[SDK 许可](licenses/Steamworks-SDK.txt)来自上述固定输入归档；其开发使用及可再分发部分受该协议约束。项目权利人已为有权授权的项目代码授予限定链接例外；这不授予 Valve 材料的权利，也不免除 SDK 协议义务。
+发行材料按固定提交、构建输入和实际 bundle 核对，包含间接依赖的通知与重建资料。手动打包流程生成候选资产，正式 Release 使用版本化归档、摘要和验证记录。

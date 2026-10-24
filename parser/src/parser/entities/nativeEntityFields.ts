@@ -34,7 +34,7 @@ export class NativeEntityFields {
   return record&&Object.freeze({...record,value:copyValue(record.value)});
  }
  *entries(name?:string):IterableIterator<NativeFieldRecord> {
-  // Name lookup still visits every candidate, but copies only matching values.
+  // Yield defensive copies for each record matching the optional field name.
   for(const record of this.values.values())if(name===undefined||record.field.name===name)
    yield Object.freeze({...record,value:copyValue(record.value)});
  }

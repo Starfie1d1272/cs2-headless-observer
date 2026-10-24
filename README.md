@@ -1,56 +1,51 @@
 # CS2 Headless Observer
 
-以普通 Steam 观众身份连接获授权的 GOTV 源，在后台接收比赛数据，输出逐行 JSON 事件。运行时不启动游戏画面；Steam 认证及可靠传输使用本机官方接口。
+Windows x64 的 GOTV 后台接收工具。使用普通 Steam 观众身份连接获授权的观战地址，输出逐行 JSON 比赛事件，可独立运行，也可由应用管理。
 
-这是独立的 Windows x64 接收程序。可以交互运行，也可以由任意应用以子进程方式管理。当前版本为1.0.0。
+[Mizar](https://github.com/Starfie1d1272/Mizar) 使用本组件提供 Lookahead 来源数据。
 
-本组件为 [Mizar](https://github.com/Starfie1d1272/Mizar) 的 Lookahead 功能提供底层观战数据。
+## 快速开始
 
-## 使用
+从 [Releases](https://github.com/Starfie1d1272/cs2-headless-observer/releases) 下载发行包：
 
-发行包从 [Releases](https://github.com/Starfie1d1272/cs2-headless-observer/releases) 获取；没有正式资产时按[构建步骤](docs/build.md)准备。选择 `windows-x64` 独立包，或由应用管理、复用已有 Node 的 `windows-x64-external-node` 包。
+| 包 | 适合的用法 |
+| --- | --- |
+| `windows-x64` | 独立运行，包内提供 Python、Node 和交互启动入口 |
+| `windows-x64-external-node` | 应用集成，复用已有的 Node.js 24.0.0 或更高版本 |
 
-独立包三步开始：解压到可写目录，先运行 `Replay.cmd` 自检，再登录 Steam、运行 `Start.cmd` 并填写 CS2 路径与获授权连接。需游戏共存时先启动游戏。
+独立包使用步骤：
 
-包内入口：
+1. 解压到可写目录，运行 `Replay.cmd` 完成本地自检。
+2. 登录自己的 Steam 账号，准备 CS2 安装目录和获授权的 GOTV 地址、密码。需要同时使用游戏时，先启动游戏。
+3. 运行 `Start.cmd`，按提示填写路径、来源 host 版本和连接信息。程序持续运行，Ctrl+C 请求停止。
 
-- `Start.cmd`：交互连接，需要本机 Steam 登录、CS2 安装和有效观战授权。
-- `Replay.cmd`：运行包内完全合成的离线样例，无需 Steam、CS2 或网络。
-- 应用集成：按[托管接口](docs/managed-interface.md)启动 `client/driver.py --managed`，通过 stdin 传入配置，从 stdout 消费 JSON。
+Steam 会将观众的 App730 上下文显示为 CS2 运行状态。重启游戏前，先停止观察器并等待进程退出。
 
-external-node包使用调用方提供或PATH中的Node.js 24.0.0及以上版本，不绑定Node小版本。便携包的实际验证范围由制品 manifest 及验证报告说明。源码使用者见[构建步骤](docs/build.md)。
+## 事件与应用集成
 
-合成自检输出先建立 cursor，再输出事件。下面是[实际合成输出](examples/managed-events.json)的字段节选，不是比赛数据或完整契约记录：
+输出包括来源时钟、游戏事件和来源断点。下面是[合成自检输出](examples/managed-events.json)的字段节选；完整结构见 [JSON Schema](schemas/managed-event.schema.json)。
 
 ```jsonl
 {"kind":"cursor","sequence":1,"world":1,"tick":100,"map":"de_test"}
 {"kind":"round_freeze_end","sequence":2,"world":1,"committedTick":100,"players":{},"identityResolved":false}
 ```
 
-集成时保持 stdin 开放、持续读取 stdout；关闭 stdin 请求停止。完整字段和可运行消费者见[托管接口](docs/managed-interface.md)。运行失败时按[使用说明](docs/usage.md)检查报告和下一步操作。
+应用按[托管接口](docs/managed-interface.md)启动子进程，通过私有 stdin 传入配置，持续读取 stdout，并以 stdin EOF 请求停止。[Python](examples/managed_consumer.py) 和 [Node](examples/managed_consumer.mjs) 示例展示了完整进程调用。
 
-## 支持范围
+## 适用范围
 
-原生桥 ABI 3、有序解析 IPC 3；已验证 host 14191、14192。真实普通观众接入已在 CS2 build 10955 / host 14192 验证。其他 build 和来源需要单独验证。
+当前在线验证环境为 Windows x64、CS2 build 10955 / host 14192。解析器依据来源 schema 处理实体和事件；身份有当前证据时输出 Steam64，其余保留为 null 或未解析状态。
 
-身份缺失保留未知；控制器 Steam 身份与可选 pawn 证明分别输出。事件接收时间不是画面时间。换图使用新 GOTV 地址和新来源实例。项目不承诺固定提前量，也不提供渲染或完整游戏模拟。
+同账号并行观战使用不同的 GOTV 端点；同一 IP:port 的后续连接可能替换已有连接，游戏客户端也占用该端点。每次换场或换图使用新授权地址与新来源实例。
 
-同一 Steam 账号重复连接同一 GOTV IP、端口，本次实测出现已有连接被替换；不同端点可以并行。与游戏客户端共用同一观战端点时，不应依赖额外观众连接稳定共存。
+事件时间属于来源时间线。实际领先量、节目时间对齐和展示由消费应用管理。完整条件与在线补验范围见[兼容性](docs/compatibility.md)，运行和故障处理见[使用说明](docs/usage.md)。
 
-Steam 可能将后台观众的 App730 上下文显示为“CS2 正在运行”。需要同时使用游戏时先启动游戏，再启动观察器；重启游戏前停止观察器并等待退出。
+## 文档
 
-完整限制见[兼容性](docs/compatibility.md)，启动、停止及报告含义见[使用说明](docs/usage.md)。
-
-## 开发与维护
-
-- [构建](docs/build.md)、[验证](docs/verification.md)、[贡献说明](CONTRIBUTING.md)
-- [架构](docs/architecture.md)、[托管接口](docs/managed-interface.md)、[协议契约](docs/protocol/README.md)
-- [通用外部Node组件与独立包](docs/component-distribution.md)：共享运行时、随包安装及独立更新方案
-- [研究知识库与证据](research/README.md)、[历史归档](archive/README.md)
-- [第三方来源](THIRD_PARTY_NOTICES.md)、[许可证](LICENSE)
-
-真实比赛捕获、玩家资料、认证信息和游戏二进制不作为公开示例。仓库样例由合成字节生成。
+- 使用与集成：[使用说明](docs/usage.md)、[托管接口](docs/managed-interface.md)、[组件分发](docs/component-distribution.md)
+- 开发与维护：[构建](docs/build.md)、[验证](docs/verification.md)、[架构](docs/architecture.md)、[贡献指南](CONTRIBUTING.md)、[更新日志](CHANGELOG.md)
+- 协议与证据：[协议契约](docs/protocol/README.md)、[研究知识库](research/README.md)、[历史归档](archive/README.md)
 
 ## 许可
 
-项目自有代码采用 AGPL-3.0，并附[限定的 Steamworks SDK 链接例外](LICENSE-STEAMWORKS-EXCEPTION.txt)，允许与 Steamworks SDK、Steam API 库链接及分发组合产物；项目代码及对应源码的其他 AGPL 义务继续适用。第三方组件各自遵循原许可证，例外不替 Valve 授权，详见[第三方来源](THIRD_PARTY_NOTICES.md)。
+项目自有代码采用 AGPL-3.0，并附[Steamworks SDK 链接例外](LICENSE-STEAMWORKS-EXCEPTION.txt)。对应源码与许可随发行包提供；第三方组件适用各自许可证，详见[第三方来源](THIRD_PARTY_NOTICES.md)。
