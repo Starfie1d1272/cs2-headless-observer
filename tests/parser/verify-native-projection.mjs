@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import {resolve} from 'node:path';
-const {projectNativeEvent}=await import(pathToFileURL(resolve(process.argv[2])).href);
+const {projectNativeEvent,projectRoundClock}=await import(pathToFileURL(resolve(process.argv[2])).href);
 const steam='76561198000000123',serial=100000,pawn=3000;
 const values=object=>({*entries(){for(const [name,value] of Object.entries(object))yield {field:{name},operation:'value',value};}});
 const entities=new Map([[1,{id:1,classId:0,serial:1,fields:values({m_steamID:BigInt(steam),m_hPlayerPawn:pawn|((serial&1023)<<14)})}],
@@ -17,6 +17,15 @@ const project=()=>projectNativeEvent(schema,snapshots,tables,'weapon_fire',field
 let checks=0;const check=f=>{f();checks++;};
 check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().warmup,true));check(()=>assert.equal(project().round,3));
 check(()=>assert.equal(project().identityResolved,true));
+entities.get(10).fields=values({m_totalRoundsPlayed:3,m_fRoundStartTime:12.5,m_iRoundTime:115,m_bFreezePeriod:false,m_bWarmupPeriod:false,m_bBombPlanted:false,m_bGamePaused:false,m_nTotalPausedTicks:0,m_nPauseStartTick:0,m_bTechnicalTimeOut:false});
+let clock=projectRoundClock(schema,snapshots,100);
+check(()=>assert.deepEqual(clock,{totalRoundsPlayed:3,phase:'unknown',startTime:12.5,duration:115,committedTick:100,freezePeriod:false,warmupPeriod:false,bombPlanted:false,pause:{active:false,totalPausedTicks:0,startTick:0,technical:false,semantics:'unknown'},status:'available'}));
+entities.get(10).fields=values({m_bWarmupPeriod:false,m_bFreezePeriod:true});
+check(()=>assert.equal(projectRoundClock(schema,snapshots,101).phase,'freezetime'));
+check(()=>assert.equal(projectRoundClock(schema,snapshots,101).status,'partial'));
+snapshots.waitingFull=true;clock=projectRoundClock(schema,snapshots,102);
+check(()=>assert.equal(clock.status,'unavailable'));check(()=>assert.equal(clock.startTime,null));snapshots.waitingFull=false;
+entities.get(10).fields=values({m_bWarmupPeriod:true,m_totalRoundsPlayed:3});
 const originalControllerFields=entities.get(1).fields;
 entities.get(1).fields={*entries(){yield* originalControllerFields.entries();yield {field:{name:'m_steamID'},operation:'value',value:BigInt(steam)};}};
 check(()=>assert.equal(project().actor,null));

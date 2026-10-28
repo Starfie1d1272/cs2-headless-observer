@@ -239,6 +239,7 @@ class OrderedParserBridge:
                           **{key: row.get(key) for key in ('source', 'channel', 'world', 'sequence', 'tick')}))
             if emit is not None and (row['type'] == 'cursor' or (row['type'] == 'raw-event' and row.get('name') in self.FORWARDED_EVENTS)):
                 emit(dict(kind='cursor' if row['type'] == 'cursor' else row['name'],
+                    **({'roundClock': row.get('roundClock')} if row['type'] == 'cursor' and 'roundClock' in row else {}),
                     **({key: row.get(key) for key in ('type', 'name', 'fields', 'players', 'pawns', 'committedTick')} if row['type'] == 'raw-event' else {}),
                     **{key: row.get(key) for key in ('tick', 'tickInterval', 'map',
                     'warmup', 'round', 'weapon', 'actor', 'target', 'source', 'channel', 'world', 'sequence',

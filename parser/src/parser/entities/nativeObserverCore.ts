@@ -6,7 +6,7 @@ import {NativeStringTables} from './nativeStringTables.js';
 import {NativeSchema} from './nativeSchema.js';
 import {NativeSnapshotState} from './nativeSnapshotState.js';
 import {NativePacketEntities} from './nativePacketEntities.js';
-import {projectNativeEvent} from './nativeEventProjection.js';
+import {projectNativeEvent,projectRoundClock} from './nativeEventProjection.js';
 
 export type NativeSourceIdentity=Readonly<{source:string;channel:number;world:number}>;
 export type NativeMessageEnvelope=Readonly<NativeSourceIdentity&{sequence:number;messageId:number;body:Uint8Array;contextTick?:number}>;
@@ -103,7 +103,7 @@ export class NativeObserverCore {
       if(receipt.epoch!==priorEpoch){record('gap',{reason:'snapshot-epoch-restarted'});this.lastCursor=-Infinity;}
       if(this.server?.tick_interval&&(receipt.tick-this.lastCursor)*this.server.tick_interval>=1){
        this.lastCursor=receipt.tick;
-       record('cursor',{map:this.server.map_name??null,tickInterval:this.server.tick_interval,
+       record('cursor',{map:this.server.map_name??null,tickInterval:this.server.tick_interval,roundClock:projectRoundClock(this.schema,this.snapshots,receipt.tick),
         ...projectNativeEvent(this.schema,this.snapshots,this.tables,'cursor',{},new Map())});
       }
      }
