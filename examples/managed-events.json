@@ -18,7 +18,25 @@
       "descriptorGeneration": null,
       "eventServerTick": null,
       "networkTick": 100,
-      "identityResolved": false
+      "identityResolved": false,
+      "roundClock": {
+        "totalRoundsPlayed": null,
+        "phase": "unknown",
+        "startTime": null,
+        "duration": null,
+        "committedTick": 100,
+        "freezePeriod": null,
+        "warmupPeriod": null,
+        "bombPlanted": null,
+        "pause": {
+          "active": null,
+          "totalPausedTicks": null,
+          "startTick": null,
+          "technical": null,
+          "semantics": "unknown"
+        },
+        "status": "unavailable"
+      }
     },
     {
       "kind": "round_freeze_end",

@@ -33,7 +33,7 @@ def main():
         '--worker',str(args.worker.resolve()),'--node',args.node,'--host-version',str(fixture['hostVersion']),
         '--output',str(args.output/'replay')],check=True)
     rows=[json.loads(line) for line in (args.output/'replay/events.jsonl').read_text(encoding='utf-8').splitlines()]
-    assert any(row.get('kind')=='cursor' and row.get('tick')==100 for row in rows), 'Missing synthetic cursor'
+    assert any(row.get('kind')=='cursor' and row.get('tick')==100 and row.get('roundClock', {}).get('committedTick')==100 and row['roundClock']['status']=='unavailable' for row in rows), 'Missing synthetic cursor clock'
     assert sum(row.get('kind')==fixture['expectedEvent'] for row in rows)==1, 'Missing synthetic lifecycle event'
     print(json.dumps({'synthetic':True,'frames':len(fixture['frames']),'events':len(rows),'passed':True}))
     return 0
