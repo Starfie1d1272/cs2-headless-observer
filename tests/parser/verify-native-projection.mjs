@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import {resolve} from 'node:path';
-const {projectNativeEvent,projectRoundClock}=await import(pathToFileURL(resolve(process.argv[2])).href);
+const {projectNativeEvent,projectRoundClock,NativeSchema,NativeEntityFields,BitBuffer}=await import(pathToFileURL(resolve(process.argv[2])).href);
 const steam='76561198000000123',serial=100000,pawn=3000;
 const values=object=>({*entries(){for(const [name,value] of Object.entries(object))yield {field:{name},operation:'value',value};}});
 const entities=new Map([[1,{id:1,classId:0,serial:1,fields:values({m_steamID:BigInt(steam),m_hPlayerPawn:pawn|((serial&1023)<<14)})}],
@@ -25,6 +25,22 @@ check(()=>assert.equal(projectRoundClock(schema,snapshots,101).phase,'freezetime
 check(()=>assert.equal(projectRoundClock(schema,snapshots,101).status,'partial'));
 snapshots.waitingFull=true;clock=projectRoundClock(schema,snapshots,102);
 check(()=>assert.equal(clock.status,'unavailable'));check(()=>assert.equal(clock.startTime,null));snapshots.waitingFull=false;
+entities.get(10).fields=values({m_bWarmupPeriod:true,m_totalRoundsPlayed:3});
+// Decode default signed varints through the production schema and entity field reader.
+const codes=Object.fromEntries(JSON.parse(fs.readFileSync(process.env.GOTV_FIXTURE_ROOT+'huffman-codebook-authority.json','utf8')).codes.map(r=>[r.symbol,[...r.wire_bits_first_to_last].map(Number)]));
+const names=['CCSGameRulesProxy','m_iRoundTime','m_iRoundWinStatus','m_totalRoundsPlayed','m_nTotalPausedTicks','int32'];
+const nativeSchema=new NativeSchema({symbols:names,fields:[1,2,3,4].map(i=>({var_name_sym:i,var_type_sym:5,polymorphic_types:[]})),serializers:[{serializer_name_sym:0,serializer_version:0,fields_index:[0,1,2,3]}]},[{class_id:0,network_name:'CCSGameRulesProxy'}],1);
+const bits=(value,width)=>Array.from({length:width},(_,i)=>(value>>>i)&1);
+const wire=[...codes[0],...codes[0],...codes[0],...codes[0],...codes[39],...bits(230,8),...bits(1,8),...bits(3,8),...bits(6,8),...bits(14,8)];
+const bytes=new Uint8Array(Math.ceil(wire.length/8));wire.forEach((v,i)=>bytes[i>>>3]|=v<<(i&7));
+const decoded=NativeEntityFields.decode(nativeSchema,0,new BitBuffer(bytes),NativeEntityFields.empty(nativeSchema,0),wire.length).state;
+const nativeSnapshots={waitingFull:false,*entries(){yield {id:1,classId:0,serial:1,fields:decoded};}};
+check(()=>assert.equal(decoded.get([0]).value,115n));
+clock=projectRoundClock(nativeSchema,nativeSnapshots,103);
+check(()=>assert.equal(clock.duration,115));check(()=>assert.equal(clock.roundWinStatus,-2));
+check(()=>assert.equal(clock.totalRoundsPlayed,3));check(()=>assert.equal(clock.pause.totalPausedTicks,7));
+entities.get(10).fields=values({m_iRoundTime:1.5,m_iRoundWinStatus:2147483648n});
+clock=projectRoundClock(schema,snapshots,104);check(()=>assert.equal(clock.duration,null));check(()=>assert.equal(clock.roundWinStatus,null));
 entities.get(10).fields=values({m_bWarmupPeriod:true,m_totalRoundsPlayed:3});
 const originalControllerFields=entities.get(1).fields;
 entities.get(1).fields={*entries(){yield* originalControllerFields.entries();yield {field:{name:'m_steamID'},operation:'value',value:BigInt(steam)};}};

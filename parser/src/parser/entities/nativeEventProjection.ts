@@ -16,6 +16,7 @@ const field=(entity:NativeEntity,name:string):NativeWireValue=>{
  for(const record of entity.fields.entries(name))if(record.field.name===name&&record.operation==='value'){found=record.value;count++;}
  return count===1?found:undefined;
 };
+const int32Value=(v:NativeWireValue)=>typeof v==='bigint'&&v>=-0x80000000n&&v<=0x7fffffffn?Number(v):typeof v==='number'&&Number.isInteger(v)&&v>=-0x80000000&&v<=0x7fffffff?v:undefined;
 const uint32Value=(v:NativeWireValue)=>typeof v==='bigint'&&v>=0n&&v<=0xffffffffn?Number(v):typeof v==='number'&&Number.isInteger(v)&&v>=0&&v<=0xffffffff?v:undefined;
 /** Values are read only from the current committed GameRules snapshot. */
 export function projectRoundClock(schema:NativeSchema|undefined,snapshots:NativeSnapshotState,committedTick:number){
@@ -25,11 +26,10 @@ export function projectRoundClock(schema:NativeSchema|undefined,snapshots:Native
  const get=(name:string)=>rules?field(rules,name):undefined;
  const boolean=(name:string)=>{const v=get(name);return typeof v==='boolean'?v:null;};
  const number=(name:string)=>{const v=get(name);return typeof v==='number'&&Number.isFinite(v)&&v>=0?v:null;};
- const integer=(name:string)=>{const v=uint32Value(get(name));return v??null;};
- const totalRoundsPlayed=integer('m_totalRoundsPlayed'),startTime=number('m_fRoundStartTime'),duration=number('m_iRoundTime');
+ const integer=(name:string)=>{const v=int32Value(get(name));return v!==undefined&&v>=0?v:null;};
+ const totalRoundsPlayed=integer('m_totalRoundsPlayed'),startTime=number('m_fRoundStartTime'),duration=integer('m_iRoundTime');
  const freezePeriod=boolean('m_bFreezePeriod'),warmupPeriod=boolean('m_bWarmupPeriod'),bombPlanted=boolean('m_bBombPlanted');
- const roundInProgress=boolean('m_bRoundInProgress'),winStatus=get('m_iRoundWinStatus');
- const roundWinStatus=typeof winStatus==='number'&&Number.isInteger(winStatus)&&winStatus>=-0x80000000&&winStatus<=0x7fffffff?winStatus:null;
+ const roundInProgress=boolean('m_bRoundInProgress'),roundWinStatus=int32Value(get('m_iRoundWinStatus'))??null;
  const pause=Object.freeze({active:boolean('m_bGamePaused'),totalPausedTicks:integer('m_nTotalPausedTicks'),
   startTick:integer('m_nPauseStartTick'),technical:boolean('m_bTechnicalTimeOut'),semantics:'unknown' as const});
  const phase=warmupPeriod===true?'warmup':warmupPeriod===false&&freezePeriod===true?'freezetime':'unknown';
