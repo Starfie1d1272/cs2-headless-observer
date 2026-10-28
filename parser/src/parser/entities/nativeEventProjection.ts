@@ -16,7 +16,27 @@ const field=(entity:NativeEntity,name:string):NativeWireValue=>{
  for(const record of entity.fields.entries(name))if(record.field.name===name&&record.operation==='value'){found=record.value;count++;}
  return count===1?found:undefined;
 };
+const int32Value=(v:NativeWireValue)=>typeof v==='bigint'&&v>=-0x80000000n&&v<=0x7fffffffn?Number(v):typeof v==='number'&&Number.isInteger(v)&&v>=-0x80000000&&v<=0x7fffffff?v:undefined;
 const uint32Value=(v:NativeWireValue)=>typeof v==='bigint'&&v>=0n&&v<=0xffffffffn?Number(v):typeof v==='number'&&Number.isInteger(v)&&v>=0&&v<=0xffffffff?v:undefined;
+/** Values are read only from the current committed GameRules snapshot. */
+export function projectRoundClock(schema:NativeSchema|undefined,snapshots:NativeSnapshotState,committedTick:number){
+ let rules:NativeEntity|undefined;
+ if(schema&&!snapshots.waitingFull)for(const entity of snapshots.entries())
+  if(schema.getClass(entity.classId).name==='CCSGameRulesProxy'){rules=entity;break;}
+ const get=(name:string)=>rules?field(rules,name):undefined;
+ const boolean=(name:string)=>{const v=get(name);return typeof v==='boolean'?v:null;};
+ const number=(name:string)=>{const v=get(name);return typeof v==='number'&&Number.isFinite(v)&&v>=0?v:null;};
+ const integer=(name:string)=>{const v=int32Value(get(name));return v!==undefined&&v>=0?v:null;};
+ const totalRoundsPlayed=integer('m_totalRoundsPlayed'),startTime=number('m_fRoundStartTime'),duration=integer('m_iRoundTime');
+ const freezePeriod=boolean('m_bFreezePeriod'),warmupPeriod=boolean('m_bWarmupPeriod'),bombPlanted=boolean('m_bBombPlanted');
+ const roundInProgress=boolean('m_bRoundInProgress'),roundWinStatus=int32Value(get('m_iRoundWinStatus'))??null;
+ const pause=Object.freeze({active:boolean('m_bGamePaused'),totalPausedTicks:integer('m_nTotalPausedTicks'),
+  startTick:integer('m_nPauseStartTick'),technical:boolean('m_bTechnicalTimeOut'),semantics:'unknown' as const});
+ const phase=warmupPeriod===true?'warmup':warmupPeriod===false&&freezePeriod===true?'freezetime':'unknown';
+ const values=[totalRoundsPlayed,startTime,duration,freezePeriod,warmupPeriod,bombPlanted,pause.active,pause.totalPausedTicks,pause.startTick,pause.technical];
+ const status=values.every(v=>v===null)?'unavailable':values.every(v=>v!==null)?'available':'partial';
+ return Object.freeze({totalRoundsPlayed,phase,startTime,duration,committedTick,freezePeriod,warmupPeriod,bombPlanted,roundInProgress,roundWinStatus,pause,status});
+}
 export interface NativePlayerIdentity {
  readonly domain:'player-controller-slot';
  readonly slot:number;

@@ -64,3 +64,13 @@ stderr 包含原生日志及最终报告，作为私有诊断通道处理。`rep
 运行平台为 Windows x64。独立包提供运行时，`external-node` 使用调用方或 PATH 中的 Node.js 24.0.0 及以上版本，具备 WebAssembly、ReadableStream、structuredClone。
 
 托管契约为 `cs2-observer-managed-json/1`，由 manifest 声明。1.x 保持公开字段含义、未知值、来源代际和停止语义；扩展采用新增字段或记录。原生 ABI、有序 IPC 与托管 JSON 各自独立标识，详见[组件分发](component-distribution.md)。
+
+### 回合时钟快照
+
+新版 cursor 提供 `roundClock`；旧版可能没有该字段。其 `committedTick` 是本条 cursor 对应的已提交快照 tick，与 cursor 的 source、channel、world、map 和 tickInterval 属于同一快照。对象内未知值为 null，不沿用前次值。
+
+`totalRoundsPlayed`、`startTime` 和 `duration` 分别来自 GameRules 的已完成回合数、回合开始时间和回合时长；时间单位为秒。`freezePeriod`、`warmupPeriod`、`bombPlanted` 为对应的来源布尔值。`roundInProgress` 和 `roundWinStatus` 原样提供来源的回合进行标志和数值状态，不解释其枚举。`phase` 是不完整的快照分类，为 `warmup`、`freezetime`、`live`、`over` 或 `unknown`；当前仅有充分依据时输出 warmup 和 freezetime，freeze 结束本身不能证明 live。`pause` 包含 `active`、`totalPausedTicks`、`startTick`、`technical`，以及语义标记 `semantics`（当前为 `unknown`）。不要未经验证将暂停 tick 补偿进时钟。
+
+`status` 统计 `totalRoundsPlayed`、`startTime`、`duration`、`freezePeriod`、`warmupPeriod`、`bombPlanted`、`pause.active`、`pause.totalPausedTicks`、`pause.startTick` 和 `pause.technical`；不计 `roundInProgress`、`roundWinStatus`、`phase` 或 `pause.semantics`。这十个来源值均可用时为 `available`，全部未知时为 `unavailable`，其他情况为 `partial`；它不证明 phase 或暂停计算语义。消费方仅在已知普通未暂停 live 的条件下，可用 `duration + startTime - committedTick * tickInterval` 计算剩余秒数。事件的 tick、networkTick、eventServerTick、committedTick 保持各自含义，快照 tick 不是事件精确时间。
+
+现有输出还包括 cursor 来源时钟、事件原始字段、已验证身份和回合投影。解析器可解码的其他实体字段并不自动成为稳定公共接口：字段的类型、含义及生命周期需先有证据与规范，避免暴露内部对象或原始完整流。

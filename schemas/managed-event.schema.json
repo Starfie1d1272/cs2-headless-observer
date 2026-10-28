@@ -63,6 +63,143 @@
           "map": {
             "type": "string",
             "minLength": 1
+          },
+          "roundClock": {
+            "type": "object",
+            "required": [
+              "totalRoundsPlayed",
+              "phase",
+              "startTime",
+              "duration",
+              "committedTick",
+              "freezePeriod",
+              "warmupPeriod",
+              "bombPlanted",
+              "pause",
+              "status",
+              "roundInProgress",
+              "roundWinStatus"
+            ],
+            "properties": {
+              "totalRoundsPlayed": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "phase": {
+                "enum": [
+                  "warmup",
+                  "freezetime",
+                  "live",
+                  "over",
+                  "unknown"
+                ]
+              },
+              "startTime": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "duration": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 2147483647
+              },
+              "committedTick": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "freezePeriod": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "warmupPeriod": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "bombPlanted": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "pause": {
+                "type": "object",
+                "required": [
+                  "active",
+                  "totalPausedTicks",
+                  "startTick",
+                  "technical",
+                  "semantics"
+                ],
+                "properties": {
+                  "active": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "totalPausedTicks": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "startTick": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "technical": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "semantics": {
+                    "enum": [
+                      "unknown",
+                      "verified"
+                    ]
+                  }
+                }
+              },
+              "status": {
+                "enum": [
+                  "available",
+                  "partial",
+                  "unavailable"
+                ]
+              },
+              "roundInProgress": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "roundWinStatus": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": -2147483648,
+                "maximum": 2147483647
+              }
+            }
           }
         }
       }

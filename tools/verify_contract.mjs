@@ -11,6 +11,8 @@ const cursor=fixture.records.find(x=>x.kind==='cursor');assert.ok(cursor);
 assert.equal(validate({...cursor,sequence:null}),false);
 assert.equal(validate({...cursor,tickInterval:0}),false);
 assert.equal(validate({...cursor,extraFutureField:true}),true);
+assert.equal(validate({...cursor,roundClock:{...cursor.roundClock,committedTick:0}}),false);
+const {roundClock,...legacyCursor}=cursor;assert.equal(validate(legacyCursor),true);
 const owner=new Consumer(cursor.source);
 for(const row of fixture.records)owner.accept(row);
 owner.accept({kind:'discontinuity',source:cursor.source,channel:1,world:cursor.world+1,sequence:owner.sequence+1,reason:'synthetic-reset'});
