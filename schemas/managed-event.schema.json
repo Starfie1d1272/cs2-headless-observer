@@ -76,7 +76,9 @@
               "warmupPeriod",
               "bombPlanted",
               "pause",
-              "status"
+              "status",
+              "roundInProgress",
+              "roundWinStatus"
             ],
             "properties": {
               "totalRoundsPlayed": {
@@ -181,6 +183,20 @@
                   "partial",
                   "unavailable"
                 ]
+              },
+              "roundInProgress": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "roundWinStatus": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": -2147483648,
+                "maximum": 2147483647
               }
             }
           }

@@ -17,9 +17,9 @@ const project=()=>projectNativeEvent(schema,snapshots,tables,'weapon_fire',field
 let checks=0;const check=f=>{f();checks++;};
 check(()=>assert.equal(project().actor,steam));check(()=>assert.equal(project().warmup,true));check(()=>assert.equal(project().round,3));
 check(()=>assert.equal(project().identityResolved,true));
-entities.get(10).fields=values({m_totalRoundsPlayed:3,m_fRoundStartTime:12.5,m_iRoundTime:115,m_bFreezePeriod:false,m_bWarmupPeriod:false,m_bBombPlanted:false,m_bGamePaused:false,m_nTotalPausedTicks:0,m_nPauseStartTick:0,m_bTechnicalTimeOut:false});
+entities.get(10).fields=values({m_totalRoundsPlayed:3,m_fRoundStartTime:12.5,m_iRoundTime:115,m_bFreezePeriod:false,m_bWarmupPeriod:false,m_bBombPlanted:false,m_bGamePaused:false,m_nTotalPausedTicks:0,m_nPauseStartTick:0,m_bTechnicalTimeOut:false,m_bRoundInProgress:true,m_iRoundWinStatus:2});
 let clock=projectRoundClock(schema,snapshots,100);
-check(()=>assert.deepEqual(clock,{totalRoundsPlayed:3,phase:'unknown',startTime:12.5,duration:115,committedTick:100,freezePeriod:false,warmupPeriod:false,bombPlanted:false,pause:{active:false,totalPausedTicks:0,startTick:0,technical:false,semantics:'unknown'},status:'available'}));
+check(()=>assert.deepEqual(clock,{totalRoundsPlayed:3,phase:'unknown',startTime:12.5,duration:115,committedTick:100,freezePeriod:false,warmupPeriod:false,bombPlanted:false,roundInProgress:true,roundWinStatus:2,pause:{active:false,totalPausedTicks:0,startTick:0,technical:false,semantics:'unknown'},status:'available'}));
 entities.get(10).fields=values({m_bWarmupPeriod:false,m_bFreezePeriod:true});
 check(()=>assert.equal(projectRoundClock(schema,snapshots,101).phase,'freezetime'));
 check(()=>assert.equal(projectRoundClock(schema,snapshots,101).status,'partial'));

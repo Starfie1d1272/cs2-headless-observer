@@ -35,7 +35,9 @@
           "technical": null,
           "semantics": "unknown"
         },
-        "status": "unavailable"
+        "status": "unavailable",
+        "roundInProgress": null,
+        "roundWinStatus": null
       }
     },
     {
