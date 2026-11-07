@@ -29,7 +29,10 @@ if (execFileSync('git', ['-C', source, 'status', '--porcelain'], { encoding: 'ut
   throw new Error('Expected a clean disposable parser checkout');
 // Upstream enforces LF, while this repository's patch can be checked out as
 // CRLF on Windows. Normalize only the diff transport, not source or matching.
-const patch = readFileSync(resolve(repo, 'patches/cs2parser-online.patch'), 'utf8').replaceAll('\r\n', '\n');
+const patch = readFileSync(resolve(repo, 'patches/cs2parser-online.patch'), 'utf8').replaceAll(
+  '\r\n',
+  '\n',
+);
 execFileSync('git', ['-C', source, 'apply', '--check', '--unidiff-zero', '-'], { input: patch });
 execFileSync('git', ['-C', source, 'apply', '--unidiff-zero', '-'], { input: patch });
 // Project-owned parser sources have one editable owner; only upstream edits stay in the patch.
@@ -88,4 +91,3 @@ await esbuild.build({
   },
   nodePaths: [protobufModules],
 });
-

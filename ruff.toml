@@ -1,0 +1,5 @@
+line-length = 88
+
+[lint]
+# Guard against syntax errors, undefined names and malformed control flow.
+select = ["E9", "F63", "F7", "F82"]

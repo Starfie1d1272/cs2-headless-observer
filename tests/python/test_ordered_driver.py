@@ -1,82 +1,118 @@
 from support.protocol import bits, packed, info, scalar, schema, table, full
+
 """Actual Node parser pipe + synthetic SDK port only; never contacts a server."""
 import os
 import struct
 import time
 import unittest
-from channel import encode_message, join_messages, reliable_frame, decode_frame, messages, unreliable_frame
+from channel import (
+    encode_message,
+    join_messages,
+    reliable_frame,
+    decode_frame,
+    messages,
+    unreliable_frame,
+)
 from driver import ObserverDriver
 from handshake import blob, number
 from ordered_parser_bridge import OrderedParserBridge
 from support.sdk_port import Port
 from wire import fields, scalar as pb_scalar
 
-WORKER = os.environ.get('GOTV_ORDERED_WORKER')
+WORKER = os.environ.get("GOTV_ORDERED_WORKER")
 
-@unittest.skipUnless(WORKER, 'Set GOTV_ORDERED_WORKER to locally built worker')
+
+@unittest.skipUnless(WORKER, "Set GOTV_ORDERED_WORKER to locally built worker")
 class OrderedDriverTests(unittest.TestCase):
     def setUp(self):
         self.port = Port()
-        self.parser = OrderedParserBridge(source='ahead', channel=1, world=1, worker=WORKER)
+        self.parser = OrderedParserBridge(
+            source="ahead", channel=1, world=1, worker=WORKER
+        )
         self.output = []
-        self.driver = ObserverDriver(self.port, host_version=14191, password=bytearray(), emit=self.output.append, parser=self.parser)
+        self.driver = ObserverDriver(
+            self.port,
+            host_version=14191,
+            password=bytearray(),
+            emit=self.output.append,
+            parser=self.parser,
+        )
         # Test starts after handshake; this is not an authenticated real connection.
-        self.driver.phase = 'channel'
+        self.driver.phase = "channel"
         self.driver._account_id = 123
         self.now = 1
+
     def tearDown(self):
         self.driver.close()
         self.parser.close()
+
     def send(self, messages, hint=0):
         body, _ = join_messages([encode_message(i, b) for i, b in messages])
         self.port.incoming.append((reliable_frame(body, hint), True))
         self.step()
+
     def step(self):
         self.now += 1
         self.driver.step(self.now)
+
     def until(self, condition):
         limit = time.monotonic() + 5
         while not condition():
             self.step()
-            if time.monotonic() > limit: self.fail('Expected synthetic transition did not complete')
-            time.sleep(.005)
+            if time.monotonic() > limit:
+                self.fail("Expected synthetic transition did not complete")
+            time.sleep(0.005)
+
     def initialize(self, serialized=None):
         self.send([(40, info()), (7, number(1, 3) + number(2, 7))])
         self.until(lambda: self.driver._new_sent)
-        self.send([(41, serialized if serialized is not None else schema()), (42, blob(2, number(1, 0) + blob(3, b'Root'))), (44, table()),
-                   (7, number(1, 4) + number(2, 7))])
+        self.send(
+            [
+                (41, serialized if serialized is not None else schema()),
+                (42, blob(2, number(1, 0) + blob(3, b"Root"))),
+                (44, table()),
+                (7, number(1, 4) + number(2, 7)),
+            ]
+        )
         self.until(lambda: self.driver._prespawn_sent)
         self.send([(7, number(1, 5) + number(2, 7))])
         self.until(lambda: self.driver._spawn_sent)
+
     def test_normal_close_delivers_worker_tail_before_terminal(self):
         self.initialize()
         self.send([(4, number(1, 100)), (55, full(100))])
         self.until(lambda: self.driver._full_sent)
-        descriptor = blob(1, number(1, 17) + blob(2, b'cs_win_panel_match'))
-        body, _ = join_messages([encode_message(205, descriptor), encode_message(207, number(2, 17))])
+        descriptor = blob(1, number(1, 17) + blob(2, b"cs_win_panel_match"))
+        body, _ = join_messages(
+            [encode_message(205, descriptor), encode_message(207, number(2, 17))]
+        )
         self.port.incoming.append((reliable_frame(body, 0), True))
         self.port.state, self.port.remote_end_reason = 6, 1038
         before = len(self.port.sent)
         self.until(lambda: self.driver.done)
         self.assertTrue(self.driver.drain_completed)
         self.assertEqual(len(self.port.sent), before)
-        kinds = [row['kind'] for row in self.output]
-        self.assertEqual(kinds.count('cs_win_panel_match'), 1)
-        self.assertLess(kinds.index('cs_win_panel_match'), len(kinds) - 1)
-        self.assertEqual(kinds[-1], 'discontinuity')
-        self.assertEqual([r['sequence'] for r in self.output], list(range(1, len(self.output) + 1)))
+        kinds = [row["kind"] for row in self.output]
+        self.assertEqual(kinds.count("cs_win_panel_match"), 1)
+        self.assertLess(kinds.index("cs_win_panel_match"), len(kinds) - 1)
+        self.assertEqual(kinds[-1], "discontinuity")
+        self.assertEqual(
+            [r["sequence"] for r in self.output], list(range(1, len(self.output) + 1))
+        )
 
     def test_reset_at_frame_end_allows_next_serverinfo(self):
         self.initialize()
         self.send([(4, number(1, 100)), (55, full(100))])
         self.until(lambda: self.driver._full_sent)
         self.send([(7, number(1, 7) + number(2, 7))])
-        self.until(lambda: self.parser.completed_sequence == self.driver._parser_sequence)
+        self.until(
+            lambda: self.parser.completed_sequence == self.driver._parser_sequence
+        )
         self.assertIsNone(self.parser.checkpoint)
         self.send([(40, info()), (7, number(1, 3) + number(2, 7))])
         self.until(lambda: self.driver._new_sent)
-        self.assertTrue(all(isinstance(r['sequence'], int) for r in self.output))
-        self.assertTrue(any(r['kind'] == 'discontinuity' for r in self.output))
+        self.assertTrue(all(isinstance(r["sequence"], int) for r in self.output))
+        self.assertTrue(any(r["kind"] == "discontinuity" for r in self.output))
 
     def test_first_full_waits_for_control_watermark_and_requests_recovery(self):
         self.initialize()
@@ -85,13 +121,21 @@ class OrderedDriverTests(unittest.TestCase):
         self.until(lambda: self.driver._full_update_outstanding)
         self.assertFalse(self.driver._full_sent)
         self.send([(11, number(1, 999) + number(3, 2))])
-        self.send([(4, number(1, 101)), (55, full(101).replace(number(10, 0), number(10, 2), 1))])
+        self.send(
+            [
+                (4, number(1, 101)),
+                (55, full(101).replace(number(10, 0), number(10, 2), 1)),
+            ]
+        )
         self.until(lambda: self.driver._full_sent)
         self.assertEqual(self.driver._processed_entity_tick, 101)
 
     def test_optional_serializer_version_uses_worker_default(self):
-        serialized = schema().replace(blob(1, number(1, 0) + number(2, 0) + number(3, 0)),
-                                      blob(1, number(1, 0) + number(3, 0)), 1)
+        serialized = schema().replace(
+            blob(1, number(1, 0) + number(2, 0) + number(3, 0)),
+            blob(1, number(1, 0) + number(3, 0)),
+            1,
+        )
         self.initialize(serialized)
         self.assertTrue(self.driver._spawn_sent)
 
@@ -99,14 +143,20 @@ class OrderedDriverTests(unittest.TestCase):
         self.initialize()
         self.send([(4, number(1, 100)), (55, full(100))])
         self.until(lambda: self.driver._full_sent)
-        descriptor = blob(1, number(1, 17) + blob(2, b'weapon_fire') + blob(3, number(1, 1) + blob(2, b'weapon')))
-        event = number(2, 17) + blob(3, blob(2, '中'.encode() * 2000))
+        descriptor = blob(
+            1,
+            number(1, 17)
+            + blob(2, b"weapon_fire")
+            + blob(3, number(1, 1) + blob(2, b"weapon")),
+        )
+        event = number(2, 17) + blob(3, blob(2, "中".encode() * 2000))
         self.send([(205, descriptor), (207, event)])
-        self.until(lambda: any(r['kind'] == 'weapon_fire' for r in self.output))
-        row = [r for r in self.output if r['kind'] == 'weapon_fire'][-1]
+        self.until(lambda: any(r["kind"] == "weapon_fire" for r in self.output))
+        row = [r for r in self.output if r["kind"] == "weapon_fire"][-1]
         from process_io import encode_record
+
         self.assertLess(len(encode_record(row)), 65536)
-        self.assertEqual(row['fields']['weapon'], '中' * 2000)
+        self.assertEqual(row["fields"]["weapon"], "中" * 2000)
 
     def test_full_recovery_and_world_fencing(self):
         self.initialize()
@@ -114,19 +164,27 @@ class OrderedDriverTests(unittest.TestCase):
         self.send([(4, number(1, 100)), (55, full(100))])
         self.until(lambda: self.driver._full_sent)
         self.assertEqual(self.driver._processed_entity_tick, 100)
-        self.assertTrue(any(row['kind'] == 'cursor' and row['tick'] == 100 for row in self.output))
-        self.send([(4, number(1, 101)), (55, number(6, 99) + number(12, 101) + blob(19, b''))])
+        self.assertTrue(
+            any(row["kind"] == "cursor" and row["tick"] == 100 for row in self.output)
+        )
+        self.send(
+            [(4, number(1, 101)), (55, number(6, 99) + number(12, 101) + blob(19, b""))]
+        )
         self.until(lambda: self.driver._full_update_outstanding)
         self.assertIsNone(self.driver._processed_entity_tick)
-        self.assertTrue(any(row['kind'] == 'discontinuity' for row in self.output))
+        self.assertTrue(any(row["kind"] == "discontinuity" for row in self.output))
         self.send([(4, number(1, 102)), (55, full(102))])
         self.until(lambda: self.driver._processed_entity_tick == 102)
-        self.until(lambda: any(row['kind'] == 'cursor' and row['tick'] == 102 for row in self.output))
+        self.until(
+            lambda: any(
+                row["kind"] == "cursor" and row["tick"] == 102 for row in self.output
+            )
+        )
         self.assertFalse(self.driver._recovery_pending)
         before = self.driver.feedback.sequence
-        self.send([(51, b'')])
+        self.send([(51, b"")])
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
-        self.assertEqual(self.parser.identity['world'], 2)
+        self.assertEqual(self.parser.identity["world"], 2)
         self.assertEqual(self.driver.signon.state, 2)
         self.assertFalse(self.driver._full_sent)
         self.assertIsNone(self.driver._processed_entity_tick)
@@ -147,52 +205,97 @@ class OrderedDriverTests(unittest.TestCase):
         self.until(lambda: self.driver._full_sent)
         self.assertEqual(self.driver._processed_entity_tick, 100)
         self.assertEqual(self.driver.decoder.tick, 90)
-        descriptor = blob(1, number(1, 17) + blob(2, b'round_start'))
+        descriptor = blob(1, number(1, 17) + blob(2, b"round_start"))
         self.send([(205, descriptor), (207, number(2, 17))], hint=200)
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
-        self.assertEqual([r for r in self.output if r['kind'] == 'round_start'][-1]['tick'], 200)
+        self.assertEqual(
+            [r for r in self.output if r["kind"] == "round_start"][-1]["tick"], 200
+        )
         # The framing pass sees a suppressed Tick; its game callback does not.
-        self.send([(61, number(1, 1) + number(3, 1)), (61, number(1, 1) + number(3, 1)),
-                   (4, number(1, 400)), (61, number(3, 0)), (207, number(2, 17))])
+        self.send(
+            [
+                (61, number(1, 1) + number(3, 1)),
+                (61, number(1, 1) + number(3, 1)),
+                (4, number(1, 400)),
+                (61, number(3, 0)),
+                (207, number(2, 17)),
+            ]
+        )
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
         self.assertEqual(self.driver.decoder.tick, 90)
-        self.assertEqual([r for r in self.output if r['kind'] == 'round_start'][-1]['tick'], 400)
+        self.assertEqual(
+            [r for r in self.output if r["kind"] == "round_start"][-1]["tick"], 400
+        )
         # An unrelated unreliable frame has no inherited reliable-frame context.
         body, _ = join_messages([encode_message(207, number(2, 17))])
         self.port.incoming.append((unreliable_frame(body, 1, 0, (0, 0, 0)), False))
         self.step()
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
-        self.assertEqual([r for r in self.output if r['kind'] == 'round_start'][-1]['tick'], 0)
+        self.assertEqual(
+            [r for r in self.output if r["kind"] == "round_start"][-1]["tick"], 0
+        )
 
-    def test_source_lifecycle_events_are_forwarded_without_synthesizing_round_start(self):
+    def test_source_lifecycle_events_are_forwarded_without_synthesizing_round_start(
+        self,
+    ):
         self.initialize()
         self.send([(4, number(1, 100)), (55, full(100))])
         self.until(lambda: self.driver._full_sent)
-        names = ('round_prestart', 'round_poststart', 'round_freeze_end',
-                 'round_officially_ended', 'round_announce_warmup', 'begin_new_match',
-                 'round_announce_match_start', 'cs_win_panel_round', 'cs_win_panel_match',
-                 'player_sound')
-        descriptors = b''.join(blob(1, number(1, index) + blob(2, name.encode()))
-                               for index, name in enumerate(names, 17))
-        self.send([(205, descriptors)] + [(207, number(2, index) + number(4, 123))
-                                         for index in range(17, 17 + len(names))], hint=120)
+        names = (
+            "round_prestart",
+            "round_poststart",
+            "round_freeze_end",
+            "round_officially_ended",
+            "round_announce_warmup",
+            "begin_new_match",
+            "round_announce_match_start",
+            "cs_win_panel_round",
+            "cs_win_panel_match",
+            "player_sound",
+        )
+        descriptors = b"".join(
+            blob(1, number(1, index) + blob(2, name.encode()))
+            for index, name in enumerate(names, 17)
+        )
+        self.send(
+            [(205, descriptors)]
+            + [
+                (207, number(2, index) + number(4, 123))
+                for index in range(17, 17 + len(names))
+            ],
+            hint=120,
+        )
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
-        lifecycle = [row for row in self.output if row.get('type') == 'raw-event']
-        self.assertEqual([row['name'] for row in lifecycle], list(names[:-1]))
+        lifecycle = [row for row in self.output if row.get("type") == "raw-event"]
+        self.assertEqual([row["name"] for row in lifecycle], list(names[:-1]))
         for row in lifecycle:
-            self.assertEqual((row['tick'], row['eventServerTick'], row['committedTick']), (120, 123, 100))
-            self.assertEqual(row['fields'], {})
-            self.assertEqual((row['source'], row['world']), ('ahead', 1))
-        self.assertFalse(any(row['kind'] == 'round_start' for row in self.output))
+            self.assertEqual(
+                (row["tick"], row["eventServerTick"], row["committedTick"]),
+                (120, 123, 100),
+            )
+            self.assertEqual(row["fields"], {})
+            self.assertEqual((row["source"], row["world"]), ("ahead", 1))
+        self.assertFalse(any(row["kind"] == "round_start" for row in self.output))
 
     def test_event_subscription_and_changelevel_keep_channel(self):
         self.initialize()
-        descriptor = blob(1, number(1, 17) + blob(2, b'round_start'))
+        descriptor = blob(1, number(1, 17) + blob(2, b"round_start"))
         self.send([(205, descriptor)])
-        self.until(lambda: any(m.message_id == 206 for data, flags in self.port.sent
-            for m in messages(decode_frame(data, gns_reliable=bool(flags & 8)).body)[0]))
-        subscriptions = [m for data, flags in self.port.sent
-            for m in messages(decode_frame(data, gns_reliable=bool(flags & 8)).body)[0] if m.message_id == 206]
+        self.until(
+            lambda: any(
+                m.message_id == 206
+                for data, flags in self.port.sent
+                for m in messages(
+                    decode_frame(data, gns_reliable=bool(flags & 8)).body
+                )[0]
+            )
+        )
+        subscriptions = [
+            m
+            for data, flags in self.port.sent
+            for m in messages(decode_frame(data, gns_reliable=bool(flags & 8)).body)[0]
+            if m.message_id == 206
+        ]
         values = fields(subscriptions[-1].body)
         self.assertEqual(pb_scalar(values, 1), 0)
         self.assertEqual(len(values[2]), 16)
@@ -200,16 +303,25 @@ class OrderedDriverTests(unittest.TestCase):
         self.send([(4, number(1, 100)), (55, full(100))])
         self.until(lambda: self.driver._full_sent)
         before = self.driver.feedback.sequence
-        self.send([(61, number(1, 8) + number(3, 1)), (61, number(3, 0)),
-                   (7, number(1, 7) + number(2, 7)),
-                   (61, number(1, 1) + number(3, 1)), (4, number(1, 2)), (61, number(3, 0))])
+        self.send(
+            [
+                (61, number(1, 8) + number(3, 1)),
+                (61, number(3, 0)),
+                (7, number(1, 7) + number(2, 7)),
+                (61, number(1, 1) + number(3, 1)),
+                (4, number(1, 2)),
+                (61, number(3, 0)),
+            ]
+        )
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
         self.assertEqual(self.driver.signon.state, 2)
-        self.assertEqual(self.parser.identity['world'], 2)
+        self.assertEqual(self.parser.identity["world"], 2)
         self.assertEqual(self.driver.reliable_filter.last_tick, 1)
         self.assertEqual(self.driver.decoder.tick, 2)
         self.assertFalse(self.driver._full_sent)
         self.assertEqual(self.port.closed, 0)
         self.assertGreaterEqual(self.driver.feedback.sequence, before)
 
-if __name__ == '__main__': unittest.main()
+
+if __name__ == "__main__":
+    unittest.main()
