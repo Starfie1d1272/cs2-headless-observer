@@ -1,0 +1,7 @@
+node_modules/
+work/
+dist/
+archive/
+research/
+fixtures/
+pnpm-lock.yaml

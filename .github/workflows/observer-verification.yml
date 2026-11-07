@@ -23,6 +23,12 @@ jobs:
           cache: false
           require-lockfile: true
           install: true
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: python -m pip install ruff==0.17.4
+      - run: python -m ruff format --check client tools tests
+      - run: python -m ruff check client tools tests
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: osztenkurden/cs2parser

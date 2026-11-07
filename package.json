@@ -9,15 +9,20 @@
     "test": "python tools/run_python_tests.py",
     "test:events": "vitest run tests/demo/decode.test.ts tests/demo/failure.test.ts",
     "typecheck": "tsc6 -p tsconfig.json --noEmit",
-    "verify": "python tools/verify_all.py"
+    "verify": "python tools/verify_all.py",
+    "format": "prettier --write \"{parser/src,tools,tests}/**/*.{ts,js,mjs,cjs}\" --ignore-unknown",
+    "format:check": "prettier --check \"{parser/src,tools,tests}/**/*.{ts,js,mjs,cjs}\" --ignore-unknown",
+    "lint": "biome lint parser/src tools tests --diagnostic-level=error"
   },
   "dependencies": {
     "cs2parser": "2.7.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.6.5",
     "@types/node": "26.6.4",
     "ajv": "8.17.1",
     "esbuild": "0.28.2",
+    "prettier": "^3.9.10",
     "tsx": "4.23.15",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "vitest": "5.0.3"

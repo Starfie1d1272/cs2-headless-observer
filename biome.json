@@ -1,0 +1,12 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.6.5/schema.json",
+	"linter": {
+		"rules": {
+			"preset": "recommended",
+			"suspicious": {
+				"noImplicitAnyLet": "off",
+				"useIterableCallbackReturn": "off"
+			}
+		}
+	}
+}
