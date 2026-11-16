@@ -63,12 +63,15 @@ export function nativeSnappySize(data: Uint8Array): number | null {
 }
 export function nativeTableDecompress(
   data: Uint8Array,
-  capacity: number,
+  capacity: number | undefined,
   snappy: SnappyDecoder,
 ): Uint8Array {
+  const size = nativeSnappySize(data);
+  // The outer protobuf size is optional. A valid Snappy block carries its own
+  // output length; raw fallback uses the actual input length.
+  capacity ??= size ?? data.length;
   if (!Number.isSafeInteger(capacity) || capacity < 0 || capacity > 64 * 1024 ** 2)
     throw new Error('Invalid table decompression budget');
-  const size = nativeSnappySize(data);
   if (size === null) {
     if (data.length > capacity) throw new Error('Raw table capacity');
     return data.slice();
@@ -163,9 +166,7 @@ export class NativeStringTables {
     let data = msg.string_data ?? new Uint8Array();
     if (data.length > 32 * 1024 ** 2) throw new Error('String table input budget');
     if (msg.data_compressed) {
-      const capacity = msg.uncompressed_size;
-      if (capacity === undefined) throw new Error('Missing table uncompressed size');
-      data = nativeTableDecompress(data, capacity, this.snappy);
+      data = nativeTableDecompress(data, msg.uncompressed_size, this.snappy);
     }
     const table: Table = {
       name: msg.name,
