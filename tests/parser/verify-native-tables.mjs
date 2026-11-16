@@ -2,9 +2,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
-const { NativeStringTables, nativeSnappySize, nativeTableDecompress, SnappyDecoder } = await import(
-  pathToFileURL(resolve(process.argv[2])).href
-);
+const {
+  NativeStringTables,
+  nativeSnappySize,
+  nativeTableDecompress,
+  SnappyDecoder,
+  CSVCMsg_CreateStringTable,
+} = await import(pathToFileURL(resolve(process.argv[2])).href);
 const root = process.env.GOTV_FIXTURE_ROOT,
   resultRoot = process.env.GOTV_RESULT_ROOT;
 if (!root || !resultRoot) throw new Error('Use tools/verification/verify_cohesive_parser.mjs');
@@ -50,6 +54,18 @@ check(() =>
     /Raw table capacity/,
   ),
 );
+check(() => {
+  const compressed = new NativeStringTables(snappy);
+  const tableData = pack(entry('player', [42]));
+  const block = Uint8Array.of(tableData.length, (tableData.length - 1) << 2, ...tableData);
+  const name = new TextEncoder().encode('test');
+  const message = CSVCMsg_CreateStringTable.decode(
+    Uint8Array.of(10, name.length, ...name, 16, 1, 58, block.length, ...block, 72, 1),
+  );
+  assert.equal(message.uncompressed_size, undefined);
+  assert.equal(compressed.create(message), 0);
+  assert.deepEqual(compressed.get(0, 0).value, Uint8Array.of(42));
+});
 const tables = new NativeStringTables(snappy);
 check(() => assert.equal(tables.create({ name: 'unprojected', num_entries: 0 }), 0));
 check(() =>
