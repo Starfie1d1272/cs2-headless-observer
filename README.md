@@ -34,6 +34,8 @@ Steam 会将观众的 App730 上下文显示为 CS2 运行状态。重启游戏�
 
 ## 适用范围
 
+托管模式默认使用 v2，内置有界连接恢复。需要单次连接行为时使用 `--managed-protocol 1`。详见[托管接口](docs/managed-interface.md)。
+
 已有在线验证环境为 Windows x64、CS2 build 10955 / host 14192。最新构建核对范围见[兼容性](docs/compatibility.md)。解析器依据来源 schema 处理实体和事件；身份有当前证据时输出 Steam64，其余保留为 null 或未解析状态。
 
 同账号并行观战使用不同的 GOTV 端点；同一 IP:port 的后续连接可能替换已有连接，游戏客户端也占用该端点。每次换场或换图使用新授权地址与新来源实例。

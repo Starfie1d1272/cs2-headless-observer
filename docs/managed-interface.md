@@ -15,7 +15,7 @@
   --host-version 14192 --output <new-local-directory>
 ```
 
-环境使用 `SteamAppId=730`，Steam 提供真实合法账号上下文。每次启动组件使用新 UUID；准备输出父目录，由组件创建末级目录。默认 `--managed-protocol 1`，显式增加 `--managed-protocol 2` 启用组件内恢复。`source-role` 可选 `ahead` 或 `delayed`，实际时间线由消费应用绑定。
+环境使用 `SteamAppId=730`，Steam 提供真实合法账号上下文。每次启动组件使用新 UUID；准备输出父目录，由组件创建末级目录。`--managed` 默认使用 v2 并启用组件内恢复。迁移期间可以显式传入 `--managed-protocol 1` 使用单次连接契约。`source-role` 可选 `ahead` 或 `delayed`，实际时间线由消费应用绑定。
 
 向 stdin 写入一行 UTF-8 JSON，包含 `endpoint`、`password`，行末为 LF，总计至多 4096 字节。地址使用数字 IP:port，IPv6 可使用方括号。密码支持至多 95 字节的 ASCII，空密码可显式传入。凭据通过私有 stdin 进入会话内存。
 
@@ -92,7 +92,7 @@ stderr 的 `cs2-observer-health/2` 包含连接代际、就绪、重连次数、
 
 运行平台为 Windows x64。独立包提供运行时，`external-node` 使用调用方或 PATH 中的 Node.js 24.0.0 及以上版本，具备 WebAssembly、ReadableStream、structuredClone。
 
-manifest 的 `managedProtocol` 声明默认 `cs2-observer-managed-json/1`，`managedProtocols` 同时列出可选的 `cs2-observer-managed-json/2`。1.x 保持公开字段含义、未知值、来源代际和停止语义；扩展采用新增字段或记录。原生 ABI、有序 IPC 与托管 JSON 各自独立标识，详见[组件分发](component-distribution.md)。
+2.0.0 的 manifest 由 `managedProtocol` 声明默认 `cs2-observer-managed-json/2`，`managedProtocols` 列出可用的 v1 和 v2。迁移至默认 v2 的宿主必须处理 `session-start`、连接断点和递增的 channel，把连接级重试交给组件。原生 ABI、有序 IPC 与托管 JSON 各自独立标识，详见[组件分发](component-distribution.md)。
 
 ### 回合时钟快照
 

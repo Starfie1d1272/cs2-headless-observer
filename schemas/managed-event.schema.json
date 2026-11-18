@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Starfie1d1272/cs2-headless-observer/schemas/managed-event.schema.json",
-  "title": "CS2 observer managed JSON record, contract 1",
+  "title": "CS2 observer managed JSON record, contracts 1 and 2",
   "type": "object",
   "required": [
     "kind",

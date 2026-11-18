@@ -1135,7 +1135,11 @@ def main():
 
     ap.add_argument("--source-id", type=lambda value: UUID(value).hex)
     ap.add_argument("--managed", action="store_true")
-    ap.add_argument("--managed-protocol", choices=("1", "2"), default="1")
+    ap.add_argument(
+        "--managed-protocol",
+        choices=("1", "2"),
+        help="Managed JSON contract (default: 2)",
+    )
     ap.add_argument("--session-attempt", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument(
         "--host-version",
@@ -1155,6 +1159,7 @@ def main():
     )
     ap.add_argument("--capture-budget-mib", type=positive, default=256)
     args = ap.parse_args()
+    args.managed_protocol = args.managed_protocol or ("2" if args.managed else "1")
     if not args.managed and (args.managed_protocol == "2" or args.session_attempt):
         ap.error("Managed protocol selection requires --managed")
     if args.session_attempt and args.managed_protocol != "1":

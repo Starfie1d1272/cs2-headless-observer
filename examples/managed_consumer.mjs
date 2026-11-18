@@ -8,13 +8,18 @@ import {randomUUID} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 
 export class Consumer {
- constructor(source){this.source=source;this.sequence=0;this.world=1;this.ready=false;}
+ constructor(source){this.source=source;this.sequence=0;this.channel=0;this.world=1;this.ready=false;this.bound=false;}
  accept(row){
-  if(row.source!==this.source||row.channel!==1)throw new Error('source-owner-mismatch');
-  if(!Number.isSafeInteger(row.sequence)||row.sequence<=this.sequence)throw new Error('record-order');
+  if(row.source!==this.source)throw new Error('source-owner-mismatch');
+  if(!Number.isSafeInteger(row.sequence)||row.sequence!==this.sequence+1)throw new Error('record-order');
   this.sequence=row.sequence;
+  if(row.kind==='session-start'){
+   if(this.bound||row.channel!==this.channel+1||row.world!==1||row.protocol!==2)throw new Error('invalid-session-boundary');
+   this.channel=row.channel;this.world=1;this.bound=true;this.ready=false;return;
+  }
+  if(!this.bound||row.channel!==this.channel)return;
   if(!Number.isSafeInteger(row.world)||row.world<this.world)return;
-  if(row.kind==='discontinuity'){this.world=row.world;this.ready=false;}
+  if(row.kind==='discontinuity'){this.world=row.world;this.ready=false;if(row.scope==='connection')this.bound=false;}
   else if(row.kind==='cursor'&&row.world===this.world)this.ready=Number.isSafeInteger(row.tick)&&row.tick>0&&typeof row.map==='string'&&row.map.length>0&&Number.isFinite(row.tickInterval)&&row.tickInterval>0&&row.tickInterval<=1;
   else if(row.type==='raw-event'&&this.ready&&row.world===this.world)return row;
  }

@@ -535,6 +535,8 @@ class SessionSupervisor:
                     str(Path(__file__).with_name("driver.py")),
                     "--managed",
                     "--session-attempt",
+                    "--managed-protocol",
+                    "1",
                     "--native",
                     str(self.args.native),
                     "--node",

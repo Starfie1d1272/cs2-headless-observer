@@ -35,7 +35,8 @@ assert.equal(validate({ ...session, world: 2 }), false);
 assert.equal(validate({ ...session, protocol: 1 }), false);
 assert.equal(validate({ ...cursor, supervisorForwardUs: 14 }), true);
 const owner = new Consumer(cursor.source);
-for (const row of fixture.records) owner.accept(row);
+owner.accept({ ...session, channel: 1, sequence: 1 });
+for (const row of fixture.records) owner.accept({ ...row, sequence: owner.sequence + 1 });
 owner.accept({
   kind: 'discontinuity',
   source: cursor.source,
@@ -48,5 +49,20 @@ assert.equal(owner.ready, false);
 owner.accept({ ...cursor, sequence: owner.sequence + 1 });
 assert.equal(owner.ready, false);
 owner.accept({ ...cursor, world: cursor.world + 1, sequence: owner.sequence + 1 });
+assert.equal(owner.ready, true);
+owner.accept({
+  kind: 'discontinuity',
+  source: cursor.source,
+  channel: 1,
+  world: owner.world,
+  sequence: owner.sequence + 1,
+  reason: 'synthetic-reconnect',
+  scope: 'connection',
+});
+assert.equal(owner.ready, false);
+owner.accept({ ...session, sequence: owner.sequence + 1 });
+owner.accept({ ...cursor, channel: 1, sequence: owner.sequence + 1 });
+assert.equal(owner.ready, false);
+owner.accept({ ...cursor, channel: 2, world: 1, sequence: owner.sequence + 1 });
 assert.equal(owner.ready, true);
 console.log(JSON.stringify({ schemaFixtureRecords: fixture.records.length, passed: true }));

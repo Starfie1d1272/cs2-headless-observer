@@ -1,10 +1,10 @@
 {
   "componentId": "cs2-headless-observer",
-  "componentVersion": "1.2.0",
+  "componentVersion": "2.0.0",
   "platform": "win32-x64",
   "nativeAbi": 4,
   "parserIpc": 4,
-  "managedProtocol": "cs2-observer-managed-json/1",
+  "managedProtocol": "cs2-observer-managed-json/2",
   "managedProtocols": ["cs2-observer-managed-json/1", "cs2-observer-managed-json/2"],
   "validatedHostVersions": [
     14191,

@@ -9,7 +9,7 @@
 | 真实接入环境 | CS2 build 10955、host 14192、Patch 1.41.9.2 |
 | 固定构建研究 | host 14191 / build 10924，各规则绑定模块摘要 |
 | 外部运行时 | Node.js 24.0.0 或更高，具备 WebAssembly、ReadableStream、structuredClone |
-| 接口 | 原生 ABI 4、有序 IPC 4、托管 JSON 契约 1（默认）与 2（显式启用） |
+| 接口 | 原生 ABI 4、有序 IPC 4、托管 JSON 契约 2（默认）与 1（显式启用） |
 | 最新版本核对 | 2026-11-18，Steam build 26748068，CS2 1.41.9.8 / host 14198 |
 | 解析器 | cs2parser 2.7.2，固定上游提交与本项目解析源码 |
 
