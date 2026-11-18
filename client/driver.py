@@ -14,7 +14,6 @@ import getpass
 import hashlib
 import ipaddress
 import json
-import os
 from pathlib import Path
 import struct
 import sys
@@ -48,7 +47,18 @@ from observer_settings import ObserverSettings
 from ordered_parser_bridge import Envelope, OrderedParserBridge
 from password import transform_password
 from wire import ProbeError, fields, scalar
-from process_io import CaptureWriter, PublicRecords, ManagedOwner, OutputWriter
+from process_io import (
+    CaptureWriter,
+    PublicRecords,
+    ManagedOwner,
+    OutputWriter,
+    DRAIN_TIMEOUT_MS,
+    HARD_AGE_US,
+    HEALTH_INTERVAL_NS,
+    SOFT_AGE_US,
+    private_file,
+    source_age_us,
+)
 
 MAGIC = b"MZRCS2\x01\0"
 
@@ -58,12 +68,8 @@ class DriverError(Exception):
 
 
 # Local residence protections, independent of protocol feedback and GOTV delay.
-SOFT_AGE_US = 250_000
-HARD_AGE_US = 2_000_000
 STARTUP_AGE_US = 10_000_000
 WORK_NS = 2_000_000
-HEALTH_INTERVAL_NS = 1_000_000_000
-DRAIN_TIMEOUT_MS = 5000
 PARSER_NO_PAYLOAD = frozenset({76})  # Fixed-profile CSVCMsg_UserCommands.
 PARSER_CONTROL_BARRIERS = frozenset({7, 8, 9, 11, 12, 40, 51, 58, 205})
 
@@ -105,6 +111,7 @@ class ObserverDriver:
         now_ms=0,
         parser=None,
         encoded_output=False,
+        supervised=False,
     ):
         uint(host_version)
         if (
@@ -115,6 +122,7 @@ class ObserverDriver:
         ):
             raise DriverError("configuration-boundary")
         self.port, self.host_version = port, host_version
+        self.supervised = supervised
         self._password = password  # Owned only through connection/retries; wiped on acceptance/close.
         self._challenge = None
         self._last_challenge_request_ms = None
@@ -231,6 +239,8 @@ class ObserverDriver:
             )
         self._check_residence()
         results = self._poll_parser(cancelled)
+        if cancelled and cancelled():
+            return StepResult(Duty.STOPPED, results=results)
         now_ms = clock() if clock else now_ms
         if self.parser is not None and self._drain_deadline is None:
             self._advance_initialization(now_ms)
@@ -418,6 +428,9 @@ class ObserverDriver:
                     self._cursor_rate = (tick - last_tick) * 1_000_000_000 / elapsed
             self._last_cursor = world, tick, now, paused, self.emit.sequence + 1
             self._gap = False
+        if self.supervised:
+            row["_attemptEmittedNs"] = time.monotonic_ns()
+            row["_attemptDraining"] = self._drain_deadline is not None
         self.emit(row)
 
     def _send_channel_feedback(self, encoded, now_ms):
@@ -1041,13 +1054,6 @@ class ObserverDriver:
         self.port.close()
 
 
-def private_file(path, mode):
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    return os.fdopen(
-        fd, mode, **({"encoding": "utf-8", "newline": "\n"} if "b" not in mode else {})
-    )
-
-
 class CaptureBudget:
     def __init__(self, maximum=256 * 1024**2):
         self.maximum, self.written, self.truncated = maximum, 0, False
@@ -1129,6 +1135,8 @@ def main():
 
     ap.add_argument("--source-id", type=lambda value: UUID(value).hex)
     ap.add_argument("--managed", action="store_true")
+    ap.add_argument("--managed-protocol", choices=("1", "2"), default="1")
+    ap.add_argument("--session-attempt", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument(
         "--host-version",
         type=host_version,
@@ -1147,6 +1155,10 @@ def main():
     )
     ap.add_argument("--capture-budget-mib", type=positive, default=256)
     args = ap.parse_args()
+    if not args.managed and (args.managed_protocol == "2" or args.session_attempt):
+        ap.error("Managed protocol selection requires --managed")
+    if args.session_attempt and args.managed_protocol != "1":
+        ap.error("Invalid internal session attempt")
     if args.managed and args.capture:
         ap.error("Managed mode never captures raw traffic or event files")
     if args.host_version is None:
@@ -1186,6 +1198,21 @@ def main():
         password[:] = bytes(len(password))
         owner.close()
         raise SystemExit("output-directory-unavailable") from None
+    try:
+        if args.managed_protocol == "2":
+            from session_supervisor import run
+
+            args.source_id = args.source_id or uuid4().hex
+            return run(args, owner, endpoint, password)
+        return run_attempt(args, owner, endpoint, password)
+    finally:
+        password[:] = bytes(len(password))
+        owner.close()
+
+
+def run_attempt(args, owner, endpoint, password):
+    from uuid import uuid4
+
     driver = native = parser = samples = events = writer = diagnostics = capture = None
     budget = CaptureBudget(args.capture_budget_mib * 1024**2)
     report, failure, finalization = (
@@ -1229,14 +1256,10 @@ def main():
             )
             if driver._drain_deadline is not None:
                 writer.age_limit_us = DRAIN_TIMEOUT_MS * 1000
-            age = None
-            if driver._drain_deadline is None and "submitToObservedUs" in event:
-                age = (
-                    (event["sdkQueueAgeUs"] or 0)
-                    + event["dequeueToSubmitUs"]
-                    + event["submitToObservedUs"]
-                )
-            writer.emit_encoded(data, cursor=cursor, source_age_us=age)
+            age = source_age_us(event) if driver._drain_deadline is None else None
+            writer.emit_encoded(
+                data, cursor=cursor, source_age_us=age, sequence=event["sequence"]
+            )
             if capture:
                 capture.emit(events, data)
 
@@ -1253,6 +1276,7 @@ def main():
             password=password,
             emit=emit_event,
             encoded_output=True,
+            supervised=args.session_attempt,
             capture=capture_sample if capture else None,
             now_ms=clock_ms(),
             parser=parser,

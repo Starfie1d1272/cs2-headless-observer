@@ -344,3 +344,138 @@ class ManagedConnectionTests(unittest.TestCase):
         finally:
             if writer_open:
                 os.close(write_fd)
+
+
+class ManagedSupervisorTests(unittest.TestCase):
+    def test_reconnect_isolates_partial_output_and_resequences(self):
+        import json
+        from pathlib import Path
+        import sys
+        import tempfile
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        from process_io import ManagedOwner
+        import session_supervisor as supervisor
+
+        fake = """
+import json
+from pathlib import Path
+import sys
+import time
+
+_, attempt, output, source = sys.argv
+config = json.loads(sys.stdin.buffer.readline())
+if config != {"endpoint": "127.0.0.1:27020", "password": "test-only"}:
+    sys.exit(3)
+directory = Path(output)
+directory.mkdir()
+if attempt == "1":
+    sys.stdout.write('{"abandoned":')
+    reason, code = "parser-residence-overload", 1
+else:
+    row = dict(
+        source=source, channel=1, world=1, sequence=1, kind="cursor",
+        map="de_test", tick=44, committedTick=44, tickInterval=1 / 64,
+        _attemptEmittedNs=time.monotonic_ns(), _attemptDraining=True,
+    )
+    print(json.dumps(row))
+    row.update(sequence=2, kind="discontinuity", reason="source-hltv-stop")
+    print(json.dumps(row))
+    reason, code = "source-hltv-stop", 0
+(directory / "report.json").write_text(json.dumps(dict(
+    reason=reason, cleanupCompleted=True, drainCompleted=not code,
+    outcome="closed" if not code else "failed",
+)))
+sys.exit(code)
+"""
+        with (
+            tempfile.TemporaryDirectory() as temp,
+            tempfile.TemporaryFile() as stdout,
+            tempfile.TemporaryFile() as stderr,
+        ):
+            root = Path(temp)
+            script = root / "attempt.py"
+            script.write_text(fake, encoding="utf-8")
+            output = root / "run"
+            output.mkdir()
+            source_id = "12" * 16
+            args = SimpleNamespace(
+                output=output,
+                seconds=10,
+                source_id=source_id,
+                source_role="ahead",
+                native="unused.dll",
+                node="node",
+                parser_worker="unused.mjs",
+                steam_api=None,
+                host_version=14198,
+            )
+            password = bytearray(b"test-only")
+            attempts = []
+            real_attempt = supervisor.SessionAttempt
+
+            def fixture(_, directory, endpoint, private_password, progress):
+                attempts.append(directory)
+                self.assertFalse(any(path.exists() for path in attempts[:-1]))
+                return real_attempt(
+                    [
+                        sys.executable,
+                        str(script),
+                        str(len(attempts)),
+                        str(directory),
+                        f"ahead:{source_id}",
+                    ],
+                    directory,
+                    endpoint,
+                    private_password,
+                    progress,
+                )
+
+            with (
+                patch.object(supervisor, "SessionAttempt", side_effect=fixture),
+                patch.object(supervisor.random, "uniform", return_value=1),
+                patch.object(sys, "stdout", stdout),
+                patch.object(sys, "stderr", stderr),
+            ):
+                result = supervisor.run(
+                    args, ManagedOwner(), "127.0.0.1:27020", password
+                )
+            self.assertEqual(result, 0)
+            self.assertEqual(password, bytearray(len(password)))
+            stdout.seek(0)
+            records = [json.loads(line) for line in stdout]
+            self.assertEqual(
+                [(r["kind"], r["channel"], r["sequence"]) for r in records],
+                [
+                    ("session-start", 1, 1),
+                    ("discontinuity", 1, 2),
+                    ("session-start", 2, 3),
+                    ("cursor", 2, 4),
+                    ("discontinuity", 2, 5),
+                ],
+            )
+            self.assertEqual({r["source"] for r in records}, {f"ahead:{source_id}"})
+            self.assertEqual(records[1]["scope"], "connection")
+            self.assertIsInstance(records[3]["supervisorForwardUs"], int)
+            self.assertNotIn("_attemptEmittedNs", records[3])
+            report = json.loads((output / "report.json").read_text())
+            self.assertEqual(report["health"]["reconnects"], 1)
+            self.assertEqual(report["health"]["output"]["lastDeliveredSequence"], 5)
+            self.assertEqual(report["faults"][0]["reason"], "parser-residence-overload")
+            self.assertEqual(list(output.iterdir()), [output / "report.json"])
+
+    def test_permanent_and_consumer_failures_do_not_reconnect(self):
+        from session_supervisor import retryable
+
+        for reason in (
+            "output-backpressure",
+            "output-closed",
+            "attempt-record-invalid",
+            "connection-inner-prefix-or-budget",
+            "ordered-parser-protocol-version",
+        ):
+            self.assertFalse(retryable({"reason": reason}))
+        self.assertFalse(retryable({"reason": "phase-timeout", "phase": "connection"}))
+        self.assertTrue(retryable({"reason": "phase-timeout", "phase": "channel"}))
+        self.assertTrue(retryable({"reason": "ordered-parser-exited"}))

@@ -101,9 +101,9 @@ class OrderedParserBridge:
         self._input = queue.Queue(maxsize=32)
         self._output = queue.Queue(maxsize=64)
         self._available = threading.Event()
-        from process_job import ParserJob
+        from process_job import ProcessJob
 
-        self._job = ParserJob()
+        self._job = ProcessJob()
         try:
             self.process = subprocess.Popen(
                 [node, str(Path(worker))],

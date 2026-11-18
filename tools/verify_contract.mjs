@@ -22,6 +22,18 @@ assert.equal(
 );
 const { roundClock, ...legacyCursor } = cursor;
 assert.equal(validate(legacyCursor), true);
+const session = {
+  kind: 'session-start',
+  protocol: 2,
+  source: cursor.source,
+  channel: 2,
+  world: 1,
+  sequence: 10,
+};
+assert.equal(validate(session), true);
+assert.equal(validate({ ...session, world: 2 }), false);
+assert.equal(validate({ ...session, protocol: 1 }), false);
+assert.equal(validate({ ...cursor, supervisorForwardUs: 14 }), true);
 const owner = new Consumer(cursor.source);
 for (const row of fixture.records) owner.accept(row);
 owner.accept({

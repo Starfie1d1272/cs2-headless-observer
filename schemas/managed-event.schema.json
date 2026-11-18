@@ -73,6 +73,10 @@
         "integer",
         "null"
       ]
+    },
+    "supervisorForwardUs": {
+      "type": "integer",
+      "minimum": 0
     }
   },
   "additionalProperties": true,
@@ -265,6 +269,13 @@
           "reason": {
             "type": "string",
             "minLength": 1
+          },
+          "scope": {
+            "enum": [
+              "connection",
+              "world",
+              "snapshot"
+            ]
           }
         }
       }
@@ -343,6 +354,31 @@
           },
           "identityResolved": {
             "type": "boolean"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "session-start"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "protocol"
+        ],
+        "properties": {
+          "protocol": {
+            "const": 2
+          },
+          "channel": {
+            "minimum": 1
+          },
+          "world": {
+            "const": 1
           }
         }
       }
