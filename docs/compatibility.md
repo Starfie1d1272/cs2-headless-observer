@@ -9,10 +9,13 @@
 | 真实接入环境 | CS2 build 10955、host 14192、Patch 1.41.9.2 |
 | 固定构建研究 | host 14191 / build 10924，各规则绑定模块摘要 |
 | 外部运行时 | Node.js 24.0.0 或更高，具备 WebAssembly、ReadableStream、structuredClone |
-| 接口 | 原生 ABI 3、有序 IPC 3、托管 JSON 契约 1 |
+| 接口 | 原生 ABI 4、有序 IPC 4、托管 JSON 契约 1 |
+| 最新版本核对 | 2026-11-18，Steam build 26748068，CS2 1.41.9.8 / host 14198 |
 | 解析器 | cs2parser 2.7.2，固定上游提交与本项目解析源码 |
 
 CLI 接受非零 uint32 host，`validatedHostVersions` 记录已验证的版本。实际兼容性由握手、初始化和所需解码能力共同确定；新增 host 的验证记录按版本补充。构建内的 `ordinaryViewerProtocol=2` 表示上游解析能力，版本含义见[构建](build.md)。
+
+2026-11-18 核对 Steam 本机清单和 `steam.inf`，构建 26748068 的 ClientVersion / ServerVersion 为 2000946，SourceRevision 为 11251667。检查本机 Windows `engine2.dll` 的 protobuf 描述符，确认 `net_Tick=4`、`net_SignonState=7`、`svc_ServerInfo=40`、`svc_ClearAllStringTables=51`、`svc_PacketEntities=55`、`svc_UserCmds=76`，且后者仍只有 repeated message 字段 `commands=1`。用该构建自带的 `steam_api64.dll` 通过本地 SDK socket pair 检查，正常 1038 后仍可读到队尾，且 SDK 接收时间戳可用。没有最新构建的授权 GOTV 连接数据。本次静态证据单独列出，manifest 的 `validatedHostVersions` 沿用已有已验证范围。
 
 ## 身份、时间与来源切换
 

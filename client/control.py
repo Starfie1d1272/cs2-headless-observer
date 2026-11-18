@@ -107,7 +107,7 @@ class ControlDecoder:
                 break
         return ready
 
-    def consume(self, message_id, body):
+    def consume(self, message_id, body, *, values=None):
         # Diagnostic cardinality is bounded even if a source sends unknown IDs.
         key = (
             message_id
@@ -117,7 +117,7 @@ class ControlDecoder:
         self.counts[key] = self.counts.get(key, 0) + 1
         if message_id not in (4, 8, 9, 11, 12, 40, 51):
             return
-        f = fields(body, limit=4 * 1024**2)
+        f = fields(body, limit=4 * 1024**2) if values is None else values
         if message_id == 4:
             tick = scalar(f, 1)
             if tick is None or tick > 0x7FFFFFFF:

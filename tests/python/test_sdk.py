@@ -72,7 +72,11 @@ class SdkAbiTest(unittest.TestCase):
         )
         port.send(b"a\0b", 5)
         port.send(b"a\0b", 1)
-        self.assertEqual(port.receive(), (b"a\0b", True))
+        first, second = port.receive(), port.receive()
+        self.assertEqual(first[:2], (b"a\0b", True))
+        self.assertEqual(second[:2], (b"a\0b", False))
+        self.assertEqual(first[2], second[2])
+        self.assertEqual((first[3], second[3]), (730, None))
         with self.assertRaisesRegex(ValueError, "send-failed"):
             port.send(b"bad", 8)
         with self.assertRaisesRegex(ValueError, "send-boundary"):

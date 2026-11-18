@@ -1,6 +1,7 @@
 // Local SDK queue semantics only: no GOTV handshake, match data or real spectator endpoint.
 #include <steam_api.h>
 #include <steam_api_flat.h>
+#include <isteamnetworkingutils.h>
 #include <chrono>
 #include <thread>
 #include <cstring>
@@ -35,10 +36,14 @@ int main() {
   }
   SteamNetworkingMessage_t* message = nullptr;
   const auto count = sockets->ReceiveMessagesOnConnection(second, &message, 1);
-  const bool passed = info.m_eState == k_ESteamNetworkingConnectionState_ClosedByPeer && count == 1 &&
+  auto* utils = SteamAPI_SteamNetworkingUtils_SteamAPI_v004();
+  const auto now = utils ? utils->GetLocalTimestamp() : 0;
+  const bool valid_age = message && message->m_usecTimeReceived > 0 && message->m_usecTimeReceived <= now;
+  const bool passed = valid_age && info.m_eState == k_ESteamNetworkingConnectionState_ClosedByPeer && count == 1 &&
     message && message->m_cbSize == sizeof(payload) && std::memcmp(message->m_pData, payload, sizeof(payload)) == 0;
   if (message) SteamAPI_SteamNetworkingMessage_t_Release(message);
   std::cout << "{\"passed\":" << (passed ? "true" : "false") << ",\"state\":" << int(info.m_eState)
+    << ",\"sdkQueueAgeAvailable\":" << (valid_age ? "true" : "false")
     << ",\"receivedMessages\":" << count << ",\"scope\":\"local-SDK-socket-pair-only\"}";
   return passed ? 0 : 5;
 }

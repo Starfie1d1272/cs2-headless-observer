@@ -35,6 +35,8 @@ manifest 记录组件版本、源码提交、平台、原生 ABI、有序 IPC、
 
 托管应用将输出目录安排在安装目录之外；独立交互入口默认写入包内 `runs/`，因此使用可写解压目录。Python 启动时保持源码文件状态，包验证在执行后再次核对文件与摘要。
 
+1.2.0 使用原生 ABI 4 与有序 IPC 4，托管 JSON 继续为 `cs2-observer-managed-json/1`。整包替换 Python、DLL 和 worker，并由 ABI、IPC 握手及制品自检核对一致性。来源与主机版本证据按[兼容性](compatibility.md)分开记录。
+
 ## 应用安装与升级
 
 应用可随安装包分发 `external-node`，复用已有 Node。按来源、归档摘要、manifest 和运行时能力验证组件，再定位入口并执行合成自检。

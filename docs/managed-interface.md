@@ -25,7 +25,7 @@
 
 stdout 为 UTF-8 JSONL，单条记录连同 LF 至多 64 KiB。消费者持续读取并按行处理任意流分块，对未完成行与消费队列设置边界。
 
-stderr 包含原生日志及最终报告，作为私有诊断通道处理。`report.json` 位于会话输出目录。托管会话默认仅保存报告，公共记录由 stdout 交付。
+stderr 包含原生日志、低频健康记录及最终报告，作为私有诊断通道处理。`report.json` 位于会话输出目录。托管会话默认仅保存报告，公共记录由 stdout 交付。
 
 完整类型见 [JSON Schema](../schemas/managed-event.schema.json)，实际合成记录见[样例](../examples/managed-events.json)。
 
@@ -33,9 +33,9 @@ stderr 包含原生日志及最终报告，作为私有诊断通道处理。`rep
 | --- | --- |
 | `source` / `channel` / `world` | 连接尝试身份、通道和世界代际，共同绑定当前连续段 |
 | `sequence` | 进程从 1 连续递增的公共记录顺序，跨 world 保持递增 |
-| `kind=cursor` | 已提交实体快照的时间依据；`tick` 为正整数，`tickInterval` 为每 tick 的秒数，`map` 为来源地图 |
+| `kind=cursor` | 已提交实体快照的时间依据。兼容字段 `tick` 与 `committedTick` 都是该快照的正整数 tick，`tickInterval` 为每 tick 的秒数，`map` 为来源地图 |
 | `type=raw-event` | `kind`、`name` 为事件名，`fields` 保留原始字段；其中 type9 玩家值表示控制器槽位 |
-| `tick` / `networkTick` | 消息帧上下文和最近处理的网络 Tick；帧上下文可能为 0 |
+| `contextTick` / `networkTick` | 帧上下文与最近处理的网络 Tick。帧上下文可能为 0，事件仍以 `tick` 保留同一上下文 |
 | `eventServerTick` / `committedTick` | 事件消息的 `server_tick`，以及处理事件时最后提交的实体快照 tick |
 | `players` | 按事件玩家字段提供当前 controller 与 userinfo 的一致性证明：零基 `slot`、字符串 `steamId`、实际 `userId` 或 null、controller 的 index/serial；未知项为 null |
 | `pawns` | 独立的 pawn index/serial 证明，按完整实体身份验证 |
@@ -47,6 +47,24 @@ stderr 包含原生日志及最终报告，作为私有诊断通道处理。`rep
 
 各 tick 属于来源时间域。有效时间映射采用正整数 tick 与相应证据；null、0 等值表示该项时间依据尚未建立。接收墙钟和节目画面时间由消费应用另外记录。
 
+## 本地时间与健康
+
+新版 cursor 和事件附带可选的 `sdkQueueAgeUs`、`dequeueToSubmitUs`、`submitToObservedUs`、`resultQueueUs` 和 `observedAt`。这些字段按各记录所属的 GNS envelope 关联。前四项单位为微秒，未提供的 SDK 年龄为 null。
+
+| 字段 | 计量范围 |
+| --- | --- |
+| `sdkQueueAgeUs` | Steam SDK 从收到应用消息至出队的本地时长 |
+| `dequeueToSubmitUs` | Python 看到 SDK 出队至 parser IPC 入队，含已出队尾部等待、framing 与序列化 |
+| `submitToObservedUs` | Python IPC 入队至 owner 消费结果，含发送、Node 处理、结果传输和结果排队 |
+| `resultQueueUs` | 上一项的子区间，从 Python 读线程解析结果批至 owner 消费 |
+| `observedAt` | Python owner 消费解析输出时的 Unix 毫秒，仅用于观测 |
+
+同进程单调时钟计算 Python 驻留。Worker 单独汇总 base64 解码及协议事务耗时 `workerDecodeUs`。SDK 时间、Python 墙钟、节点单调计时和游戏 tick 各有自己的时域。SDK 年龄描述本地接收队列，上游播放位置、单程延迟以及绝对 freshness 仍为 unknown。stdout writer 完成表示写入管道，消费应用仍需观测其自身排队。报告的 `lastOutputSequence` 记录最后接纳入队的公共序号，与实际写入位置分别观测。
+
+stderr 大约每秒尝试交付一条 `type=cs2-observer-health/1`，最终报告的 `health` 保留最后一次观测，按 source/channel/world 标识。记录包含 SDK 年龄、出队尾部、parser 和 stdout 的队列水位及驻留、窗口计数、预算用尽次数、context/network/committed tick 与已写入 stdout 的最后 cursor。窗口计数和时间跨度对应相同采样周期，队列峰值与预算用尽次数为本次尝试累计。诊断可丢失，游戏队列和公共 sequence 独立推进。
+
+`state` 为 `unknown`、`catching-up`、`live`、`discontinuity` 或 `overloaded`，`reason` 描述判定依据。`live` 需要近期可用的 SDK 年龄、低排队及同一连续段的有效 cursor 持续前进并成功写入。gap、世界切换、暂停和 tick 停滞会使进度速率失效。`upstreamFreshness` 始终为 `unknown`。这些字段用于来源健康和诊断，展示时间仍由消费应用按来源证据计算。
+
 ## 就绪、扩展与停止
 
 接纳匹配 source/channel/world 的有效 cursor 后建立就绪。断点、EOF、错误和来源替换撤销就绪；新的连续段从匹配代际的有效 cursor 恢复。
@@ -55,7 +73,9 @@ stderr 包含原生日志及最终报告，作为私有诊断通道处理。`rep
 
 默认持续运行；`--seconds` 用于显式诊断时限。停止时先撤销应用侧投递，再关闭 stdin，给予至少 12 秒收尾宽限，超时后结束本应用拥有的进程。Windows 驱动通过 Job 管理解析器；宿主可用自己的 Job 将驱动绑定到应用生命周期。
 
-正常 1038 按已接收通道、解析和输出顺序排空，随后发布断点并关闭会话。输出压力和管道关闭分别报告 `output-backpressure`、`output-closed`。退出码与报告字段见[使用说明](usage.md)。
+正常 1038 在独立期限内有序排空通道和解析，写出 `source-hltv-stop` 断点并完成 stdout 排空。短突发可进入 `catching-up`。实时软阈值为 250 ms，硬保护为 2 秒，初始化内部队列可等待至多 10 秒。上线前的公共 cursor 和事件仍采用 2 秒保护。这些值是运行保护。
+
+过载导致退出码 1，报告 `reason` 标识故障阶段。常见原因包括 `sdk-receive-overload`、`receive-staging-overload`、`parser-residence-overload`、`output-residence-overload`、`source-residence-overload`、`output-backpressure` 与 `output-closed`。发生过载时撤销仍待写入的公共记录。EOF、未完成行或失败报告均使原连续段失效。重连时分配新 source，等待新会话完成初始化并收到有效 cursor。退出码与报告字段见[使用说明](usage.md)。
 
 一次进程运行对应一次来源尝试。消费者按失败原因管理重试，重连分配新 source；同账号并行使用不同端点。正常来源结束后等待新授权来源，清理失败后先确认旧进程退出。
 

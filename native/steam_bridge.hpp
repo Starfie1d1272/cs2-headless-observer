@@ -4,17 +4,19 @@
 #include "session.hpp"
 #include <steam_api.h>
 #include <steam_api_flat.h>
-#include <functional>
+#include <isteamnetworkingutils.h>
+#include <array>
 
 namespace cs2::observer {
 class SteamBridge final : private Port {
  public:
   SteamBridge(ISteamUser& user, ISteamUtils& utils, ISteamNetworkingSockets& sockets,
+              ISteamNetworkingUtils* networking_utils,
               const SteamNetworkingIPAddr& authorized_endpoint)
-      : user_(user), utils_(utils), sockets_(sockets), endpoint_(authorized_endpoint), session_(*this),
+      : user_(user), utils_(utils), sockets_(sockets), networking_utils_(networking_utils), endpoint_(authorized_endpoint), session_(*this),
         ticket_callback_(this, &SteamBridge::on_ticket),
         connection_callback_(this, &SteamBridge::on_connection) {}
-  ~SteamBridge() { session_.close(); }
+  ~SteamBridge() { release_received(); session_.close(); }
   SteamBridge(const SteamBridge&) = delete;
   SteamBridge& operator=(const SteamBridge&) = delete;
 
@@ -35,24 +37,45 @@ class SteamBridge final : private Port {
     if (!context_ready()) session_.close(Failure::context);
     session_.tick(monotonic_ms);
   }
-  // GNS owns message ACK/reassembly/encryption; this supplies complete GNS messages,
-  // NOT decoded Source 2 netchannel data. The consumer must not retain the span.
-  int receive(const std::function<void(std::span<const std::uint8_t>, bool)>& consume) {
+  struct Received {
+    const std::uint8_t* data;
+    std::int64_t sdk_queue_age_us;
+    std::uint32_t size;
+    std::int32_t reliable;
+  };
+  static constexpr int receive_limit = 8;
+  // Borrowed payloads remain valid until the next receive call or destruction.
+  // The SDK owns these allocations; Python copies only the envelopes it consumes.
+  int receive(Received* output, int capacity) {
+    release_received();
     if (!transport_ready() && !(remote_end_reason_ == 1038 && session_.connection())) return 0;
-    SteamNetworkingMessage_t* message = nullptr;
-    const int count = sockets_.ReceiveMessagesOnConnection(session_.connection(), &message, 1);
+    const int count = sockets_.ReceiveMessagesOnConnection(session_.connection(), received_.data(), capacity);
     if (count < 0) { session_.close(Failure::disconnected); return count; }
-    if (!message) return count;
-    struct Release { SteamNetworkingMessage_t* p; ~Release() { SteamAPI_SteamNetworkingMessage_t_Release(p); } } release{message};
-    if (message->m_cbSize < 0) { session_.close(Failure::disconnected); return -1; }
-    try {
-      consume({static_cast<const std::uint8_t*>(message->m_pData), static_cast<std::size_t>(message->m_cbSize)},
-        (message->m_nFlags & k_nSteamNetworkingSend_Reliable) != 0);
-    } catch (...) {
-      session_.close(Failure::consumer);
-      throw; // RAII releases this SDK message even when protocol processing fails.
+    if (!count) return 0;
+    const auto now = networking_utils_ ? networking_utils_->GetLocalTimestamp() : 0;
+    for (int i = 0; i < count; ++i) {
+      const auto* message = received_[i];
+      if (!message || !message->m_pData || message->m_cbSize <= 0 || message->m_cbSize > 4 * 1024 * 1024) {
+        release_received();
+        session_.close(Failure::consumer);
+        return -1;
+      }
+      const auto received = message->m_usecTimeReceived;
+      const auto elapsed = received > 0 && received <= now ? now - received : -1;
+      const auto age = elapsed <= 9007199254740991LL ? elapsed : -1;
+      output[i] = {
+        static_cast<const std::uint8_t*>(message->m_pData), age,
+        static_cast<std::uint32_t>(message->m_cbSize),
+        (message->m_nFlags & k_nSteamNetworkingSend_Reliable) != 0,
+      };
     }
     return count;
+  }
+  void release_received() noexcept {
+    for (auto& message : received_) {
+      if (message) SteamAPI_SteamNetworkingMessage_t_Release(message);
+      message = nullptr;
+    }
   }
   EResult send(std::span<const std::uint8_t> bytes, int flags) {
     if (!transport_ready() || bytes.size() > 512 * 1024) return k_EResultInvalidState;
@@ -113,6 +136,8 @@ class SteamBridge final : private Port {
   ISteamUser& user_;
   ISteamUtils& utils_;
   ISteamNetworkingSockets& sockets_;
+  ISteamNetworkingUtils* networking_utils_;
+  std::array<SteamNetworkingMessage_t*, receive_limit> received_{};
   SteamNetworkingIPAddr endpoint_;
   Session session_;
   int remote_end_reason_ = 0;

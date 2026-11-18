@@ -24,7 +24,7 @@ def main():
     args = ap.parse_args()
     root = args.package.resolve(strict=True)
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
-    assert manifest["nativeAbi"] == 3 and manifest["parserIpc"] == 3
+    assert manifest["nativeAbi"] == 4 and manifest["parserIpc"] == 4
     expected = manifest["filesSha256"]
     actual = {p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file()}
     assert actual == set(expected) | {"manifest.json"}, "Package inventory mismatch"

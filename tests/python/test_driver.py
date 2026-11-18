@@ -49,10 +49,20 @@ class DriverTest(unittest.TestCase):
                     class Parser:
                         completed_sequence = 0
                         checkpoint = None
+                        caught_up = True
                         identity = {"source": "synthetic", "channel": 1, "world": 1}
 
-                        def poll(self, emit):
+                        def poll(self, emit, **options):
                             return []
+
+                        def oldest_age_us(self, _):
+                            return None
+
+                        def has_credit(self):
+                            return True
+
+                        def has_results(self):
+                            return False
 
                     driver.parser = Parser()
                 driver._full_sent, driver._processed_entity_tick = full, 123

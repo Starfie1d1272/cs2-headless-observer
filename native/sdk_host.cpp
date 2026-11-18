@@ -1,7 +1,6 @@
 // Optional in-process C ABI for driver.py. Link only to a legitimately obtained
 // Valve steam_api library. No app-id files, credentials, tickets or keys on disk.
 #include "steam_bridge.hpp"
-#include <cstring>
 #include <memory>
 #ifdef _WIN32
 #define OBS_API extern "C" __declspec(dllexport)
@@ -31,6 +30,7 @@ OBS_API void* observer_create(const char* endpoint, std::uint64_t now_ms) noexce
     if (init_result != k_ESteamAPIInitResult_OK) { boot_failure = 2; return nullptr; }
     initialized = true;
     auto* user = SteamUser(); auto* utils = SteamUtils(); auto* sockets = SteamNetworkingSockets();
+    auto* networking_utils = SteamAPI_SteamNetworkingUtils_SteamAPI_v004();
     if (!user || !utils || !sockets) { boot_failure = 3; shutdown(); return nullptr; }
     if (utils->GetAppID() != 730 || !user->BLoggedOn()) {
       boot_failure = utils->GetAppID() != 730 ? 4 : 5;
@@ -41,7 +41,7 @@ OBS_API void* observer_create(const char* endpoint, std::uint64_t now_ms) noexce
       boot_failure = 6;
       shutdown(); return nullptr;
     }
-    bridge = std::make_unique<SteamBridge>(*user, *utils, *sockets, address);
+    bridge = std::make_unique<SteamBridge>(*user, *utils, *sockets, networking_utils, address);
     bridge->session().start(now_ms);
     return bridge.get();
   } catch (...) { boot_failure = 7; shutdown(); return nullptr; }
@@ -57,7 +57,7 @@ OBS_API int observer_failure(void* handle) noexcept {
 OBS_API int observer_remote_end_reason(void* handle) noexcept {
   return valid(handle) ? bridge->remote_end_reason() : 0;
 }
-OBS_API int observer_abi_version() noexcept { return 3; }
+OBS_API int observer_abi_version() noexcept { return 4; }
 OBS_API void observer_pump(void* handle, std::uint64_t now_ms) noexcept {
   if (!valid(handle)) return;
   try { bridge->pump(now_ms); } catch (...) { bridge->session().close(Failure::consumer); }
@@ -92,17 +92,15 @@ OBS_API int observer_send(void* handle, const std::uint8_t* bytes, std::uint32_t
       (flags != k_nSteamNetworkingSend_UnreliableNoDelay && flags != k_nSteamNetworkingSend_UnreliableNoNagle && flags != k_nSteamNetworkingSend_Reliable)) return 0;
   return bridge->send({bytes, size}, flags) == k_EResultOK;
 }
-OBS_API int observer_receive(void* handle, std::uint8_t* output, std::uint32_t capacity, int* reliable) noexcept {
-  if (!valid(handle) || !output || !capacity || !reliable) return -1;
-  int bytes = 0;
-  try {
-    const int count = bridge->receive([&](std::span<const std::uint8_t> message, bool r) {
-      if (message.size() > capacity || message.empty()) throw std::length_error("message-budget");
-      std::memcpy(output, message.data(), message.size());
-      bytes = static_cast<int>(message.size()); *reliable = r ? 1 : 0;
-    });
-    return count < 0 ? -1 : bytes;
-  } catch (...) { return -1; }
+OBS_API int observer_receive_many(void* handle, SteamBridge::Received* output, int capacity) noexcept {
+  if (!valid(handle) || !output || capacity < 1 || capacity > SteamBridge::receive_limit) return -1;
+  try { return bridge->receive(output, capacity); }
+  catch (...) {
+    bridge->release_received();
+    bridge->session().close(Failure::consumer);
+    return -1;
+  }
 }
+OBS_API void observer_release_received(void* handle) noexcept { if (valid(handle)) bridge->release_received(); }
 OBS_API void observer_close(void* handle) noexcept { if (valid(handle)) shutdown(); }
 

@@ -1,7 +1,9 @@
 """Generation-fenced ordered parser pipe. No Steam/network authority lives here."""
 
 from collections import deque
+from dataclasses import dataclass
 import base64
+import io
 import json
 import os
 from pathlib import Path
@@ -13,9 +15,32 @@ from process_io import cancel_io
 from wire import ProbeError
 
 
+@dataclass(frozen=True)
+class Envelope:
+    actions: list
+    dequeued_ns: int
+    sdk_age_us: int | None
+
+
+@dataclass(frozen=True)
+class InputBatch:
+    number: int
+    first: int
+    last: int
+    raw_bytes: int
+    submitted_ns: int
+    world: int
+    envelopes: list  # (last parser sequence, dequeue time, SDK age)
+
+
 class OrderedParserBridge:
     ordered = True
-    MAX_QUEUED_BYTES = 16 * 1024**2
+    MAX_QUEUED_BYTES = 32 * 1024**2
+    # Reserve a whole legal channel envelope above either high watermark.
+    BATCH_TARGET_MESSAGES, BATCH_TARGET_BYTES = 64, 256 * 1024
+    HIGH_BATCHES, LOW_BATCHES = 16, 8
+    HIGH_MESSAGES, LOW_MESSAGES = 8192, 4096
+    HIGH_BYTES, LOW_BYTES = 4 * 1024**2, 2 * 1024**2
     MAX_BODY = 4 * 1024**2
     FORWARDED_EVENTS = frozenset(
         {
@@ -62,12 +87,19 @@ class OrderedParserBridge:
         self._pending_controls = deque()
         self._receipts = deque()
         self._subscriptions = None
+        self._inflight = deque()
+        self._batch = 0
+        self._pending_messages = self._pending_bytes = 0
+        self.peak_messages = self.peak_bytes = self.peak_batches = 0
+        self._throttled = False
+        self.processed_messages = self.processed_bytes = self.decode_us = 0
+        self._ready = deque()
         self._closed = False
         self._failure = None
         self._queued_bytes = 0
         self._lock = threading.Lock()
-        self._input = queue.Queue(maxsize=16)
-        self._output = queue.Queue(maxsize=4096)
+        self._input = queue.Queue(maxsize=32)
+        self._output = queue.Queue(maxsize=64)
         self._available = threading.Event()
         from process_job import ParserJob
 
@@ -82,6 +114,7 @@ class OrderedParserBridge:
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
             )
             self._job.assign(self.process)
+            self.process.stdout = io.BufferedReader(self.process.stdout)
         except BaseException:
             if hasattr(self, "process") and self.process.poll() is None:
                 self.process.kill()
@@ -101,20 +134,21 @@ class OrderedParserBridge:
 
     def _enqueue(self, row):
         self.check()
-        data = b"".join(
-            (json.dumps(item, separators=(",", ":"), ensure_ascii=True) + "\n").encode()
-            for item in (row if isinstance(row, list) else [row])
-        )
+        data = (
+            json.dumps(row, separators=(",", ":"), ensure_ascii=True) + "\n"
+        ).encode()
         if len(data) > 8 * 1024**2:
             raise ProbeError("ordered-parser-record-budget")
         with self._lock:
             if self._queued_bytes + len(data) > self.MAX_QUEUED_BYTES:
                 raise ProbeError("ordered-parser-input-backpressure")
+            submitted_ns = time.monotonic_ns()
             try:
                 self._input.put_nowait(data)
             except queue.Full:
                 raise ProbeError("ordered-parser-input-backpressure") from None
             self._queued_bytes += len(data)
+            return submitted_ns
 
     def _write(self):
         try:
@@ -133,6 +167,7 @@ class OrderedParserBridge:
         except Exception as error:
             if not self._closed:
                 self._failure = "ordered-parser-input-failed: " + type(error).__name__
+                self._available.set()
 
     def _read(self):
         try:
@@ -141,6 +176,7 @@ class OrderedParserBridge:
                 if not line:
                     if not self._closed:
                         self._failure = "ordered-parser-exited"
+                        self._available.set()
                     return
                 if len(line) > 65536 or not line.endswith(b"\n"):
                     raise ValueError("record-size")
@@ -152,83 +188,178 @@ class OrderedParserBridge:
                         "ordered-parser-error: "
                         + str(row.get("message", "unknown"))[:1024]
                     )
+                    self._available.set()
                     return
-                if row.get("type") not in {
-                    "initialized",
-                    "world-reset",
-                    "creation-sequence-admitted",
-                    "checkpoint",
-                    "receipt",
-                    "cursor",
-                    "raw-event",
-                    "gap",
-                    "recovery",
-                    "blocked",
-                    "event-subscriptions",
-                    "diagnostic",
-                }:
+                rows = row.get("rows")
+                if (
+                    row.get("type") != "results"
+                    or not isinstance(rows, list)
+                    or not rows
+                ):
+                    raise ValueError("result-batch-shape")
+                if any(
+                    not isinstance(item, dict)
+                    or item.get("type")
+                    not in {
+                        "initialized",
+                        "world-reset",
+                        "creation-sequence-admitted",
+                        "checkpoint",
+                        "receipt",
+                        "cursor",
+                        "raw-event",
+                        "gap",
+                        "recovery",
+                        "blocked",
+                        "event-subscriptions",
+                        "diagnostic",
+                        "batch-complete",
+                    }
+                    for item in rows
+                ):
                     raise ValueError("record-type")
-                self._output.put_nowait(row)
-                self._available.set()
+                observed_ns = time.monotonic_ns()
+                while not self._closed:
+                    try:
+                        self._output.put((rows, len(line), observed_ns), timeout=0.02)
+                        self._available.set()
+                        break
+                    except queue.Full:
+                        continue
         except Exception as error:
             if not self._closed:
                 self._failure = "ordered-parser-output-failed: " + type(error).__name__
+                self._available.set()
 
     def submit_message(self, message_id, body):
         return self.submit_batch([("message", message_id, body)])
 
+    @property
+    def caught_up(self):
+        return not self._inflight
+
+    def has_credit(self):
+        if self._throttled:
+            self._throttled = (
+                len(self._inflight) > self.LOW_BATCHES
+                or self._pending_messages > self.LOW_MESSAGES
+                or self._pending_bytes > self.LOW_BYTES
+            )
+        else:
+            self._throttled = (
+                len(self._inflight) >= self.HIGH_BATCHES
+                or self._pending_messages >= self.HIGH_MESSAGES
+                or self._pending_bytes >= self.HIGH_BYTES
+            )
+        return not self._throttled
+
+    def oldest_age_us(self, now_ns):
+        if self._inflight:
+            return (now_ns - self._inflight[0].envelopes[0][1]) // 1000
+        return None
+
+    def backlog(self, now_ns):
+        return dict(
+            pendingBatches=len(self._inflight),
+            pendingMessages=self._pending_messages,
+            pendingBytes=self._pending_bytes,
+            peakBatches=self.peak_batches,
+            peakMessages=self.peak_messages,
+            peakBytes=self.peak_bytes,
+            oldestAgeUs=self.oldest_age_us(now_ns),
+        )
+
     def submit_batch(self, actions):
+        return self.submit_envelopes([Envelope(actions, time.monotonic_ns(), None)])
+
+    def submit_envelopes(self, envelopes):
+        if not self.has_credit():
+            raise ProbeError("ordered-parser-input-backpressure")
         identity = self.identity.copy()
         sequence = self.sequence
         rows = []
-        for action in actions:
-            if action[0] == "message":
-                _, message_id, body, *context = action
-                if (
-                    type(message_id) is not int
-                    or message_id < 0
-                    or not isinstance(body, bytes)
-                    or len(body) > self.MAX_BODY
-                ):
-                    raise ProbeError("ordered-parser-message-budget")
-                sequence += 1
-                if len(context) > 1 or (
-                    context
-                    and (
-                        type(context[0]) is not int
-                        or not -0x80000000 <= context[0] <= 0x7FFFFFFF
+        raw_bytes = 0
+        sources = []
+        for envelope in envelopes:
+            prior = sequence
+            for action in envelope.actions:
+                if action[0] == "message":
+                    _, message_id, body, *context = action
+                    if (
+                        type(message_id) is not int
+                        or message_id < 0
+                        or not isinstance(body, bytes)
+                        or len(body) > self.MAX_BODY
+                    ):
+                        raise ProbeError("ordered-parser-message-budget")
+                    sequence += 1
+                    raw_bytes += len(body)
+                    if len(context) > 1 or (
+                        context
+                        and (
+                            type(context[0]) is not int
+                            or not -0x80000000 <= context[0] <= 0x7FFFFFFF
+                        )
+                    ):
+                        raise ProbeError("ordered-parser-message-context")
+                    rows.append(
+                        dict(
+                            type="message",
+                            world=identity["world"],
+                            sequence=sequence,
+                            messageId=message_id,
+                            bodyBase64=base64.b64encode(body).decode("ascii"),
+                            **({"contextTick": context[0]} if context else {}),
+                        )
                     )
-                ):
-                    raise ProbeError("ordered-parser-message-context")
-                rows.append(
-                    dict(
-                        type="message",
-                        **identity,
-                        sequence=sequence,
-                        messageId=message_id,
-                        bodyBase64=base64.b64encode(body).decode("ascii"),
-                        **({"contextTick": context[0]} if context else {}),
+                    if message_id == 51:
+                        identity = {**identity, "world": identity["world"] + 1}
+                elif action[0] == "admit":
+                    if type(action[1]) is not int or not 0 <= action[1] <= 0xFFFFFFFF:
+                        raise ProbeError("ordered-parser-creation-sequence")
+                    rows.append(
+                        dict(
+                            type="admit-creation-sequence",
+                            world=identity["world"],
+                            creationSequence=action[1],
+                        )
                     )
-                )
-                if message_id == 51:
+                elif action[0] == "reset":
                     identity = {**identity, "world": identity["world"] + 1}
-            elif action[0] == "admit":
-                if type(action[1]) is not int or not 0 <= action[1] <= 0xFFFFFFFF:
-                    raise ProbeError("ordered-parser-creation-sequence")
-                rows.append(
-                    dict(
-                        type="admit-creation-sequence",
-                        **identity,
-                        creationSequence=action[1],
-                    )
-                )
-            elif action[0] == "reset":
-                identity = {**identity, "world": identity["world"] + 1}
-                rows.append(dict(type="reset-world", **identity))
-            else:
-                raise ProbeError("ordered-parser-batch-action")
+                    rows.append(dict(type="reset-world", world=identity["world"]))
+                else:
+                    raise ProbeError("ordered-parser-batch-action")
+            if sequence != prior or not sources:
+                sources.append((sequence, envelope.dequeued_ns, envelope.sdk_age_us))
         if rows:
-            self._enqueue(rows)
+            count = sequence - self.sequence
+            # A live group has a short target size plus at most one atomic envelope.
+            if (
+                count > 16384 + self.BATCH_TARGET_MESSAGES
+                or raw_bytes > self.MAX_BODY + self.BATCH_TARGET_BYTES
+                or len(rows) > 49152
+            ):
+                raise ProbeError("ordered-parser-batch-budget")
+            submitted_ns = self._enqueue(
+                dict(type="batch", **self.identity, batch=self._batch + 1, rows=rows)
+            )
+            self._batch += 1
+            self._inflight.append(
+                InputBatch(
+                    self._batch,
+                    self.sequence + 1,
+                    sequence,
+                    raw_bytes,
+                    submitted_ns,
+                    identity["world"],
+                    sources,
+                )
+            )
+            self._pending_messages += count
+            self._pending_bytes += raw_bytes
+            self.peak_messages = max(self.peak_messages, self._pending_messages)
+            self.peak_bytes = max(self.peak_bytes, self._pending_bytes)
+            self.peak_batches = max(self.peak_batches, len(self._inflight))
         self.sequence = sequence
         if identity != self.identity:
             self.checkpoint = None
@@ -241,13 +372,7 @@ class OrderedParserBridge:
     def admit_creation_sequence(self, sequence):
         if type(sequence) is not int or not 0 <= sequence <= 0xFFFFFFFF:
             raise ProbeError("ordered-parser-creation-sequence")
-        self._enqueue(
-            dict(
-                type="admit-creation-sequence",
-                **self.identity,
-                creationSequence=sequence,
-            )
-        )
+        self.submit_batch([("admit", sequence)])
 
     def reset_world(self):
         self.submit_batch([("reset",)])
@@ -259,20 +384,36 @@ class OrderedParserBridge:
             raise ProbeError("ordered-parser-not-running")
 
     def wait_for_progress(self, timeout=0.1):
-        """Offline consumers can sleep on a receipt instead of Windows timer quanta."""
+        """Wake on results or worker failure, with a caller-supplied poll deadline."""
         self._available.clear()
-        if self._output.empty():
+        self.check()
+        if not self.has_results():
             self._available.wait(timeout)
         self.check()
 
-    def poll(self, emit=None):
+    def has_results(self):
+        return bool(self._ready) or not self._output.empty()
+
+    def poll(self, emit=None, *, deadline_ns=None, limit=256, cancelled=None):
         self.check()
         result = []
-        while True:
-            try:
-                row = self._output.get_nowait()
-            except queue.Empty:
-                return result
+        read_bytes = 0
+        for index in range(limit):
+            if cancelled and cancelled():
+                break
+            if index and deadline_ns is not None and time.monotonic_ns() >= deadline_ns:
+                break
+            if not self._ready:
+                if read_bytes >= 256 * 1024:
+                    break
+                try:
+                    rows = self._output.get_nowait()
+                except queue.Empty:
+                    break
+                rows, size, observed_ns = rows
+                read_bytes += size
+                self._ready.extend((row, observed_ns) for row in rows)
+            row, observed_ns = self._ready.popleft()
             if (
                 row.get("source") != self.identity["source"]
                 or row.get("channel") != self.identity["channel"]
@@ -283,15 +424,39 @@ class OrderedParserBridge:
                 raise ProbeError("ordered-parser-output-world")
             sequence = row.get("sequence")
             if sequence is not None and (
-                type(sequence) is not int or not 1 <= sequence <= self.sequence
+                type(sequence) is not int or not 0 <= sequence <= self.sequence
             ):
                 raise ProbeError("ordered-parser-output-sequence")
-            if row["type"] == "initialized" and row.get("protocol") != 3:
+            if row["type"] == "initialized" and row.get("protocol") != 4:
                 raise ProbeError("ordered-parser-protocol-version")
             if row["type"] == "checkpoint":
-                if sequence is None or sequence <= self.completed_sequence:
+                if (
+                    not self._inflight
+                    or sequence is None
+                    or not self.completed_sequence < sequence <= self._inflight[0].last
+                ):
                     raise ProbeError("ordered-parser-checkpoint-order")
+                decode_us = row.get("decodeUs")
+                if type(decode_us) is not int or decode_us < 0:
+                    raise ProbeError("ordered-parser-checkpoint-duration")
+                self.processed_messages += sequence - self.completed_sequence
+                self.decode_us += decode_us
                 self.completed_sequence = sequence
+            if row["type"] == "batch-complete":
+                if not self._inflight:
+                    raise ProbeError("ordered-parser-unexpected-completion")
+                batch = self._inflight[0]
+                if (
+                    row.get("batch") != batch.number
+                    or world != batch.world
+                    or sequence != batch.last
+                    or self.completed_sequence != batch.last
+                ):
+                    raise ProbeError("ordered-parser-batch-order")
+                self._inflight.popleft()
+                self._pending_messages -= batch.last - batch.first + 1
+                self._pending_bytes -= batch.raw_bytes
+                self.processed_bytes += batch.raw_bytes
             if world != self.identity["world"]:
                 continue  # Retired output cannot grant readiness, identities or ACKs.
             if row["type"] == "checkpoint":
@@ -362,8 +527,13 @@ class OrderedParserBridge:
                     and row.get("name") in self.FORWARDED_EVENTS
                 )
             ):
+                timing = self._timing(sequence, observed_ns)
+                row = {**row, "contextTick": row["tick"]}
+                if row["type"] == "cursor":
+                    row["tick"] = row["committedTick"]
                 emit(
                     dict(
+                        **timing,
                         kind="cursor" if row["type"] == "cursor" else row["name"],
                         **(
                             {"roundClock": row.get("roundClock")}
@@ -379,7 +549,6 @@ class OrderedParserBridge:
                                     "fields",
                                     "players",
                                     "pawns",
-                                    "committedTick",
                                 )
                             }
                             if row["type"] == "raw-event"
@@ -390,6 +559,8 @@ class OrderedParserBridge:
                             for key in (
                                 "tick",
                                 "tickInterval",
+                                "contextTick",
+                                "committedTick",
                                 "map",
                                 "warmup",
                                 "round",
@@ -409,6 +580,23 @@ class OrderedParserBridge:
                     )
                 )
             result.append(row)
+        return result
+
+    def _timing(self, sequence, observed_ns):
+        now = time.monotonic_ns()
+        if not self._inflight:
+            raise ProbeError("ordered-parser-result-without-input")
+        batch = self._inflight[0]
+        if batch.first <= sequence <= batch.last:
+            for last, dequeued, sdk_age in batch.envelopes:
+                if sequence <= last:
+                    return dict(
+                        sdkQueueAgeUs=sdk_age,
+                        dequeueToSubmitUs=(batch.submitted_ns - dequeued) // 1000,
+                        submitToObservedUs=(now - batch.submitted_ns) // 1000,
+                        resultQueueUs=(now - observed_ns) // 1000,
+                    )
+        raise ProbeError("ordered-parser-result-without-input")
 
     def pop_receipts(self):
         result = list(self._receipts)
@@ -417,6 +605,10 @@ class OrderedParserBridge:
 
     def pop_subscriptions(self):
         result = self._subscriptions
+        if result is not None and (
+            self.checkpoint is None or self.checkpoint["sequence"] < result["sequence"]
+        ):
+            return None
         self._subscriptions = None
         return result
 

@@ -12,8 +12,8 @@ static_assert(offsetof(SteamNetworkingMessage_t, m_conn) == 0xc);
 // Emit actual SDK callback/pump references in the object, without linking/running.
 std::unique_ptr<cs2::observer::SteamBridge> compile_checked_bridge(
     ISteamUser& user, ISteamUtils& utils, ISteamNetworkingSockets& sockets,
-    const SteamNetworkingIPAddr& endpoint) {
-  return std::make_unique<cs2::observer::SteamBridge>(user, utils, sockets, endpoint);
+    ISteamNetworkingUtils* networking_utils, const SteamNetworkingIPAddr& endpoint) {
+  return std::make_unique<cs2::observer::SteamBridge>(user, utils, sockets, networking_utils, endpoint);
 }
 void compile_checked_pump(cs2::observer::SteamBridge& bridge, std::uint64_t now_ms) {
   bridge.pump(now_ms);

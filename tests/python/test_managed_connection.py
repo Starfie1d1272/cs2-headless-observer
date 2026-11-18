@@ -270,6 +270,7 @@ class ManagedConnectionTests(unittest.TestCase):
         try:
             self.assertFalse(owner.is_set())
             os.close(write_fd)
+            self.assertTrue(owner.stopped.wait(1))
             self.assertTrue(owner.is_set())
             self.assertTrue(owner.is_set())
         finally:
