@@ -135,16 +135,22 @@ class OrderedParserTests(unittest.TestCase):
         self.until(lambda _: self.bridge.completed_sequence == 1)
         self.bridge.reset_world()
         self.bridge._output.put_nowait(
-            dict(
-                type="receipt",
-                source="ahead",
-                channel=1,
-                world=1,
-                sequence=1,
-                tick=3,
-                epoch=0,
-                full=True,
-                baselineAck=None,
+            (
+                [
+                    dict(
+                        type="receipt",
+                        source="ahead",
+                        channel=1,
+                        world=1,
+                        sequence=1,
+                        tick=3,
+                        epoch=0,
+                        full=True,
+                        baselineAck=None,
+                    )
+                ],
+                1,
+                time.monotonic_ns(),
             )
         )
         self.assertFalse(any(r["type"] == "receipt" for r in self.bridge.poll()))

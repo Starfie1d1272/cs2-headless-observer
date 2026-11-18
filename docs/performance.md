@@ -1,4 +1,10 @@
-# 离线性能检查
+# 实时数据面与离线性能检查
+
+## 在线调度
+
+2.0.0 使用工作驱动的接收与解析结果排空，SDK 批量移交原始消息，Python 批量提交 worker。ID 76 仅保留必要的入站处理。批末累计 checkpoint 和独立事务 receipt 分别承担流控与 ACK，stdout writer 独立报告交付压力。托管 v2 的 Supervisor 使用有界转发队列和单条公共在途写入，新增的转发驻留计入原有实时保护。短突发追赶、暂停与无新数据分别观测，SDK 或 parser 硬过载后的连接恢复归 Supervisor。预算与顺序见[架构](architecture.md)，健康指标及过载行为见[托管接口](managed-interface.md)。
+
+SDK 出队年龄、解析驻留和 stdout 驻留分别观测。离线回放不经过 Steam SDK、在线 duty cycle 或托管消费队列。下文为既有离线采样，2.0.0 的改动通过现有离线功能验证和源码审查确认，在线吞吐及延迟未测量。
 
 ## 方法
 

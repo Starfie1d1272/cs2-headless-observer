@@ -7,6 +7,7 @@ connection. Only the explicitly invoked local driver should instantiate this.
 import ctypes as c
 import os
 from pathlib import Path
+import time
 from channel import MAX_BYTES
 from wire import ProbeError
 
@@ -15,6 +16,15 @@ class NativeStartError(Exception):
     def __init__(self, boot_code, init_result):
         super().__init__("native-start-failed")
         self.boot_code, self.init_result = boot_code, init_result
+
+
+class Received(c.Structure):
+    _fields_ = [
+        ("data", c.c_void_p),
+        ("sdk_queue_age_us", c.c_int64),
+        ("size", c.c_uint32),
+        ("reliable", c.c_int32),
+    ]
 
 
 class NativePort:
@@ -33,7 +43,7 @@ class NativePort:
             raise
         self.lib.observer_abi_version.argtypes = []
         self.lib.observer_abi_version.restype = c.c_int
-        if self.lib.observer_abi_version() != 3:
+        if self.lib.observer_abi_version() != 4:
             if self.directory:
                 self.directory.close()
             raise ProbeError("native-abi-version")
@@ -53,13 +63,16 @@ class NativePort:
             "request_ticket": ([c.c_void_p], c.c_int),
             "auth": ([c.c_void_p, c.POINTER(c.c_uint32)], byte),
             "send": ([c.c_void_p, byte, c.c_uint32, c.c_int], c.c_int),
-            "receive": ([c.c_void_p, byte, c.c_uint32, c.POINTER(c.c_int)], c.c_int),
+            "receive_many": ([c.c_void_p, c.POINTER(Received), c.c_int], c.c_int),
+            "release_received": ([c.c_void_p], None),
             "close": ([c.c_void_p], None),
         }
         for name, (args, result) in signatures.items():
             function = getattr(self.lib, "observer_" + name)
             function.argtypes, function.restype = args, result
-        self.buffer = (c.c_ubyte * MAX_BYTES)()
+        self.batch = (Received * 8)()
+        self.batch_count = self.batch_index = 0
+        self.dequeue_ns = None
         self.handle = self.lib.observer_create(endpoint.encode("ascii"), now_ms)
         if not self.handle:
             if self.directory:
@@ -120,26 +133,54 @@ class NativePort:
         finally:
             c.memset(local, 0, len(local))
 
-    def receive(self):
-        reliable = c.c_int()
-        size = self.lib.observer_receive(
-            self.handle, self.buffer, len(self.buffer), c.byref(reliable)
+    def pending_receive_age_ns(self, now_ns):
+        return now_ns - self.dequeue_ns if self.batch_index < self.batch_count else None
+
+    def receive_backlog(self, now_ns):
+        pending = self.batch_count - self.batch_index
+        age = self.pending_receive_age_ns(now_ns)
+        return dict(
+            pendingMessages=pending,
+            pendingBytes=sum(
+                self.batch[index].size
+                for index in range(self.batch_index, self.batch_count)
+            ),
+            oldestAgeUs=age // 1000 if age is not None else None,
         )
+
+    def receive(self):
+        if self.batch_index == self.batch_count:
+            self.batch_count = self.lib.observer_receive_many(
+                self.handle, self.batch, len(self.batch)
+            )
+            self.dequeue_ns = time.monotonic_ns()
+            self.batch_index = 0
+            if not 0 <= self.batch_count <= len(self.batch):
+                raise ProbeError("native-receive-failed")
+            if not self.batch_count:
+                return None
+        item = self.batch[self.batch_index]
         if (
-            size < 0
-            or size > len(self.buffer)
-            or (size and reliable.value not in (0, 1))
+            not item.data
+            or not 0 < item.size <= MAX_BYTES
+            or item.reliable not in (0, 1)
         ):
             raise ProbeError("native-receive-failed")
-        if not size:
-            return None
-        return bytes(self.buffer[:size]), bool(reliable.value)
+        data = c.string_at(item.data, item.size)
+        self.batch_index += 1
+        if self.batch_index == self.batch_count:
+            self.lib.observer_release_received(self.handle)
+        return (
+            data,
+            bool(item.reliable),
+            self.dequeue_ns,
+            None if item.sdk_queue_age_us < 0 else item.sdk_queue_age_us,
+        )
 
     def close(self):
         if self.handle:
             self.lib.observer_close(self.handle)
             self.handle = None
-            c.memset(self.buffer, 0, len(self.buffer))
             if self.directory:
                 self.directory.close()
                 self.directory = None

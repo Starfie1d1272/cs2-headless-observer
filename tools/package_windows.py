@@ -22,6 +22,7 @@ RUNTIMES = {
 }
 MODULES = [
     "driver",
+    "session_supervisor",
     "launcher",
     "ordered_parser_bridge",
     "observer_settings",
@@ -303,6 +304,7 @@ SDK 构建输入：ValveSoftware/Proton bc896217ffcd67f892f952b010f898fe7bd0f0a1
                 "nativeAbi": contract["nativeAbi"],
                 "parserIpc": contract["parserIpc"],
                 "managedProtocol": contract["managedProtocol"],
+                "managedProtocols": contract["managedProtocols"],
                 "validatedHostVersions": contract["validatedHostVersions"],
                 "nodeRequirement": contract["nodeRequirement"],
                 "entrypoints": {

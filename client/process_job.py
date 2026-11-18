@@ -1,10 +1,11 @@
-"""Windows parser-only Job: forced driver death must not leave its worker running."""
+"""Owned Windows process trees, with kill-on-close as a parent-exit fence."""
 
 import os
+import time
 from wire import ProbeError
 
 
-class ParserJob:
+class ProcessJob:
     def __init__(self):
         self.handle = None
         if os.name != "nt":
@@ -25,6 +26,17 @@ class ParserJob:
                 ("scheduling", w.DWORD),
             ]
 
+        class Accounting(c.Structure):
+            _fields_ = [
+                ("times", c.c_int64 * 4),
+                ("pageFaults", w.DWORD),
+                ("totalProcesses", w.DWORD),
+                ("activeProcesses", w.DWORD),
+                ("terminatedProcesses", w.DWORD),
+            ]
+
+        self.accounting = Accounting
+
         class Extended(c.Structure):
             _fields_ = [
                 ("basic", Basic),
@@ -40,6 +52,14 @@ class ParserJob:
         k.CreateJobObjectW.restype = w.HANDLE
         k.SetInformationJobObject.argtypes = [w.HANDLE, c.c_int, c.c_void_p, w.DWORD]
         k.AssignProcessToJobObject.argtypes = [w.HANDLE, w.HANDLE]
+        k.QueryInformationJobObject.argtypes = [
+            w.HANDLE,
+            c.c_int,
+            c.c_void_p,
+            w.DWORD,
+            c.c_void_p,
+        ]
+        k.TerminateJobObject.argtypes = [w.HANDLE, w.UINT]
         k.CloseHandle.argtypes = [w.HANDLE]
         self.handle = k.CreateJobObjectW(None, None)
         if not self.handle:
@@ -57,6 +77,29 @@ class ParserJob:
             self.handle, int(process._handle)
         ):
             raise ProbeError("parser-job-assignment-failed")
+
+    def reap(self, timeout=2):
+        if not self.handle:
+            return
+        import ctypes as c
+
+        def active():
+            status = self.accounting()
+            if not self.kernel.QueryInformationJobObject(
+                self.handle, 1, c.byref(status), c.sizeof(status), None
+            ):
+                raise ProbeError("attempt-job-query-failed")
+            return status.activeProcesses
+
+        if not active():
+            return
+        if not self.kernel.TerminateJobObject(self.handle, 1):
+            raise ProbeError("attempt-job-termination-failed")
+        deadline = time.monotonic() + timeout
+        while active():
+            if time.monotonic() >= deadline:
+                raise ProbeError("attempt-job-reap-timeout")
+            time.sleep(0.01)
 
     def close(self):
         if self.handle:

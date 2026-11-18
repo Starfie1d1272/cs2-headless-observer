@@ -87,7 +87,8 @@ def main():
     required = [
         "observer_create",
         "observer_send",
-        "observer_receive",
+        "observer_receive_many",
+        "observer_release_received",
         "observer_auth",
         "observer_close",
         "observer_abi_version",

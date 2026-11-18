@@ -12,19 +12,29 @@ import uuid
 
 class Consumer:
     def __init__(self, source):
-        self.source, self.sequence, self.world, self.ready = source, 0, 1, False
+        self.source, self.sequence, self.channel, self.world = source, 0, 0, 1
+        self.ready = self.bound = False
 
     def accept(self, row):
         sequence = row.get('sequence')
-        if row.get('source') != self.source or row.get('channel') != 1:
+        if row.get('source') != self.source:
             raise ValueError('source-owner-mismatch')
-        if type(sequence) is not int or not self.sequence < sequence <= 9007199254740991:
+        if type(sequence) is not int or not sequence == self.sequence + 1 <= 9007199254740991:
             raise ValueError('record-order')
         self.sequence = sequence
+        if row.get('kind') == 'session-start':
+            if self.bound or row.get('channel') != self.channel + 1 or row.get('world') != 1 or row.get('protocol') != 2:
+                raise ValueError('invalid-session-boundary')
+            self.channel, self.world, self.bound, self.ready = row['channel'], 1, True, False
+            return None
+        if not self.bound or row.get('channel') != self.channel:
+            return None
         if type(row.get('world')) is not int or row['world'] < self.world:
             return None
         if row.get('kind') == 'discontinuity':
             self.world, self.ready = row['world'], False
+            if row.get('scope') == 'connection':
+                self.bound = False
         elif row.get('kind') == 'cursor' and row['world'] == self.world:
             self.ready = (type(row.get('tick')) is int and row['tick'] > 0
                 and isinstance(row.get('map'), str) and bool(row['map'])

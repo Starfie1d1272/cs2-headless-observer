@@ -43,9 +43,12 @@ class Bits:
         head = self.read(6)
         return (head & 15) | (self.read((0, 4, 8, 28)[head >> 4]) << 4)
 
-    def bytes(self, size):
+    def bytes(self, size, *, discard=False):
         if size > MAX_BYTES or self.pos + size * 8 > self.end:
             raise ProbeError("channel-body-boundary")
+        if discard:
+            self.pos += size * 8
+            return b""
         if self.pos & 7:
             start, shift = self.pos // 8, self.pos & 7
             self.pos += size * 8
@@ -166,7 +169,7 @@ class NetMessage:
     body: bytes = field(repr=False)
 
 
-def messages(data: bytes, bit_count=None):
+def messages(data: bytes, bit_count=None, *, discard_bodies=()):
     """UBitVar id + unaligned VarInt32 byte length + protobuf bytes. No schema decode.
 
     Like the observed loop, fewer than 8 trailing bits are padding, not a message.
@@ -177,7 +180,12 @@ def messages(data: bytes, bit_count=None):
         if len(result) >= 16384:
             raise ProbeError("channel-message-budget")
         message_id = reader.ubitvar()
-        result.append(NetMessage(message_id, reader.bytes(reader.varuint())))
+        result.append(
+            NetMessage(
+                message_id,
+                reader.bytes(reader.varuint(), discard=message_id in discard_bodies),
+            )
+        )
     return result, reader.end - reader.pos
 
 

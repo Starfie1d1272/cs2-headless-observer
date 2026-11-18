@@ -128,7 +128,22 @@ export class NativeObserverCore {
     this.schema = schema;
     this.packets = new NativePacketEntities(schema, this.snapshots, this.tables);
   }
-  consume(input: NativeMessageEnvelope): readonly NativeCoreRecord[] {
+  checkpoint(contextTick?: number): NativeCoreRecord {
+    return Object.freeze({
+      ...this.identity,
+      sequence: this.sequence,
+      tick: contextTick ?? this.tick,
+      networkTick: this.tick,
+      type: 'checkpoint',
+      classCount: this.classes?.classes.length ?? 0,
+      schemaReady: this.ready,
+      schemaFields: this.ready ? this.serializers!.fields.length : 0,
+      serverInfo: !this.halted && this.server !== undefined,
+      stringTables: this.tables.count,
+      committedTick: this.snapshots.lastTick,
+    });
+  }
+  consume(input: NativeMessageEnvelope, checkpoint = true): readonly NativeCoreRecord[] {
     if (
       input.source !== this.identity.source ||
       input.channel !== this.identity.channel ||
@@ -241,6 +256,7 @@ export class NativeObserverCore {
               this.lastCursor = receipt.tick;
               record('cursor', {
                 map: this.server.map_name ?? null,
+                committedTick: receipt.tick,
                 tickInterval: this.server.tick_interval,
                 roundClock: projectRoundClock(this.schema, this.snapshots, receipt.tick),
                 ...projectNativeEvent(
@@ -356,14 +372,6 @@ export class NativeObserverCore {
         default:
           break; // Control owner handles its registered messages; no commands execute here.
       }
-      record('checkpoint', {
-        classCount: this.classes?.classes.length ?? 0,
-        schemaReady: this.ready,
-        schemaFields: this.ready ? this.serializers!.fields.length : 0,
-        serverInfo: !this.halted && this.server !== undefined,
-        stringTables: this.tables.count,
-        committedTick: this.snapshots.lastTick,
-      });
     } catch (error) {
       // A failed ordered message cannot lead to an ACK from a later unrelated
       // delta. Keep last visible entities but explicitly retire snapshot authority.
@@ -380,15 +388,8 @@ export class NativeObserverCore {
           worldReinitialization: this.halted,
         });
       }
-      record('checkpoint', {
-        classCount: this.classes?.classes.length ?? 0,
-        schemaReady: this.ready,
-        schemaFields: this.ready ? this.serializers!.fields.length : 0,
-        serverInfo: !this.halted && this.server !== undefined,
-        stringTables: this.tables.count,
-        committedTick: this.snapshots.lastTick,
-      });
     }
+    if (checkpoint) output.push(this.checkpoint(input.contextTick));
     return Object.freeze(output);
   }
 }

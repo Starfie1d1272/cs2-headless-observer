@@ -206,7 +206,17 @@ class OrderedDriverTests(unittest.TestCase):
         self.assertEqual(self.driver._processed_entity_tick, 100)
         self.assertEqual(self.driver.decoder.tick, 90)
         descriptor = blob(1, number(1, 17) + blob(2, b"round_start"))
-        self.send([(205, descriptor), (207, number(2, 17))], hint=200)
+        prior = self.parser.sequence
+        self.send(
+            [
+                (205, descriptor),
+                (76, blob(1, b"opaque command history")),
+                (207, number(2, 17)),
+            ],
+            hint=200,
+        )
+        self.assertEqual(self.driver.decoder.counts[76], 1)
+        self.assertEqual(self.parser.sequence - prior, 2)
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
         self.assertEqual(
             [r for r in self.output if r["kind"] == "round_start"][-1]["tick"], 200

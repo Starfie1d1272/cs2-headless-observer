@@ -24,7 +24,13 @@ def main():
     args = ap.parse_args()
     root = args.package.resolve(strict=True)
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
-    assert manifest["nativeAbi"] == 3 and manifest["parserIpc"] == 3
+    assert manifest["nativeAbi"] == 4 and manifest["parserIpc"] == 4
+    assert manifest["managedProtocol"] == "cs2-observer-managed-json/2"
+    assert manifest["managedProtocols"] == [
+        "cs2-observer-managed-json/1",
+        "cs2-observer-managed-json/2",
+    ]
+    assert (root / "client/session_supervisor.py").is_file()
     expected = manifest["filesSha256"]
     actual = {p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file()}
     assert actual == set(expected) | {"manifest.json"}, "Package inventory mismatch"
@@ -141,11 +147,15 @@ def main():
             )
             stdout, stderr = child.stdout.read(), child.stderr.read()
         terminal = json.loads((managed / "report.json").read_text())
-        assert (
-            stdout == ""
-            and terminal["finalization_failures"] == []
-            and terminal["outcome"] == "failed"
-        )
+        rows = [json.loads(line) for line in stdout.splitlines()]
+        assert [(r["kind"], r["channel"], r["sequence"]) for r in rows] == [
+            ("session-start", 1, 1),
+            ("discontinuity", 1, 2),
+        ]
+        assert rows[0]["protocol"] == 2 and rows[1]["scope"] == "connection"
+        assert terminal["schema"] == "cs2-observer-report/2"
+        assert terminal["cleanupCompleted"] and terminal["outcome"] == "failed"
+        assert terminal["health"]["reconnects"] == 0
         assert sorted(p.name for p in managed.iterdir()) == ["report.json"]
         assert (
             connection["password"] not in stderr

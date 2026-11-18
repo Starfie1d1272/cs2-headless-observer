@@ -92,11 +92,11 @@ def main():
                         raise ValueError("sample-truncated-body")
                     driver.receive(body, bool(reliable), elapsed)
                     deadline = time.monotonic() + 15
-                    while parser.completed_sequence < driver._parser_sequence:
+                    while not parser.caught_up:
                         parser.poll(driver.emit)
                         if time.monotonic() >= deadline:
                             raise TimeoutError("replay-parser-timeout")
-                        if parser.completed_sequence < driver._parser_sequence:
+                        if not parser.caught_up:
                             parser.wait_for_progress()
                     driver._advance_initialization(elapsed)
                     driver._send_processed_tick(elapsed)
