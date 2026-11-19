@@ -50,9 +50,12 @@ def main():
     ap.add_argument('--steam-api', type=Path, required=True)
     ap.add_argument('--host-version', type=int, required=True)
     ap.add_argument('--node', type=Path)
+    ap.add_argument('--follow-source', action='store_true', help='Follow the same authorized GOTV endpoint')
     args = ap.parse_args()
     root = args.package.resolve(strict=True)
     manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+    if args.follow_source and 'follow-source' not in manifest.get('managedFeatures', []):
+        ap.error('This package does not support --follow-source')
     def entry(name):
         value = (root / manifest['entrypoints'][name]).resolve(strict=True)
         if not value.is_relative_to(root):
@@ -70,6 +73,8 @@ def main():
         '--steam-api', str(args.steam_api.resolve(strict=True)), '--node', str(node),
         '--parser-worker', entry('worker'), '--source-role', 'ahead', '--source-id', identity,
         '--host-version', str(args.host_version), '--output', str(output)]
+    if args.follow_source:
+        command.append('--follow-source')
     connection = {'endpoint': getpass.getpass('Authorized GOTV IP:port: '), 'password': getpass.getpass('Password: ')}
     child = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
         env={**os.environ, 'SteamAppId': '730'}, creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)

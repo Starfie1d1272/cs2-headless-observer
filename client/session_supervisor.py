@@ -34,6 +34,10 @@ STABLE_NS = 30_000_000_000
 ATTEMPT_STOP_SECONDS = 8
 HEALTH_TIMEOUT_NS = 15_000_000_000
 WAIT_SECONDS = 0.02
+FOLLOW_INITIAL_SECONDS = 5
+FOLLOW_MAX_SECONDS = 45
+# SteamNetworkingSockets end reasons Remote_Timeout and Misc_Timeout.
+TRANSPORT_TIMEOUT_CODES = frozenset({4001, 5003})
 RETRY_REASONS = frozenset(
     {
         "sdk-receive-overload",
@@ -78,6 +82,31 @@ def retryable(report):
         "OSError",
         "BrokenPipeError",
         "ConnectionResetError",
+    )
+
+
+def source_unavailable(report):
+    if (
+        report.get("schema") != "cs2-observer-report/1"
+        or report.get("phase") != "transport"
+        or report.get("outcome") != "failed"
+        or report.get("cleanupCompleted") is not True
+        or report.get("reportWritten") is not True
+    ):
+        return False
+    if report["reason"] == "phase-timeout":
+        # State 2 means GNS is connecting. State 1 is still local authentication.
+        return report.get("native_state") == 2
+    if report["reason"] != "native-session-closed":
+        return False
+    if report.get("native_failure") == 6:
+        # The SDK can time out just before the driver's transport deadline.
+        return any(
+            stage.get("stage") == "sdk-state" and stage.get("value") == 2
+            for stage in report.get("stages", ())
+        )
+    return report.get("native_failure") == 7 and (
+        report.get("remote_end_reason") in TRANSPORT_TIMEOUT_CODES
     )
 
 
@@ -269,6 +298,10 @@ class SessionSupervisor:
         self.ready_since = self.cursor_sequence = None
         self.deadline = time.monotonic() + args.seconds if args.seconds else None
         self.retry_streak = self.reconnects = 0
+        self.source_ends = self.follow_attempts = 0
+        self.follow_delay = FOLLOW_INITIAL_SECONDS
+        self.following = False
+        self.last_attempt_end = None
         self.faults = deque(maxlen=8)
         self.health = None
         self.next_health = 0
@@ -307,7 +340,10 @@ class SessionSupervisor:
             self.output.check()
             self.progress.wait(WAIT_SECONDS)
             self.progress.clear()
-        return not self._stop_reason()
+        if self._stop_reason():
+            return False
+        self.output.check()
+        return True
 
     def _boundary(self, kind, **fields):
         if not self.wait_output():
@@ -325,7 +361,9 @@ class SessionSupervisor:
         )
         return True
 
-    def _health(self, state, attempt=None, *, force=False, retry_ms=None):
+    def _health(
+        self, state, attempt=None, *, force=False, retry_ms=None, wait_reason=None
+    ):
         now = time.monotonic_ns()
         if not force and now < self.next_health:
             return
@@ -347,9 +385,10 @@ class SessionSupervisor:
                 }
         output = self.output.status()
         cursor = output["lastDeliveredCursor"]
-        if cursor and (cursor["channel"], cursor["world"]) != (
-            self.channel,
-            self.world,
+        if cursor and (
+            self.cursor_sequence is None
+            or cursor["sequence"] < self.cursor_sequence
+            or (cursor["channel"], cursor["world"]) != (self.channel, self.world)
         ):
             output["lastDeliveredCursor"] = None
         backlog = attempt.backlog(now) if attempt else None
@@ -369,7 +408,11 @@ class SessionSupervisor:
             state=state,
             ready=self.ready_since is not None,
             reconnects=self.reconnects,
+            sourceEnds=self.source_ends,
+            followAttempts=self.follow_attempts,
             retryInMs=retry_ms,
+            waitReason=wait_reason,
+            lastAttemptEnd=self.last_attempt_end,
             lastFault=self.faults[-1] if self.faults else None,
             attempt=self.last_attempt_health,
             output=output,
@@ -383,6 +426,23 @@ class SessionSupervisor:
             self.diagnostics.emit(self.health)
         except ProbeError:
             pass
+
+    def _wait_to_retry(self, delay, reason):
+        until = time.monotonic() + delay
+        self.next_health = 0
+        while not self._stop_reason():
+            self.output.check()
+            now = time.monotonic()
+            remaining = until - now
+            if remaining <= 0:
+                return True
+            self._health(
+                "backoff", retry_ms=round(remaining * 1000), wait_reason=reason
+            )
+            until_health = (self.next_health - time.monotonic_ns()) / 1_000_000_000
+            until_stop = self.deadline - now if self.deadline is not None else remaining
+            self.owner.stopped.wait(max(0, min(remaining, until_health, until_stop)))
+        return False
 
     def _forward(self, row, received_ns):
         kind, world = row.get("kind"), row.get("world")
@@ -454,11 +514,20 @@ class SessionSupervisor:
             ):
                 if self.ready_since is None:
                     self.ready_since = now
+                    self.next_health = 0
                 if now - self.ready_since >= STABLE_NS:
                     self.retry_streak = 0
+                    self.follow_delay = FOLLOW_INITIAL_SECONDS
+                    self.following = False
             exit_code = attempt.process.poll()
             if exit_code not in (None, 0):
                 report = attempt.report()
+                if report.get("cleanupCompleted") is False:
+                    return report
+                if report.get("outcome") == "closed" or (
+                    report.get("reason") == "source-hltv-stop"
+                ):
+                    raise ProbeError("attempt-invalid-completion")
                 return report or {
                     "reason": "attempt-crashed"
                     if exit_code != 2
@@ -498,15 +567,22 @@ class SessionSupervisor:
                     eof_deadline = time.monotonic() + ATTEMPT_STOP_SECONDS
                 if exit_code == 0 and attempt.records.empty():
                     report = attempt.report()
+                    if report.get("cleanupCompleted") is False:
+                        return report
                     if (
                         terminal_seen
                         and attempt.bad_line is None
+                        and report.get("schema") == "cs2-observer-report/1"
                         and report.get("outcome") == "closed"
-                        and report.get("drainCompleted")
-                        and report.get("cleanupCompleted")
+                        and report.get("reason") == "source-hltv-stop"
+                        and report.get("phase") == "closed"
+                        and report.get("remote_end_reason") == 1038
+                        and report.get("lastOutputSequence") == expected_sequence - 1
+                        and report.get("reportWritten") is True
+                        and report.get("reachedFull") is True
+                        and report.get("drainCompleted") is True
+                        and report.get("cleanupCompleted") is True
                     ):
-                        if report["reason"] != "source-hltv-stop":
-                            raise ProbeError("attempt-invalid-completion")
                         return report
                     raise ProbeError("attempt-invalid-completion")
                 if time.monotonic() >= eof_deadline:
@@ -516,6 +592,7 @@ class SessionSupervisor:
             self.progress.wait(WAIT_SECONDS)
 
     def connect(self, endpoint, password):
+        retry_kind = None
         while True:
             stop = self._stop_reason()
             if stop:
@@ -523,8 +600,16 @@ class SessionSupervisor:
             self.channel += 1
             self.world = 1
             self.last_attempt_health = None
-            if not self._boundary("session-start", protocol=2):
+            if (
+                not self._boundary("session-start", protocol=2)
+                or not self.wait_output()
+            ):
                 return "incomplete", self._stop_reason()
+            if retry_kind == "follow-source":
+                self.follow_attempts += 1
+            elif retry_kind == "fault-retry":
+                self.reconnects += 1
+            self.next_health = 0
             with tempfile.TemporaryDirectory(
                 prefix=".attempt-", dir=self.args.output
             ) as folder:
@@ -567,42 +652,80 @@ class SessionSupervisor:
                 finally:
                     attempt.close()
                 if attempt.forced or attempt.report().get("cleanupCompleted") is False:
-                    report = {
-                        "reason": "attempt-cleanup-failed",
-                        "cleanupCompleted": False,
-                    }
+                    report.update(
+                        outcome="failed",
+                        reason="attempt-cleanup-failed",
+                        cleanupCompleted=False,
+                    )
                 if attempt.health and attempt.health.get("source") == self.source:
                     self._health("retiring", attempt, force=True)
             stop = self._stop_reason()
             if stop:
                 return "incomplete", stop
             reason = report["reason"][:256]
-            if not self._boundary("discontinuity", reason=reason, scope="connection"):
+            if (
+                not self._boundary("discontinuity", reason=reason, scope="connection")
+                or not self.wait_output()
+            ):
                 return "incomplete", self._stop_reason()
-            if report.get("outcome") == "closed":
-                return "closed", reason
-            self.faults.append(
-                {
-                    "channel": self.channel,
-                    "reason": reason,
-                    "nativeFailure": report.get("native_failure"),
-                    "remoteEndReason": report.get("remote_end_reason"),
-                }
+            closed = report.get("outcome") == "closed"
+            unavailable = self.following and source_unavailable(report)
+            self.last_attempt_end = dict(
+                channel=self.channel,
+                reason=reason,
+                category="closed"
+                if closed
+                else "source-unavailable"
+                if unavailable
+                else "fault",
+                phase=report.get("phase"),
+                nativeFailure=report.get("native_failure"),
+                remoteEndReason=report.get("remote_end_reason"),
+                lastDeliveredSequence=self.output.last_delivered_sequence,
             )
-            if not retryable(report) or report.get("cleanupCompleted") is False:
-                return "failed", reason
-            if self.retry_streak >= RETRY_LIMIT:
-                return "failed", "reconnect-budget-exhausted"
-            delay = (0.5 * 2**self.retry_streak) * random.uniform(0.8, 1.2)
-            self.retry_streak += 1
-            until = time.monotonic() + delay
-            while time.monotonic() < until and not self._stop_reason():
-                self.output.check()
-                remaining = until - time.monotonic()
-                self._health("backoff", retry_ms=max(0, round(remaining * 1000)))
-                self.owner.stopped.wait(max(0, min(remaining, 0.1)))
-            if not self._stop_reason():
-                self.reconnects += 1
+            if closed:
+                self.source_ends += 1
+                if not self.args.follow_source:
+                    return "closed", reason
+                self.following = True
+            if closed or unavailable:
+                retry_kind = "follow-source"
+                delay = random.uniform(
+                    self.follow_delay * 0.8,
+                    min(FOLLOW_MAX_SECONDS, self.follow_delay * 1.2),
+                )
+                self.follow_delay = min(FOLLOW_MAX_SECONDS, 2 * self.follow_delay)
+            else:
+                self.faults.append(
+                    {
+                        key: self.last_attempt_end[key]
+                        for key in (
+                            "channel",
+                            "reason",
+                            "nativeFailure",
+                            "remoteEndReason",
+                        )
+                    }
+                )
+                if (
+                    report.get("cleanupCompleted") is False
+                    or not retryable(report)
+                    or (
+                        self.following
+                        and reason == "native-session-closed"
+                        and report.get("native_failure") == 7
+                        and report.get("remote_end_reason")
+                        not in TRANSPORT_TIMEOUT_CODES
+                    )
+                ):
+                    return "failed", reason
+                if self.retry_streak >= RETRY_LIMIT:
+                    return "failed", "reconnect-budget-exhausted"
+                retry_kind = "fault-retry"
+                delay = (0.5 * 2**self.retry_streak) * random.uniform(0.8, 1.2)
+                self.retry_streak += 1
+            if not self._wait_to_retry(delay, retry_kind):
+                return "incomplete", self._stop_reason()
 
 
 def run(args, owner, endpoint, password):
@@ -661,6 +784,7 @@ def run(args, owner, endpoint, password):
     ):
         supervisor.faults.append({"channel": supervisor.channel, "reason": reason})
     supervisor.ready_since = None
+    supervisor.cursor_sequence = None
     supervisor._health("stopped", force=True)
     report = dict(
         schema="cs2-observer-report/2",

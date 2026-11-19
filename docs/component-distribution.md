@@ -37,6 +37,8 @@ manifest 记录组件版本、源码提交、平台、原生 ABI、有序 IPC、
 
 2.0.0 使用原生 ABI 4 与有序 IPC 4。`--managed` 默认使用 `cs2-observer-managed-json/2`，包含 Supervisor 和连接级恢复。应用在迁移期间可显式传入 `--managed-protocol 1` 使用原单次连接契约。manifest 的 `managedProtocols` 列出可选契约。整包替换 Python、DLL 和 worker，并由 ABI、IPC 握手及制品自检核对一致性。来源与主机版本证据按[兼容性](compatibility.md)分开记录。
 
+2.1.0 的 manifest 在 `managedFeatures` 中声明 `follow-source`。持续观战宿主检查该能力后，为托管 v2 传入 `--follow-source`。缺少该字段的旧包继续支持原有 v2 启动方式。原生 ABI、解析 IPC 与托管 JSON 协议版本沿用 2.0.0。
+
 ## 应用安装与升级
 
 应用可随安装包分发 `external-node`，复用已有 Node。按来源、归档摘要、manifest 和运行时能力验证组件，再定位入口并执行合成自检。

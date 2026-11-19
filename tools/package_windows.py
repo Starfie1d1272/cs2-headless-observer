@@ -305,6 +305,7 @@ SDK 构建输入：ValveSoftware/Proton bc896217ffcd67f892f952b010f898fe7bd0f0a1
                 "parserIpc": contract["parserIpc"],
                 "managedProtocol": contract["managedProtocol"],
                 "managedProtocols": contract["managedProtocols"],
+                "managedFeatures": contract["managedFeatures"],
                 "validatedHostVersions": contract["validatedHostVersions"],
                 "nodeRequirement": contract["nodeRequirement"],
                 "entrypoints": {
