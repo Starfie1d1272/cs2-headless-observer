@@ -353,8 +353,9 @@ class ManagedConnectionTests(unittest.TestCase):
 
 
 class ManagedSupervisorTests(unittest.TestCase):
-    def test_reconnect_isolates_partial_output_and_resequences(self):
+    def run_attempts(self, steps, *, follow=False, stop_in_wait=None):
         import json
+        import os
         from pathlib import Path
         import sys
         import tempfile
@@ -376,9 +377,18 @@ if config != {"endpoint": "127.0.0.1:27020", "password": "test-only"}:
     sys.exit(3)
 directory = Path(output)
 directory.mkdir()
-if attempt == "1":
+phase = "closed"
+remote = 1038
+native_failure = 7
+last_sequence = 0
+if attempt == "overload":
     sys.stdout.write('{"abandoned":')
     reason, code = "parser-residence-overload", 1
+elif attempt in ("unavailable", "unknown-close", "silent-password"):
+    phase = "connection" if attempt == "silent-password" else "transport"
+    remote = 4002 if attempt == "unknown-close" else 5003
+    reason = "phase-timeout" if attempt == "silent-password" else "native-session-closed"
+    code = 1
 else:
     row = dict(
         source=source, channel=1, world=1, sequence=1, kind="cursor",
@@ -389,8 +399,12 @@ else:
     row.update(sequence=2, kind="discontinuity", reason="source-hltv-stop")
     print(json.dumps(row))
     reason, code = "source-hltv-stop", 0
+    last_sequence = 1 if attempt == "invalid" else 2
 (directory / "report.json").write_text(json.dumps(dict(
-    reason=reason, cleanupCompleted=True, drainCompleted=not code,
+    schema="cs2-observer-report/1", reportWritten=True, phase=phase,
+    remote_end_reason=remote, native_failure=native_failure, reachedFull=not code,
+    lastOutputSequence=last_sequence, reason=reason,
+    cleanupCompleted=attempt != "cleanup-failed", drainCompleted=not code,
     outcome="closed" if not code else "failed",
 )))
 sys.exit(code)
@@ -408,7 +422,8 @@ sys.exit(code)
             source_id = "12" * 16
             args = SimpleNamespace(
                 output=output,
-                seconds=10,
+                seconds=3 if stop_in_wait == "deadline" else 15,
+                follow_source=follow,
                 source_id=source_id,
                 source_role="ahead",
                 native="unused.dll",
@@ -417,18 +432,21 @@ sys.exit(code)
                 steam_api=None,
                 host_version=14198,
             )
-            password = bytearray(b"test-only")
             attempts = []
             real_attempt = supervisor.SessionAttempt
+            real_health = supervisor.SessionSupervisor._health
 
-            def fixture(_, directory, endpoint, private_password, progress):
+            def fixture(command, directory, endpoint, private_password, progress):
+                self.assertNotIn("--follow-source", command)
+                self.assertNotIn("--seconds", command)
+                step = steps[len(attempts)]
                 attempts.append(directory)
                 self.assertFalse(any(path.exists() for path in attempts[:-1]))
                 return real_attempt(
                     [
                         sys.executable,
                         str(script),
-                        str(len(attempts)),
+                        step,
                         str(directory),
                         f"ahead:{source_id}",
                     ],
@@ -438,38 +456,152 @@ sys.exit(code)
                     progress,
                 )
 
-            with (
-                patch.object(supervisor, "SessionAttempt", side_effect=fixture),
-                patch.object(supervisor.random, "uniform", return_value=1),
-                patch.object(sys, "stdout", stdout),
-                patch.object(sys, "stderr", stderr),
-            ):
-                result = supervisor.run(
-                    args, ManagedOwner(), "127.0.0.1:27020", password
+            def observe_health(instance, state, *args, **kwargs):
+                nonlocal write_fd
+                real_health(instance, state, *args, **kwargs)
+                if (
+                    state == "backoff"
+                    and stop_in_wait == "eof"
+                    and write_fd is not None
+                ):
+                    os.close(write_fd)
+                    write_fd = None
+
+            read_fd, write_fd = os.pipe()
+            with os.fdopen(read_fd, "rb") as stdin:
+                os.write(
+                    write_fd,
+                    b'{"endpoint":"127.0.0.1:27020","password":"test-only"}\n',
                 )
-            self.assertEqual(result, 0)
+                owner = ManagedOwner(
+                    stream=stdin if stop_in_wait == "eof" else None,
+                    configuration_reader=read_managed_connection,
+                )
+                try:
+                    endpoint, password = (
+                        owner.configuration()
+                        if stop_in_wait == "eof"
+                        else ("127.0.0.1:27020", bytearray(b"test-only"))
+                    )
+                    with (
+                        patch.object(supervisor, "SessionAttempt", side_effect=fixture),
+                        patch.object(
+                            supervisor.random,
+                            "uniform",
+                            side_effect=lambda lower, upper: (lower + upper) / 2,
+                        ),
+                        patch.object(
+                            supervisor,
+                            "FOLLOW_INITIAL_SECONDS",
+                            5 if stop_in_wait else 0.01,
+                        ),
+                        patch.object(
+                            supervisor.SessionSupervisor, "_health", observe_health
+                        ),
+                        patch.object(sys, "stdout", stdout),
+                        patch.object(sys, "stderr", stderr),
+                    ):
+                        result = supervisor.run(args, owner, endpoint, password)
+                finally:
+                    if write_fd is not None:
+                        os.close(write_fd)
+                    owner.close()
             self.assertEqual(password, bytearray(len(password)))
             stdout.seek(0)
             records = [json.loads(line) for line in stdout]
-            self.assertEqual(
-                [(r["kind"], r["channel"], r["sequence"]) for r in records],
-                [
-                    ("session-start", 1, 1),
-                    ("discontinuity", 1, 2),
-                    ("session-start", 2, 3),
-                    ("cursor", 2, 4),
-                    ("discontinuity", 2, 5),
-                ],
-            )
             self.assertEqual({r["source"] for r in records}, {f"ahead:{source_id}"})
-            self.assertEqual(records[1]["scope"], "connection")
-            self.assertIsInstance(records[3]["supervisorForwardUs"], int)
-            self.assertNotIn("_attemptEmittedNs", records[3])
             report = json.loads((output / "report.json").read_text())
-            self.assertEqual(report["health"]["reconnects"], 1)
-            self.assertEqual(report["health"]["output"]["lastDeliveredSequence"], 5)
-            self.assertEqual(report["faults"][0]["reason"], "parser-residence-overload")
+            stderr.seek(0)
+            diagnostics = [json.loads(line) for line in stderr]
+            self.assertEqual(len(attempts), len(steps))
             self.assertEqual(list(output.iterdir()), [output / "report.json"])
+            return result, records, report, diagnostics
+
+    def test_reconnect_isolates_partial_output_and_resequences(self):
+        result, records, report, _ = self.run_attempts(["overload", "closed"])
+        self.assertEqual(result, 0)
+        self.assertEqual(
+            [(r["kind"], r["channel"], r["sequence"]) for r in records],
+            [
+                ("session-start", 1, 1),
+                ("discontinuity", 1, 2),
+                ("session-start", 2, 3),
+                ("cursor", 2, 4),
+                ("discontinuity", 2, 5),
+            ],
+        )
+        self.assertEqual(records[1]["scope"], "connection")
+        self.assertIsInstance(records[3]["supervisorForwardUs"], int)
+        self.assertNotIn("_attemptEmittedNs", records[3])
+        self.assertEqual(report["outcome"], "closed")
+        self.assertEqual(report["health"]["reconnects"], 1)
+        self.assertEqual(report["health"]["followAttempts"], 0)
+        self.assertEqual(report["health"]["sourceEnds"], 1)
+        self.assertEqual(report["health"]["output"]["lastDeliveredSequence"], 5)
+        self.assertEqual(report["faults"][0]["reason"], "parser-residence-overload")
+
+    def test_follow_survives_unavailability_and_stops_on_ambiguous_password(self):
+        steps = ["closed", *(["unavailable"] * 6), "closed", "silent-password"]
+        result, records, report, diagnostics = self.run_attempts(steps, follow=True)
+        self.assertEqual(result, 1)
+        self.assertEqual(report["reason"], "phase-timeout")
+        self.assertEqual([r["sequence"] for r in records], list(range(1, 21)))
+        for channel, step in enumerate(steps, 1):
+            rows = [r for r in records if r["channel"] == channel]
+            expected = ["session-start", "discontinuity"]
+            if step == "closed":
+                expected.insert(1, "cursor")
+                self.assertEqual(rows[-1]["reason"], "source-hltv-stop")
+            self.assertEqual([r["kind"] for r in rows], expected)
+            self.assertTrue(all(r["world"] == 1 for r in rows))
+            self.assertEqual(rows[-1]["scope"], "connection")
+        self.assertEqual(report["health"]["followAttempts"], 8)
+        self.assertEqual(report["health"]["sourceEnds"], 2)
+        self.assertEqual(report["health"]["reconnects"], 0)
+        self.assertEqual([fault["channel"] for fault in report["faults"]], [9])
+        waiting = [
+            row for row in diagnostics if row.get("waitReason") == "follow-source"
+        ]
+        self.assertTrue(waiting)
+        self.assertTrue(all(not row["ready"] for row in waiting))
+        self.assertTrue(
+            all(row["output"]["lastDeliveredCursor"] is None for row in waiting)
+        )
+
+    def test_follow_wait_stops_on_stdin_eof_or_total_duration(self):
+        for stop, reason in (
+            ("eof", "owner-stopped"),
+            ("deadline", "duration-limit-incomplete"),
+        ):
+            with self.subTest(stop=stop):
+                result, records, report, _ = self.run_attempts(
+                    ["closed"], follow=True, stop_in_wait=stop
+                )
+                self.assertEqual(result, 2)
+                self.assertEqual(report["reason"], reason)
+                self.assertEqual(len(records), 3)
+                self.assertEqual(report["health"]["sourceEnds"], 1)
+                self.assertEqual(report["health"]["followAttempts"], 0)
+                self.assertFalse(report["faults"])
+
+    def test_follow_stops_on_unknown_native_close_or_invalid_completion(self):
+        for steps, reason in (
+            (["closed", "unknown-close"], "native-session-closed"),
+            (["invalid"], "attempt-invalid-completion"),
+            (["cleanup-failed"], "attempt-cleanup-failed"),
+        ):
+            with self.subTest(steps=steps):
+                result, records, report, _ = self.run_attempts(steps, follow=True)
+                self.assertEqual(result, 1)
+                self.assertEqual(report["reason"], reason)
+                self.assertEqual(
+                    report["cleanupCompleted"], steps != ["cleanup-failed"]
+                )
+                self.assertEqual(report["health"]["sourceEnds"], steps.count("closed"))
+                self.assertEqual(
+                    sum(r.get("reason") == "source-hltv-stop" for r in records),
+                    steps.count("closed"),
+                )
 
     def test_permanent_and_consumer_failures_do_not_reconnect(self):
         from session_supervisor import retryable

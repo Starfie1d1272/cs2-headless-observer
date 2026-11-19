@@ -30,6 +30,7 @@ def main():
         "cs2-observer-managed-json/1",
         "cs2-observer-managed-json/2",
     ]
+    assert "follow-source" in manifest["managedFeatures"]
     assert (root / "client/session_supervisor.py").is_file()
     expected = manifest["filesSha256"]
     actual = {p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file()}

@@ -1142,6 +1142,11 @@ def main():
     )
     ap.add_argument("--session-attempt", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument(
+        "--follow-source",
+        action="store_true",
+        help="Managed v2 only: wait and reconnect to the same source after normal completion",
+    )
+    ap.add_argument(
         "--host-version",
         type=host_version,
         help="Actual source host; otherwise suggest from local steam.inf",
@@ -1150,7 +1155,7 @@ def main():
     ap.add_argument(
         "--seconds",
         type=positive,
-        help="Explicit diagnostic duration; default runs until stop/source end",
+        help="Total diagnostic duration, including managed v2 retries and waits",
     )
     ap.add_argument(
         "--capture",
@@ -1164,6 +1169,8 @@ def main():
         ap.error("Managed protocol selection requires --managed")
     if args.session_attempt and args.managed_protocol != "1":
         ap.error("Invalid internal session attempt")
+    if args.follow_source and (not args.managed or args.managed_protocol != "2"):
+        ap.error("--follow-source requires managed protocol 2")
     if args.managed and args.capture:
         ap.error("Managed mode never captures raw traffic or event files")
     if args.host_version is None:

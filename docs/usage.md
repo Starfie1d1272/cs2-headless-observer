@@ -14,7 +14,7 @@
 
 独立入口将会话报告写入 `runs/<UTC时间>/report.json`，事件从 stdout 输出。托管调用可选择自己的输出目录，见[托管接口](managed-interface.md)。
 
-直接调用 `client/driver.py` 时，可用 `--seconds <正整数>` 选择诊断时限。原始采集由独立交互驱动的 `--capture` 开启，`--capture-budget-mib` 设置容量，默认 256 MiB。`Start.cmd` 使用启动器默认参数。
+直接调用 `client/driver.py` 时，可用 `--seconds <正整数>` 选择诊断总时限，托管 v2 将连接和退避等待都计入。托管 v2 可用 `--follow-source` 在正常结束后等待同一授权地址恢复。原始采集由独立交互驱动的 `--capture` 开启，`--capture-budget-mib` 设置容量，默认 256 MiB。`Start.cmd` 使用启动器默认参数。
 
 采集生成 `events.jsonl` 与 `channel.frames`，共享总容量预算。写入保留完整记录前缀；达到预算后会话继续，报告中的 `capture.truncated` 标记采集范围。通道文件用于本地回放，游戏原生 Demo 使用游戏提供的格式。托管模式以 stdout 交付记录，默认文件输出为会话报告。
 
@@ -28,7 +28,7 @@
 | 1 | 运行、清理或报告写入失败 |
 | 2 | owner 停止、诊断时限等不完整停止，或参数用法错误；结合报告与 stderr 判断 |
 
-报告格式为 `cs2-observer-report/1`，以原子替换方式保存。
+单次连接报告为 `cs2-observer-report/1`，以原子替换方式保存。托管 v2 的最终报告为 `cs2-observer-report/2`，记录整个组件的结束结果与最近连接摘要。
 
 | 字段 | 含义 |
 | --- | --- |
@@ -55,7 +55,7 @@ FULL 描述协议状态。来源当前是否可用由匹配代际的 cursor 和�
 | `output-backpressure` / `output-closed` | 检查消费者存活和持续读取状态；按 JSON 行处理任意分块，停止旧会话后再建立新会话。 |
 | `source-drain-timeout`、解析或清理失败 | 保存失败阶段与报告，确认自有旧进程已退出，再开始新的来源尝试。 |
 | `remote_end_reason=1000` | 结合操作时间、端点和完整回执判断；共存客户端使用不同端点。 |
-| `source-hltv-stop` / 1038 | 对照 `drainCompleted`、`cleanupCompleted` 和最终结果确认来源收尾，之后等待新的授权来源。 |
+| `source-hltv-stop` / 1038 | 连接正常收尾时发布断点。启用跟随后，组件等待原地址恢复。默认退出，由宿主管理下一次启动。 |
 | `duration-limit-incomplete` | 达到显式诊断时限；持续观战使用默认运行时长。 |
 
 ## 离线回放
