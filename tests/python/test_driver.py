@@ -11,7 +11,8 @@ from channel import (
     messages,
     unreliable_frame,
 )
-from driver import ObserverDriver, DriverError, SampleWriter
+from driver import ObserverDriver, DriverError
+from process_io import SampleWriter
 from handshake import blob, number, initial_challenge_request
 from replay import replay
 from wire import fields, scalar, varint

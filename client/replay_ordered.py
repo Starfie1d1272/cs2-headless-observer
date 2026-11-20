@@ -13,7 +13,8 @@ import sys
 
 sys.dont_write_bytecode = True  # Replays must not add caches to a verified component.
 import time
-from driver import MAGIC, ObserverDriver
+from driver import ObserverDriver
+from process_io import MAGIC
 from ordered_parser_bridge import OrderedParserBridge
 
 
