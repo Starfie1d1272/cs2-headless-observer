@@ -351,6 +351,33 @@ def validate_worker_record(
         raise ProbeError("ordered-parser-output-sequence")
     if kind == "initialized" and row.get("protocol") != IPC_PROTOCOL_VERSION:
         raise ProbeError("ordered-parser-protocol-version")
+    if kind == "world-reset" and "reason" in row and type(row["reason"]) is not str:
+        raise ProbeError("ordered-parser-record-shape")
+    if kind == "creation-sequence-admitted" and (
+        "creationSequence" in row
+        and (type(row["creationSequence"]) is not int or row["creationSequence"] < 0)
+    ):
+        raise ProbeError("ordered-parser-record-shape")
+    if kind == "batch-complete" and (
+        type(row.get("batch")) is not int or row["batch"] < 1
+    ):
+        raise ProbeError("ordered-parser-record-shape")
+    if kind in ("gap", "diagnostic") and type(row.get("reason")) is not str:
+        raise ProbeError("ordered-parser-record-shape")
+    if kind == "cursor" and (
+        type(row.get("committedTick")) is not int
+        or row["committedTick"] < 1
+        or type(row.get("tickInterval")) not in (int, float)
+        or not 0 < row["tickInterval"] <= 1
+        or (row.get("map") is not None and type(row.get("map")) is not str)
+    ):
+        raise ProbeError("ordered-parser-record-shape")
+    if kind == "raw-event" and (
+        type(row.get("name")) is not str
+        or not row["name"]
+        or not isinstance(row.get("fields"), dict)
+    ):
+        raise ProbeError("ordered-parser-record-shape")
     return world, sequence
 
 

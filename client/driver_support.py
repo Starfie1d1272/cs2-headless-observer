@@ -361,7 +361,9 @@ def parse_attempt_result(
         cleanup_completed=raw["cleanupCompleted"],
         report_written=raw["reportWritten"],
         last_output_sequence=raw["lastOutputSequence"],
-        valid_completion=valid_clean and not contradictory and category == "clean-source-stop",
+        valid_completion=valid_clean
+        and not contradictory
+        and category == "clean-source-stop",
     )
 
 
@@ -479,9 +481,8 @@ def build_attempt_health(driver, writer, now, *, force=False):
         reason = "source-draining"
     elif not snap["full_sent"]:
         reason = "initializing"
-    elif (
-        any(age is not None and age >= SOFT_AGE_US for age in ages)
-        or getattr(parser, "throttled", False)
+    elif any(age is not None and age >= SOFT_AGE_US for age in ages) or getattr(
+        parser, "throttled", False
     ):
         state, reason = "catching-up", "local-backlog"
     elif not sdk_recent or snap["last_sdk_age_us"] is None:

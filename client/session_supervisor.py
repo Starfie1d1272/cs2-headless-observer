@@ -579,7 +579,9 @@ class SessionSupervisor:
                         ):
                             raise ProbeError("attempt-record-identity")
                     elif not self._forward(row, received_ns):
-                        return {"reason": "source-residence-overload"}, AttemptResult.synthetic(
+                        return {
+                            "reason": "source-residence-overload"
+                        }, AttemptResult.synthetic(
                             "transient-fault",
                             phase="channel",
                             reached_full=True,
@@ -800,7 +802,7 @@ def run(args, owner, endpoint, password):
         outcome, reason = "failed", str(error)
         output.abort()
     stop = supervisor._stop_reason()
-    if stop:
+    if stop and outcome != "failed":
         outcome, reason = "incomplete", stop
     cleanup = (
         owner.close() and not output.thread.is_alive() and not supervisor.cleanup_failed

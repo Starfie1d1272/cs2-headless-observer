@@ -884,6 +884,79 @@ sys.exit(code)
         self.assertIn("attempt-job-reap-timeout", str(ctx.exception))
         attempt.job.close.assert_called_once()
 
+    def test_supervisor_cleanup_failure_not_masked_by_owner_stop(self):
+        from pathlib import Path
+        import sys
+        import tempfile
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        from process_io import ManagedOwner
+        import session_supervisor as supervisor
+
+        with (
+            tempfile.TemporaryDirectory() as temp,
+            tempfile.TemporaryFile() as stdout,
+            tempfile.TemporaryFile() as stderr,
+        ):
+            output = Path(temp) / "run"
+            output.mkdir()
+            args = SimpleNamespace(
+                output=output,
+                seconds=5,
+                follow_source=False,
+                source_id="12" * 16,
+                source_role="ahead",
+                native="unused.dll",
+                node="node",
+                parser_worker="unused.mjs",
+                steam_api=None,
+                host_version=14198,
+            )
+            owner = ManagedOwner()
+            owner.stopped.set()
+
+            def fail_after_stop(self_sup, endpoint, password):
+                self_sup.cleanup_failed = True
+                raise supervisor.AttemptCleanupError("attempt-job-reap-timeout")
+
+            with (
+                patch.object(supervisor.SessionSupervisor, "connect", fail_after_stop),
+                patch.object(sys, "stdout", stdout),
+                patch.object(sys, "stderr", stderr),
+            ):
+                result = supervisor.run(
+                    args, owner, "127.0.0.1:27020", bytearray(b"test-only")
+                )
+            report = json.loads((output / "report.json").read_text())
+            self.assertEqual(result, 1)
+            self.assertEqual(report["outcome"], "failed")
+            self.assertFalse(report["cleanupCompleted"])
+            self.assertEqual(report["reason"], "attempt-job-reap-timeout")
+
+    def test_session_attempt_partial_init_assign_failure_cleans_up(self):
+        from unittest.mock import MagicMock, patch
+        import session_supervisor as supervisor
+        from wire import ProbeError
+
+        fake_proc = MagicMock()
+        fake_proc.poll.return_value = None
+        fake_job = MagicMock()
+        fake_job.assign.side_effect = ProbeError("parser-job-assignment-failed")
+        with (
+            patch.object(supervisor, "ProcessJob", return_value=fake_job),
+            patch.object(supervisor.subprocess, "Popen", return_value=fake_proc),
+            patch.object(supervisor.SessionAttempt, "_kill_group") as kill_group,
+        ):
+            with self.assertRaisesRegex(ProbeError, "parser-job-assignment-failed"):
+                supervisor.SessionAttempt(
+                    ["unused"], None, "127.0.0.1:27020", bytearray(b"pw"), MagicMock()
+                )
+        fake_job.close.assert_called_once()
+        fake_proc.stdin.close.assert_called_once()
+        if __import__("os").name != "nt":
+            kill_group.assert_called()
+
     def test_driver_report_write_failure_syncs_attempt_result(self):
         from pathlib import Path
         import sys
@@ -921,11 +994,17 @@ sys.exit(code)
             with (
                 patch.object(sys, "stdout", stdout_file),
                 patch.object(sys, "stderr", stderr_file),
-                patch.object(driver, "write_report_file", side_effect=OSError("disk-full")),
+                patch.object(
+                    driver, "write_report_file", side_effect=OSError("disk-full")
+                ),
             ):
-                code = driver.run_attempt(args, owner, "127.0.0.1:27020", bytearray(b"test"))
+                code = driver.run_attempt(
+                    args, owner, "127.0.0.1:27020", bytearray(b"test")
+                )
             stderr_file.seek(0)
-            lines = [json.loads(line) for line in stderr_file.read().splitlines() if line]
+            lines = [
+                json.loads(line) for line in stderr_file.read().splitlines() if line
+            ]
             report = lines[-1]
             self.assertEqual(code, 1)
             self.assertFalse(report["reportWritten"])
