@@ -2,9 +2,27 @@
 
 ## [Unreleased]
 
-- **破坏性变更（3.0.0 目标）**：正式退役公开托管协议 v1（`--managed-protocol 1` / `cs2-observer-managed-json/1`），传入旧版本请求将显式拒绝并提示迁移至 `cs2-observer-managed-json/2`；Supervisor 内部单次连接改用私有 `--session-attempt` 接口。
-- **生命周期与 IPC 边界加固（#45、#46）**：修复 `ProcessJob.reap()` 异常未被归类为 `AttemptCleanupError` 的问题；完善 `AttemptResult` fail-closed 类型与跨字段一致性校验；同步报告写入失败后的 `attemptResult`；为有序 IPC v4 补全 `checkpoint`、`receipt.baselineAck`、`recovery`、`event-subscriptions` 与 `world >= 1` 运行时形状校验。
-- **运行时收敛与工程治理（#47–#50）**：统一 Supervisor 合成 `AttemptResult` 构造；消除 Driver 重复 `CONNECTED` ACK 发送并将健康信用采样改为只读观测；清理 `docs/architecture.md` 与 `docs/managed-interface.md` 残留的 v1 现行描述；将 `client/parser_worker.mjs` 纳入格式化/lint 检查并将 `AGENTS.md` 纳入布局链接检查。
+## 3.0.0 — 2026-11-20
+
+### 破坏性变更
+
+- **正式退役公开托管协议 v1**：移除 `--managed-protocol 1` / `cs2-observer-managed-json/1` 对外支持，传入旧版本请求将显式拒绝并提示迁移至 `cs2-observer-managed-json/2`；Supervisor 内部单次连接改用私有 `--session-attempt` 接口。原生 ABI（`4`）、有序 IPC（`4`）与公开托管协议（`cs2-observer-managed-json/2`）保持向后兼容。
+
+### 架构稳定化与运行时解耦
+
+- **拆解单次连接外围职责**：移除混合职责的 `driver_support.py`，拆分为 `attempt_contract.py`（结果契约与分类）、`attempt_reporting.py`（基于显式 `HealthInputs` / `ReportInputs` 的纯投影）与 `attempt_runner.py`（CLI 与运行生命周期），并移除 `driver.py` 的冗余兼容重导出。
+- **结构化错误分类与采样优化**：`ProbeError` 与 `DriverError` 携带稳定机器码与结构化 `transient` / `detail` 字段，彻底消除依赖诊断文本 `partition(": ")` 与类名字符串的错误分类；提前健康采样间隔检查，避免非采样周期执行冗余队列扫描。
+- **退役旧 Demo 在线实体路径**：生产 Node worker 统一收敛至 `NativeObserverCore`，并核对保留所有生产必需的 `cs2parser` 上游补丁与解码证据。
+
+### 可靠性与契约加固
+
+- **进程回收与终态报告 fail-closed**：将 `ProcessJob.reap()`、进程等待与句柄关闭异常统一归类为 `AttemptCleanupError`，防止 `owner-stop` 掩盖既有清理或终态失败；完善 `AttemptResult` 的类型、类别与跨字段一致性校验，并在写盘失败时同步更新 `attemptResult`。
+- **有序 IPC v4 全类型校验**：补全 `checkpoint`、`receipt.baselineAck`、`recovery`、`event-subscriptions`、`cursor`、`raw-event`、`gap`、`diagnostic`、`batch-complete` 与 `world >= 1` 的运行时形状与 tick 类型校验。
+
+### 工程体系与发布门禁
+
+- **测试分层与双平台 CI**：为 `tools/run_python_tests.py` 增加 `--fast` 单元模式供 `pnpm run test:fast` 使用，完整门禁仍严格禁止跳过；新增 Ubuntu `posix-lifecycle` 生命周期 CI 与 `client/parser_worker.mjs` / `AGENTS.md` 门禁检查。
+- **文档同步**：重构 `README.md`，并同步更新架构、托管接口、组件分发、验证与 `AGENTS.md` 工程规范。
 
 ## 2.1.0 — 2026-11-19
 

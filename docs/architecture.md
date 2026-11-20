@@ -41,6 +41,6 @@ Windows 驱动持有解析器 Job，随驱动退出回收其自有 worker。Sess
 
 ## 回放与辅助工具
 
-`client/replay_ordered.py` 复用驱动和有序解析器，以本地帧文件替代网络端口。`tools/demo/` 提供 Demo 文件辅助解析，`tools/diagnostics/` 提供消息级研究工具。历史 Demo 包装器已归档至 Git 标签 `archive/research-era`（见[归档索引](../archive/README.md)）。
+`client/attempt_runner.py` 负责 CLI 解析、运行资源管理与报告落盘，`client/attempt_contract.py` 负责 `AttemptResult` 分类与 fail-closed 解析，`client/attempt_reporting.py` 负责基于显式快照的纯健康/报告投影。`client/replay_ordered.py` 复用驱动和有序解析器，以本地帧文件替代网络端口。`tools/demo/` 提供 Demo 文件辅助解析，`tools/diagnostics/` 提供消息级研究工具。历史 Demo 包装器已归档至 Git 标签 `archive/research-era`（见[归档索引](../archive/README.md)）。
 
 公开进程接口见[托管接口](managed-interface.md)，固定构建依据见[协议契约](protocol/README.md)，解析器源码组织见[构建](build.md)。

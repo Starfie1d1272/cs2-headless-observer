@@ -48,14 +48,10 @@ from attempt_reporting import (
     build_attempt_report,
 )
 from process_io import (
-    MAGIC,
-    ManagedOwner,
-    PublicRecords,
-    SampleWriter,
     DRAIN_TIMEOUT_MS,
     HARD_AGE_US,
-    connection_values,
-    read_managed_connection,
+    HEALTH_INTERVAL_NS,
+    PublicRecords,
 )
 
 
@@ -998,6 +994,8 @@ class ObserverDriver:
 
     def update_health(self, writer, *, force=False):
         now = time.monotonic_ns()
+        if not force and now - self._last_health_ns < HEALTH_INTERVAL_NS:
+            return None
         inputs = self.health_snapshot_inputs()
         parser = self.parser
         receive_backlog = getattr(self.port, "receive_backlog", None)

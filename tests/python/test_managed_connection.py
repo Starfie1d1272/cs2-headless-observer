@@ -1,7 +1,7 @@
 import io
 import json
 import unittest
-from driver import read_managed_connection, connection_values
+from process_io import read_managed_connection, connection_values
 
 
 class ManagedConnectionTests(unittest.TestCase):
@@ -318,7 +318,7 @@ class ManagedConnectionTests(unittest.TestCase):
 
     def test_owner_eof_is_a_stop_signal_without_blocking_reader(self):
         import os
-        from driver import ManagedOwner
+        from process_io import ManagedOwner
 
         read_fd, write_fd = os.pipe()
         owner = ManagedOwner(read_fd)
