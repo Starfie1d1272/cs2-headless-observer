@@ -292,21 +292,29 @@ class ManagedConnectionTests(unittest.TestCase):
 
     def test_partial_config_write_close_does_not_hang(self):
         import os
+        import time
         from process_io import ManagedOwner
 
-        read_fd, write_fd = os.pipe()
-        owner = ManagedOwner(fd=read_fd, configuration_reader=read_managed_connection)
-        try:
-            os.write(write_fd, b'{"endpoint":"127.0.0.1:27020"')
-            os.close(write_fd)
-            write_fd = None
-            with self.assertRaisesRegex(ValueError, "^configuration-boundary$"):
-                owner.configuration(timeout=1)
-            self.assertTrue(owner.close())
-        finally:
-            if write_fd is not None:
-                os.close(write_fd)
-            os.close(read_fd)
+        for close_writer in (True, False):
+            with self.subTest(close_writer=close_writer):
+                read_fd, write_fd = os.pipe()
+                owner = ManagedOwner(
+                    fd=read_fd, configuration_reader=read_managed_connection
+                )
+                try:
+                    os.write(write_fd, b'{"endpoint":"127.0.0.1:27020"')
+                    if close_writer:
+                        os.close(write_fd)
+                        write_fd = None
+                    start = time.monotonic()
+                    with self.assertRaisesRegex(ValueError, "^configuration-boundary$"):
+                        owner.configuration(timeout=1 if close_writer else 0.05)
+                    self.assertTrue(owner.close())
+                    self.assertLess(time.monotonic() - start, 0.5)
+                finally:
+                    if write_fd is not None:
+                        os.close(write_fd)
+                    os.close(read_fd)
 
     def test_owner_eof_is_a_stop_signal_without_blocking_reader(self):
         import os
@@ -719,6 +727,25 @@ sys.exit(code)
                 parser_exit, following=False, follow_source=False, retry_streak=0
             ).action,
             "retry",
+        )
+        unknown_follow_close = classify_attempt_result(
+            {
+                "outcome": "failed",
+                "cleanupCompleted": True,
+                "phase": "channel",
+                "native_failure": 7,
+                "remote_end_reason": None,
+            },
+            failure_code="native-session-closed",
+        )
+        self.assertEqual(
+            decide_recovery(
+                unknown_follow_close,
+                following=True,
+                follow_source=True,
+                retry_streak=0,
+            ).action,
+            "fail",
         )
 
     def test_recovery_decision_ignores_diagnostic_reason_text(self):

@@ -82,7 +82,6 @@ def decide_recovery(
         following
         and result.native_failure == 7
         and result.remote_end_reason not in TRANSPORT_TIMEOUT_CODES
-        and result.remote_end_reason is not None
         and result.category == "transient-fault"
     ):
         return RecoveryDecision(action="fail", category="fault")
