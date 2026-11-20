@@ -4,15 +4,10 @@
 
 ## 开发前核对
 
-1. 核对开放重构系列 Issue（#30–#37）的边界与依赖：
-   - **#30** 生产链路一致性与已确认缺陷修复
-   - **#31** 早期研究路线与历史材料归档（`archive/research-era` 标签）
-   - **#32** 退役旧 Demo 在线实体适配器，收敛生产解析路径
-   - **#33** 开发者入口、术语、`AGENTS.md` 与分层验证规范
-   - **#34** 正式退役公开 Managed v1，分离私有单次连接 Attempt 接口
-   - **#35** 精简 `client/driver.py` 外围职责
-   - **#36** 重构 Supervisor 与生命周期基础设施
-   - **#37** 重构 IPC、初始化与快照 ACK 状态所有权
+1. 已完成收敛的架构基准（Issue #30–#37 均已关闭，后续修改须保持其确立的边界）：
+   - **#30–#33** 生产链路修复、历史归档（`archive/research-era` 标签）、旧 Demo 在线实体适配器退役与工程验证分层
+   - **#34–#36** 公开 Managed v1 退役、私有 `--session-attempt` 边界、`AttemptResult` 与纯函数 `decide_recovery()`
+   - **#37** 显式有序 IPC v4 契约（`CreditLedger` / `GenerationCommitTracker`）与 `WorldSyncState` 单一状态所有权
 2. **每类状态唯一 owner**：
    - **Session Supervisor**（`client/session_supervisor.py`）：公开 `cs2-observer-managed-json/2` 输出、`source` / `channel` / `public sequence`、连接恢复与 `--follow-source`。
    - **单次连接 Driver**（`client/driver.py`）：单次连接握手、Signon、控制流、ACK、SDK 与 worker 协调。

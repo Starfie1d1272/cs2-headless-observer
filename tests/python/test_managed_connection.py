@@ -786,3 +786,157 @@ sys.exit(code)
             ).action,
             "follow",
         )
+
+    def test_malformed_and_contradictory_attempt_result_fails_closed(self):
+        from driver_support import parse_attempt_result
+
+        base = {
+            "schema": "cs2-observer-attempt-result/1",
+            "category": "clean-source-stop",
+            "outcome": "closed",
+            "phase": "closed",
+            "nativeState": 3,
+            "nativeFailure": 7,
+            "remoteEndReason": 1038,
+            "reachedFull": True,
+            "drainCompleted": True,
+            "cleanupCompleted": True,
+            "reportWritten": True,
+            "lastOutputSequence": 1,
+            "validCompletion": True,
+        }
+        cases = [
+            {**base, "outcome": "unknown"},
+            {**base, "lastOutputSequence": -1},
+            {**base, "validCompletion": "yes"},
+            {**base, "reachedFull": False},
+            {**base, "drainCompleted": False},
+            {**base, "category": "transient-fault"},
+            {**base, "outcome": "failed"},
+            {**base, "outcome": "incomplete", "category": "transient-fault"},
+            {
+                **base,
+                "category": "transient-fault",
+                "outcome": "failed",
+                "validCompletion": True,
+            },
+        ]
+        for bad in cases:
+            with self.subTest(bad=bad):
+                res = parse_attempt_result(
+                    {"schema": "cs2-observer-report/1", "attemptResult": bad},
+                    exit_code=0,
+                    terminal_seen=True,
+                    expected_sequence=2,
+                )
+                self.assertEqual(res.category, "invalid-completion")
+                self.assertFalse(res.valid_completion)
+
+    def test_session_attempt_init_cleanup_failure_marks_supervisor_cleanup_failed(
+        self,
+    ):
+        from pathlib import Path
+        import sys
+        import tempfile
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        from process_io import ManagedOwner
+        import session_supervisor as supervisor
+
+        with (
+            tempfile.TemporaryDirectory() as temp,
+            tempfile.TemporaryFile() as stdout,
+            tempfile.TemporaryFile() as stderr,
+        ):
+            output = Path(temp) / "run"
+            output.mkdir()
+            args = SimpleNamespace(
+                output=output,
+                seconds=5,
+                follow_source=False,
+                source_id="12" * 16,
+                source_role="ahead",
+                native="unused.dll",
+                node="node",
+                parser_worker="unused.mjs",
+                steam_api=None,
+                host_version=14198,
+            )
+            owner = ManagedOwner()
+            with (
+                patch.object(
+                    supervisor,
+                    "SessionAttempt",
+                    side_effect=supervisor.AttemptCleanupError(
+                        "attempt-io-close-timeout"
+                    ),
+                ),
+                patch.object(sys, "stdout", stdout),
+                patch.object(sys, "stderr", stderr),
+            ):
+                result = supervisor.run(
+                    args, owner, "127.0.0.1:27020", bytearray(b"test-only")
+                )
+            report = json.loads((output / "report.json").read_text())
+            self.assertEqual(result, 1)
+            self.assertEqual(report["outcome"], "failed")
+            self.assertFalse(report["cleanupCompleted"])
+            self.assertEqual(report["reason"], "attempt-io-close-timeout")
+
+    @unittest.skipUnless(
+        __import__("os").environ.get("GOTV_ORDERED_WORKER"), "Set GOTV_ORDERED_WORKER"
+    )
+    def test_duration_limit_not_misclassified_as_owner_stopped(self):
+        import os
+        from pathlib import Path
+        import sys
+        import tempfile
+        from unittest.mock import patch
+        import driver
+        import sdk
+        from support.sdk_port import Port
+
+        read_fd, write_fd = os.pipe()
+        port = Port()
+        try:
+            os.write(
+                write_fd,
+                b'{"endpoint":"127.0.0.1:27020","password":"synthetic-only"}\n',
+            )
+            with (
+                os.fdopen(read_fd, "r") as input_stream,
+                tempfile.TemporaryDirectory() as temp,
+            ):
+                output = Path(temp) / "run"
+                argv = [
+                    "driver.py",
+                    "--session-attempt",
+                    "--native",
+                    str(Path(temp) / "not-loaded"),
+                    "--parser-worker",
+                    os.environ["GOTV_ORDERED_WORKER"],
+                    "--host-version",
+                    "14191",
+                    "--output",
+                    str(output),
+                    "--seconds",
+                    "1",
+                ]
+                with (
+                    tempfile.TemporaryFile(mode="w+") as stdout_file,
+                    tempfile.TemporaryFile(mode="w+") as stderr_file,
+                    patch.object(sys, "argv", argv),
+                    patch.object(sys, "stdin", input_stream),
+                    patch.object(sys, "stdout", stdout_file),
+                    patch.object(sys, "stderr", stderr_file),
+                    patch.object(sdk, "NativePort", return_value=port),
+                ):
+                    result = driver.main()
+                report = json.loads((output / "report.json").read_text())
+                self.assertEqual(result, 2)
+                self.assertEqual(report["outcome"], "incomplete")
+                self.assertEqual(report["reason"], "duration-limit-incomplete")
+                self.assertEqual(report["attemptResult"]["category"], "duration-limit")
+        finally:
+            os.close(write_fd)

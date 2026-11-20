@@ -46,6 +46,10 @@ FOLLOW_INITIAL_SECONDS = 5
 FOLLOW_MAX_SECONDS = 45
 
 
+class AttemptCleanupError(ProbeError):
+    pass
+
+
 @dataclass(frozen=True)
 class RecoveryDecision:
     action: str  # "close" | "follow" | "retry" | "fail"
@@ -262,7 +266,7 @@ class SessionAttempt:
                     cancel_io(thread)
                     thread.join(WAIT_SECONDS)
             if any(thread.is_alive() for thread in self.threads):
-                raise ProbeError("attempt-io-close-timeout")
+                raise AttemptCleanupError("attempt-io-close-timeout")
             process.stdout.close()
             process.stderr.close()
 
@@ -699,9 +703,13 @@ class SessionSupervisor:
                 ]
                 if self.args.steam_api is not None:
                     command.extend(("--steam-api", str(self.args.steam_api)))
-                attempt = SessionAttempt(
-                    command, directory, endpoint, password, self.progress
-                )
+                try:
+                    attempt = SessionAttempt(
+                        command, directory, endpoint, password, self.progress
+                    )
+                except AttemptCleanupError:
+                    self.cleanup_failed = True
+                    raise
                 try:
                     report, attempt_result = self._channel(attempt)
                     if not self.wait_output():
@@ -712,7 +720,7 @@ class SessionSupervisor:
                 finally:
                     try:
                         attempt.close()
-                    except ProbeError:
+                    except AttemptCleanupError:
                         self.cleanup_failed = True
                         raise
                 if attempt.forced or attempt.report().get("cleanupCompleted") is False:

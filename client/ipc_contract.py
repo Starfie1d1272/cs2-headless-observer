@@ -3,7 +3,6 @@
 from collections import deque
 from dataclasses import dataclass
 import time
-from typing import Literal, TypedDict
 
 from wire import ProbeError
 
@@ -78,22 +77,6 @@ PUBLIC_COMMON_FIELDS = (
 )
 
 PUBLIC_RAW_EVENT_FIELDS = ("type", "name", "fields", "players", "pawns")
-
-
-class InitCommand(TypedDict):
-    type: Literal["init"]
-    source: str
-    channel: int
-    world: int
-
-
-class BatchCommand(TypedDict):
-    type: Literal["batch"]
-    source: str
-    channel: int
-    world: int
-    batch: int
-    rows: list[dict]
 
 
 @dataclass(frozen=True)
