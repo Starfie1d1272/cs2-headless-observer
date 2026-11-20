@@ -1,6 +1,6 @@
 {
   "componentId": "cs2-headless-observer",
-  "componentVersion": "2.1.0",
+  "componentVersion": "3.0.0",
   "platform": "win32-x64",
   "nativeAbi": 4,
   "parserIpc": 4,
