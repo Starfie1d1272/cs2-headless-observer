@@ -65,12 +65,12 @@ class DriverTest(unittest.TestCase):
                             return False
 
                     driver.parser = Parser()
-                driver._full_sent, driver._processed_entity_tick = full, 123
+                driver.world_sync.full_sent, driver.world_sync.processed_entity_tick = full, 123
                 if normal:
                     driver.step(1)
                     self.assertTrue(driver.done)
                     self.assertEqual(driver.reason, "source-hltv-stop")
-                    self.assertIsNone(driver._processed_entity_tick)
+                    self.assertIsNone(driver.world_sync.processed_entity_tick)
                     driver.step(2)
                     self.assertEqual([r["kind"] for r in output], ["discontinuity"])
                     self.assertTrue(driver.drain_completed)
@@ -233,8 +233,8 @@ class DriverTest(unittest.TestCase):
             port.sent[-1], (bytes.fromhex("02 02 03 fd ff ff ff ff ff"), 1)
         )
         port.incoming.append((bytes.fromhex("02 02 00 fd ff fd ff fd ff"), False))
-        driver._full_sent = True
-        driver._processed_entity_tick = 1380
+        driver.world_sync.full_sent = True
+        driver.world_sync.processed_entity_tick = 1380
         driver.step(310)
         feedback = decode_frame(port.sent[-1][0], gns_reliable=False)
         self.assertEqual((feedback.sequence, feedback.acknowledgement), (3, 3))
@@ -248,7 +248,7 @@ class DriverTest(unittest.TestCase):
         repeat = decode_frame(port.sent[-1][0], gns_reliable=False)
         self.assertEqual(repeat.body, feedback.body)
         self.assertEqual(repeat.sequence, 4)
-        driver._recovery_pending = True
+        driver.world_sync.recovery_pending = True
         driver.step(510)
         self.assertEqual(decode_frame(port.sent[-1][0], gns_reliable=False).body, b"")
         driver.close()
@@ -421,9 +421,9 @@ class DriverTest(unittest.TestCase):
         for state in (3, 4, 5):
             driver.signon.receive(number(1, state) + number(2, 7))
         driver.signon.finish_spawn()
-        driver._new_sent = driver._prespawn_sent = driver._spawn_sent = True
+        driver.world_sync.new_sent = driver.world_sync.prespawn_sent = driver.world_sync.spawn_sent = True
         driver._advance_initialization(100)
-        self.assertFalse(driver._full_sent)
+        self.assertFalse(driver.world_sync.full_sent)
         driver._parser_sequence = (
             2  # Later traffic cannot stall a completed full snapshot.
         )
@@ -437,7 +437,7 @@ class DriverTest(unittest.TestCase):
             }
         ]
         driver._send_processed_tick(200)
-        self.assertTrue(driver._full_sent)
+        self.assertTrue(driver.world_sync.full_sent)
         self.assertEqual(driver.signon.state, 6)
         sent = [
             m
@@ -481,10 +481,10 @@ class DriverTest(unittest.TestCase):
         for state in (3, 4, 5):
             driver.signon.receive(number(1, state) + number(2, 7))
         driver.signon.finish_spawn()
-        driver._new_sent = driver._prespawn_sent = driver._spawn_sent = True
+        driver.world_sync.new_sent = driver.world_sync.prespawn_sent = driver.world_sync.spawn_sent = True
         driver.signon.receive(number(1, 6) + number(2, 7))
         driver._advance_initialization(100)
-        self.assertFalse(driver._full_sent)
+        self.assertFalse(driver.world_sync.full_sent)
         driver.parser.controls = [
             {
                 "type": "receipt",
@@ -495,7 +495,7 @@ class DriverTest(unittest.TestCase):
             }
         ]
         driver._send_processed_tick(200)
-        self.assertFalse(driver._full_sent)
+        self.assertFalse(driver.world_sync.full_sent)
         self.assertEqual(len(port.sent), 3)
         driver.parser.controls = [
             {
@@ -507,7 +507,7 @@ class DriverTest(unittest.TestCase):
             }
         ]
         driver._send_processed_tick(300)
-        self.assertTrue(driver._full_sent)
+        self.assertTrue(driver.world_sync.full_sent)
         self.assertEqual(driver.report()["received_signon_state"], 6)
         self.assertEqual(driver.report()["baseline_ack_count"], 1)
 
@@ -532,7 +532,7 @@ class DriverTest(unittest.TestCase):
                 return ready
 
         driver.parser = Parser()
-        driver._full_sent = True
+        driver.world_sync.full_sent = True
         driver.parser.controls = [
             {"type": "receipt", "sequence": 1, "tick": 100, "baselineAck": None}
         ]
@@ -717,6 +717,29 @@ class DriverTest(unittest.TestCase):
         with self.assertRaisesRegex(DriverError, "monotonic-clock-regressed"):
             driver.step(1)
         driver.close()
+
+
+    def test_world_sync_state_ownership_and_reset(self):
+        from driver import WorldSyncState
+
+        sync = WorldSyncState(last_receipt_ms=10)
+        sync.new_sent = sync.prespawn_sent = sync.spawn_sent = sync.full_sent = True
+        ack = sync.apply_receipt(
+            {"type": "receipt", "tick": 120, "full": True, "baselineAck": 1}
+        )
+        self.assertEqual(ack, (120, 1))
+        self.assertTrue(sync.full_snapshot_processed)
+        self.assertEqual(sync.processed_entity_tick, 120)
+        self.assertIsNone(sync.apply_receipt({"type": "recovery", "request": True}))
+        self.assertTrue(sync.recovery_pending)
+        self.assertIsNone(sync.processed_entity_tick)
+        sync.reset(999)
+        self.assertFalse(
+            sync.new_sent or sync.prespawn_sent or sync.spawn_sent or sync.full_sent
+        )
+        self.assertFalse(sync.full_snapshot_processed or sync.recovery_pending)
+        self.assertIsNone(sync.ack_tick)
+        self.assertEqual(sync.last_receipt_ms, 999)
 
 
 if __name__ == "__main__":

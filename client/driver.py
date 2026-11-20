@@ -94,6 +94,56 @@ class StepResult:
     results: int = 0
 
 
+@dataclass
+class WorldSyncState:
+    """Single owner for world-scoped Signon initialization and snapshot commit/ACK state.
+
+    Reset atomically on world boundaries; never holds session-wide counters or transport auth.
+    """
+
+    last_receipt_ms: int = 0
+    new_sent: bool = False
+    prespawn_sent: bool = False
+    spawn_sent: bool = False
+    full_snapshot_processed: bool = False
+    full_sent: bool = False
+    recovery_pending: bool = False
+    request_full_update: bool = False
+    full_update_outstanding: bool = False
+    event_subscription_pending: dict | None = None
+    processed_entity_tick: int | None = None
+    ack_tick: int | None = None
+
+    def reset(self, now_ms: int) -> None:
+        self.new_sent = False
+        self.prespawn_sent = False
+        self.spawn_sent = False
+        self.full_snapshot_processed = False
+        self.full_sent = False
+        self.recovery_pending = False
+        self.request_full_update = False
+        self.full_update_outstanding = False
+        self.event_subscription_pending = None
+        self.processed_entity_tick = None
+        self.ack_tick = None
+        self.last_receipt_ms = now_ms
+
+    def apply_receipt(self, receipt: dict) -> tuple[int, int] | None:
+        if receipt["type"] == "recovery":
+            self.recovery_pending = True
+            self.request_full_update = receipt.get("request", True)
+            self.processed_entity_tick = None
+            return None
+        if receipt.get("full") is True:
+            self.full_snapshot_processed = True
+        self.recovery_pending = False
+        self.full_update_outstanding = False
+        self.processed_entity_tick = receipt["tick"]
+        if receipt["baselineAck"] is not None:
+            return (receipt["tick"], receipt["baselineAck"])
+        return None
+
+
 def clock_ms():
     return time.monotonic_ns() // 1_000_000
 
@@ -138,7 +188,7 @@ class ObserverDriver:
         self.settings = ObserverSettings()
         self._query_window_ms = now_ms
         self._query_count = 0
-        self._new_sent = False
+        self.world_sync = WorldSyncState(last_receipt_ms=now_ms)
         self.parser, self.emit = parser, PublicRecords(emit, encoded=encoded_output)
         self._parser_sequence = 0
         self._last_sdk_age_us = self._max_sdk_age_us = None
@@ -153,20 +203,9 @@ class ObserverDriver:
         self._window_sdk_age_us = None
         self._last_health_totals = (0, 0, 0, 0, 0)
         self._last_health_ns = 0
-        self._prespawn_sent = False
-        self._spawn_sent = False
-        self._full_snapshot_processed = False
-        self._full_sent = False
         self._ever_full = False
-        self._recovery_pending = False
-        self._request_full_update = False
-        self._full_update_outstanding = False
         self._recovery_requests = 0
         self._baseline_ack_count = 0
-        self._event_subscription_pending = None
-        self._processed_entity_tick = None
-        self._ack_tick = None
-        self._last_receipt_ms = now_ms
         self.decoder, self.signon = ControlDecoder(), SignonSequence()
         self.order = UnreliableOrder(initial=0)
         self.feedback = UnreliableFeedback()
@@ -215,7 +254,7 @@ class ObserverDriver:
         if self.port.state == 6 and self._drain_deadline is None:
             if (
                 getattr(self.port, "remote_end_reason", None) == 1038
-                and self._full_sent
+                and self.world_sync.full_sent
                 and getattr(self.port, "failure", 7) == 7
             ):
                 self.phase = "draining"
@@ -224,7 +263,7 @@ class ObserverDriver:
                 raise DriverError("native-session-closed")
         if (
             self.phase == "channel"
-            and not self._full_sent
+            and not self.world_sync.full_sent
             and now_ms >= self.initialization_deadline
         ):
             raise DriverError("initialization-timeout")
@@ -253,7 +292,7 @@ class ObserverDriver:
         status = Duty.BUDGET
         received = pumped_bytes = 0
         work_deadline = time.monotonic_ns() + WORK_NS
-        envelopes = [] if self.parser and self._full_sent else None
+        envelopes = [] if self.parser and self.world_sync.full_sent else None
         staged_messages = staged_bytes = 0
         while received < 128 and pumped_bytes < 8 * 1024**2:
             if self.done or (cancelled and cancelled()):
@@ -282,7 +321,7 @@ class ObserverDriver:
                     self._max_sdk_age_us = max(self._max_sdk_age_us or 0, sdk_age)
                     self._window_sdk_age_us = max(self._window_sdk_age_us or 0, sdk_age)
                 if self._drain_deadline is None:
-                    limit = HARD_AGE_US if self._full_sent else STARTUP_AGE_US
+                    limit = HARD_AGE_US if self.world_sync.full_sent else STARTUP_AGE_US
                     if sdk_age is not None and sdk_age >= limit:
                         raise DriverError("sdk-receive-overload")
                     if (time.monotonic_ns() - dequeued) // 1000 >= limit:
@@ -328,7 +367,7 @@ class ObserverDriver:
                 and not self.parser.has_results()
             ):
                 self.drain_completed = True
-                self._processed_entity_tick = None
+                self.world_sync.processed_entity_tick = None
                 self.phase, self.reason = "closed", "source-hltv-stop"
                 self._emit_parser(
                     dict(
@@ -342,14 +381,14 @@ class ObserverDriver:
         if self.phase == "channel" and now_ms - self._last_feedback_ms >= 100:
             encoded = b""
             if (
-                self._full_sent
-                and not self._recovery_pending
-                and self._processed_entity_tick is not None
+                self.world_sync.full_sent
+                and not self.world_sync.recovery_pending
+                and self.world_sync.processed_entity_tick is not None
             ):
-                encoded, _ = encode_message(4, number(1, self._processed_entity_tick))
+                encoded, _ = encode_message(4, number(1, self.world_sync.processed_entity_tick))
             self._send_channel_feedback(encoded, now_ms)
             if encoded:
-                self._ack_tick = self._processed_entity_tick
+                self.world_sync.ack_tick = self.world_sync.processed_entity_tick
         if (
             self.phase in ("challenge", "ticket", "connection")
             and self._last_challenge_request_ms is not None
@@ -370,7 +409,7 @@ class ObserverDriver:
             deadlines.append(self.deadline)
             if self.phase == "channel":
                 deadlines.append(self._last_feedback_ms + 100)
-                if not self._full_sent:
+                if not self.world_sync.full_sent:
                     deadlines.append(self.initialization_deadline)
             elif self._last_challenge_request_ms is not None:
                 deadlines.append(self._last_challenge_request_ms + 500)
@@ -383,7 +422,7 @@ class ObserverDriver:
             self._max_parser_age_us = max(self._max_parser_age_us or 0, oldest)
         if self._drain_deadline is not None:
             return
-        limit = HARD_AGE_US if self._full_sent else STARTUP_AGE_US
+        limit = HARD_AGE_US if self.world_sync.full_sent else STARTUP_AGE_US
         pending = getattr(self.port, "pending_receive_age_ns", None)
         if pending and (pending(now_ns) or 0) // 1000 >= limit:
             raise DriverError("receive-staging-overload")
@@ -442,7 +481,7 @@ class ObserverDriver:
         self.port.send(self.feedback.frame(encoded), 1)
         self._feedback_sent += 1
         self._last_feedback_ms = now_ms
-        self._last_receipt_ms = now_ms
+        self.world_sync.last_receipt_ms = now_ms
 
     def _request_challenge(self, now_ms):
         request = initial_challenge_request(
@@ -694,14 +733,7 @@ class ObserverDriver:
         self._gap = True
         self.initialization_deadline = now_ms + 30000
         self.signon = SignonSequence()
-        self._new_sent = self._prespawn_sent = self._spawn_sent = False
-        self._full_snapshot_processed = self._full_sent = False
-        self._recovery_pending = self._request_full_update = (
-            self._full_update_outstanding
-        ) = False
-        self._processed_entity_tick = self._ack_tick = None
-        self._last_receipt_ms = now_ms
-        self._event_subscription_pending = None
+        self.world_sync.reset(now_ms)
         if replace_client:
             self.reliable_filter.replace_client_owner()
         self.stages.append(
@@ -729,7 +761,7 @@ class ObserverDriver:
         checkpoint = self.parser.checkpoint if self.parser else None
         if (
             self.parser
-            and not self._full_sent
+            and not self.world_sync.full_sent
             and (
                 self.parser.completed_sequence < self._parser_sequence
                 or not getattr(self.parser, "caught_up", True)
@@ -739,14 +771,14 @@ class ObserverDriver:
         if getattr(self.parser, "ordered", False):
             subscriptions = self.parser.pop_subscriptions()
             if subscriptions is not None:
-                self._event_subscription_pending = subscriptions
+                self.world_sync.event_subscription_pending = subscriptions
             if (
                 self.signon.state > 3
-                and self._event_subscription_pending is not None
+                and self.world_sync.event_subscription_pending is not None
                 and self.decoder.server
             ):
                 words = [0] * 16
-                for event_id in self._event_subscription_pending["ids"]:
+                for event_id in self.world_sync.event_subscription_pending["ids"]:
                     if type(event_id) is not int or not 0 <= event_id < 512:
                         raise DriverError("event-subscription-id")
                     words[event_id // 32] |= 1 << (event_id % 32)
@@ -756,8 +788,8 @@ class ObserverDriver:
                 )
                 encoded, _ = encode_message(206, payload)
                 self.port.send(reliable_frame(encoded, 0), 8)
-                self._event_subscription_pending = None
-        if self.signon.state == 3 and not self._new_sent:
+                self.world_sync.event_subscription_pending = None
+        if self.signon.state == 3 and not self.world_sync.new_sent:
             if self.decoder.server is None:
                 raise DriverError("new-before-serverinfo")
             # Empty-table NEW can request the full schema immediately. Existing
@@ -779,14 +811,14 @@ class ObserverDriver:
             message_id, payload = self.signon.acknowledgement()
             encoded, _ = encode_message(message_id, payload)
             self.port.send(reliable_frame(encoded, 0), 8)
-            self._new_sent = True
+            self.world_sync.new_sent = True
             self.stages.append(
                 {
                     "stage": "sent-client-info-and-new",
                     "elapsed_ms": now_ms - self.start_ms,
                 }
             )
-        elif self.signon.state == 4 and not self._prespawn_sent:
+        elif self.signon.state == 4 and not self.world_sync.prespawn_sent:
             if (
                 not checkpoint
                 or not checkpoint["serverInfo"]
@@ -798,7 +830,7 @@ class ObserverDriver:
             message_id, payload = self.signon.acknowledgement()
             encoded, _ = encode_message(message_id, payload)
             self.port.send(reliable_frame(encoded, 0), 8)
-            self._prespawn_sent = True
+            self.world_sync.prespawn_sent = True
             self.stages.append(
                 {"stage": "sent-prespawn", "elapsed_ms": now_ms - self.start_ms}
             )
@@ -813,11 +845,11 @@ class ObserverDriver:
                 self.stages.append(
                     {"stage": "sent-world-ready", "elapsed_ms": now_ms - self.start_ms}
                 )
-        if self.signon.state == 5 and not self._spawn_sent:
+        if self.signon.state == 5 and not self.world_sync.spawn_sent:
             if (
                 not checkpoint
                 or not checkpoint["schemaFields"]
-                or not self._prespawn_sent
+                or not self.world_sync.prespawn_sent
             ):
                 raise DriverError("spawn-before-parser-initialization")
             if set(self.decoder.spawn_groups) != self.decoder.ready_spawn_groups:
@@ -826,7 +858,7 @@ class ObserverDriver:
             message_id, payload = self.signon.acknowledgement()
             encoded, _ = encode_message(message_id, payload)
             self.port.send(reliable_frame(encoded, 0), 8)
-            self._spawn_sent = True
+            self.world_sync.spawn_sent = True
             self.stages.append(
                 {"stage": "sent-spawn", "elapsed_ms": now_ms - self.start_ms}
             )
@@ -835,15 +867,15 @@ class ObserverDriver:
     def _acknowledge_full(self, now_ms):
         if (
             self.signon.state == 6
-            and not self._full_sent
-            and self._full_snapshot_processed
+            and not self.world_sync.full_sent
+            and self.world_sync.full_snapshot_processed
         ):
-            if not self._spawn_sent:
+            if not self.world_sync.spawn_sent:
                 raise DriverError("full-before-spawn-acknowledgement")
             message_id, payload = self.signon.acknowledgement()
             encoded, _ = encode_message(message_id, payload)
             self.port.send(reliable_frame(encoded, 0), 8)
-            self._full_sent = True
+            self.world_sync.full_sent = True
             self._ever_full = True
             self.stages.append(
                 {
@@ -857,35 +889,27 @@ class ObserverDriver:
         checkpoint = self.parser.checkpoint if self.parser else None
         if checkpoint is None:
             return
-        if not self._full_sent and not self._spawn_sent:
+        if not self.world_sync.full_sent and not self.world_sync.spawn_sent:
             return
         baseline_acks = []
         for receipt in self.parser.pop_receipts():
             if receipt["sequence"] > checkpoint["sequence"]:
                 raise DriverError("receipt-before-parser-checkpoint")
+            baseline_ack = self.world_sync.apply_receipt(receipt)
             if receipt["type"] == "recovery":
-                self._recovery_pending = True
-                self._request_full_update = receipt.get("request", True)
-                self._processed_entity_tick = None
                 baseline_acks.clear()
-            else:
-                if receipt.get("full") is True:
-                    self._full_snapshot_processed = True
-                self._recovery_pending = False
-                self._full_update_outstanding = False
-                self._processed_entity_tick = receipt["tick"]
-                if receipt["baselineAck"] is not None:
-                    baseline_acks.append((receipt["tick"], receipt["baselineAck"]))
-        if self._full_snapshot_processed and not self._full_sent:
+            elif baseline_ack is not None:
+                baseline_acks.append(baseline_ack)
+        if self.world_sync.full_snapshot_processed and not self.world_sync.full_sent:
             if self.signon.state == 5:
                 self.signon.finish_full_snapshot()
             self._acknowledge_full(now_ms)
-        if self._recovery_pending:
-            if self._request_full_update and not self._full_update_outstanding:
+        if self.world_sync.recovery_pending:
+            if self.world_sync.request_full_update and not self.world_sync.full_update_outstanding:
                 encoded, _ = encode_message(4, number(1, 0xFFFFFFFF))
                 self.port.send(reliable_frame(encoded, 0), 8)
-                self._ack_tick = 0xFFFFFFFF
-                self._full_update_outstanding = True
+                self.world_sync.ack_tick = 0xFFFFFFFF
+                self.world_sync.full_update_outstanding = True
                 self._recovery_requests += 1
             return
         for tick, bank in baseline_acks:
@@ -893,18 +917,18 @@ class ObserverDriver:
             self.port.send(reliable_frame(encoded, 0), 8)
             self._baseline_ack_count += 1
         if (
-            not self._full_sent
-            or self._processed_entity_tick is None
-            or self._ack_tick == self._processed_entity_tick
-            or now_ms - self._last_receipt_ms < 100
+            not self.world_sync.full_sent
+            or self.world_sync.processed_entity_tick is None
+            or self.world_sync.ack_tick == self.world_sync.processed_entity_tick
+            or now_ms - self.world_sync.last_receipt_ms < 100
         ):
             return
         # Only acknowledge entity packets consumed by the actual parser. Never
         # echo a raw network tick while the entity parser is still behind.
-        encoded, _ = encode_message(4, number(1, self._processed_entity_tick))
+        encoded, _ = encode_message(4, number(1, self.world_sync.processed_entity_tick))
         self._send_channel_feedback(encoded, now_ms)
-        self._ack_tick = self._processed_entity_tick
-        self._last_receipt_ms = now_ms
+        self.world_sync.ack_tick = self.world_sync.processed_entity_tick
+        self.world_sync.last_receipt_ms = now_ms
 
     def health_snapshot_inputs(self):
         parser = self.parser
@@ -918,9 +942,9 @@ class ObserverDriver:
             "max_parser_age_us": self._max_parser_age_us,
             "health_reason": self._health_reason,
             "gap": self._gap,
-            "recovery_pending": self._recovery_pending,
+            "recovery_pending": self.world_sync.recovery_pending,
             "draining": self._drain_deadline is not None,
-            "full_sent": self._full_sent,
+            "full_sent": self.world_sync.full_sent,
             "last_cursor": self._last_cursor,
             "cursor_rate": self._cursor_rate,
             "receive_budget_exhausted": self._receive_budget_exhausted,
@@ -943,13 +967,13 @@ class ObserverDriver:
         return {
             "challenge_requests": self._challenge_requests,
             "feedback_sent": self._feedback_sent,
-            "full_snapshot_processed": self._full_snapshot_processed,
+            "full_snapshot_processed": self.world_sync.full_snapshot_processed,
             "ever_full": self._ever_full,
-            "processed_entity_tick": self._processed_entity_tick,
-            "ack_tick": self._ack_tick,
+            "processed_entity_tick": self.world_sync.processed_entity_tick,
+            "ack_tick": self.world_sync.ack_tick,
             "recovery_requests": self._recovery_requests,
             "baseline_ack_count": self._baseline_ack_count,
-            "full_sent": self._full_sent,
+            "full_sent": self.world_sync.full_sent,
         }
 
     def update_health(self, writer, *, force=False):
