@@ -205,7 +205,9 @@ def parse_attempt_result(
     if (
         not isinstance(raw, dict)
         or raw.get("schema") != ATTEMPT_RESULT_SCHEMA
+        or type(raw.get("category")) is not str
         or raw.get("category") not in VALID_ATTEMPT_CATEGORIES
+        or type(raw.get("outcome")) is not str
         or raw.get("outcome") not in ("closed", "failed", "incomplete")
         or type(raw.get("cleanupCompleted")) is not bool
         or type(raw.get("reportWritten")) is not bool
@@ -213,7 +215,7 @@ def parse_attempt_result(
         or type(raw.get("drainCompleted")) is not bool
         or type(raw.get("lastOutputSequence")) is not int
         or raw.get("lastOutputSequence") < 0
-        or ("validCompletion" in raw and type(raw.get("validCompletion")) is not bool)
+        or type(raw.get("validCompletion")) is not bool
     ):
         category = (
             "transient-fault"
@@ -250,23 +252,54 @@ def parse_attempt_result(
         and raw.get("reachedFull") is True
         and raw.get("drainCompleted") is True
         and raw.get("cleanupCompleted") is True
+        and raw.get("validCompletion") is True
+    )
+    outer_mismatch = any(
+        key in report and report.get(key) != raw.get(key)
+        for key in (
+            "outcome",
+            "phase",
+            "reachedFull",
+            "drainCompleted",
+            "cleanupCompleted",
+            "reportWritten",
+            "lastOutputSequence",
+        )
     )
     contradictory = (
-        (category == "clean-source-stop" and raw.get("outcome") != "closed")
+        outer_mismatch
         or (
-            raw.get("outcome") == "closed"
+            category == "clean-source-stop"
             and (
-                category != "clean-source-stop"
+                raw.get("outcome") != "closed"
+                or raw.get("phase") != "closed"
+                or raw.get("remoteEndReason") != 1038
                 or not raw["reachedFull"]
                 or not raw["drainCompleted"]
                 or not raw["reportWritten"]
+                or not raw["cleanupCompleted"]
+                or raw["validCompletion"] is not True
             )
         )
+        or (raw.get("outcome") == "closed" and category != "clean-source-stop")
         or (
             raw.get("outcome") == "incomplete"
             and category not in ("owner-stopped", "duration-limit")
         )
-        or (raw.get("validCompletion") is True and category != "clean-source-stop")
+        or (
+            category in ("owner-stopped", "duration-limit")
+            and raw.get("outcome") != "incomplete"
+        )
+        or (
+            category in ("transient-fault", "permanent-fault", "source-unavailable")
+            and raw.get("outcome") != "failed"
+        )
+        or (
+            category == "source-unavailable"
+            and (raw.get("phase") != "transport" or not raw["cleanupCompleted"])
+        )
+        or (category == "cleanup-failed" and raw["cleanupCompleted"])
+        or (raw["validCompletion"] is True and category != "clean-source-stop")
     )
     if contradictory or (exit_code == 0 and not valid_clean):
         category = "invalid-completion"
@@ -295,7 +328,7 @@ def parse_attempt_result(
         cleanup_completed=raw["cleanupCompleted"],
         report_written=raw["reportWritten"],
         last_output_sequence=raw["lastOutputSequence"],
-        valid_completion=valid_clean,
+        valid_completion=valid_clean and not contradictory and category == "clean-source-stop",
     )
 
 

@@ -241,34 +241,51 @@ class SessionAttempt:
             self.job.close()
             return
         self.stopping.set()
+        cleanup_error = None
         try:
-            process.stdin.close()
             try:
-                process.wait(timeout=ATTEMPT_STOP_SECONDS)
-            except subprocess.TimeoutExpired:
-                self.forced = True
+                process.stdin.close()
+            except OSError:
+                pass
+            try:
+                try:
+                    process.wait(timeout=ATTEMPT_STOP_SECONDS)
+                except subprocess.TimeoutExpired:
+                    self.forced = True
+                    if os.name == "nt":
+                        self.job.reap()
+                        if process.poll() is None:
+                            process.kill()
+                    else:
+                        self._kill_group()
+                    process.wait(timeout=2)
                 if os.name == "nt":
                     self.job.reap()
-                    if process.poll() is None:
-                        process.kill()
                 else:
                     self._kill_group()
-                process.wait(timeout=2)
-            if os.name == "nt":
-                self.job.reap()
-            else:
-                self._kill_group()
+            except (ProbeError, subprocess.SubprocessError, OSError) as error:
+                cleanup_error = AttemptCleanupError(str(error))
         finally:
-            self.job.close()
+            try:
+                self.job.close()
+            except (ProbeError, OSError) as error:
+                if cleanup_error is None:
+                    cleanup_error = AttemptCleanupError(str(error))
             deadline = time.monotonic() + 1
             for thread in self.threads:
                 while thread.is_alive() and time.monotonic() < deadline:
                     cancel_io(thread)
                     thread.join(WAIT_SECONDS)
             if any(thread.is_alive() for thread in self.threads):
-                raise AttemptCleanupError("attempt-io-close-timeout")
-            process.stdout.close()
-            process.stderr.close()
+                if cleanup_error is None:
+                    cleanup_error = AttemptCleanupError("attempt-io-close-timeout")
+            for stream in (process.stdout, process.stderr):
+                try:
+                    stream.close()
+                except OSError:
+                    pass
+        if cleanup_error is not None:
+            raise cleanup_error
 
     def _kill_group(self):
         try:
@@ -817,7 +834,7 @@ def run(args, owner, endpoint, password):
     except KeyboardInterrupt:
         outcome, reason = "incomplete", "owner-stopped"
         owner.stopped.set()
-    except (OSError, ProbeError, subprocess.SubprocessError, ValueError) as error:
+    except Exception as error:
         outcome = "failed"
         reason = (
             str(error)

@@ -820,6 +820,25 @@ sys.exit(code)
                 "outcome": "failed",
                 "validCompletion": True,
             },
+            {**base, "category": []},
+            {**base, "category": {"nested": 1}},
+            {**base, "outcome": []},
+            {k: v for k, v in base.items() if k != "validCompletion"},
+            {**base, "validCompletion": False},
+            {
+                **base,
+                "category": "source-unavailable",
+                "outcome": "failed",
+                "phase": "channel",
+                "validCompletion": False,
+            },
+            {
+                **base,
+                "category": "cleanup-failed",
+                "outcome": "failed",
+                "cleanupCompleted": True,
+                "validCompletion": False,
+            },
         ]
         for bad in cases:
             with self.subTest(bad=bad):
@@ -831,6 +850,92 @@ sys.exit(code)
                 )
                 self.assertEqual(res.category, "invalid-completion")
                 self.assertFalse(res.valid_completion)
+        outer_mismatch = parse_attempt_result(
+            {
+                "schema": "cs2-observer-report/1",
+                "outcome": "failed",
+                "attemptResult": base,
+            },
+            exit_code=0,
+            terminal_seen=True,
+            expected_sequence=2,
+        )
+        self.assertEqual(outer_mismatch.category, "invalid-completion")
+        self.assertFalse(outer_mismatch.valid_completion)
+
+    def test_session_attempt_close_job_reap_failure_raises_cleanup_error(self):
+        from unittest.mock import MagicMock, patch
+        import os
+        import session_supervisor as supervisor
+        from wire import ProbeError
+
+        attempt = supervisor.SessionAttempt.__new__(supervisor.SessionAttempt)
+        attempt.stopping = __import__("threading").Event()
+        attempt.forced = False
+        attempt.threads = []
+        attempt.job = MagicMock()
+        attempt.job.reap.side_effect = ProbeError("attempt-job-reap-timeout")
+        attempt.process = MagicMock()
+        attempt.process.wait.return_value = 0
+
+        with patch.object(os, "name", "nt"):
+            with self.assertRaises(supervisor.AttemptCleanupError) as ctx:
+                attempt.close()
+        self.assertIn("attempt-job-reap-timeout", str(ctx.exception))
+        attempt.job.close.assert_called_once()
+
+    def test_driver_report_write_failure_syncs_attempt_result(self):
+        from pathlib import Path
+        import sys
+        import tempfile
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import driver
+        from process_io import ManagedOwner
+
+        with (
+            tempfile.TemporaryDirectory() as temp,
+            tempfile.TemporaryFile(mode="w+") as stdout_file,
+            tempfile.TemporaryFile(mode="w+") as stderr_file,
+        ):
+            output = Path(temp) / "run"
+            output.mkdir()
+            args = SimpleNamespace(
+                native=Path(temp) / "not-loaded",
+                steam_api=None,
+                node="node",
+                parser_worker=Path(temp) / "unused.mjs",
+                source_role="ahead",
+                source_id="12" * 16,
+                managed=False,
+                session_attempt=True,
+                follow_source=False,
+                host_version=14198,
+                output=output,
+                seconds=1,
+                capture=False,
+                capture_budget_mib=1,
+            )
+            owner = ManagedOwner()
+            owner.stopped.set()
+            with (
+                patch.object(sys, "stdout", stdout_file),
+                patch.object(sys, "stderr", stderr_file),
+                patch.object(driver, "write_report_file", side_effect=OSError("disk-full")),
+            ):
+                code = driver.run_attempt(args, owner, "127.0.0.1:27020", bytearray(b"test"))
+            stderr_file.seek(0)
+            lines = [json.loads(line) for line in stderr_file.read().splitlines() if line]
+            report = lines[-1]
+            self.assertEqual(code, 1)
+            self.assertFalse(report["reportWritten"])
+            self.assertFalse(report["cleanupCompleted"])
+            self.assertEqual(report["outcome"], "failed")
+            self.assertEqual(report["attemptResult"]["category"], "cleanup-failed")
+            self.assertEqual(report["attemptResult"]["outcome"], "failed")
+            self.assertFalse(report["attemptResult"]["reportWritten"])
+            self.assertFalse(report["attemptResult"]["cleanupCompleted"])
+            self.assertFalse(report["attemptResult"]["validCompletion"])
 
     def test_session_attempt_init_cleanup_failure_marks_supervisor_cleanup_failed(
         self,

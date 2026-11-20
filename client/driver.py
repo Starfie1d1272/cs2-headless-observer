@@ -1259,6 +1259,11 @@ def run_attempt(args, owner, endpoint, password):
             report["reportWritten"] = False
             finalization.append("write-report")
             report.update(outcome="failed", cleanupCompleted=False)
+            report["attemptResult"] = classify_attempt_result(
+                report,
+                failure_code=failure or "write-report",
+                owner_stopped=owner_stopped,
+            ).to_dict()
         emit_terminal_report(diagnostics, report)
     return (
         1
