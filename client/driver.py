@@ -600,21 +600,7 @@ class ObserverDriver:
                 return
             # Official Connect queues CONNECTED/-1 before ServerInfo; otherwise
             # both peers wait. A fresh channel's reliable tick context is zero.
-            message_id, payload = self.signon.acknowledgement()
-            encoded, _ = join_messages(
-                [
-                    encode_message(6, self.settings.userinfo()),
-                    encode_message(message_id, payload),
-                ]
-            )
-            self.port.send(reliable_frame(encoded, 0), 8)
-            self.stages.append(
-                {
-                    "stage": "sent-signon",
-                    "value": 2,
-                    "elapsed_ms": now_ms - self.start_ms,
-                }
-            )
+            self._send_connected_ack(now_ms)
             self.phase, self.deadline = "channel", now_ms + 15000
             self.stages.append(
                 {"stage": self.phase, "elapsed_ms": now_ms - self.start_ms}

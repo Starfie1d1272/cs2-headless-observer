@@ -217,6 +217,10 @@ class OrderedParserBridge:
     def caught_up(self):
         return self._ledger.caught_up
 
+    @property
+    def throttled(self):
+        return self._ledger.throttled
+
     def has_credit(self):
         return self._ledger.has_credit()
 
