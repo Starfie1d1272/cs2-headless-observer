@@ -290,6 +290,32 @@ class ManagedConnectionTests(unittest.TestCase):
             self.assertTrue(report["reportWritten"])
             self.assertEqual(report["finalization_failures"], [])
 
+    def test_partial_config_write_close_does_not_hang(self):
+        import os
+        import time
+        from process_io import ManagedOwner
+
+        for close_writer in (True, False):
+            with self.subTest(close_writer=close_writer):
+                read_fd, write_fd = os.pipe()
+                owner = ManagedOwner(
+                    fd=read_fd, configuration_reader=read_managed_connection
+                )
+                try:
+                    os.write(write_fd, b'{"endpoint":"127.0.0.1:27020"')
+                    if close_writer:
+                        os.close(write_fd)
+                        write_fd = None
+                    start = time.monotonic()
+                    with self.assertRaisesRegex(ValueError, "^configuration-boundary$"):
+                        owner.configuration(timeout=1 if close_writer else 0.05)
+                    self.assertTrue(owner.close())
+                    self.assertLess(time.monotonic() - start, 0.5)
+                finally:
+                    if write_fd is not None:
+                        os.close(write_fd)
+                    os.close(read_fd)
+
     def test_owner_eof_is_a_stop_signal_without_blocking_reader(self):
         import os
         from driver import ManagedOwner
@@ -423,12 +449,38 @@ else:
     print(json.dumps(row))
     reason, code = "source-hltv-stop", 0
     last_sequence = 1 if attempt == "invalid" else 2
+category = (
+    "cleanup-failed"
+    if attempt == "cleanup-failed"
+    else "clean-source-stop"
+    if not code
+    else "source-unavailable"
+    if attempt == "unavailable"
+    else "transient-fault"
+    if attempt == "overload"
+    else "permanent-fault"
+)
 (directory / "report.json").write_text(json.dumps(dict(
     schema="cs2-observer-report/1", reportWritten=True, phase=phase,
     remote_end_reason=remote, native_failure=native_failure, reachedFull=not code,
     lastOutputSequence=last_sequence, reason=reason,
     cleanupCompleted=attempt != "cleanup-failed", drainCompleted=not code,
     outcome="closed" if not code else "failed",
+    attemptResult=dict(
+        schema="cs2-observer-attempt-result/1",
+        category=category,
+        outcome="closed" if not code else "failed",
+        phase=phase,
+        nativeState=3 if not code else 2,
+        nativeFailure=native_failure,
+        remoteEndReason=remote,
+        reachedFull=not code,
+        drainCompleted=not code,
+        cleanupCompleted=attempt != "cleanup-failed",
+        reportWritten=True,
+        lastOutputSequence=last_sequence,
+        validCompletion=not code,
+    ),
 )))
 sys.exit(code)
 """
@@ -627,16 +679,110 @@ sys.exit(code)
                 )
 
     def test_permanent_and_consumer_failures_do_not_reconnect(self):
-        from session_supervisor import retryable
+        from driver_support import classify_attempt_result
+        from session_supervisor import decide_recovery
 
-        for reason in (
+        for code in (
             "output-backpressure",
             "output-closed",
             "attempt-record-invalid",
             "connection-inner-prefix-or-budget",
             "ordered-parser-protocol-version",
         ):
-            self.assertFalse(retryable({"reason": reason}))
-        self.assertFalse(retryable({"reason": "phase-timeout", "phase": "connection"}))
-        self.assertTrue(retryable({"reason": "phase-timeout", "phase": "channel"}))
-        self.assertTrue(retryable({"reason": "ordered-parser-exited"}))
+            res = classify_attempt_result(
+                {"outcome": "failed", "cleanupCompleted": True}, failure_code=code
+            )
+            self.assertEqual(
+                decide_recovery(
+                    res, following=False, follow_source=False, retry_streak=0
+                ).action,
+                "fail",
+            )
+        conn_timeout = classify_attempt_result(
+            {"outcome": "failed", "cleanupCompleted": True, "phase": "connection"},
+            failure_code="phase-timeout",
+        )
+        self.assertEqual(
+            decide_recovery(
+                conn_timeout, following=False, follow_source=False, retry_streak=0
+            ).action,
+            "fail",
+        )
+        chan_timeout = classify_attempt_result(
+            {"outcome": "failed", "cleanupCompleted": True, "phase": "channel"},
+            failure_code="phase-timeout",
+        )
+        self.assertEqual(
+            decide_recovery(
+                chan_timeout, following=False, follow_source=False, retry_streak=0
+            ).action,
+            "retry",
+        )
+        parser_exit = classify_attempt_result(
+            {"outcome": "failed", "cleanupCompleted": True},
+            failure_code="ordered-parser-exited",
+        )
+        self.assertEqual(
+            decide_recovery(
+                parser_exit, following=False, follow_source=False, retry_streak=0
+            ).action,
+            "retry",
+        )
+        unknown_follow_close = classify_attempt_result(
+            {
+                "outcome": "failed",
+                "cleanupCompleted": True,
+                "phase": "channel",
+                "native_failure": 7,
+                "remote_end_reason": None,
+            },
+            failure_code="native-session-closed",
+        )
+        self.assertEqual(
+            decide_recovery(
+                unknown_follow_close,
+                following=True,
+                follow_source=True,
+                retry_streak=0,
+            ).action,
+            "fail",
+        )
+
+    def test_recovery_decision_ignores_diagnostic_reason_text(self):
+        from driver_support import parse_attempt_result
+        from session_supervisor import decide_recovery
+
+        base = {
+            "schema": "cs2-observer-report/1",
+            "outcome": "failed",
+            "phase": "transport",
+            "cleanupCompleted": True,
+            "reportWritten": True,
+            "attemptResult": {
+                "schema": "cs2-observer-attempt-result/1",
+                "category": "source-unavailable",
+                "outcome": "failed",
+                "phase": "transport",
+                "nativeState": 2,
+                "nativeFailure": 7,
+                "remoteEndReason": 5003,
+                "reachedFull": False,
+                "drainCompleted": False,
+                "cleanupCompleted": True,
+                "reportWritten": True,
+                "lastOutputSequence": 0,
+                "validCompletion": False,
+            },
+        }
+        r1 = parse_attempt_result({**base, "reason": "arbitrary-display-text-1"})
+        r2 = parse_attempt_result({**base, "reason": "output-backpressure"})
+        self.assertEqual(
+            decide_recovery(r1, following=True, follow_source=True, retry_streak=0),
+            decide_recovery(r2, following=True, follow_source=True, retry_streak=0),
+        )
+        self.assertEqual(
+            decide_recovery(
+                r1, following=True, follow_source=True, retry_streak=0
+            ).action,
+            "follow",
+        )

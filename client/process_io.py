@@ -124,12 +124,32 @@ class ManagedOwner:
                 return True
         return False
 
+    def _read_cancellable_line(self):
+        import io
+
+        buf = bytearray()
+        fd = self.stream.fileno()
+        while len(buf) < 4097:
+            if not self._wait_readable():
+                return None
+            chunk = os.read(fd, 1)
+            if not chunk:
+                break
+            buf.extend(chunk)
+            if chunk == b"\n":
+                break
+        return io.BytesIO(bytes(buf))
+
     def _read(self, reader):
         try:
             if reader:
-                if not self._wait_readable():
-                    return
-                self.value = reader(self.stream)
+                if self._wake_r is not None:
+                    line_stream = self._read_cancellable_line()
+                    if line_stream is None:
+                        return
+                    self.value = reader(line_stream)
+                else:
+                    self.value = reader(self.stream)
                 self.configured.set()
             if not self.stopped.is_set() and self._wait_readable():
                 self.stream.read(1)  # EOF and any extra input both request stop.

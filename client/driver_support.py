@@ -1,10 +1,282 @@
-"""CLI parsing, health snapshots, and report assembly for single-attempt driver."""
+"""CLI parsing, AttemptResult contract, health snapshots, and report assembly."""
 
 import argparse
+from dataclasses import dataclass
 from pathlib import Path
 from uuid import UUID
 
 from process_io import HEALTH_INTERVAL_NS, SOFT_AGE_US
+
+ATTEMPT_RESULT_SCHEMA = "cs2-observer-attempt-result/1"
+# SteamNetworkingSockets end reasons Remote_Timeout and Misc_Timeout.
+TRANSPORT_TIMEOUT_CODES = frozenset({4001, 5003})
+TRANSIENT_FAILURE_CODES = frozenset(
+    {
+        "sdk-receive-overload",
+        "receive-staging-overload",
+        "parser-residence-overload",
+        "source-residence-overload",
+        "ordered-parser-input-backpressure",
+        "initialization-timeout",
+        "native-receive-failed",
+        "native-send-failed",
+        "ordered-parser-exited",
+        "ordered-parser-not-running",
+    }
+)
+VALID_ATTEMPT_CATEGORIES = frozenset(
+    {
+        "clean-source-stop",
+        "source-unavailable",
+        "transient-fault",
+        "permanent-fault",
+        "owner-stopped",
+        "duration-limit",
+        "cleanup-failed",
+        "invalid-completion",
+    }
+)
+
+
+@dataclass(frozen=True)
+class AttemptResult:
+    schema: str
+    category: str
+    outcome: str
+    phase: str | None
+    native_state: int | None
+    native_failure: int | None
+    remote_end_reason: int | None
+    reached_full: bool
+    drain_completed: bool
+    cleanup_completed: bool
+    report_written: bool
+    last_output_sequence: int
+    valid_completion: bool
+
+    def to_dict(self):
+        return {
+            "schema": self.schema,
+            "category": self.category,
+            "outcome": self.outcome,
+            "phase": self.phase,
+            "nativeState": self.native_state,
+            "nativeFailure": self.native_failure,
+            "remoteEndReason": self.remote_end_reason,
+            "reachedFull": self.reached_full,
+            "drainCompleted": self.drain_completed,
+            "cleanupCompleted": self.cleanup_completed,
+            "reportWritten": self.report_written,
+            "lastOutputSequence": self.last_output_sequence,
+            "validCompletion": self.valid_completion,
+        }
+
+
+def _is_transient_failure_code(code, report):
+    if code in TRANSIENT_FAILURE_CODES:
+        return True
+    if code == "phase-timeout":
+        # A silent response after sending credentials is ambiguous. Do not retry it.
+        return report.get("phase") in ("transport", "challenge", "channel")
+    if code == "native-session-closed":
+        remote = report.get("remote_end_reason")
+        if remote == 1038:
+            return False
+        if report.get("phase") in ("connection", "ticket"):
+            return (
+                report.get("native_failure") == 7
+                and isinstance(remote, int)
+                and 3000 <= remote < 6000
+            )
+        return report.get("native_failure") in (3, 6, 7)
+    if isinstance(code, str):
+        stage, _, error = code.partition(": ")
+        return stage in (
+            "ordered-parser-input-failed",
+            "ordered-parser-output-failed",
+        ) and error in ("OSError", "BrokenPipeError", "ConnectionResetError")
+    return False
+
+
+def _is_source_unavailable(code, report):
+    if (
+        report.get("phase") != "transport"
+        or report.get("outcome") != "failed"
+        or report.get("cleanupCompleted") is not True
+    ):
+        return False
+    if code == "phase-timeout":
+        # State 2 means GNS is connecting. State 1 is still local authentication.
+        return report.get("native_state") == 2
+    if code != "native-session-closed":
+        return False
+    if report.get("native_failure") == 6:
+        return any(
+            stage.get("stage") == "sdk-state" and stage.get("value") == 2
+            for stage in report.get("stages", ())
+        )
+    return (
+        report.get("native_failure") == 7
+        and report.get("remote_end_reason") in TRANSPORT_TIMEOUT_CODES
+    )
+
+
+def classify_attempt_result(report, *, failure_code=None, owner_stopped=False):
+    outcome = report.get("outcome", "failed")
+    cleanup = report.get("cleanupCompleted") is True
+    reached_full = report.get("reachedFull") is True
+    drain_completed = report.get("drainCompleted") is True
+    report_written = report.get("reportWritten") is True
+    phase = report.get("phase")
+    native_state = report.get("native_state")
+    native_failure = report.get("native_failure")
+    remote_end_reason = report.get("remote_end_reason")
+    last_seq = report.get("lastOutputSequence", 0)
+    if not cleanup:
+        category = "cleanup-failed"
+    elif (
+        outcome == "closed"
+        and reached_full
+        and drain_completed
+        and phase == "closed"
+        and remote_end_reason == 1038
+    ):
+        category = "clean-source-stop"
+    elif outcome == "incomplete":
+        category = "owner-stopped" if owner_stopped else "duration-limit"
+    elif _is_source_unavailable(failure_code, report):
+        category = "source-unavailable"
+    elif _is_transient_failure_code(failure_code, report):
+        category = "transient-fault"
+    else:
+        category = "permanent-fault"
+    return AttemptResult(
+        schema=ATTEMPT_RESULT_SCHEMA,
+        category=category,
+        outcome=outcome,
+        phase=phase,
+        native_state=native_state if type(native_state) is int else None,
+        native_failure=native_failure if type(native_failure) is int else None,
+        remote_end_reason=remote_end_reason if type(remote_end_reason) is int else None,
+        reached_full=reached_full,
+        drain_completed=drain_completed,
+        cleanup_completed=cleanup,
+        report_written=report_written,
+        last_output_sequence=last_seq if type(last_seq) is int else 0,
+        valid_completion=category == "clean-source-stop",
+    )
+
+
+def parse_attempt_result(
+    report,
+    *,
+    exit_code=None,
+    forced_kill=False,
+    terminal_seen=False,
+    expected_sequence=1,
+    bad_line=None,
+):
+    """Validate versioned AttemptResult from child report; fail closed on missing/invalid facts."""
+    if forced_kill or (
+        isinstance(report, dict) and report.get("cleanupCompleted") is False
+    ):
+        return AttemptResult(
+            schema=ATTEMPT_RESULT_SCHEMA,
+            category="cleanup-failed",
+            outcome="failed",
+            phase=report.get("phase") if isinstance(report, dict) else None,
+            native_state=None,
+            native_failure=report.get("native_failure")
+            if isinstance(report, dict)
+            else None,
+            remote_end_reason=report.get("remote_end_reason")
+            if isinstance(report, dict)
+            else None,
+            reached_full=False,
+            drain_completed=False,
+            cleanup_completed=False,
+            report_written=bool(
+                isinstance(report, dict) and report.get("reportWritten") is True
+            ),
+            last_output_sequence=0,
+            valid_completion=False,
+        )
+    raw = report.get("attemptResult") if isinstance(report, dict) else None
+    if (
+        not isinstance(raw, dict)
+        or raw.get("schema") != ATTEMPT_RESULT_SCHEMA
+        or raw.get("category") not in VALID_ATTEMPT_CATEGORIES
+        or type(raw.get("cleanupCompleted")) is not bool
+        or type(raw.get("reportWritten")) is not bool
+        or type(raw.get("reachedFull")) is not bool
+        or type(raw.get("drainCompleted")) is not bool
+        or type(raw.get("lastOutputSequence")) is not int
+    ):
+        category = (
+            "transient-fault"
+            if exit_code not in (None, 0, 2) and not report
+            else "invalid-completion"
+        )
+        return AttemptResult(
+            schema=ATTEMPT_RESULT_SCHEMA,
+            category=category,
+            outcome="failed",
+            phase=None,
+            native_state=None,
+            native_failure=None,
+            remote_end_reason=None,
+            reached_full=False,
+            drain_completed=False,
+            cleanup_completed=True,
+            report_written=False,
+            last_output_sequence=0,
+            valid_completion=False,
+        )
+    category = raw["category"]
+    valid_clean = (
+        exit_code == 0
+        and terminal_seen
+        and bad_line is None
+        and category == "clean-source-stop"
+        and report.get("schema") == "cs2-observer-report/1"
+        and raw.get("outcome") == "closed"
+        and raw.get("phase") == "closed"
+        and raw.get("remoteEndReason") == 1038
+        and raw.get("lastOutputSequence") == expected_sequence - 1
+        and raw.get("reportWritten") is True
+        and raw.get("reachedFull") is True
+        and raw.get("drainCompleted") is True
+        and raw.get("cleanupCompleted") is True
+    )
+    if exit_code == 0 and not valid_clean:
+        category = "invalid-completion"
+    elif exit_code not in (None, 0) and (
+        raw.get("outcome") == "closed" or category == "clean-source-stop"
+    ):
+        category = "invalid-completion"
+    elif not raw["cleanupCompleted"]:
+        category = "cleanup-failed"
+    return AttemptResult(
+        schema=ATTEMPT_RESULT_SCHEMA,
+        category=category,
+        outcome=str(raw.get("outcome", "failed")),
+        phase=raw.get("phase") if isinstance(raw.get("phase"), str) else None,
+        native_state=raw.get("nativeState")
+        if type(raw.get("nativeState")) is int
+        else None,
+        native_failure=raw.get("nativeFailure")
+        if type(raw.get("nativeFailure")) is int
+        else None,
+        remote_end_reason=raw.get("remoteEndReason")
+        if type(raw.get("remoteEndReason")) is int
+        else None,
+        reached_full=raw["reachedFull"],
+        drain_completed=raw["drainCompleted"],
+        cleanup_completed=raw["cleanupCompleted"],
+        report_written=raw["reportWritten"],
+        last_output_sequence=raw["lastOutputSequence"],
+        valid_completion=valid_clean,
+    )
 
 
 def parse_driver_args(argv=None, *, doc=None):
@@ -90,7 +362,8 @@ def parse_driver_args(argv=None, *, doc=None):
 
 
 def build_attempt_health(driver, writer, now, *, force=False):
-    elapsed = now - driver._last_health_ns
+    snap = driver.health_snapshot_inputs()
+    elapsed = now - snap["last_health_ns"]
     if not force and elapsed < HEALTH_INTERVAL_NS:
         return None
     parser = driver.parser
@@ -101,49 +374,41 @@ def build_attempt_health(driver, writer, now, *, force=False):
     if delivered and delivered["world"] != parser.identity["world"]:
         delivered = None
     output["lastDeliveredCursor"] = delivered
-    sdk_recent = (
-        driver._sdk_sample_ns is not None
-        and now - driver._sdk_sample_ns < HEALTH_INTERVAL_NS
-    )
+    sdk_sample_ns = snap["sdk_sample_ns"]
+    sdk_recent = sdk_sample_ns is not None and now - sdk_sample_ns < HEALTH_INTERVAL_NS
     receive_backlog = getattr(driver.port, "receive_backlog", None)
     staging = receive_backlog(now) if receive_backlog else {"oldestAgeUs": None}
     ages = (
-        driver._window_sdk_age_us,
+        snap["window_sdk_age_us"],
         staging["oldestAgeUs"],
         backlog["oldestAgeUs"],
         output["oldestAgeUs"],
     )
     state, reason = "unknown", "awaiting-continuous-cursor"
-    if driver._health_reason:
-        state, reason = "overloaded", driver._health_reason
-    elif driver.done or driver.reason or driver._gap or driver._recovery_pending:
+    if snap["health_reason"]:
+        state, reason = "overloaded", snap["health_reason"]
+    elif driver.done or driver.reason or snap["gap"] or snap["recovery_pending"]:
         state, reason = "discontinuity", driver.reason or "world-or-snapshot-gap"
-    elif driver._drain_deadline is not None:
+    elif snap["draining"]:
         reason = "source-draining"
-    elif not driver._full_sent:
+    elif not snap["full_sent"]:
         reason = "initializing"
     elif (
         any(age is not None and age >= SOFT_AGE_US for age in ages)
         or not parser.has_credit()
     ):
         state, reason = "catching-up", "local-backlog"
-    elif not sdk_recent or driver._last_sdk_age_us is None:
+    elif not sdk_recent or snap["last_sdk_age_us"] is None:
         reason = "sdk-receive-age-unavailable"
     elif (
         delivered
-        and driver._last_cursor
-        and delivered["sequence"] == driver._last_cursor[4]
-        and driver._cursor_rate is not None
-        and now - driver._last_cursor[2] <= 2_500_000_000
+        and snap["last_cursor"]
+        and delivered["sequence"] == snap["last_cursor"][4]
+        and snap["cursor_rate"] is not None
+        and now - snap["last_cursor"][2] <= 2_500_000_000
     ):
         state, reason = "live", "local-ordered-progress"
-    totals = (
-        driver.received,
-        driver._received_bytes,
-        parser.processed_messages,
-        parser.processed_bytes,
-        parser.decode_us,
-    )
+    totals = snap["totals"]
     window = dict(
         zip(
             (
@@ -153,10 +418,10 @@ def build_attempt_health(driver, writer, now, *, force=False):
                 "processedBytes",
                 "workerDecodeUs",
             ),
-            (new - old for new, old in zip(totals, driver._last_health_totals)),
+            (new - old for new, old in zip(totals, snap["last_health_totals"])),
         )
     )
-    window["durationUs"] = elapsed // 1000 if driver._last_health_ns else None
+    window["durationUs"] = elapsed // 1000 if snap["last_health_ns"] else None
     health = dict(
         type="cs2-observer-health/1",
         **parser.identity,
@@ -164,27 +429,26 @@ def build_attempt_health(driver, writer, now, *, force=False):
         reason=reason,
         upstreamFreshness="unknown",
         window=window,
-        sdkQueueAgeUs=driver._last_sdk_age_us if sdk_recent else None,
-        sdkWindowMaxAgeUs=driver._window_sdk_age_us,
-        sdkMaxAgeUs=driver._max_sdk_age_us,
+        sdkQueueAgeUs=snap["last_sdk_age_us"] if sdk_recent else None,
+        sdkWindowMaxAgeUs=snap["window_sdk_age_us"],
+        sdkMaxAgeUs=snap["max_sdk_age_us"],
         receiveStaging=staging,
-        parser={**backlog, "maxAgeUs": driver._max_parser_age_us},
+        parser={**backlog, "maxAgeUs": snap["max_parser_age_us"]},
         output=output,
-        receiveBudgetExhausted=driver._receive_budget_exhausted,
-        resultBudgetExhausted=driver._result_budget_exhausted,
+        receiveBudgetExhausted=snap["receive_budget_exhausted"],
+        resultBudgetExhausted=snap["result_budget_exhausted"],
         contextTick=checkpoint.get("tick"),
         networkTick=checkpoint.get("networkTick"),
         committedTick=checkpoint.get("committedTick"),
-        committedTicksPerSecond=driver._cursor_rate if state == "live" else None,
+        committedTicksPerSecond=snap["cursor_rate"] if state == "live" else None,
     )
     if not force:
-        driver._last_health_totals = totals
-        driver._last_health_ns = now
-        driver._window_sdk_age_us = None
+        driver.record_health_window(totals, now)
     return health
 
 
 def build_attempt_report(driver):
+    snap = driver.report_snapshot()
     span = (
         None
         if driver.first_channel_ms is None
@@ -204,17 +468,17 @@ def build_attempt_report(driver):
             for group in driver.decoder.spawn_groups.values()
         ),
         "challenge_metadata": driver.challenge_metadata,
-        "challenge_requests": driver._challenge_requests,
-        "outgoing_channel_feedback_frames": driver._feedback_sent,
+        "challenge_requests": snap["challenge_requests"],
+        "outgoing_channel_feedback_frames": snap["feedback_sent"],
         "last_received_channel_sequence": driver.feedback.received,
         "channel_frames": driver.channel_frames,
         "channel_bytes": driver.channel_bytes,
         "channel_receive_span_ms": span,
         "received_signon_state": driver.signon.received_state,
         "effective_signon_state": driver.signon.state,
-        "full_snapshot_processed": driver._full_snapshot_processed,
+        "full_snapshot_processed": snap["full_snapshot_processed"],
         "stages": list(driver.stages),
-        "reachedFull": driver._ever_full,
+        "reachedFull": snap["ever_full"],
         "lastProcessedSequence": driver.parser.completed_sequence
         if driver.parser
         else 0,
@@ -224,12 +488,12 @@ def build_attempt_report(driver):
         "parser_checkpoint": driver.parser.checkpoint if driver.parser else None,
         "parser_failure": getattr(driver.parser, "failure_details", None),
         "parserDiagnostics": list(getattr(driver.parser, "diagnostics", [])),
-        "last_processed_entity_tick": driver._processed_entity_tick,
-        "last_acknowledged_entity_tick": driver._ack_tick,
-        "full_update_requests": driver._recovery_requests,
-        "baseline_ack_count": driver._baseline_ack_count,
+        "last_processed_entity_tick": snap["processed_entity_tick"],
+        "last_acknowledged_entity_tick": snap["ack_tick"],
+        "full_update_requests": snap["recovery_requests"],
+        "baseline_ack_count": snap["baseline_ack_count"],
         "net_message_counts": driver.decoder.counts,
         "initialization_blockers": (
-            [] if driver._full_sent else [driver.reason or "signon-in-progress"]
+            [] if snap["full_sent"] else [driver.reason or "signon-in-progress"]
         ),
     }

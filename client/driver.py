@@ -46,6 +46,7 @@ from wire import ProbeError, fields, scalar
 from driver_support import (
     build_attempt_health,
     build_attempt_report,
+    classify_attempt_result,
     parse_driver_args,
 )
 from process_io import (
@@ -905,6 +906,52 @@ class ObserverDriver:
         self._ack_tick = self._processed_entity_tick
         self._last_receipt_ms = now_ms
 
+    def health_snapshot_inputs(self):
+        parser = self.parser
+        return {
+            "last_health_ns": self._last_health_ns,
+            "last_health_totals": self._last_health_totals,
+            "sdk_sample_ns": self._sdk_sample_ns,
+            "last_sdk_age_us": self._last_sdk_age_us,
+            "window_sdk_age_us": self._window_sdk_age_us,
+            "max_sdk_age_us": self._max_sdk_age_us,
+            "max_parser_age_us": self._max_parser_age_us,
+            "health_reason": self._health_reason,
+            "gap": self._gap,
+            "recovery_pending": self._recovery_pending,
+            "draining": self._drain_deadline is not None,
+            "full_sent": self._full_sent,
+            "last_cursor": self._last_cursor,
+            "cursor_rate": self._cursor_rate,
+            "receive_budget_exhausted": self._receive_budget_exhausted,
+            "result_budget_exhausted": self._result_budget_exhausted,
+            "totals": (
+                self.received,
+                self._received_bytes,
+                parser.processed_messages,
+                parser.processed_bytes,
+                parser.decode_us,
+            ),
+        }
+
+    def record_health_window(self, totals, now):
+        self._last_health_totals = totals
+        self._last_health_ns = now
+        self._window_sdk_age_us = None
+
+    def report_snapshot(self):
+        return {
+            "challenge_requests": self._challenge_requests,
+            "feedback_sent": self._feedback_sent,
+            "full_snapshot_processed": self._full_snapshot_processed,
+            "ever_full": self._ever_full,
+            "processed_entity_tick": self._processed_entity_tick,
+            "ack_tick": self._ack_tick,
+            "recovery_requests": self._recovery_requests,
+            "baseline_ack_count": self._baseline_ack_count,
+            "full_sent": self._full_sent,
+        }
+
     def update_health(self, writer, *, force=False):
         health = build_attempt_health(self, writer, time.monotonic_ns(), force=force)
         if health is not None:
@@ -1159,16 +1206,23 @@ def run_attempt(args, owner, endpoint, password):
             "failed"
             if failure or finalization
             else "closed"
-            if report.get("reason") == "source-hltv-stop"
+            if driver is not None
+            and driver.phase == "closed"
+            and driver.drain_completed
             else "incomplete"
         )
+        report["reportWritten"] = True
+        report["attemptResult"] = classify_attempt_result(
+            report,
+            failure_code=failure,
+            owner_stopped=owner.is_set(),
+        ).to_dict()
         if len(json.dumps(report).encode()) > 30000:
             report["stages"] = report.get("stages", [])[-32:]
             report["net_message_counts"] = dict(
                 list(report.get("net_message_counts", {}).items())[:128]
             )
             report["diagnosticTruncated"] = True
-        report["reportWritten"] = True
         try:
             write_report_file(args.output, report)
         except BaseException:
