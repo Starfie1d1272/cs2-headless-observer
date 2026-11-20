@@ -206,11 +206,14 @@ def parse_attempt_result(
         not isinstance(raw, dict)
         or raw.get("schema") != ATTEMPT_RESULT_SCHEMA
         or raw.get("category") not in VALID_ATTEMPT_CATEGORIES
+        or raw.get("outcome") not in ("closed", "failed", "incomplete")
         or type(raw.get("cleanupCompleted")) is not bool
         or type(raw.get("reportWritten")) is not bool
         or type(raw.get("reachedFull")) is not bool
         or type(raw.get("drainCompleted")) is not bool
         or type(raw.get("lastOutputSequence")) is not int
+        or raw.get("lastOutputSequence") < 0
+        or ("validCompletion" in raw and type(raw.get("validCompletion")) is not bool)
     ):
         category = (
             "transient-fault"
@@ -248,7 +251,24 @@ def parse_attempt_result(
         and raw.get("drainCompleted") is True
         and raw.get("cleanupCompleted") is True
     )
-    if exit_code == 0 and not valid_clean:
+    contradictory = (
+        (category == "clean-source-stop" and raw.get("outcome") != "closed")
+        or (
+            raw.get("outcome") == "closed"
+            and (
+                category != "clean-source-stop"
+                or not raw["reachedFull"]
+                or not raw["drainCompleted"]
+                or not raw["reportWritten"]
+            )
+        )
+        or (
+            raw.get("outcome") == "incomplete"
+            and category not in ("owner-stopped", "duration-limit")
+        )
+        or (raw.get("validCompletion") is True and category != "clean-source-stop")
+    )
+    if contradictory or (exit_code == 0 and not valid_clean):
         category = "invalid-completion"
     elif exit_code not in (None, 0) and (
         raw.get("outcome") == "closed" or category == "clean-source-stop"

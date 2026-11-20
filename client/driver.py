@@ -1181,11 +1181,12 @@ def run_attempt(args, owner, endpoint, password):
             driver.update_health(writer, force=True)
             report.update(driver.report())
     finally:
+        owner_stopped = owner.is_set()
         password[:] = bytes(len(password))
         # Retire public delivery before joining parser pipes on owner cancellation.
         # Normal source completion still flushes the accepted final records below.
         output_closed = (
-            writer.abort() if writer and (failure or owner.is_set()) else None
+            writer.abort() if writer and (failure or owner_stopped) else None
         )
         for stage, action in [
             (
@@ -1212,7 +1213,7 @@ def run_attempt(args, owner, endpoint, password):
             completed = output_closed if output_closed is not None else writer.finish()
             if not completed:
                 finalization.append("close-output")
-                if driver and not failure and not owner.is_set():
+                if driver and not failure and not owner_stopped:
                     failure = writer.failure or "output-drain-timeout"
                     driver.reason = driver._health_reason = failure
             if driver:
@@ -1244,7 +1245,7 @@ def run_attempt(args, owner, endpoint, password):
         report["attemptResult"] = classify_attempt_result(
             report,
             failure_code=failure,
-            owner_stopped=owner.is_set(),
+            owner_stopped=owner_stopped,
         ).to_dict()
         if len(json.dumps(report).encode()) > 30000:
             report["stages"] = report.get("stages", [])[-32:]
