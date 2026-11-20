@@ -47,4 +47,23 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+  posix-lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check Python formatting and lint
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install ruff==0.17.4
+          .venv/bin/ruff format --check client tools tests
+          .venv/bin/ruff check client tools tests
+          rm -rf .venv
+      - name: Run targeted POSIX pipe and supervisor lifecycle tests
+        env:
+          PYTHONPATH: client:tests:tests/python:tools/diagnostics
+        run: python -m unittest tests/python/test_managed_connection.py
 # No login, game connection, Steam/CS2 DLL loading, package assembly or release.

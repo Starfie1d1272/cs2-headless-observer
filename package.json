@@ -8,7 +8,7 @@
     "build:parser": "node tools/build_parser.mjs",
     "test": "python tools/run_python_tests.py",
     "test:events": "vitest run tests/demo/decode.test.ts tests/demo/failure.test.ts",
-    "test:fast": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:events && pnpm test",
+    "test:fast": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:events && node -e \"const{execFileSync}=require('child_process');for(const p of['python','python3'])try{execFileSync(p,['tools/run_python_tests.py','--fast'],{stdio:'inherit'});process.exit(0)}catch(e){if(e.code!=='ENOENT')process.exit(e.status||1)}process.exit(127)\"",
     "typecheck": "tsc6 -p tsconfig.json --noEmit",
     "verify": "python tools/verify_all.py",
     "format": "prettier --write \"{parser/src,tools,tests}/**/*.{ts,js,mjs,cjs}\" client/parser_worker.mjs --ignore-unknown",
