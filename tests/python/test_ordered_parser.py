@@ -268,7 +268,10 @@ class IpcContractTests(unittest.TestCase):
                 "type": "checkpoint",
                 "sequence": 1,
                 "schemaReady": True,
+                "serverInfo": True,
                 "stringTables": 1,
+                "schemaFields": 10,
+                "classCount": 5,
             },
             1,
             diagnostics,
@@ -277,6 +280,85 @@ class IpcContractTests(unittest.TestCase):
         tracker.reset_generation()
         self.assertIsNone(tracker.checkpoint)
         self.assertEqual(tracker.pop_receipts(), [])
+
+    def test_ipc_contract_rejects_malformed_records(self):
+        from collections import deque
+        from ipc_contract import GenerationCommitTracker, validate_worker_record
+        from wire import ProbeError
+
+        base = {"source": "ahead:test", "channel": 1, "world": 1, "sequence": 1}
+        for bad in (
+            {**base, "type": []},
+            {**base, "type": "unknown-kind"},
+            {**base, "type": "checkpoint", "world": 0},
+            {**base, "type": "checkpoint", "world": -1},
+            {**base, "type": "checkpoint", "sequence": None},
+            {**base, "type": "receipt", "sequence": None},
+            {**base, "type": "recovery", "sequence": None},
+            {**base, "type": "event-subscriptions", "sequence": None},
+        ):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ProbeError):
+                    validate_worker_record(
+                        bad,
+                        source="ahead:test",
+                        channel=1,
+                        max_world=1,
+                        max_sequence=5,
+                    )
+
+        tracker = GenerationCommitTracker()
+        diagnostics = deque(maxlen=8)
+        for bad, pattern in (
+            (
+                {
+                    "type": "receipt",
+                    "sequence": 1,
+                    "tick": 10,
+                    "epoch": 0,
+                    "full": True,
+                },
+                "ordered-parser-receipt-shape",
+            ),
+            (
+                {
+                    "type": "checkpoint",
+                    "sequence": 1,
+                    "schemaReady": True,
+                    "stringTables": 1,
+                },
+                "ordered-parser-checkpoint-shape",
+            ),
+            (
+                {
+                    "type": "recovery",
+                    "sequence": 1,
+                    "reason": "bad",
+                    "snapshotEpoch": -1,
+                    "worldReinitialization": False,
+                },
+                "ordered-parser-recovery-shape",
+            ),
+            (
+                {
+                    "type": "event-subscriptions",
+                    "sequence": 1,
+                    "ids": [512],
+                },
+                "ordered-parser-subscriptions-shape",
+            ),
+            (
+                {
+                    "type": "event-subscriptions",
+                    "sequence": 1,
+                    "ids": [1, 1],
+                },
+                "ordered-parser-subscriptions-shape",
+            ),
+        ):
+            with self.subTest(bad=bad):
+                with self.assertRaisesRegex(ProbeError, pattern):
+                    tracker.accept_current_world(bad, 1, diagnostics)
 
 
 if __name__ == "__main__":

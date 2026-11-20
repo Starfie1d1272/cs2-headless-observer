@@ -238,8 +238,15 @@ class GenerationCommitTracker:
         kind = row["type"]
         if kind == "checkpoint":
             if (
-                type(row.get("schemaReady")) is not bool
+                type(row.get("sequence")) is not int
+                or type(row.get("schemaReady")) is not bool
+                or type(row.get("serverInfo")) is not bool
                 or type(row.get("stringTables")) is not int
+                or row["stringTables"] < 0
+                or type(row.get("schemaFields")) is not int
+                or row["schemaFields"] < 0
+                or type(row.get("classCount")) is not int
+                or row["classCount"] < 0
             ):
                 raise ProbeError("ordered-parser-checkpoint-shape")
             self.checkpoint = row
@@ -254,20 +261,32 @@ class GenerationCommitTracker:
             return
         if kind == "receipt":
             if (
-                type(row.get("tick")) is not int
+                type(row.get("sequence")) is not int
+                or type(row.get("tick")) is not int
                 or row["tick"] < 1
                 or type(row.get("epoch")) is not int
                 or row["epoch"] < 0
                 or type(row.get("full")) is not bool
+                or "baselineAck" not in row
                 or (
-                    row.get("baselineAck") is not None
+                    row["baselineAck"] is not None
                     and (
-                        type(row.get("baselineAck")) is not int
+                        type(row["baselineAck"]) is not int
                         or row["baselineAck"] not in (0, 1)
                     )
                 )
             ):
                 raise ProbeError("ordered-parser-receipt-shape")
+        if kind == "recovery":
+            if (
+                type(row.get("sequence")) is not int
+                or type(row.get("reason")) is not str
+                or type(row.get("snapshotEpoch")) is not int
+                or row["snapshotEpoch"] < 0
+                or type(row.get("worldReinitialization")) is not bool
+                or ("request" in row and type(row["request"]) is not bool)
+            ):
+                raise ProbeError("ordered-parser-recovery-shape")
         if kind in ("receipt", "recovery"):
             if len(self._pending_controls) + len(self._receipts) >= 4096:
                 raise ProbeError("ordered-parser-receipt-budget")
@@ -278,6 +297,15 @@ class GenerationCommitTracker:
                 + str(row.get("reason", "unknown"))[:1024]
             )
         if kind == "event-subscriptions":
+            ids = row.get("ids")
+            if (
+                type(row.get("sequence")) is not int
+                or not isinstance(ids, list)
+                or len(ids) > 512
+                or any(type(eid) is not int or not 0 <= eid < 512 for eid in ids)
+                or len(set(ids)) != len(ids)
+            ):
+                raise ProbeError("ordered-parser-subscriptions-shape")
             self._subscriptions = row
 
     def pop_receipts(self) -> list[dict]:
@@ -298,17 +326,30 @@ class GenerationCommitTracker:
 def validate_worker_record(
     row: dict, *, source: str, channel: int, max_world: int, max_sequence: int
 ) -> tuple[int, int | None]:
+    if not isinstance(row, dict):
+        raise ProbeError("ordered-parser-output-type")
+    kind = row.get("type")
+    if type(kind) is not str or kind not in WORKER_RECORD_TYPES:
+        raise ProbeError("ordered-parser-output-type")
     if row.get("source") != source or row.get("channel") != channel:
         raise ProbeError("ordered-parser-output-owner")
     world = row.get("world")
-    if type(world) is not int or world > max_world:
+    if type(world) is not int or not 1 <= world <= max_world:
         raise ProbeError("ordered-parser-output-world")
     sequence = row.get("sequence")
-    if sequence is not None and (
+    require_seq = kind not in (
+        "initialized",
+        "world-reset",
+        "creation-sequence-admitted",
+    )
+    if require_seq:
+        if type(sequence) is not int or not 0 <= sequence <= max_sequence:
+            raise ProbeError("ordered-parser-output-sequence")
+    elif sequence is not None and (
         type(sequence) is not int or not 0 <= sequence <= max_sequence
     ):
         raise ProbeError("ordered-parser-output-sequence")
-    if row["type"] == "initialized" and row.get("protocol") != IPC_PROTOCOL_VERSION:
+    if kind == "initialized" and row.get("protocol") != IPC_PROTOCOL_VERSION:
         raise ProbeError("ordered-parser-protocol-version")
     return world, sequence
 
