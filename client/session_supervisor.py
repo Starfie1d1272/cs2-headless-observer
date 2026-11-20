@@ -44,6 +44,8 @@ HEALTH_TIMEOUT_NS = 15_000_000_000
 WAIT_SECONDS = 0.02
 FOLLOW_INITIAL_SECONDS = 5
 FOLLOW_MAX_SECONDS = 45
+
+
 @dataclass(frozen=True)
 class RecoveryDecision:
     action: str  # "close" | "follow" | "retry" | "fail"
@@ -835,9 +837,7 @@ def run(args, owner, endpoint, password):
     if stop:
         outcome, reason = "incomplete", stop
     cleanup = (
-        owner.close()
-        and not output.thread.is_alive()
-        and not supervisor.cleanup_failed
+        owner.close() and not output.thread.is_alive() and not supervisor.cleanup_failed
     )
     if not cleanup and outcome != "failed":
         outcome, reason = "failed", "supervisor-cleanup-failed"

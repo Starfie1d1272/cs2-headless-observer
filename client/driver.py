@@ -1206,7 +1206,9 @@ def run_attempt(args, owner, endpoint, password):
             "failed"
             if failure or finalization
             else "closed"
-            if driver is not None and driver.phase == "closed" and driver.drain_completed
+            if driver is not None
+            and driver.phase == "closed"
+            and driver.drain_completed
             else "incomplete"
         )
         report["reportWritten"] = True

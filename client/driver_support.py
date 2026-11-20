@@ -134,7 +134,13 @@ def classify_attempt_result(report, *, failure_code=None, owner_stopped=False):
     last_seq = report.get("lastOutputSequence", 0)
     if not cleanup:
         category = "cleanup-failed"
-    elif outcome == "closed" and reached_full and drain_completed and phase == "closed" and remote_end_reason == 1038:
+    elif (
+        outcome == "closed"
+        and reached_full
+        and drain_completed
+        and phase == "closed"
+        and remote_end_reason == 1038
+    ):
         category = "clean-source-stop"
     elif outcome == "incomplete":
         category = "owner-stopped" if owner_stopped else "duration-limit"
@@ -171,19 +177,27 @@ def parse_attempt_result(
     bad_line=None,
 ):
     """Validate versioned AttemptResult from child report; fail closed on missing/invalid facts."""
-    if forced_kill or (isinstance(report, dict) and report.get("cleanupCompleted") is False):
+    if forced_kill or (
+        isinstance(report, dict) and report.get("cleanupCompleted") is False
+    ):
         return AttemptResult(
             schema=ATTEMPT_RESULT_SCHEMA,
             category="cleanup-failed",
             outcome="failed",
             phase=report.get("phase") if isinstance(report, dict) else None,
             native_state=None,
-            native_failure=report.get("native_failure") if isinstance(report, dict) else None,
-            remote_end_reason=report.get("remote_end_reason") if isinstance(report, dict) else None,
+            native_failure=report.get("native_failure")
+            if isinstance(report, dict)
+            else None,
+            remote_end_reason=report.get("remote_end_reason")
+            if isinstance(report, dict)
+            else None,
             reached_full=False,
             drain_completed=False,
             cleanup_completed=False,
-            report_written=bool(isinstance(report, dict) and report.get("reportWritten") is True),
+            report_written=bool(
+                isinstance(report, dict) and report.get("reportWritten") is True
+            ),
             last_output_sequence=0,
             valid_completion=False,
         )
@@ -198,7 +212,11 @@ def parse_attempt_result(
         or type(raw.get("drainCompleted")) is not bool
         or type(raw.get("lastOutputSequence")) is not int
     ):
-        category = "transient-fault" if exit_code not in (None, 0, 2) and not report else "invalid-completion"
+        category = (
+            "transient-fault"
+            if exit_code not in (None, 0, 2) and not report
+            else "invalid-completion"
+        )
         return AttemptResult(
             schema=ATTEMPT_RESULT_SCHEMA,
             category=category,
@@ -243,9 +261,15 @@ def parse_attempt_result(
         category=category,
         outcome=str(raw.get("outcome", "failed")),
         phase=raw.get("phase") if isinstance(raw.get("phase"), str) else None,
-        native_state=raw.get("nativeState") if type(raw.get("nativeState")) is int else None,
-        native_failure=raw.get("nativeFailure") if type(raw.get("nativeFailure")) is int else None,
-        remote_end_reason=raw.get("remoteEndReason") if type(raw.get("remoteEndReason")) is int else None,
+        native_state=raw.get("nativeState")
+        if type(raw.get("nativeState")) is int
+        else None,
+        native_failure=raw.get("nativeFailure")
+        if type(raw.get("nativeFailure")) is int
+        else None,
+        remote_end_reason=raw.get("remoteEndReason")
+        if type(raw.get("remoteEndReason")) is int
+        else None,
         reached_full=raw["reachedFull"],
         drain_completed=raw["drainCompleted"],
         cleanup_completed=raw["cleanupCompleted"],
@@ -351,9 +375,7 @@ def build_attempt_health(driver, writer, now, *, force=False):
         delivered = None
     output["lastDeliveredCursor"] = delivered
     sdk_sample_ns = snap["sdk_sample_ns"]
-    sdk_recent = (
-        sdk_sample_ns is not None and now - sdk_sample_ns < HEALTH_INTERVAL_NS
-    )
+    sdk_recent = sdk_sample_ns is not None and now - sdk_sample_ns < HEALTH_INTERVAL_NS
     receive_backlog = getattr(driver.port, "receive_backlog", None)
     staging = receive_backlog(now) if receive_backlog else {"oldestAgeUs": None}
     ages = (

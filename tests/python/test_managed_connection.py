@@ -295,9 +295,7 @@ class ManagedConnectionTests(unittest.TestCase):
         from process_io import ManagedOwner
 
         read_fd, write_fd = os.pipe()
-        owner = ManagedOwner(
-            fd=read_fd, configuration_reader=read_managed_connection
-        )
+        owner = ManagedOwner(fd=read_fd, configuration_reader=read_managed_connection)
         try:
             os.write(write_fd, b'{"endpoint":"127.0.0.1:27020"')
             os.close(write_fd)
