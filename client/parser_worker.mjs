@@ -4,6 +4,7 @@ import process from 'node:process';
 import { performance } from 'node:perf_hooks';
 import { NativeObserverCore } from 'cs2parser/observer-core';
 
+const IPC_PROTOCOL_VERSION = 4;
 const MAX_INPUT = 8 * 1024 ** 2;
 const MAX_BODY = 4 * 1024 ** 2;
 const MAX_OUTPUT = 65536;
@@ -81,7 +82,7 @@ async function batch(input) {
   if (input?.type === 'init') {
     if (core) throw new Error('ordered-parser-already-initialized');
     core = new NativeObserverCore(identity(input));
-    await send({ type: 'initialized', protocol: 4, ...core.currentIdentity });
+    await send({ type: 'initialized', protocol: IPC_PROTOCOL_VERSION, ...core.currentIdentity });
     await flush();
     return;
   }
