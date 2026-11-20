@@ -55,12 +55,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a26af69be951a213d395a4a24216302127e8326d
-        with:
-          python-version: "3.13"
-      - run: python -m pip install ruff==0.17.4
-      - run: python -m ruff format --check client tools tests
-      - run: python -m ruff check client tools tests
+      - name: Check Python formatting and lint
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install ruff==0.17.4
+          .venv/bin/ruff format --check client tools tests
+          .venv/bin/ruff check client tools tests
+          rm -rf .venv
       - name: Run targeted POSIX pipe and supervisor lifecycle tests
         env:
           PYTHONPATH: client:tests:tests/python:tools/diagnostics
