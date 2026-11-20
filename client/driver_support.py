@@ -54,6 +54,39 @@ class AttemptResult:
     last_output_sequence: int
     valid_completion: bool
 
+    @classmethod
+    def synthetic(
+        cls,
+        category,
+        *,
+        outcome="failed",
+        phase=None,
+        native_state=None,
+        native_failure=None,
+        remote_end_reason=None,
+        reached_full=False,
+        drain_completed=False,
+        cleanup_completed=True,
+        report_written=False,
+        last_output_sequence=0,
+        valid_completion=False,
+    ):
+        return cls(
+            schema=ATTEMPT_RESULT_SCHEMA,
+            category=category,
+            outcome=outcome,
+            phase=phase,
+            native_state=native_state,
+            native_failure=native_failure,
+            remote_end_reason=remote_end_reason,
+            reached_full=reached_full,
+            drain_completed=drain_completed,
+            cleanup_completed=cleanup_completed,
+            report_written=report_written,
+            last_output_sequence=last_output_sequence,
+            valid_completion=valid_completion,
+        )
+
     def to_dict(self):
         return {
             "schema": self.schema,
@@ -448,7 +481,7 @@ def build_attempt_health(driver, writer, now, *, force=False):
         reason = "initializing"
     elif (
         any(age is not None and age >= SOFT_AGE_US for age in ages)
-        or not parser.has_credit()
+        or getattr(parser, "throttled", False)
     ):
         state, reason = "catching-up", "local-backlog"
     elif not sdk_recent or snap["last_sdk_age_us"] is None:

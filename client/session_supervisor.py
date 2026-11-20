@@ -16,7 +16,6 @@ import threading
 import time
 
 from driver_support import (
-    ATTEMPT_RESULT_SCHEMA,
     AttemptResult,
     TRANSPORT_TIMEOUT_CODES,
     parse_attempt_result,
@@ -515,22 +514,10 @@ class SessionSupervisor:
             stop = self._stop_reason()
             if stop:
                 self.output.abort()
-                return {"reason": stop}, AttemptResult(
-                    schema=ATTEMPT_RESULT_SCHEMA,
-                    category="owner-stopped"
-                    if self.owner.is_set()
-                    else "duration-limit",
+                return {"reason": stop}, AttemptResult.synthetic(
+                    "owner-stopped" if self.owner.is_set() else "duration-limit",
                     outcome="incomplete",
-                    phase=None,
-                    native_state=None,
-                    native_failure=None,
-                    remote_end_reason=None,
-                    reached_full=False,
-                    drain_completed=False,
-                    cleanup_completed=True,
-                    report_written=False,
                     last_output_sequence=expected_sequence - 1,
-                    valid_completion=False,
                 )
             self.output.check()
             now = time.monotonic_ns()
@@ -563,22 +550,8 @@ class SessionSupervisor:
                         if exit_code != 2
                         else "attempt-incomplete"
                     }
-                    result = AttemptResult(
-                        schema=ATTEMPT_RESULT_SCHEMA,
-                        category="transient-fault"
-                        if exit_code != 2
-                        else "permanent-fault",
-                        outcome="failed",
-                        phase=None,
-                        native_state=None,
-                        native_failure=None,
-                        remote_end_reason=None,
-                        reached_full=False,
-                        drain_completed=False,
-                        cleanup_completed=True,
-                        report_written=False,
-                        last_output_sequence=0,
-                        valid_completion=False,
+                    result = AttemptResult.synthetic(
+                        "transient-fault" if exit_code != 2 else "permanent-fault"
                     )
                 return report, result
             self._health(
@@ -606,20 +579,11 @@ class SessionSupervisor:
                         ):
                             raise ProbeError("attempt-record-identity")
                     elif not self._forward(row, received_ns):
-                        return {"reason": "source-residence-overload"}, AttemptResult(
-                            schema=ATTEMPT_RESULT_SCHEMA,
-                            category="transient-fault",
-                            outcome="failed",
+                        return {"reason": "source-residence-overload"}, AttemptResult.synthetic(
+                            "transient-fault",
                             phase="channel",
-                            native_state=None,
-                            native_failure=None,
-                            remote_end_reason=None,
                             reached_full=True,
-                            drain_completed=False,
-                            cleanup_completed=True,
-                            report_written=False,
                             last_output_sequence=expected_sequence - 1,
-                            valid_completion=False,
                         )
                     continue
             if attempt.eof.is_set():
@@ -642,36 +606,14 @@ class SessionSupervisor:
                         return report, result
                     raise ProbeError("attempt-invalid-completion")
                 if time.monotonic() >= eof_deadline:
-                    return {"reason": "attempt-crashed"}, AttemptResult(
-                        schema=ATTEMPT_RESULT_SCHEMA,
-                        category="transient-fault",
-                        outcome="failed",
-                        phase=None,
-                        native_state=None,
-                        native_failure=None,
-                        remote_end_reason=None,
-                        reached_full=False,
-                        drain_completed=False,
-                        cleanup_completed=True,
-                        report_written=False,
+                    return {"reason": "attempt-crashed"}, AttemptResult.synthetic(
+                        "transient-fault",
                         last_output_sequence=expected_sequence - 1,
-                        valid_completion=False,
                     )
             if exit_code is None and now - attempt.health_ns >= HEALTH_TIMEOUT_NS:
-                return {"reason": "attempt-unresponsive"}, AttemptResult(
-                    schema=ATTEMPT_RESULT_SCHEMA,
-                    category="transient-fault",
-                    outcome="failed",
-                    phase=None,
-                    native_state=None,
-                    native_failure=None,
-                    remote_end_reason=None,
-                    reached_full=False,
-                    drain_completed=False,
-                    cleanup_completed=True,
-                    report_written=False,
+                return {"reason": "attempt-unresponsive"}, AttemptResult.synthetic(
+                    "transient-fault",
                     last_output_sequence=expected_sequence - 1,
-                    valid_completion=False,
                 )
             self.progress.wait(WAIT_SECONDS)
 
