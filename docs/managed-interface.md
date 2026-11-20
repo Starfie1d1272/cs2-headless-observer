@@ -15,7 +15,7 @@
   --host-version 14192 --output <new-local-directory>
 ```
 
-环境使用 `SteamAppId=730`，Steam 提供真实合法账号上下文。每次启动组件使用新 UUID；准备输出父目录，由组件创建末级目录。`--managed` 默认使用 v2 并启用组件内恢复。迁移期间可以显式传入 `--managed-protocol 1` 使用单次连接契约。`source-role` 可选 `ahead` 或 `delayed`，实际时间线由消费应用绑定。
+环境使用 `SteamAppId=730`，Steam 提供真实合法账号上下文。每次启动组件使用新 UUID；准备输出父目录，由组件创建末级目录。`--managed` 仅支持 v2（`cs2-observer-managed-json/2`）并启用组件内恢复；旧版 `--managed-protocol 1` 已正式退役并会被显式拒绝。`source-role` 可选 `ahead` 或 `delayed`，实际时间线由消费应用绑定。
 
 持续制作的宿主（例如 Mizar）可在包清单的 `managedFeatures` 包含 `follow-source` 时，加上 `--follow-source`。该参数只适用于托管 v2，一次启动确定跟随意图，始终使用初始配置的同一授权地址。切换地址时，关闭旧实例的 stdin 并等待退出，再使用新的配置、UUID 和输出目录启动组件。
 
@@ -100,7 +100,7 @@ stderr 的 `cs2-observer-health/2` 包含连接代际、就绪、重连次数、
 
 运行平台为 Windows x64。独立包提供运行时，`external-node` 使用调用方或 PATH 中的 Node.js 24.0.0 及以上版本，具备 WebAssembly、ReadableStream、structuredClone。
 
-2.0.0 的 manifest 由 `managedProtocol` 声明默认 `cs2-observer-managed-json/2`，`managedProtocols` 列出可用的 v1 和 v2。迁移至默认 v2 的宿主必须处理 `session-start`、连接断点和递增的 channel，把连接级重试交给组件。原生 ABI、有序 IPC 与托管 JSON 各自独立标识，详见[组件分发](component-distribution.md)。
+manifest 由 `managedProtocol` 声明 `cs2-observer-managed-json/2`，`managedProtocols` 仅保留 `["cs2-observer-managed-json/2"]`（v1 已退役，旧版本仍可从历史 release 获取）。宿主必须处理 `session-start`、连接断点和递增的 channel，把连接级重试交给组件。原生 ABI、有序 IPC 与托管 JSON 各自独立标识，详见[组件分发](component-distribution.md)。
 
 ### 回合时钟快照
 

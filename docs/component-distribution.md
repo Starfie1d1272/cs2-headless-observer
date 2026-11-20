@@ -35,7 +35,7 @@ manifest 记录组件版本、源码提交、平台、原生 ABI、有序 IPC、
 
 托管应用将输出目录安排在安装目录之外；独立交互入口默认写入包内 `runs/`，因此使用可写解压目录。Python 启动时保持源码文件状态，包验证在执行后再次核对文件与摘要。
 
-2.0.0 使用原生 ABI 4 与有序 IPC 4。`--managed` 默认使用 `cs2-observer-managed-json/2`，包含 Supervisor 和连接级恢复。应用在迁移期间可显式传入 `--managed-protocol 1` 使用原单次连接契约。manifest 的 `managedProtocols` 列出可选契约。整包替换 Python、DLL 和 worker，并由 ABI、IPC 握手及制品自检核对一致性。来源与主机版本证据按[兼容性](compatibility.md)分开记录。
+当前使用原生 ABI 4 与有序 IPC 4。`--managed` 仅支持 `cs2-observer-managed-json/2`，包含 Supervisor 和连接级恢复（v1 已退役，传入 `--managed-protocol 1` 会被显式拒绝）。manifest 的 `managedProtocols` 仅列出 `cs2-observer-managed-json/2`。整包替换 Python、DLL 和 worker，并由 ABI、IPC 握手及制品自检核对一致性。来源与主机版本证据按[兼容性](compatibility.md)分开记录。
 
 2.1.0 的 manifest 在 `managedFeatures` 中声明 `follow-source`。持续观战宿主检查该能力后，为托管 v2 传入 `--follow-source`。缺少该字段的旧包继续支持原有 v2 启动方式。原生 ABI、解析 IPC 与托管 JSON 协议版本沿用 2.0.0。
 

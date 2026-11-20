@@ -22,6 +22,7 @@ RUNTIMES = {
 }
 MODULES = [
     "driver",
+    "driver_support",
     "session_supervisor",
     "launcher",
     "ordered_parser_bridge",

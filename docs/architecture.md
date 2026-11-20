@@ -1,6 +1,6 @@
 # 架构
 
-托管 v2 由 Session Supervisor 持有组件生命周期，以稳定 source 管理各次 GOTV 连接。在每次连接内部分别管理通道、世界与实体快照。托管 v1 和交互模式直接运行单次连接。
+托管模式（v2）由 Session Supervisor 持有组件生命周期，以稳定 source 管理各次 GOTV 连接；单次连接通过私有 `--session-attempt` 子进程运行，在每次连接内部分别管理通道、世界与实体快照。交互诊断模式直接运行单次连接。
 
 ```text
 交互启动器 / 消费应用
@@ -39,6 +39,6 @@ Windows 驱动持有解析器 Job，随驱动退出回收其自有 worker。托�
 
 ## 回放与辅助工具
 
-`client/replay_ordered.py` 复用驱动和有序解析器，以本地帧文件替代网络端口。`tools/demo/` 提供 Demo 文件辅助解析，`tools/diagnostics/` 提供消息级研究工具。历史 Demo 包装器保存在 `archive/parser-v1/`。
+`client/replay_ordered.py` 复用驱动和有序解析器，以本地帧文件替代网络端口。`tools/demo/` 提供 Demo 文件辅助解析，`tools/diagnostics/` 提供消息级研究工具。历史 Demo 包装器已归档至 Git 标签 `archive/research-era`（见[归档索引](../archive/README.md)）。
 
 公开进程接口见[托管接口](managed-interface.md)，固定构建依据见[协议契约](protocol/README.md)，解析器源码组织见[构建](build.md)。

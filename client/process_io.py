@@ -1,12 +1,18 @@
 """Bounded process input/output; no SDK work or connection configuration logging."""
 
 from collections import deque
+import ipaddress
 import json
 import os
 import queue
+import struct
+import sys
 import threading
 import time
+from channel import decode_frame
 from wire import ProbeError
+
+MAGIC = b"MZRCS2\x01\0"
 
 MAX_RECORD_BYTES = 65536  # Includes the terminating LF.
 SOFT_AGE_US = 250_000
@@ -88,20 +94,44 @@ class ManagedOwner:
         self.value = self.error = None
         self.thread = None
         self.stream = stream
+        self._wake_r = self._wake_w = None
         if stream is None and fd is not None:
             self.stream = os.fdopen(fd, "rb", buffering=0, closefd=False)
         if self.stream is not None:
+            if os.name != "nt" and hasattr(self.stream, "fileno"):
+                try:
+                    self.stream.fileno()
+                except (OSError, ValueError):
+                    pass
+                else:
+                    self._wake_r, self._wake_w = os.pipe()
             self.thread = threading.Thread(
                 target=self._read, args=(configuration_reader,), daemon=True
             )
             self.thread.start()
 
+    def _wait_readable(self):
+        if self._wake_r is None:
+            return True
+        import select
+
+        fd = self.stream.fileno()
+        while not self.stopped.is_set():
+            readable, _, _ = select.select([fd, self._wake_r], [], [])
+            if self._wake_r in readable or self.stopped.is_set():
+                return False
+            if fd in readable:
+                return True
+        return False
+
     def _read(self, reader):
         try:
             if reader:
+                if not self._wait_readable():
+                    return
                 self.value = reader(self.stream)
                 self.configured.set()
-            if not self.stopped.is_set():
+            if not self.stopped.is_set() and self._wait_readable():
                 self.stream.read(1)  # EOF and any extra input both request stop.
         except Exception:
             self.error = "configuration-boundary"
@@ -121,11 +151,26 @@ class ManagedOwner:
 
     def close(self):
         self.stopped.set()
+        if self._wake_w is not None:
+            try:
+                os.write(self._wake_w, b"\x00")
+            except OSError:
+                pass
         deadline = time.monotonic() + 1
         while self.thread and self.thread.is_alive() and time.monotonic() < deadline:
             cancel_io(self.thread)
             self.thread.join(timeout=0.02)
-        return not self.thread or not self.thread.is_alive()
+        closed = not self.thread or not self.thread.is_alive()
+        if closed:
+            for fd_name in ("_wake_r", "_wake_w"):
+                fd = getattr(self, fd_name)
+                if fd is not None:
+                    setattr(self, fd_name, None)
+                    try:
+                        os.close(fd)
+                    except OSError:
+                        pass
+        return closed
 
 
 class OutputWriter:
@@ -233,7 +278,7 @@ class OutputWriter:
 
                         if not select.select([], [self.fd], [], 0.02)[1]:
                             continue
-                    count = os.write(self.fd, view if os.name == "nt" else view[:4096])
+                    count = os.write(self.fd, view if os.name == "nt" else view[:512])
                     if not count:
                         raise OSError("output-closed")
                     view = view[count:]
@@ -348,3 +393,83 @@ class CaptureWriter:
                 self.budget.written -= self.pending_bytes
         if self.thread.is_alive():
             raise ProbeError("capture-close-timeout")
+
+
+class CaptureBudget:
+    def __init__(self, maximum=256 * 1024**2):
+        self.maximum, self.written, self.truncated = maximum, 0, False
+
+    def claim(self, size):
+        if self.truncated or self.written + size > self.maximum:
+            self.truncated = True
+            return False
+        self.written += size
+        return True
+
+
+class SampleWriter:
+    """Opt-in bounded channel capture; no endpoint, handshake or authentication bytes."""
+
+    def __init__(self, handle, budget=None):
+        self.handle, self.budget = handle, budget or CaptureBudget()
+        if self.budget.claim(len(MAGIC)):
+            handle.write(MAGIC)
+
+    def __call__(self, data, reliable, elapsed_ms):
+        decode_frame(data, gns_reliable=reliable)
+        frame = struct.pack("<IQB", len(data), elapsed_ms, int(reliable)) + data
+        if self.budget.claim(len(frame)):
+            self.handle.write(frame)
+
+
+def connection_values(endpoint, supplied):
+    if not isinstance(endpoint, str) or not isinstance(supplied, str):
+        raise ValueError("configuration-boundary")
+    address, separator, port_text = endpoint.rpartition(":")
+    try:
+        ipaddress.ip_address(address.strip("[]"))
+        if not separator or not 0 < int(port_text) < 65536:
+            raise ValueError()
+        password = bytearray(supplied.encode("ascii"))
+        if len(password) > 95 or 0 in password:
+            password[:] = bytes(len(password))
+            raise ValueError()
+    except (ValueError, UnicodeError):
+        raise ValueError("configuration-boundary") from None
+    return endpoint, password
+
+
+def read_managed_connection(stream):
+    """One bounded private stdin record; no credentials in argv, logs or saved config."""
+    try:
+        raw = stream.readline(4097)
+        if len(raw) > 4096:
+            raise ValueError()
+        record = json.loads(raw)
+        if not isinstance(record, dict) or set(record) != {"endpoint", "password"}:
+            raise ValueError()
+        return connection_values(record["endpoint"], record["password"])
+    except (ValueError, TypeError, UnicodeError, RecursionError):
+        raise ValueError("configuration-boundary") from None
+
+
+def write_report_file(output_dir, report):
+    temporary = output_dir / "report.json.tmp"
+    with private_file(temporary, "w") as handle:
+        json.dump(report, handle, indent=2, ensure_ascii=False)
+        handle.write("\n")
+    temporary.replace(output_dir / "report.json")
+
+
+def emit_terminal_report(diagnostics, report):
+    # A consumer may abandon stderr; never block process exit on the report pipe.
+    try:
+        terminal = diagnostics or OutputWriter(sys.stderr.fileno())
+        try:
+            terminal.emit(report)
+            terminal.finish(timeout=1)
+        except ProbeError:
+            # The persisted report is authoritative when diagnostics cannot drain.
+            terminal.abort()
+    except (OSError, ProbeError, ValueError):
+        pass

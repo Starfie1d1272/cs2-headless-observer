@@ -100,9 +100,7 @@ class ManagedConnectionTests(unittest.TestCase):
                         sys.executable,
                         "-B",
                         str(helper),
-                        "--managed",
-                        "--managed-protocol",
-                        "1",
+                        "--session-attempt",
                         "--native",
                         str(marker),
                         "--parser-worker",
@@ -175,6 +173,35 @@ class ManagedConnectionTests(unittest.TestCase):
                         child.stdout.close()
                     child.stderr.close()
 
+    def test_retired_managed_protocol_v1_is_rejected(self):
+        from pathlib import Path
+        import subprocess
+        import sys
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as temp:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(__file__).resolve().parents[2] / "client/driver.py"),
+                    "--managed",
+                    "--managed-protocol",
+                    "1",
+                    "--native",
+                    str(Path(temp) / "absent"),
+                    "--host-version",
+                    "14192",
+                    "--output",
+                    str(Path(temp) / "run"),
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("retired", result.stderr)
+
     def test_private_stdin_values(self):
         endpoint, password = read_managed_connection(
             io.BytesIO(b'{"endpoint":"127.0.0.1:27020","password":"fixture-only"}\n')
@@ -230,9 +257,7 @@ class ManagedConnectionTests(unittest.TestCase):
                 [
                     sys.executable,
                     str(Path(__file__).resolve().parents[2] / "client/driver.py"),
-                    "--managed",
-                    "--managed-protocol",
-                    "1",
+                    "--session-attempt",
                     "--native",
                     str(root / "absent-native-library"),
                     "--parser-worker",
@@ -316,9 +341,7 @@ class ManagedConnectionTests(unittest.TestCase):
                 output = Path(temp) / "run"
                 argv = [
                     "driver.py",
-                    "--managed",
-                    "--managed-protocol",
-                    "1",
+                    "--session-attempt",
                     "--native",
                     str(Path(temp) / "not-loaded"),
                     "--parser-worker",

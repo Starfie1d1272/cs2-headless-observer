@@ -5,7 +5,7 @@
   "nativeAbi": 4,
   "parserIpc": 4,
   "managedProtocol": "cs2-observer-managed-json/2",
-  "managedProtocols": ["cs2-observer-managed-json/1", "cs2-observer-managed-json/2"],
+  "managedProtocols": ["cs2-observer-managed-json/2"],
   "managedFeatures": ["follow-source"],
   "validatedHostVersions": [
     14191,

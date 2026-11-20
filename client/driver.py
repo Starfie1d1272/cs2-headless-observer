@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
-"""Explicit local ordinary-viewer research driver. Never invoked by import/tests.
+"""Single-connection ordinary-viewer protocol coordinator.
 
-Native SDK authentication -> actual first q -> validated challenge -> callback-gated
-user ticket -> known-password connect -> channel receive -> live message consumer.
-Requests full schema at NEW and initializes the event-only network world before SPAWN.
+Native SDK authentication -> challenge -> callback-gated ticket -> connect ->
+channel receive -> ordered parser IPC -> ACK/drain.
 """
 
-import argparse
 from collections import deque
 from dataclasses import dataclass
 from enum import Enum, auto
 import getpass
 import hashlib
-import ipaddress
 import json
-from pathlib import Path
 import struct
 import sys
 
@@ -47,20 +43,28 @@ from observer_settings import ObserverSettings
 from ordered_parser_bridge import Envelope, OrderedParserBridge
 from password import transform_password
 from wire import ProbeError, fields, scalar
+from driver_support import (
+    build_attempt_health,
+    build_attempt_report,
+    parse_driver_args,
+)
 from process_io import (
+    CaptureBudget,
     CaptureWriter,
-    PublicRecords,
+    MAGIC,
     ManagedOwner,
     OutputWriter,
+    PublicRecords,
+    SampleWriter,
     DRAIN_TIMEOUT_MS,
     HARD_AGE_US,
-    HEALTH_INTERVAL_NS,
-    SOFT_AGE_US,
+    connection_values,
+    emit_terminal_report,
     private_file,
+    read_managed_connection,
     source_age_us,
+    write_report_file,
 )
-
-MAGIC = b"MZRCS2\x01\0"
 
 
 class DriverError(Exception):
@@ -902,149 +906,13 @@ class ObserverDriver:
         self._last_receipt_ms = now_ms
 
     def update_health(self, writer, *, force=False):
-        now = time.monotonic_ns()
-        elapsed = now - self._last_health_ns
-        if not force and elapsed < HEALTH_INTERVAL_NS:
-            return None
-        parser = self.parser
-        output = writer.status()
-        backlog = parser.backlog(now)
-        checkpoint = parser.checkpoint or {}
-        delivered = output["lastDeliveredCursor"]
-        if delivered and delivered["world"] != parser.identity["world"]:
-            delivered = None
-        output["lastDeliveredCursor"] = delivered
-        sdk_recent = (
-            self._sdk_sample_ns is not None
-            and now - self._sdk_sample_ns < HEALTH_INTERVAL_NS
-        )
-        receive_backlog = getattr(self.port, "receive_backlog", None)
-        staging = receive_backlog(now) if receive_backlog else {"oldestAgeUs": None}
-        ages = (
-            self._window_sdk_age_us,
-            staging["oldestAgeUs"],
-            backlog["oldestAgeUs"],
-            output["oldestAgeUs"],
-        )
-        state, reason = "unknown", "awaiting-continuous-cursor"
-        if self._health_reason:
-            state, reason = "overloaded", self._health_reason
-        elif self.done or self.reason or self._gap or self._recovery_pending:
-            state, reason = "discontinuity", self.reason or "world-or-snapshot-gap"
-        elif self._drain_deadline is not None:
-            reason = "source-draining"
-        elif not self._full_sent:
-            reason = "initializing"
-        elif (
-            any(age is not None and age >= SOFT_AGE_US for age in ages)
-            or not parser.has_credit()
-        ):
-            state, reason = "catching-up", "local-backlog"
-        elif not sdk_recent or self._last_sdk_age_us is None:
-            reason = "sdk-receive-age-unavailable"
-        elif (
-            delivered
-            and self._last_cursor
-            and delivered["sequence"] == self._last_cursor[4]
-            and self._cursor_rate is not None
-            and now - self._last_cursor[2] <= 2_500_000_000
-        ):
-            state, reason = "live", "local-ordered-progress"
-        totals = (
-            self.received,
-            self._received_bytes,
-            parser.processed_messages,
-            parser.processed_bytes,
-            parser.decode_us,
-        )
-        window = dict(
-            zip(
-                (
-                    "receivedMessages",
-                    "receivedBytes",
-                    "processedMessages",
-                    "processedBytes",
-                    "workerDecodeUs",
-                ),
-                (new - old for new, old in zip(totals, self._last_health_totals)),
-            )
-        )
-        window["durationUs"] = elapsed // 1000 if self._last_health_ns else None
-        self.health = dict(
-            type="cs2-observer-health/1",
-            **parser.identity,
-            state=state,
-            reason=reason,
-            upstreamFreshness="unknown",
-            window=window,
-            sdkQueueAgeUs=self._last_sdk_age_us if sdk_recent else None,
-            sdkWindowMaxAgeUs=self._window_sdk_age_us,
-            sdkMaxAgeUs=self._max_sdk_age_us,
-            receiveStaging=staging,
-            parser={**backlog, "maxAgeUs": self._max_parser_age_us},
-            output=output,
-            receiveBudgetExhausted=self._receive_budget_exhausted,
-            resultBudgetExhausted=self._result_budget_exhausted,
-            contextTick=checkpoint.get("tick"),
-            networkTick=checkpoint.get("networkTick"),
-            committedTick=checkpoint.get("committedTick"),
-            committedTicksPerSecond=self._cursor_rate if state == "live" else None,
-        )
-        if not force:
-            self._last_health_totals = totals
-            self._last_health_ns = now
-            self._window_sdk_age_us = None
-        return self.health
+        health = build_attempt_health(self, writer, time.monotonic_ns(), force=force)
+        if health is not None:
+            self.health = health
+        return health
 
     def report(self):
-        span = (
-            None
-            if self.first_channel_ms is None
-            else self.last_channel_ms - self.first_channel_ms
-        )
-        return {
-            "phase": self.phase,
-            "reason": self.reason,
-            "received_messages": self.received,
-            "host_version": self.host_version,
-            "native_state": self.port.state,
-            "native_failure": getattr(self.port, "failure", None),
-            "remote_end_reason": getattr(self.port, "remote_end_reason", None),
-            "world_creation_watermark": self.decoder.max_creation_sequence,
-            "world_creation_sequences": sorted(
-                group["creation_sequence"] or 0
-                for group in self.decoder.spawn_groups.values()
-            ),
-            "challenge_metadata": self.challenge_metadata,
-            "challenge_requests": self._challenge_requests,
-            "outgoing_channel_feedback_frames": self._feedback_sent,
-            "last_received_channel_sequence": self.feedback.received,
-            "channel_frames": self.channel_frames,
-            "channel_bytes": self.channel_bytes,
-            "channel_receive_span_ms": span,
-            "received_signon_state": self.signon.received_state,
-            "effective_signon_state": self.signon.state,
-            "full_snapshot_processed": self._full_snapshot_processed,
-            "stages": list(self.stages),
-            "reachedFull": self._ever_full,
-            "lastProcessedSequence": self.parser.completed_sequence
-            if self.parser
-            else 0,
-            "lastOutputSequence": self.emit.sequence,
-            "drainCompleted": self.drain_completed,
-            "health": self.health,
-            "parser_checkpoint": self.parser.checkpoint if self.parser else None,
-            "parser_failure": getattr(self.parser, "failure_details", None),
-            "parserDiagnostics": list(getattr(self.parser, "diagnostics", [])),
-            "last_processed_entity_tick": self._processed_entity_tick,
-            "last_acknowledged_entity_tick": self._ack_tick,
-            "full_update_requests": self._recovery_requests,
-            "baseline_ack_count": self._baseline_ack_count,
-            "net_message_counts": self.decoder.counts,
-            "initialization_blockers": (
-                [] if self._full_sent else [self.reason or "signon-in-progress"]
-            ),
-        }
+        return build_attempt_report(self)
 
     def close(self):
         self._password[:] = bytes(len(self._password))
@@ -1054,147 +922,30 @@ class ObserverDriver:
         self.port.close()
 
 
-class CaptureBudget:
-    def __init__(self, maximum=256 * 1024**2):
-        self.maximum, self.written, self.truncated = maximum, 0, False
-
-    def claim(self, size):
-        if self.truncated or self.written + size > self.maximum:
-            self.truncated = True
-            return False
-        self.written += size
-        return True
-
-
-class SampleWriter:
-    """Opt-in bounded channel capture; no endpoint, handshake or authentication bytes."""
-
-    def __init__(self, handle, budget=None):
-        self.handle, self.budget = handle, budget or CaptureBudget()
-        if self.budget.claim(len(MAGIC)):
-            handle.write(MAGIC)
-
-    def __call__(self, data, reliable, elapsed_ms):
-        decode_frame(data, gns_reliable=reliable)
-        frame = struct.pack("<IQB", len(data), elapsed_ms, int(reliable)) + data
-        if self.budget.claim(len(frame)):
-            self.handle.write(frame)
-
-
-def connection_values(endpoint, supplied):
-    if not isinstance(endpoint, str) or not isinstance(supplied, str):
-        raise ValueError("configuration-boundary")
-    address, separator, port_text = endpoint.rpartition(":")
-    try:
-        ipaddress.ip_address(address.strip("[]"))
-        if not separator or not 0 < int(port_text) < 65536:
-            raise ValueError()
-        password = bytearray(supplied.encode("ascii"))
-        if len(password) > 95 or 0 in password:
-            password[:] = bytes(len(password))
-            raise ValueError()
-    except (ValueError, UnicodeError):
-        raise ValueError("configuration-boundary") from None
-    return endpoint, password
-
-
-def read_managed_connection(stream):
-    """One bounded private stdin record; no credentials in argv, logs or saved config."""
-    try:
-        raw = stream.readline(4097)
-        if len(raw) > 4096:
-            raise ValueError()
-        record = json.loads(raw)
-        if not isinstance(record, dict) or set(record) != {"endpoint", "password"}:
-            raise ValueError()
-        return connection_values(record["endpoint"], record["password"])
-    except (ValueError, TypeError, UnicodeError, RecursionError):
-        raise ValueError("configuration-boundary") from None
-
-
 def main():
-    from host_version import host_version, discover_host
-
-    def positive(value):
-        result = int(value)
-        if result < 1:
-            raise ValueError("positive-integer-required")
-        return result
-
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--native", type=Path, required=True)
-    ap.add_argument("--steam-api", type=Path)
-    ap.add_argument("--node", default="node")
-    ap.add_argument(
-        "--parser-worker",
-        type=Path,
-        default=Path(__file__).with_name("parser_worker.mjs"),
-    )
-    ap.add_argument("--source-role", choices=("ahead", "delayed"), default="ahead")
-    from uuid import UUID, uuid4
-
-    ap.add_argument("--source-id", type=lambda value: UUID(value).hex)
-    ap.add_argument("--managed", action="store_true")
-    ap.add_argument(
-        "--managed-protocol",
-        choices=("1", "2"),
-        help="Managed JSON contract (default: 2)",
-    )
-    ap.add_argument("--session-attempt", action="store_true", help=argparse.SUPPRESS)
-    ap.add_argument(
-        "--follow-source",
-        action="store_true",
-        help="Managed v2 only: wait and reconnect to the same source after normal completion",
-    )
-    ap.add_argument(
-        "--host-version",
-        type=host_version,
-        help="Actual source host; otherwise suggest from local steam.inf",
-    )
-    ap.add_argument("--output", type=Path, required=True)
-    ap.add_argument(
-        "--seconds",
-        type=positive,
-        help="Total diagnostic duration, including managed v2 retries and waits",
-    )
-    ap.add_argument(
-        "--capture",
-        action="store_true",
-        help="Opt in to private raw/event capture; unavailable in managed mode",
-    )
-    ap.add_argument("--capture-budget-mib", type=positive, default=256)
-    args = ap.parse_args()
-    args.managed_protocol = args.managed_protocol or ("2" if args.managed else "1")
-    if not args.managed and (args.managed_protocol == "2" or args.session_attempt):
-        ap.error("Managed protocol selection requires --managed")
-    if args.session_attempt and args.managed_protocol != "1":
-        ap.error("Invalid internal session attempt")
-    if args.follow_source and (not args.managed or args.managed_protocol != "2"):
-        ap.error("--follow-source requires managed protocol 2")
-    if args.managed and args.capture:
-        ap.error("Managed mode never captures raw traffic or event files")
-    if args.host_version is None:
-        try:
-            args.host_version = discover_host(
-                args.steam_api.resolve().parents[2] / "csgo/steam.inf"
-            )
-        except (ValueError, OSError, AttributeError, IndexError):
-            ap.error(
-                "Supply the actual source --host-version; local version discovery unavailable"
-            )
+    from uuid import uuid4
     from node_runtime import inspect_node
 
+    args = parse_driver_args(doc=__doc__)
+
     inspect_node(args.node)
-    owner = (
-        ManagedOwner(
-            stream=sys.stdin.buffer, configuration_reader=read_managed_connection
-        )
-        if args.managed
-        else ManagedOwner()
-    )
+    private_stdin = args.managed or args.session_attempt
+    if private_stdin:
+        try:
+            stdin_fd = sys.stdin.fileno()
+        except (OSError, ValueError, AttributeError):
+            owner = ManagedOwner(
+                stream=sys.stdin.buffer, configuration_reader=read_managed_connection
+            )
+        else:
+            owner = ManagedOwner(
+                fd=stdin_fd, configuration_reader=read_managed_connection
+            )
+    else:
+        owner = ManagedOwner()
     password = bytearray()
     try:
-        if args.managed:
+        if private_stdin:
             endpoint, password = owner.configuration()
         else:
             endpoint, password = connection_values(
@@ -1211,7 +962,7 @@ def main():
         owner.close()
         raise SystemExit("output-directory-unavailable") from None
     try:
-        if args.managed_protocol == "2":
+        if args.managed:
             from session_supervisor import run
 
             args.source_id = args.source_id or uuid4().hex
@@ -1418,27 +1169,13 @@ def run_attempt(args, owner, endpoint, password):
             )
             report["diagnosticTruncated"] = True
         report["reportWritten"] = True
-        temporary = args.output / "report.json.tmp"
         try:
-            with private_file(temporary, "w") as handle:
-                json.dump(report, handle, indent=2, ensure_ascii=False)
-                handle.write("\n")
-            temporary.replace(args.output / "report.json")
+            write_report_file(args.output, report)
         except BaseException:
             report["reportWritten"] = False
             finalization.append("write-report")
             report.update(outcome="failed", cleanupCompleted=False)
-        # A consumer may also abandon stderr; never block process exit on the report pipe.
-        try:
-            terminal = diagnostics or OutputWriter(sys.stderr.fileno())
-            try:
-                terminal.emit(report)
-                terminal.finish(timeout=1)
-            except ProbeError:
-                # The persisted report is authoritative when diagnostics cannot drain.
-                terminal.abort()
-        except (OSError, ProbeError, ValueError):
-            pass
+        emit_terminal_report(diagnostics, report)
     return (
         1
         if report["outcome"] == "failed"
