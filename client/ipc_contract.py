@@ -234,7 +234,9 @@ class GenerationCommitTracker:
         self._receipts.clear()
         self._subscriptions = None
 
-    def advance_processed(self, sequence: int, decode_us: int, ledger: CreditLedger) -> None:
+    def advance_processed(
+        self, sequence: int, decode_us: int, ledger: CreditLedger
+    ) -> None:
         if (
             not ledger.inflight
             or sequence is None
@@ -247,7 +249,9 @@ class GenerationCommitTracker:
         self.decode_us += decode_us
         self.completed_sequence = sequence
 
-    def accept_current_world(self, row: dict, sequence: int | None, diagnostics: deque) -> None:
+    def accept_current_world(
+        self, row: dict, sequence: int | None, diagnostics: deque
+    ) -> None:
         kind = row["type"]
         if kind == "checkpoint":
             if (

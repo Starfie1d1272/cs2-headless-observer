@@ -264,7 +264,12 @@ class IpcContractTests(unittest.TestCase):
         self.assertEqual(tracker.pop_receipts(), [])
         tracker.advance_processed(1, 10, ledger)
         tracker.accept_current_world(
-            {"type": "checkpoint", "sequence": 1, "schemaReady": True, "stringTables": 1},
+            {
+                "type": "checkpoint",
+                "sequence": 1,
+                "schemaReady": True,
+                "stringTables": 1,
+            },
             1,
             diagnostics,
         )
