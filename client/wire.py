@@ -2,7 +2,11 @@
 
 
 class ProbeError(ValueError):
-    pass
+    def __init__(self, code, *, detail=None, transient=False):
+        self.code = code
+        self.detail = detail
+        self.transient = transient
+        super().__init__(f"{code}: {detail}" if detail else code)
 
 
 def varint(data, pos):

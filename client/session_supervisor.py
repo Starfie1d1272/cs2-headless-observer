@@ -15,7 +15,7 @@ import tempfile
 import threading
 import time
 
-from driver_support import (
+from attempt_contract import (
     AttemptResult,
     TRANSPORT_TIMEOUT_CODES,
     parse_attempt_result,
@@ -781,7 +781,7 @@ def run(args, owner, endpoint, password):
     except Exception as error:
         outcome = "failed"
         reason = (
-            str(error)
+            error.code
             if isinstance(error, ProbeError)
             else "supervisor-operation-failed"
         )
