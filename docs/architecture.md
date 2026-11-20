@@ -13,6 +13,8 @@
 
 ## 所有权与提交
 
+单次连接内将状态划分为四类唯一 owner：**传输与认证**（`phase`、`_challenge`、`_account_id`）、**Signon 初始化**（`SignonSequence` 与 `WorldSyncState`，仅在当前世界与认证前提满足后推进）、**快照提交与 ACK**（`WorldSyncState` 仅消费通过 `checkpoint` 的 `receipt` 推进 `processed_entity_tick` / `baselineAck` / `FULL`，绝不把管道写入或接收进度当成已提交，`upstreamFreshness` 保持 `unknown`）、**资源生命周期**（`ManagedOwner`、`OutputWriter`、`OrderedParserBridge` Job）。
+
 Supervisor 每次通过私有管道配置单次连接子进程，确认上一实例及其进程树已回收才创建下一实例。它消费内部完整 JSONL 行，通过数量有界的队列与一个 stdout 在途记录转发，按实际接纳写入分配公共序号。恢复前撤销未交付旧记录，完成已开始的行并发送断点。Driver 继续拥有 SDK 会话及解析子进程，C++ 桥管理官方接口的句柄和票据。Node 数据面统一解释 schema、类表、字符串表、实体与事件；驱动从实际解析完成的 checkpoint 和 receipt 推进初始化及 ACK。
 
 正常 1038 收尾时，Supervisor 确认子进程完成报告、尾部交付与资源回收，再写出连接断点。启用 `--follow-source` 后，同一个 Supervisor 在没有旧连接和 Parser 的情况下等待原地址。每次尝试先交付新的 `session-start`，再启动独立子进程走完整认证和初始化。只有匹配代际且已交付的有效 cursor 才建立就绪。保留连接的世界重置继续使用世界断点。

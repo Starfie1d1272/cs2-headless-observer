@@ -65,7 +65,7 @@ class OrderedDriverTests(unittest.TestCase):
 
     def initialize(self, serialized=None):
         self.send([(40, info()), (7, number(1, 3) + number(2, 7))])
-        self.until(lambda: self.driver._new_sent)
+        self.until(lambda: self.driver.world_sync.new_sent)
         self.send(
             [
                 (41, serialized if serialized is not None else schema()),
@@ -74,14 +74,14 @@ class OrderedDriverTests(unittest.TestCase):
                 (7, number(1, 4) + number(2, 7)),
             ]
         )
-        self.until(lambda: self.driver._prespawn_sent)
+        self.until(lambda: self.driver.world_sync.prespawn_sent)
         self.send([(7, number(1, 5) + number(2, 7))])
-        self.until(lambda: self.driver._spawn_sent)
+        self.until(lambda: self.driver.world_sync.spawn_sent)
 
     def test_normal_close_delivers_worker_tail_before_terminal(self):
         self.initialize()
         self.send([(4, number(1, 100)), (55, full(100))])
-        self.until(lambda: self.driver._full_sent)
+        self.until(lambda: self.driver.world_sync.full_sent)
         descriptor = blob(1, number(1, 17) + blob(2, b"cs_win_panel_match"))
         body, _ = join_messages(
             [encode_message(205, descriptor), encode_message(207, number(2, 17))]
@@ -103,14 +103,14 @@ class OrderedDriverTests(unittest.TestCase):
     def test_reset_at_frame_end_allows_next_serverinfo(self):
         self.initialize()
         self.send([(4, number(1, 100)), (55, full(100))])
-        self.until(lambda: self.driver._full_sent)
+        self.until(lambda: self.driver.world_sync.full_sent)
         self.send([(7, number(1, 7) + number(2, 7))])
         self.until(
             lambda: self.parser.completed_sequence == self.driver._parser_sequence
         )
         self.assertIsNone(self.parser.checkpoint)
         self.send([(40, info()), (7, number(1, 3) + number(2, 7))])
-        self.until(lambda: self.driver._new_sent)
+        self.until(lambda: self.driver.world_sync.new_sent)
         self.assertTrue(all(isinstance(r["sequence"], int) for r in self.output))
         self.assertTrue(any(r["kind"] == "discontinuity" for r in self.output))
 
@@ -118,8 +118,8 @@ class OrderedDriverTests(unittest.TestCase):
         self.initialize()
         future = full(100).replace(number(10, 0), number(10, 2), 1)
         self.send([(4, number(1, 100)), (55, future)])
-        self.until(lambda: self.driver._full_update_outstanding)
-        self.assertFalse(self.driver._full_sent)
+        self.until(lambda: self.driver.world_sync.full_update_outstanding)
+        self.assertFalse(self.driver.world_sync.full_sent)
         self.send([(11, number(1, 999) + number(3, 2))])
         self.send(
             [
@@ -127,8 +127,8 @@ class OrderedDriverTests(unittest.TestCase):
                 (55, full(101).replace(number(10, 0), number(10, 2), 1)),
             ]
         )
-        self.until(lambda: self.driver._full_sent)
-        self.assertEqual(self.driver._processed_entity_tick, 101)
+        self.until(lambda: self.driver.world_sync.full_sent)
+        self.assertEqual(self.driver.world_sync.processed_entity_tick, 101)
 
     def test_optional_serializer_version_uses_worker_default(self):
         serialized = schema().replace(
@@ -137,12 +137,12 @@ class OrderedDriverTests(unittest.TestCase):
             1,
         )
         self.initialize(serialized)
-        self.assertTrue(self.driver._spawn_sent)
+        self.assertTrue(self.driver.world_sync.spawn_sent)
 
     def test_optional_event_type_does_not_invoke_legacy_probe(self):
         self.initialize()
         self.send([(4, number(1, 100)), (55, full(100))])
-        self.until(lambda: self.driver._full_sent)
+        self.until(lambda: self.driver.world_sync.full_sent)
         descriptor = blob(
             1,
             number(1, 17)
@@ -160,41 +160,41 @@ class OrderedDriverTests(unittest.TestCase):
 
     def test_full_recovery_and_world_fencing(self):
         self.initialize()
-        self.assertFalse(self.driver._full_sent)
+        self.assertFalse(self.driver.world_sync.full_sent)
         self.send([(4, number(1, 100)), (55, full(100))])
-        self.until(lambda: self.driver._full_sent)
-        self.assertEqual(self.driver._processed_entity_tick, 100)
+        self.until(lambda: self.driver.world_sync.full_sent)
+        self.assertEqual(self.driver.world_sync.processed_entity_tick, 100)
         self.assertTrue(
             any(row["kind"] == "cursor" and row["tick"] == 100 for row in self.output)
         )
         self.send(
             [(4, number(1, 101)), (55, number(6, 99) + number(12, 101) + blob(19, b""))]
         )
-        self.until(lambda: self.driver._full_update_outstanding)
-        self.assertIsNone(self.driver._processed_entity_tick)
+        self.until(lambda: self.driver.world_sync.full_update_outstanding)
+        self.assertIsNone(self.driver.world_sync.processed_entity_tick)
         self.assertTrue(any(row["kind"] == "discontinuity" for row in self.output))
         self.send([(4, number(1, 102)), (55, full(102))])
-        self.until(lambda: self.driver._processed_entity_tick == 102)
+        self.until(lambda: self.driver.world_sync.processed_entity_tick == 102)
         self.until(
             lambda: any(
                 row["kind"] == "cursor" and row["tick"] == 102 for row in self.output
             )
         )
-        self.assertFalse(self.driver._recovery_pending)
+        self.assertFalse(self.driver.world_sync.recovery_pending)
         before = self.driver.feedback.sequence
         self.send([(51, b"")])
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
         self.assertEqual(self.parser.identity["world"], 2)
         self.assertEqual(self.driver.signon.state, 2)
-        self.assertFalse(self.driver._full_sent)
-        self.assertIsNone(self.driver._processed_entity_tick)
+        self.assertFalse(self.driver.world_sync.full_sent)
+        self.assertIsNone(self.driver.world_sync.processed_entity_tick)
         self.assertGreaterEqual(self.driver.feedback.sequence, before)
         self.assertEqual(self.port.closed, 0)
         self.initialize()
-        self.assertFalse(self.driver._full_sent)
+        self.assertFalse(self.driver.world_sync.full_sent)
         self.send([(4, number(1, 5)), (55, full(5))])
-        self.until(lambda: self.driver._full_sent)
-        self.assertEqual(self.driver._processed_entity_tick, 5)
+        self.until(lambda: self.driver.world_sync.full_sent)
+        self.assertEqual(self.driver.world_sync.processed_entity_tick, 5)
 
     def test_transport_context_is_per_frame_and_message_before_filtering(self):
         self.initialize()
@@ -202,8 +202,8 @@ class OrderedDriverTests(unittest.TestCase):
         self.until(lambda: self.parser.completed_sequence == self.parser.sequence)
         # PacketEntities itself assigns positive receive metadata before dispatch.
         self.send([(55, full(100))])
-        self.until(lambda: self.driver._full_sent)
-        self.assertEqual(self.driver._processed_entity_tick, 100)
+        self.until(lambda: self.driver.world_sync.full_sent)
+        self.assertEqual(self.driver.world_sync.processed_entity_tick, 100)
         self.assertEqual(self.driver.decoder.tick, 90)
         descriptor = blob(1, number(1, 17) + blob(2, b"round_start"))
         prior = self.parser.sequence
@@ -250,7 +250,7 @@ class OrderedDriverTests(unittest.TestCase):
     ):
         self.initialize()
         self.send([(4, number(1, 100)), (55, full(100))])
-        self.until(lambda: self.driver._full_sent)
+        self.until(lambda: self.driver.world_sync.full_sent)
         names = (
             "round_prestart",
             "round_poststart",
@@ -311,7 +311,7 @@ class OrderedDriverTests(unittest.TestCase):
         self.assertEqual(len(values[2]), 16)
         self.assertEqual(values[2][0][1], 1 << 17)
         self.send([(4, number(1, 100)), (55, full(100))])
-        self.until(lambda: self.driver._full_sent)
+        self.until(lambda: self.driver.world_sync.full_sent)
         before = self.driver.feedback.sequence
         self.send(
             [
@@ -328,7 +328,7 @@ class OrderedDriverTests(unittest.TestCase):
         self.assertEqual(self.parser.identity["world"], 2)
         self.assertEqual(self.driver.reliable_filter.last_tick, 1)
         self.assertEqual(self.driver.decoder.tick, 2)
-        self.assertFalse(self.driver._full_sent)
+        self.assertFalse(self.driver.world_sync.full_sent)
         self.assertEqual(self.port.closed, 0)
         self.assertGreaterEqual(self.driver.feedback.sequence, before)
 
