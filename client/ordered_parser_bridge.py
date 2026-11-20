@@ -32,12 +32,7 @@ class OrderedParserBridge:
     MAX_QUEUED_BYTES = 32 * 1024**2
     # Reserve a whole legal channel envelope above either high watermark.
     BATCH_TARGET_MESSAGES, BATCH_TARGET_BYTES = 64, 256 * 1024
-    HIGH_BATCHES, LOW_BATCHES = CreditLedger.HIGH_BATCHES, CreditLedger.LOW_BATCHES
-    HIGH_MESSAGES, LOW_MESSAGES = (
-        CreditLedger.HIGH_MESSAGES,
-        CreditLedger.LOW_MESSAGES,
-    )
-    HIGH_BYTES, LOW_BYTES = CreditLedger.HIGH_BYTES, CreditLedger.LOW_BYTES
+
     MAX_BODY = 4 * 1024**2
     FORWARDED_EVENTS = FORWARDED_EVENTS
 

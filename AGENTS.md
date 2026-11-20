@@ -28,8 +28,8 @@
 
 | 任务 | 负责模块与入口 | 参考文档 |
 | --- | --- | --- |
-| 连接恢复与托管生命周期 | `client/session_supervisor.py`、`client/process_io.py` | [托管接口](docs/managed-interface.md)、[架构](docs/architecture.md) |
-| 单次连接握手、Signon 与 ACK | `client/driver.py`、`client/handshake.py`、`client/channel.py`、`client/control.py` | [传输](docs/protocol/TRANSPORT-CONTRACT.md)、[恢复](docs/protocol/RECOVERY-CONTRACT.md) |
+| 连接恢复与托管生命周期 | `client/session_supervisor.py`、`client/attempt_contract.py`、`client/process_io.py` | [托管接口](docs/managed-interface.md)、[架构](docs/architecture.md) |
+| 单次连接握手、Signon 与 ACK | `client/driver.py`、`client/attempt_runner.py`、`client/attempt_reporting.py`、`client/handshake.py`、`client/channel.py`、`client/control.py` | [传输](docs/protocol/TRANSPORT-CONTRACT.md)、[恢复](docs/protocol/RECOVERY-CONTRACT.md) |
 | 实体快照与事件投影 | `client/parser_worker.mjs`、`parser/src/parser/entities/nativeObserverCore.ts` | [事件生命周期](docs/protocol/EVENT-LIFECYCLE-CONTRACT.md)、[世界生命周期](docs/protocol/WORLD-LIFECYCLE-CONTRACT.md) |
 | 认证、密码与原生桥 | `native/sdk_host.cpp`、`native/steam_bridge.hpp`、`client/sdk.py`、`client/password.py` | [组件分发](docs/component-distribution.md) |
 | 进程输入/输出与子进程清理 | `client/process_io.py`、`client/process_job.py`、`client/ordered_parser_bridge.py` | [使用说明](docs/usage.md) |
@@ -46,7 +46,7 @@
 
 ## 分层验证
 
-- **快速检查**：`pnpm run test:fast`（格式化、lint、TypeScript 类型检查、Node 事件测试、Python 单元测试）。
+- **快速检查**：`pnpm run test:fast`（格式化、lint、TypeScript 类型检查、Node 事件测试、Python 单元测试；无 `GOTV_ORDERED_WORKER` 时显式跳过 worker 集成用例，不可替代完整门禁）。
 - **生产链路完整门禁**（需先按 [构建](docs/build.md) 准备 `work/parser` 与 `work/build/parser_worker.mjs`）：`python tools/verify_all.py --parser-source work/parser --worker work/build/parser_worker.mjs`。
 - **发布验收**：`python tools/verify_package.py <dist-dir>`（检查 Windows 独立包与 `external-node` 制品、清单、摘要、合成回放与清理）。
 - **独立 Research**：`tools/verification/verify.py`、`tools/verification/verify_live.py` 等仅用于离线对照或固定证据复现。
