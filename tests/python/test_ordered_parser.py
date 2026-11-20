@@ -296,6 +296,27 @@ class IpcContractTests(unittest.TestCase):
             {**base, "type": "receipt", "sequence": None},
             {**base, "type": "recovery", "sequence": None},
             {**base, "type": "event-subscriptions", "sequence": None},
+            {**base, "type": "batch-complete", "batch": 0},
+            {**base, "type": "gap", "reason": 123},
+            {**base, "type": "diagnostic", "reason": None},
+            {**base, "type": "cursor", "committedTick": 0, "tickInterval": 0.015625},
+            {**base, "type": "cursor", "committedTick": 10, "tickInterval": 0},
+            {**base, "type": "raw-event", "name": "", "fields": {}},
+            {**base, "type": "raw-event", "name": "player_death", "fields": []},
+            {
+                "source": "ahead:test",
+                "channel": 1,
+                "world": 1,
+                "type": "world-reset",
+                "reason": 1,
+            },
+            {
+                "source": "ahead:test",
+                "channel": 1,
+                "world": 1,
+                "type": "creation-sequence-admitted",
+                "creationSequence": -1,
+            },
         ):
             with self.subTest(bad=bad):
                 with self.assertRaises(ProbeError):
