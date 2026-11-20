@@ -1,6 +1,16 @@
 # 验证
 
-## 默认离线检查
+验证分为四层：日常开发可先运行快速检查，合并前与发布前必须运行完整离线门禁或制品检查。
+
+## 1. 快速检查
+
+```powershell
+pnpm run test:fast
+```
+
+覆盖 Prettier 格式检查、Biome lint、TypeScript 类型检查、Node 事件测试与 Python 单元测试（未构建 worker 时会跳过需要 `GOTV_ORDERED_WORKER` 的进程集成用例）。Python 代码风格使用 `ruff format --check client tools tests` 与 `ruff check client tools tests`。
+
+## 2. 生产链路完整门禁
 
 按[构建步骤](build.md)从固定上游生成 worker 后运行：
 

@@ -10,10 +10,17 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 manifest = json.loads((ROOT / "archive/migration.json").read_text(encoding="utf-8"))
 preserved = 0
+RETAINED_ARCHIVE_DOCS = {
+    "archive/docs/CHANNEL-EVIDENCE.md",
+    "archive/docs/INITIALIZATION-EVIDENCE.md",
+    "archive/docs/LIVE-2026-10-24.md",
+    "archive/docs/client-README.md",
+}
 for entry in manifest["files"]:
     name = entry["to"]
     if (
-        name.startswith(("archive/", "research/data/", "research/evidence/"))
+        name in RETAINED_ARCHIVE_DOCS
+        or name.startswith(("research/data/", "research/evidence/"))
         or name == "tests/fixtures/password-oracle.json"
     ):
         assert (

@@ -40,6 +40,6 @@
 
 ## 历史材料
 
-分阶段原始记录已移入归档，用于追溯证据；各记录保留当时的进度、原型边界和计划。历史实现记录见[归档](../../archive/research-notes/COHESIVE-IMPLEMENTATION.md)，当前支持范围见[兼容性](../../docs/compatibility.md)。
+分阶段原始记录已移入归档，用于追溯证据；各记录保留当时的进度、原型边界和计划。历史实现记录见[归档索引](../../archive/README.md)，当前支持范围见[兼容性](../../docs/compatibility.md)。
 
 主题索引覆盖上述 88 条已核实结论，按各自来源和版本范围复用。
