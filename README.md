@@ -34,11 +34,11 @@ Steam 会将观众的 App730 上下文显示为 CS2 运行状态。重启游戏�
 
 ## 适用范围
 
-托管模式默认使用 v2，内置有界故障恢复，来源正常结束后退出。需要持续跟随同一授权 GOTV 地址时，加上 `--follow-source`。需要由宿主自行管理单次连接时，使用 `--managed-protocol 1`。详见[托管接口](docs/managed-interface.md)。
+托管模式仅支持 v2（`cs2-observer-managed-json/2`；v1 已退役），内置有界故障恢复，来源正常结束后退出。需要持续跟随同一授权 GOTV 地址时，加上 `--follow-source`。详见[托管接口](docs/managed-interface.md)。
 
 已有在线验证环境为 Windows x64、CS2 build 10955 / host 14192。最新构建核对范围见[兼容性](docs/compatibility.md)。解析器依据来源 schema 处理实体和事件；身份有当前证据时输出 Steam64，其余保留为 null 或未解析状态。
 
-同账号并行观战使用不同的 GOTV 端点；同一 IP:port 的后续连接可能替换已有连接，游戏客户端也占用该端点。每次换场或换图使用新授权地址与新来源实例。
+同账号并行观战使用不同的 GOTV 端点；同一 IP:port 的后续连接可能替换已有连接，游戏客户端也占用该端点。切换 GOTV 端点或独立启动时使用新授权地址与新来源实例；启用 `--follow-source` 的托管 v2 实例可在同一来源内跟随换场或换图重连。
 
 事件时间属于来源时间线。实际领先量、节目时间对齐和展示由消费应用管理。完整条件与在线补验范围见[兼容性](docs/compatibility.md)，运行和故障处理见[使用说明](docs/usage.md)。
 

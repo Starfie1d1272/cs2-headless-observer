@@ -23,8 +23,9 @@ from process_io import (
     OutputWriter,
     PublicRecords,
     cancel_io,
-    private_file,
+    emit_terminal_report,
     source_age_us,
+    write_report_file,
 )
 from process_job import ProcessJob
 from wire import ProbeError
@@ -618,10 +619,7 @@ class SessionSupervisor:
                     sys.executable,
                     "-B",
                     str(Path(__file__).with_name("driver.py")),
-                    "--managed",
                     "--session-attempt",
-                    "--managed-protocol",
-                    "1",
                     "--native",
                     str(self.args.native),
                     "--node",
@@ -796,17 +794,9 @@ def run(args, owner, endpoint, password):
         health=supervisor.health,
         faults=list(supervisor.faults),
     )
-    temporary = args.output / "report.json.tmp"
     try:
-        with private_file(temporary, "w") as handle:
-            json.dump(report, handle, indent=2, ensure_ascii=False)
-            handle.write("\n")
-        temporary.replace(args.output / "report.json")
+        write_report_file(args.output, report)
     except OSError:
         report.update(outcome="failed", reason="write-report", reportWritten=False)
-    try:
-        diagnostics.emit(report)
-        diagnostics.finish(timeout=1)
-    except ProbeError:
-        diagnostics.abort()
+    emit_terminal_report(diagnostics, report)
     return {"closed": 0, "failed": 1, "incomplete": 2}[report["outcome"]]

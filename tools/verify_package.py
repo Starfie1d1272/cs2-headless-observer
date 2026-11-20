@@ -26,10 +26,7 @@ def main():
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["nativeAbi"] == 4 and manifest["parserIpc"] == 4
     assert manifest["managedProtocol"] == "cs2-observer-managed-json/2"
-    assert manifest["managedProtocols"] == [
-        "cs2-observer-managed-json/1",
-        "cs2-observer-managed-json/2",
-    ]
+    assert manifest["managedProtocols"] == ["cs2-observer-managed-json/2"]
     assert "follow-source" in manifest["managedFeatures"]
     assert (root / "client/session_supervisor.py").is_file()
     expected = manifest["filesSha256"]

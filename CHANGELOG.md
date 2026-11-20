@@ -1,5 +1,9 @@
 # 更新日志
 
+## [Unreleased]
+
+- **破坏性变更（下一主版本目标）**：正式退役公开托管协议 v1（`--managed-protocol 1` / `cs2-observer-managed-json/1`），传入旧版本请求将显式拒绝并提示迁移至 `cs2-observer-managed-json/2`；Supervisor 内部单次连接改用私有 `--session-attempt` 接口。
+
 ## 2.1.0 — 2026-11-19
 
 - 托管 v2 新增可选的 `--follow-source`。正常 GOTV 结束且排空、清理完成后，组件低频重连同一授权地址，延续 source 与公共序号。默认仍在正常结束后退出。
