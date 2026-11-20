@@ -204,5 +204,80 @@ class OrderedParserTests(unittest.TestCase):
         self.assertNotIn("!!!=", result.stdout)
 
 
+class IpcContractTests(unittest.TestCase):
+    def test_credit_ledger_releases_credit_only_on_batch_complete(self):
+        from ipc_contract import CreditLedger, InputBatch
+        from wire import ProbeError
+
+        ledger = CreditLedger()
+        self.assertTrue(ledger.caught_up)
+        for index in range(1, CreditLedger.HIGH_BATCHES + 1):
+            ledger.record_batch(
+                InputBatch(
+                    number=index,
+                    first=index,
+                    last=index,
+                    raw_bytes=128,
+                    submitted_ns=1000,
+                    world=1,
+                    envelopes=[(index, 900, None)],
+                )
+            )
+        self.assertFalse(ledger.has_credit())
+        self.assertFalse(ledger.caught_up)
+        with self.assertRaisesRegex(ProbeError, "ordered-parser-batch-order"):
+            ledger.complete_batch(1, 1, 1, 0)
+        for index in range(1, CreditLedger.HIGH_BATCHES - CreditLedger.LOW_BATCHES + 1):
+            ledger.complete_batch(index, 1, index, index)
+        self.assertTrue(ledger.has_credit())
+
+    def test_generation_commit_tracker_gates_receipts_by_checkpoint_and_reset(self):
+        from collections import deque
+        from ipc_contract import CreditLedger, GenerationCommitTracker, InputBatch
+
+        ledger = CreditLedger()
+        ledger.record_batch(
+            InputBatch(
+                number=1,
+                first=1,
+                last=2,
+                raw_bytes=64,
+                submitted_ns=1000,
+                world=1,
+                envelopes=[(2, 900, None)],
+            )
+        )
+        tracker = GenerationCommitTracker()
+        diagnostics = deque(maxlen=8)
+        tracker.accept_current_world(
+            {
+                "type": "receipt",
+                "sequence": 1,
+                "tick": 50,
+                "epoch": 0,
+                "full": True,
+                "baselineAck": 0,
+            },
+            1,
+            diagnostics,
+        )
+        self.assertEqual(tracker.pop_receipts(), [])
+        tracker.advance_processed(1, 10, ledger)
+        tracker.accept_current_world(
+            {
+                "type": "checkpoint",
+                "sequence": 1,
+                "schemaReady": True,
+                "stringTables": 1,
+            },
+            1,
+            diagnostics,
+        )
+        self.assertEqual(len(tracker.pop_receipts()), 1)
+        tracker.reset_generation()
+        self.assertIsNone(tracker.checkpoint)
+        self.assertEqual(tracker.pop_receipts(), [])
+
+
 if __name__ == "__main__":
     unittest.main()

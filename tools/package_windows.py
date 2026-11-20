@@ -25,6 +25,7 @@ MODULES = [
     "driver_support",
     "session_supervisor",
     "launcher",
+    "ipc_contract",
     "ordered_parser_bridge",
     "observer_settings",
     "wire",
