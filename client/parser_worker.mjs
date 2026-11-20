@@ -159,7 +159,9 @@ function collect(part) {
 try {
   for await (const chunk of process.stdin) {
     let start = 0;
-    for (let end; (end = chunk.indexOf(10, start)) !== -1; start = end + 1) {
+    while (true) {
+      const end = chunk.indexOf(10, start);
+      if (end === -1) break;
       collect(chunk.subarray(start, end));
       if (!bytes) throw new Error('ordered-parser-empty-record');
       const line = pending.length === 1 ? pending[0] : Buffer.concat(pending, bytes);
@@ -172,6 +174,7 @@ try {
         throw new Error('ordered-parser-invalid-json');
       }
       await batch(input);
+      start = end + 1;
     }
     collect(chunk.subarray(start));
   }

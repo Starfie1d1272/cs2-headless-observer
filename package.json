@@ -11,9 +11,9 @@
     "test:fast": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:events && pnpm test",
     "typecheck": "tsc6 -p tsconfig.json --noEmit",
     "verify": "python tools/verify_all.py",
-    "format": "prettier --write \"{parser/src,tools,tests}/**/*.{ts,js,mjs,cjs}\" --ignore-unknown",
-    "format:check": "prettier --check \"{parser/src,tools,tests}/**/*.{ts,js,mjs,cjs}\" --ignore-unknown",
-    "lint": "biome lint parser/src tools tests --diagnostic-level=error"
+    "format": "prettier --write \"{parser/src,tools,tests}/**/*.{ts,js,mjs,cjs}\" client/parser_worker.mjs --ignore-unknown",
+    "format:check": "prettier --check \"{parser/src,tools,tests}/**/*.{ts,js,mjs,cjs}\" client/parser_worker.mjs --ignore-unknown",
+    "lint": "biome lint parser/src tools tests client/parser_worker.mjs --diagnostic-level=error"
   },
   "dependencies": {
     "cs2parser": "2.7.2"

@@ -4,20 +4,25 @@
 
 ## 开发前核对
 
-1. 已完成收敛的架构基准（Issue #30–#37 均已关闭，后续修改须保持其确立的边界）：
+1. **开发前先核对开放 Issue**：动手前检查与当前任务相关的开放 GitHub Issue，避免重复建设或破坏已有边界。长期演进任务按职责纳入对应序列，不随意扩大单次改动范围：
+   - **#1** 授权 GOTV 实机在线验证与兼容性门禁
+   - **#52** 持续性能、资源成本与长期运行治理（仅由真实 profiling / 实测数据驱动，不做预防性重写）
+   - **#53** CS2 Host、协议演进与上游解析器兼容性维护
+2. 已完成收敛的架构基准（Issue #30–#37、#45–#50，后续修改须保持其确立的边界）：
    - **#30–#33** 生产链路修复、历史归档（`archive/research-era` 标签）、旧 Demo 在线实体适配器退役与工程验证分层
    - **#34–#36** 公开 Managed v1 退役、私有 `--session-attempt` 边界、`AttemptResult` 与纯函数 `decide_recovery()`
    - **#37** 显式有序 IPC v4 契约（`CreditLedger` / `GenerationCommitTracker`）与 `WorldSyncState` 单一状态所有权
-2. **每类状态唯一 owner**：
+   - **#45–#50** 进程回收与 `AttemptResult` fail-closed 边界、IPC 运行时形状校验、Driver/Supervisor 收敛、Parser 补丁核对与工程卫生治理
+3. **每类状态唯一 owner**：
    - **Session Supervisor**（`client/session_supervisor.py`）：公开 `cs2-observer-managed-json/2` 输出、`source` / `channel` / `public sequence`、连接恢复与 `--follow-source`。
    - **单次连接 Driver**（`client/driver.py`）：单次连接握手、Signon、控制流、ACK、SDK 与 worker 协调。
    - **Node Worker**（`client/parser_worker.mjs` + `parser/src/`）：schema、类表、字符串表、实体快照与事件投影。
    - **Native Bridge**（`native/` + `client/sdk.py`）：Steamworks API、认证句柄与 GNS 收发。
-3. **诊断文本不决定控制**：`reason`、`health`、stderr 诊断仅用于观测与报告；恢复、重试和清理决策必须依据显式结构化字段或枚举。
-4. **时间域不得隐式混用**：严禁将 `contextTick`、`networkTick`、`committedTick`、`eventServerTick`、SDK 单调排队年龄、Python 单调时钟和墙钟 `observedAt` 混算。
-5. **研究代码不默认进入生产**：`tools/diagnostics/`（含 `LiveDecoder`）、`tools/demo/` 与 `research/` 不作为生产控制或事件解析权威。
-6. **协议行为修改有证据**：改动协议/解码语义前先核对 `docs/protocol/`、`research/knowledge/` 或固定回归向量；不将未实测的在线行为写成已验证事实。
-7. **小步收敛**：优先复用现有模块与普通函数/小型类型，不引入无必要框架、DI 容器、事件总线或兼容双栈。
+4. **诊断文本不决定控制**：`reason`、`health`、stderr 诊断仅用于观测与报告；恢复、重试和清理决策必须依据显式结构化字段或枚举。
+5. **时间域不得隐式混用**：严禁将 `contextTick`、`networkTick`、`committedTick`、`eventServerTick`、SDK 单调排队年龄、Python 单调时钟和墙钟 `observedAt` 混算。
+6. **研究代码不默认进入生产**：`tools/diagnostics/`（含 `LiveDecoder`）、`tools/demo/` 与 `research/` 不作为生产控制或事件解析权威。
+7. **协议行为修改有证据**：改动协议/解码语义前先核对 `docs/protocol/`、`research/knowledge/` 或固定回归向量；删改历史协议保护逻辑前必须核对原始设计证据；不将离线 CI 通过等同于真实在线验证通过。
+8. **小步收敛**：优先复用现有模块与普通函数/小型类型，新增抽象必须解决具体问题，不引入无必要框架、DI 容器、事件总线或兼容双栈。
 
 ## 任务导航
 

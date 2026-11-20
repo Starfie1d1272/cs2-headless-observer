@@ -35,6 +35,7 @@ for base in ("client", "native", "tools", "tests", "research"):
         syntax += 1
 checked = 0
 for p in [
+    ROOT / "AGENTS.md",
     ROOT / "README.md",
     ROOT / "CONTRIBUTING.md",
     ROOT / "THIRD_PARTY_NOTICES.md",
