@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- **破坏性变更（下一主版本目标）**：正式退役公开托管协议 v1（`--managed-protocol 1` / `cs2-observer-managed-json/1`），传入旧版本请求将显式拒绝并提示迁移至 `cs2-observer-managed-json/2`；Supervisor 内部单次连接改用私有 `--session-attempt` 接口。
+- **破坏性变更（3.0.0 目标）**：正式退役公开托管协议 v1（`--managed-protocol 1` / `cs2-observer-managed-json/1`），传入旧版本请求将显式拒绝并提示迁移至 `cs2-observer-managed-json/2`；Supervisor 内部单次连接改用私有 `--session-attempt` 接口。
+- **生命周期与 IPC 边界加固（#45、#46）**：修复 `ProcessJob.reap()` 异常未被归类为 `AttemptCleanupError` 的问题；完善 `AttemptResult` fail-closed 类型与跨字段一致性校验；同步报告写入失败后的 `attemptResult`；为有序 IPC v4 补全 `checkpoint`、`receipt.baselineAck`、`recovery`、`event-subscriptions` 与 `world >= 1` 运行时形状校验。
+- **运行时收敛与工程治理（#47–#50）**：统一 Supervisor 合成 `AttemptResult` 构造；消除 Driver 重复 `CONNECTED` ACK 发送并将健康信用采样改为只读观测；清理 `docs/architecture.md` 与 `docs/managed-interface.md` 残留的 v1 现行描述；将 `client/parser_worker.mjs` 纳入格式化/lint 检查并将 `AGENTS.md` 纳入布局链接检查。
 
 ## 2.1.0 — 2026-11-19
 
