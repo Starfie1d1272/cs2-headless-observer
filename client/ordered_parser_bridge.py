@@ -160,7 +160,11 @@ class OrderedParserBridge:
                     self._queued_bytes -= len(data)
         except Exception as error:
             if not self._closed:
-                self._failure = "ordered-parser-input-failed: " + type(error).__name__
+                self._failure = ProbeError(
+                    "ordered-parser-input-failed",
+                    detail=type(error).__name__,
+                    transient=isinstance(error, OSError),
+                )
                 self._available.set()
 
     def _read(self):
@@ -169,7 +173,9 @@ class OrderedParserBridge:
                 line = self.process.stdout.readline(65537)
                 if not line:
                     if not self._closed:
-                        self._failure = "ordered-parser-exited"
+                        self._failure = ProbeError(
+                            "ordered-parser-exited", transient=True
+                        )
                         self._available.set()
                     return
                 if len(line) > 65536 or not line.endswith(b"\n"):
@@ -178,9 +184,9 @@ class OrderedParserBridge:
                 if not isinstance(row, dict):
                     raise ValueError("record-shape")
                 if row.get("type") == "error":
-                    self._failure = (
-                        "ordered-parser-error: "
-                        + str(row.get("message", "unknown"))[:1024]
+                    self._failure = ProbeError(
+                        "ordered-parser-error",
+                        detail=str(row.get("message", "unknown"))[:1024],
                     )
                     self._available.set()
                     return
@@ -207,7 +213,11 @@ class OrderedParserBridge:
                         continue
         except Exception as error:
             if not self._closed:
-                self._failure = "ordered-parser-output-failed: " + type(error).__name__
+                self._failure = ProbeError(
+                    "ordered-parser-output-failed",
+                    detail=type(error).__name__,
+                    transient=isinstance(error, OSError),
+                )
                 self._available.set()
 
     def submit_message(self, message_id, body):
@@ -332,6 +342,8 @@ class OrderedParserBridge:
 
     def check(self):
         if self._failure:
+            if isinstance(self._failure, ProbeError):
+                raise self._failure
             raise ProbeError(self._failure)
         if self._closed or self.process.poll() is not None:
             raise ProbeError("ordered-parser-not-running")

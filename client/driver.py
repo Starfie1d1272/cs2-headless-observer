@@ -8,9 +8,7 @@ channel receive -> ordered parser IPC -> ACK/drain.
 from collections import deque
 from dataclasses import dataclass
 from enum import Enum, auto
-import getpass
 import hashlib
-import json
 import struct
 import sys
 
@@ -40,36 +38,31 @@ from handshake import (
 )
 from control import ControlDecoder, client_info, int32
 from observer_settings import ObserverSettings
-from ordered_parser_bridge import Envelope, OrderedParserBridge
+from ordered_parser_bridge import Envelope
 from password import transform_password
-from wire import ProbeError, fields, scalar
-from driver_support import (
+from wire import fields, scalar
+from attempt_reporting import (
+    HealthInputs,
+    ReportInputs,
     build_attempt_health,
     build_attempt_report,
-    classify_attempt_result,
-    parse_driver_args,
 )
 from process_io import (
-    CaptureBudget,
-    CaptureWriter,
     MAGIC,
     ManagedOwner,
-    OutputWriter,
     PublicRecords,
     SampleWriter,
     DRAIN_TIMEOUT_MS,
     HARD_AGE_US,
     connection_values,
-    emit_terminal_report,
-    private_file,
     read_managed_connection,
-    source_age_us,
-    write_report_file,
 )
 
 
 class DriverError(Exception):
-    pass
+    def __init__(self, code):
+        self.code = code
+        super().__init__(code)
 
 
 # Local residence protections, independent of protocol feedback and GOTV delay.
@@ -923,31 +916,33 @@ class ObserverDriver:
 
     def health_snapshot_inputs(self):
         parser = self.parser
-        return {
-            "last_health_ns": self._last_health_ns,
-            "last_health_totals": self._last_health_totals,
-            "sdk_sample_ns": self._sdk_sample_ns,
-            "last_sdk_age_us": self._last_sdk_age_us,
-            "window_sdk_age_us": self._window_sdk_age_us,
-            "max_sdk_age_us": self._max_sdk_age_us,
-            "max_parser_age_us": self._max_parser_age_us,
-            "health_reason": self._health_reason,
-            "gap": self._gap,
-            "recovery_pending": self.world_sync.recovery_pending,
-            "draining": self._drain_deadline is not None,
-            "full_sent": self.world_sync.full_sent,
-            "last_cursor": self._last_cursor,
-            "cursor_rate": self._cursor_rate,
-            "receive_budget_exhausted": self._receive_budget_exhausted,
-            "result_budget_exhausted": self._result_budget_exhausted,
-            "totals": (
+        return HealthInputs(
+            done=self.done,
+            reason=self.reason,
+            last_health_ns=self._last_health_ns,
+            last_health_totals=self._last_health_totals,
+            sdk_sample_ns=self._sdk_sample_ns,
+            last_sdk_age_us=self._last_sdk_age_us,
+            window_sdk_age_us=self._window_sdk_age_us,
+            max_sdk_age_us=self._max_sdk_age_us,
+            max_parser_age_us=self._max_parser_age_us,
+            health_reason=self._health_reason,
+            gap=self._gap,
+            recovery_pending=self.world_sync.recovery_pending,
+            draining=self._drain_deadline is not None,
+            full_sent=self.world_sync.full_sent,
+            last_cursor=self._last_cursor,
+            cursor_rate=self._cursor_rate,
+            receive_budget_exhausted=self._receive_budget_exhausted,
+            result_budget_exhausted=self._result_budget_exhausted,
+            totals=(
                 self.received,
                 self._received_bytes,
                 parser.processed_messages,
                 parser.processed_bytes,
                 parser.decode_us,
             ),
-        }
+        )
 
     def record_health_window(self, totals, now):
         self._last_health_totals = totals
@@ -955,26 +950,77 @@ class ObserverDriver:
         self._window_sdk_age_us = None
 
     def report_snapshot(self):
-        return {
-            "challenge_requests": self._challenge_requests,
-            "feedback_sent": self._feedback_sent,
-            "full_snapshot_processed": self.world_sync.full_snapshot_processed,
-            "ever_full": self._ever_full,
-            "processed_entity_tick": self.world_sync.processed_entity_tick,
-            "ack_tick": self.world_sync.ack_tick,
-            "recovery_requests": self._recovery_requests,
-            "baseline_ack_count": self._baseline_ack_count,
-            "full_sent": self.world_sync.full_sent,
-        }
+        parser = self.parser
+        span = (
+            None
+            if self.first_channel_ms is None
+            else self.last_channel_ms - self.first_channel_ms
+        )
+        return ReportInputs(
+            phase=self.phase,
+            reason=self.reason,
+            received_messages=self.received,
+            host_version=self.host_version,
+            native_state=self.port.state,
+            native_failure=getattr(self.port, "failure", None),
+            remote_end_reason=getattr(self.port, "remote_end_reason", None),
+            world_creation_watermark=self.decoder.max_creation_sequence,
+            world_creation_sequences=sorted(
+                group["creation_sequence"] or 0
+                for group in self.decoder.spawn_groups.values()
+            ),
+            challenge_metadata=self.challenge_metadata,
+            challenge_requests=self._challenge_requests,
+            feedback_sent=self._feedback_sent,
+            last_received_channel_sequence=self.feedback.received,
+            channel_frames=self.channel_frames,
+            channel_bytes=self.channel_bytes,
+            channel_receive_span_ms=span,
+            received_signon_state=self.signon.received_state,
+            effective_signon_state=self.signon.state,
+            full_snapshot_processed=self.world_sync.full_snapshot_processed,
+            stages=list(self.stages),
+            ever_full=self._ever_full,
+            last_processed_sequence=parser.completed_sequence if parser else 0,
+            last_output_sequence=self.emit.sequence,
+            drain_completed=self.drain_completed,
+            health=self.health,
+            parser_checkpoint=parser.checkpoint if parser else None,
+            parser_failure=getattr(parser, "failure_details", None),
+            parser_diagnostics=list(getattr(parser, "diagnostics", [])),
+            last_processed_entity_tick=self.world_sync.processed_entity_tick,
+            last_acknowledged_entity_tick=self.world_sync.ack_tick,
+            full_update_requests=self._recovery_requests,
+            baseline_ack_count=self._baseline_ack_count,
+            net_message_counts=dict(self.decoder.counts),
+            full_sent=self.world_sync.full_sent,
+        )
 
     def update_health(self, writer, *, force=False):
-        health = build_attempt_health(self, writer, time.monotonic_ns(), force=force)
+        now = time.monotonic_ns()
+        inputs = self.health_snapshot_inputs()
+        parser = self.parser
+        receive_backlog = getattr(self.port, "receive_backlog", None)
+        staging = receive_backlog(now) if receive_backlog else {"oldestAgeUs": None}
+        health = build_attempt_health(
+            inputs,
+            parser_identity=parser.identity,
+            parser_backlog=parser.backlog(now),
+            parser_checkpoint=parser.checkpoint,
+            parser_throttled=getattr(parser, "throttled", False),
+            writer_status=writer.status(),
+            staging_backlog=staging,
+            now=now,
+            force=force,
+        )
         if health is not None:
             self.health = health
+            if not force:
+                self.record_health_window(inputs.totals, now)
         return health
 
     def report(self):
-        return build_attempt_report(self)
+        return build_attempt_report(self.report_snapshot())
 
     def close(self):
         self._password[:] = bytes(len(self._password))
@@ -985,279 +1031,15 @@ class ObserverDriver:
 
 
 def main():
-    from uuid import uuid4
-    from node_runtime import inspect_node
+    from attempt_runner import main as run_main
 
-    args = parse_driver_args(doc=__doc__)
-
-    inspect_node(args.node)
-    private_stdin = args.managed or args.session_attempt
-    if private_stdin:
-        try:
-            stdin_fd = sys.stdin.fileno()
-        except (OSError, ValueError, AttributeError):
-            owner = ManagedOwner(
-                stream=sys.stdin.buffer, configuration_reader=read_managed_connection
-            )
-        else:
-            owner = ManagedOwner(
-                fd=stdin_fd, configuration_reader=read_managed_connection
-            )
-    else:
-        owner = ManagedOwner()
-    password = bytearray()
-    try:
-        if private_stdin:
-            endpoint, password = owner.configuration()
-        else:
-            endpoint, password = connection_values(
-                getpass.getpass("Authorized GOTV numeric IP:port: "),
-                getpass.getpass("Ordinary spectator password: "),
-            )
-    except ValueError:
-        owner.close()
-        raise SystemExit("configuration-boundary") from None
-    try:
-        args.output.mkdir(mode=0o700)
-    except OSError:
-        password[:] = bytes(len(password))
-        owner.close()
-        raise SystemExit("output-directory-unavailable") from None
-    try:
-        if args.managed:
-            from session_supervisor import run
-
-            args.source_id = args.source_id or uuid4().hex
-            return run(args, owner, endpoint, password)
-        return run_attempt(args, owner, endpoint, password)
-    finally:
-        password[:] = bytes(len(password))
-        owner.close()
+    return run_main(doc=__doc__)
 
 
 def run_attempt(args, owner, endpoint, password):
-    from uuid import uuid4
+    from attempt_runner import run_attempt as execute_attempt
 
-    driver = native = parser = samples = events = writer = diagnostics = capture = None
-    budget = CaptureBudget(args.capture_budget_mib * 1024**2)
-    report, failure, finalization = (
-        {
-            "schema": "cs2-observer-report/1",
-            "reachedFull": False,
-            "drainCompleted": False,
-            "lastProcessedSequence": 0,
-        },
-        None,
-        [],
-    )
-
-    try:
-        from sdk import NativePort
-
-        writer = OutputWriter(sys.stdout.fileno(), age_limit_us=HARD_AGE_US)
-        diagnostics = OutputWriter(sys.stderr.fileno(), max_records=1, max_bytes=65536)
-        if args.capture:
-            events = private_file(args.output / "events.jsonl", "wb")
-            samples = private_file(args.output / "channel.frames", "wb")
-            capture = CaptureWriter(budget)
-            capture.emit(samples, MAGIC)
-        parser = OrderedParserBridge(
-            source=args.source_role + ":" + (args.source_id or uuid4().hex),
-            channel=1,
-            world=1,
-            node=args.node,
-            worker=args.parser_worker,
-        )
-        if owner.is_set():
-            raise KeyboardInterrupt()
-        native = NativePort(args.native, endpoint, clock_ms(), steam_api=args.steam_api)
-        del endpoint
-
-        def emit_event(event, data):
-            cursor = (
-                {key: event[key] for key in ("world", "committedTick", "sequence")}
-                if event["kind"] == "cursor"
-                else None
-            )
-            if driver._drain_deadline is not None:
-                writer.age_limit_us = DRAIN_TIMEOUT_MS * 1000
-            age = source_age_us(event) if driver._drain_deadline is None else None
-            writer.emit_encoded(
-                data, cursor=cursor, source_age_us=age, sequence=event["sequence"]
-            )
-            if capture:
-                capture.emit(events, data)
-
-        def capture_sample(data, reliable, elapsed_ms):
-            if not budget.truncated:
-                capture.emit(
-                    samples,
-                    struct.pack("<IQB", len(data), elapsed_ms, int(reliable)) + data,
-                )
-
-        driver = ObserverDriver(
-            native,
-            host_version=args.host_version,
-            password=password,
-            emit=emit_event,
-            encoded_output=True,
-            supervised=args.session_attempt,
-            capture=capture_sample if capture else None,
-            now_ms=clock_ms(),
-            parser=parser,
-        )
-        stop = clock_ms() + args.seconds * 1000 if args.seconds else None
-        idle_ms = 1
-        while (
-            not driver.done
-            and (stop is None or clock_ms() < stop)
-            and not owner.is_set()
-        ):
-            writer.check()
-            result = driver.step(clock_ms(), clock=clock_ms, cancelled=owner.is_set)
-            health = driver.update_health(writer)
-            if health is not None:
-                try:
-                    diagnostics.emit(health)
-                except ProbeError:
-                    pass  # A stalled diagnostics reader never gates game records.
-            if result.received or result.results:
-                idle_ms = 1
-            if result.duty is Duty.BUDGET:
-                continue
-            if result.duty is Duty.STOPPED:
-                break
-            parser.wait_for_progress(driver.wait_timeout(clock_ms(), idle_ms, stop))
-            idle_ms = min(8, idle_ms * 2)
-        if not driver.done:
-            driver.reason = (
-                "owner-stopped" if owner.is_set() else "duration-limit-incomplete"
-            )
-        driver.update_health(writer, force=True)
-        report.update(driver.report())
-    except BaseException as error:
-        if isinstance(error, KeyboardInterrupt):
-            owner.stopped.set()
-            report["reason"] = "owner-stopped"
-        else:
-            failure = (
-                str(error)
-                if isinstance(error, (DriverError, ProbeError))
-                else "operation-failed-details-omitted"
-            )
-            if type(error).__name__ == "NativeStartError":
-                failure = "native-start-failed"
-                report["native_boot_code"], report["steam_init_result"] = (
-                    error.boot_code,
-                    error.init_result,
-                )
-            report["reason"] = failure
-        if driver is not None:
-            driver.reason = report["reason"]
-            if failure and (
-                failure.endswith("-overload")
-                or failure
-                in (
-                    "output-backpressure",
-                    "output-closed",
-                    "ordered-parser-input-backpressure",
-                )
-            ):
-                driver._health_reason = failure
-            driver.update_health(writer, force=True)
-            report.update(driver.report())
-    finally:
-        owner_stopped = owner.is_set()
-        password[:] = bytes(len(password))
-        # Retire public delivery before joining parser pipes on owner cancellation.
-        # Normal source completion still flushes the accepted final records below.
-        output_closed = (
-            writer.abort() if writer and (failure or owner_stopped) else None
-        )
-        for stage, action in [
-            (
-                "close-session",
-                driver.close if driver else native.close if native else None,
-            ),
-            ("close-parser", parser.close if parser else None),
-            ("close-capture", capture.finish if capture else None),
-        ]:
-            if action:
-                try:
-                    action()
-                except BaseException:
-                    finalization.append(stage)
-        if not capture or not capture.thread.is_alive():
-            for handle in (events, samples):
-                if handle:
-                    try:
-                        handle.close()
-                    except OSError:
-                        budget.truncated = True
-                        finalization.append("close-capture-file")
-        if writer:
-            completed = output_closed if output_closed is not None else writer.finish()
-            if not completed:
-                finalization.append("close-output")
-                if driver and not failure and not owner_stopped:
-                    failure = writer.failure or "output-drain-timeout"
-                    driver.reason = driver._health_reason = failure
-            if driver:
-                driver.update_health(writer, force=True)
-                report["health"] = driver.health
-                report["reason"] = driver.reason
-        if not owner.close():
-            finalization.append("close-input")
-        report.update(
-            finalization_failures=finalization,
-            cleanupCompleted=not finalization,
-            capture={
-                "enabled": args.capture,
-                "bytes": budget.written,
-                "budget": budget.maximum,
-                "truncated": budget.truncated,
-            },
-        )
-        report["outcome"] = (
-            "failed"
-            if failure or finalization
-            else "closed"
-            if driver is not None
-            and driver.phase == "closed"
-            and driver.drain_completed
-            else "incomplete"
-        )
-        report["reportWritten"] = True
-        report["attemptResult"] = classify_attempt_result(
-            report,
-            failure_code=failure,
-            owner_stopped=owner_stopped,
-        ).to_dict()
-        if len(json.dumps(report).encode()) > 30000:
-            report["stages"] = report.get("stages", [])[-32:]
-            report["net_message_counts"] = dict(
-                list(report.get("net_message_counts", {}).items())[:128]
-            )
-            report["diagnosticTruncated"] = True
-        try:
-            write_report_file(args.output, report)
-        except BaseException:
-            report["reportWritten"] = False
-            finalization.append("write-report")
-            report.update(outcome="failed", cleanupCompleted=False)
-            report["attemptResult"] = classify_attempt_result(
-                report,
-                failure_code=failure or "write-report",
-                owner_stopped=owner_stopped,
-            ).to_dict()
-        emit_terminal_report(diagnostics, report)
-    return (
-        1
-        if report["outcome"] == "failed"
-        else 0
-        if report["outcome"] == "closed"
-        else 2
-    )
+    return execute_attempt(args, owner, endpoint, password)
 
 
 if __name__ == "__main__":

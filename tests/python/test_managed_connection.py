@@ -679,7 +679,7 @@ sys.exit(code)
                 )
 
     def test_permanent_and_consumer_failures_do_not_reconnect(self):
-        from driver_support import classify_attempt_result
+        from attempt_contract import classify_attempt_result
         from session_supervisor import decide_recovery
 
         for code in (
@@ -728,6 +728,18 @@ sys.exit(code)
             ).action,
             "retry",
         )
+        structured_transient = classify_attempt_result(
+            {"outcome": "failed", "cleanupCompleted": True},
+            failure_code="ordered-parser-input-failed",
+            failure_transient=True,
+        )
+        self.assertEqual(structured_transient.category, "transient-fault")
+        structured_permanent = classify_attempt_result(
+            {"outcome": "failed", "cleanupCompleted": True},
+            failure_code="ordered-parser-input-failed",
+            failure_transient=False,
+        )
+        self.assertEqual(structured_permanent.category, "permanent-fault")
         unknown_follow_close = classify_attempt_result(
             {
                 "outcome": "failed",
@@ -749,7 +761,7 @@ sys.exit(code)
         )
 
     def test_recovery_decision_ignores_diagnostic_reason_text(self):
-        from driver_support import parse_attempt_result
+        from attempt_contract import parse_attempt_result
         from session_supervisor import decide_recovery
 
         base = {
@@ -788,7 +800,7 @@ sys.exit(code)
         )
 
     def test_malformed_and_contradictory_attempt_result_fails_closed(self):
-        from driver_support import parse_attempt_result
+        from attempt_contract import parse_attempt_result
 
         base = {
             "schema": "cs2-observer-attempt-result/1",
@@ -862,6 +874,89 @@ sys.exit(code)
         )
         self.assertEqual(outer_mismatch.category, "invalid-completion")
         self.assertFalse(outer_mismatch.valid_completion)
+
+    def test_attempt_reporting_pure_projection_has_no_driver_dependency(self):
+        from attempt_reporting import (
+            HealthInputs,
+            ReportInputs,
+            build_attempt_health,
+            build_attempt_report,
+        )
+
+        health_inputs = HealthInputs(
+            done=False,
+            reason=None,
+            last_health_ns=0,
+            last_health_totals=(0, 0, 0, 0, 0),
+            sdk_sample_ns=None,
+            last_sdk_age_us=None,
+            window_sdk_age_us=None,
+            max_sdk_age_us=None,
+            max_parser_age_us=None,
+            health_reason=None,
+            gap=False,
+            recovery_pending=False,
+            draining=False,
+            full_sent=True,
+            last_cursor=None,
+            cursor_rate=None,
+            receive_budget_exhausted=0,
+            result_budget_exhausted=0,
+            totals=(10, 100, 10, 100, 50),
+        )
+        health = build_attempt_health(
+            health_inputs,
+            parser_identity={"source": "ahead:test", "channel": 1, "world": 1},
+            parser_backlog={"oldestAgeUs": None},
+            parser_checkpoint={"tick": 5, "networkTick": 5, "committedTick": 5},
+            parser_throttled=True,
+            writer_status={"lastDeliveredCursor": None, "oldestAgeUs": None},
+            staging_backlog={"oldestAgeUs": None},
+            now=2_000_000_000,
+        )
+        self.assertEqual(health["state"], "catching-up")
+        self.assertEqual(health["reason"], "local-backlog")
+        report = build_attempt_report(
+            ReportInputs(
+                phase="closed",
+                reason="source-hltv-stop",
+                received_messages=10,
+                host_version=14198,
+                native_state=6,
+                native_failure=7,
+                remote_end_reason=1038,
+                world_creation_watermark=1,
+                world_creation_sequences=[1],
+                challenge_metadata=None,
+                challenge_requests=1,
+                feedback_sent=2,
+                last_received_channel_sequence=3,
+                channel_frames=4,
+                channel_bytes=400,
+                channel_receive_span_ms=50,
+                received_signon_state=6,
+                effective_signon_state=6,
+                full_snapshot_processed=True,
+                stages=[],
+                ever_full=True,
+                last_processed_sequence=3,
+                last_output_sequence=2,
+                drain_completed=True,
+                health=health,
+                parser_checkpoint=None,
+                parser_failure=None,
+                parser_diagnostics=[],
+                last_processed_entity_tick=5,
+                last_acknowledged_entity_tick=5,
+                full_update_requests=0,
+                baseline_ack_count=1,
+                net_message_counts={},
+                full_sent=True,
+            )
+        )
+        self.assertEqual(report["phase"], "closed")
+        self.assertTrue(report["reachedFull"])
+        self.assertTrue(report["drainCompleted"])
 
     def test_session_attempt_close_job_reap_failure_raises_cleanup_error(self):
         from unittest.mock import MagicMock, patch
@@ -963,7 +1058,7 @@ sys.exit(code)
         import tempfile
         from types import SimpleNamespace
         from unittest.mock import patch
-        import driver
+        import attempt_runner
         from process_io import ManagedOwner
 
         with (
@@ -995,10 +1090,12 @@ sys.exit(code)
                 patch.object(sys, "stdout", stdout_file),
                 patch.object(sys, "stderr", stderr_file),
                 patch.object(
-                    driver, "write_report_file", side_effect=OSError("disk-full")
+                    attempt_runner,
+                    "write_report_file",
+                    side_effect=OSError("disk-full"),
                 ),
             ):
-                code = driver.run_attempt(
+                code = attempt_runner.run_attempt(
                     args, owner, "127.0.0.1:27020", bytearray(b"test")
                 )
             stderr_file.seek(0)

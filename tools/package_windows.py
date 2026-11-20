@@ -22,7 +22,9 @@ RUNTIMES = {
 }
 MODULES = [
     "driver",
-    "driver_support",
+    "attempt_contract",
+    "attempt_reporting",
+    "attempt_runner",
     "session_supervisor",
     "launcher",
     "ipc_contract",
