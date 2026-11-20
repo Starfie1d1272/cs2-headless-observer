@@ -8,6 +8,7 @@
     "build:parser": "node tools/build_parser.mjs",
     "test": "python tools/run_python_tests.py",
     "test:events": "vitest run tests/demo/decode.test.ts tests/demo/failure.test.ts",
+    "test:fast": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:events && pnpm test",
     "typecheck": "tsc6 -p tsconfig.json --noEmit",
     "verify": "python tools/verify_all.py",
     "format": "prettier --write \"{parser/src,tools,tests}/**/*.{ts,js,mjs,cjs}\" --ignore-unknown",

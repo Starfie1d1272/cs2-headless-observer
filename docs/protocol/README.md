@@ -11,4 +11,4 @@
 - [来源代际与事务](GENERATION-TRANSACTION-CONTRACT.md)
 - [事件生命周期](EVENT-LIFECYCLE-CONTRACT.md)
 
-各页保留固定模块的地址、摘要和研究时间范围，阶段描述用于追溯当时的结论。文中证据文件按 `research/data/` 查找，原生核对工具位于 `research/tools/`，阶段实现记录位于 `archive/research-notes/`。知识条目与来源索引见[知识库](../../research/knowledge/README.md)。
+各页保留固定模块的地址、摘要和研究时间范围，阶段描述用于追溯当时的结论。文中证据文件按 `research/data/` 查找，原生核对工具位于 `research/tools/`，阶段实现记录已归档至 Git 标签 `archive/research-era`（索引见[历史归档](../../archive/README.md)）。知识条目与来源索引见[知识库](../../research/knowledge/README.md)。

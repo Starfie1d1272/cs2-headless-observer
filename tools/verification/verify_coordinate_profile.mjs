@@ -30,6 +30,12 @@ const reader = (bytes, p = profile) => new BitBuffer(bytes).setCoordinateEncodin
 assert.equal(reader(bits([1, 1], [1, 1], [0, 1], [2, 10], [8, 4])).readBitCoord(), 3.5);
 assert.equal(reader(bits([0, 1], [255, 8])).decodeNormal(), 1);
 assert.equal(reader(bits([1, 1], [255, 8])).decodeNormal(), -1);
+for (const sign of [0, 1]) {
+  for (const magnitude of [0, 1, 1024, 2047]) {
+    const defReader = new BitBuffer(bits([sign, 1], [magnitude, 11]));
+    assert.ok(Math.abs(defReader.decodeNormal() - ((sign ? -1 : 1) * magnitude) / 2047) < 1e-7);
+  }
+}
 assert.equal(reader(bits([32768, 16])).readBitCoordPres(), 0);
 assert.equal(new BitBuffer(bits([1, 1], [1, 1], [0, 1], [2, 14], [16, 5])).readBitCoord(), 3.5);
 const info = parseClassInfo({ data: Uint8Array.of(wire.length, ...wire) }, { classes: [] });

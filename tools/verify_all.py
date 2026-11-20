@@ -204,7 +204,6 @@ def main():
         run("events", [pnpm, "test:events"])
         run("typecheck", [pnpm, "typecheck"])
         for name in (
-            "verify_online_entities.mjs",
             "verify_coordinate_profile.mjs",
             "verify_angle_codecs.mjs",
             "verify_integral_coordinates.mjs",

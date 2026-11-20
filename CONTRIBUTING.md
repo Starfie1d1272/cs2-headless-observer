@@ -1,6 +1,6 @@
 # 开发与贡献
 
-先读[构建](docs/build.md)与[验证](docs/verification.md)，在现有职责边界内实现可复现的修改。
+先读 [AGENTS.md](AGENTS.md)、[构建](docs/build.md)与[验证](docs/verification.md)，在现有职责边界内实现可复现的修改。
 
 ## 源码组织
 

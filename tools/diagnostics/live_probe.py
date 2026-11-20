@@ -1,5 +1,7 @@
-"""Source 2 net-message consumer. No Demo wrapper, auth bytes, sockets or init ACKs.
+"""Non-production independent diagnostic net-message cross-validator.
 
+Production event/entity interpretation lives in client/control.py,
+client/ordered_parser_bridge.py, and client/parser_worker.mjs.
 The historical Source1Legacy names below are messages in CS2's gameevents.proto;
 this does not import Source 1 transport. Player identity/entity state stay unknown.
 """
