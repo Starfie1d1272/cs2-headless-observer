@@ -1,6 +1,9 @@
 name: Observer Windows Package
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 permissions:
   contents: read
 concurrency:
@@ -9,6 +12,8 @@ concurrency:
 jobs:
   windows:
     runs-on: windows-2025
+    permissions:
+      contents: write
     timeout-minutes: 15
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -66,6 +71,12 @@ jobs:
           & "$dist/cs2-headless-observer.exe" replay --input "$dist/examples/synthetic-channel.json" --host-version 14191 --output 'work/package-build/replay-verify'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $contract = Get-Content 'packaging/component-contract.json' | ConvertFrom-Json
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $tagVer = $env:GITHUB_REF_NAME.Substring(1)
+            if ($tagVer -ne $contract.componentVersion) {
+              throw "Tag version '$tagVer' does not match componentVersion '$($contract.componentVersion)'"
+            }
+          }
           $hashes = @{}
           Get-ChildItem -Path $dist -Recurse -File | ForEach-Object {
             $rel = $_.FullName.Substring((Resolve-Path $dist).Path.Length + 1).Replace('\', '/')
@@ -89,10 +100,24 @@ jobs:
             filesSha256 = $hashes
           }
           $manifest | ConvertTo-Json -Depth 6 | Set-Content -Path "$dist/manifest.json" -Encoding UTF8
-          Compress-Archive -Path "$dist/*" -DestinationPath 'dist/observer.zip' -Force
+          $zipName = "cs2-headless-observer-$($contract.componentVersion)-windows-x64.zip"
+          Compress-Archive -Path "$dist/*" -DestinationPath "dist/$zipName" -Force
+          $zipHash = (Get-FileHash "dist/$zipName" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$zipHash  $zipName" | Set-Content -Path 'dist/SHA256SUMS.txt' -Encoding UTF8
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: cs2-headless-observer-windows-${{ env.SOURCE_SHA }}
-          path: dist/observer.zip
+          path: |
+            dist/cs2-headless-observer-*.zip
+            dist/SHA256SUMS.txt
           retention-days: 7
           if-no-files-found: error
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $files = @(Get-ChildItem -Path 'dist' -Filter 'cs2-headless-observer-*.zip' | ForEach-Object { $_.FullName })
+          $files += (Resolve-Path 'dist/SHA256SUMS.txt').Path
+          gh release create $env:GITHUB_REF_NAME @files --title $env:GITHUB_REF_NAME --generate-notes
