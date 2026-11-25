@@ -1,49 +1,29 @@
 # 验证
 
-验证分为四层：日常开发可先运行快速检查，合并前与发布前必须运行完整离线门禁或制品检查。
+验证分为本地开发检查、跨平台 CI 门禁、Windows 制品组装自检与在线实机核对四层。
 
-## 1. 快速检查
+## 1. 本地与跨平台 CI 检查
 
-```powershell
-pnpm run test:fast
+在 `rust/` 目录下运行（由 [`.github/workflows/observer-rust.yml`](../.github/workflows/observer-rust.yml) 在 `ubuntu-latest` 与 `windows-2025` 上自动执行）：
+
+```bash
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+cargo test
+cargo build --release
 ```
 
-覆盖 Prettier 格式检查、Biome lint、TypeScript 类型检查、Node 事件测试与 Python 单元测试（未构建 worker 时会跳过需要 `GOTV_ORDERED_WORKER` 的进程集成用例）。Python 代码风格使用 `ruff format --check client tools tests` 与 `ruff check client tools tests`。
+测试覆盖：
+- **9 个单元测试**：线格式编解码与可靠序（`wire::channel`）、合成通道全量回放与 `weapon_fire` 身份投影（`parser::core`）、ICE 密码加密与内存零化（`native::password`）。
+- **5 个集成测试**（`rust/tests/mock_port.rs`）：基于 `MockPort` 覆盖完整 E2E 生命周期（Auth3 → Signon → FULL → ACK=100 → 事件输出 → ID 51/Signon 世界重置 → 实体恢复 → 1038 排空）、Auth2 握手、`--follow-source` 下 `stdin` EOF 退出、`HealthV2`/`ReportV2` 契约与 `decide_recovery` 状态机。
 
-## 2. 生产链路完整门禁
+## 2. Windows 制品编译与自检
 
-按[构建步骤](build.md)从固定上游生成 worker 后运行：
+[`.github/workflows/observer-research.yml`](../.github/workflows/observer-research.yml) 在 `windows-2025` 上执行：
+1. 构建并测试 Rust Release 二进制（`cs2-headless-observer.exe`）；
+2. 拉取固定摘要的 Proton `steamworks_sdk_165` 头文件并用 `tools/build_native.py` 编译 `cs2_observer.dll`（校验 ABI 4 全部导出符号）；
+3. 组装 `dist/observer` 后运行 `cs2-headless-observer.exe replay --input examples/synthetic-channel.json --host-version 14191 --output ...` 完成离线自检并生成 `manifest.json`（`cs2-headless-observer-package/5`）。
 
-```powershell
-python tools/verify_all.py --parser-source work/parser --worker work/build/parser_worker.mjs
-```
+## 3. 在线与实机验证
 
-可追加 `--node <absolute-node.exe>` 选择共享运行时。报告记录实际 Node 版本、可执行文件和 worker 摘要。
-
-检查覆盖原生 ABI、会话生命周期、七个解析组件、Python 与事件测试、类型、codec 对照、知识库、仓库链接、公开契约及合成回放。Windows 使用本机 MSVC，Linux 源码检查使用 g++；在线客户端的发布平台见[兼容性](compatibility.md)。
-
-结果写入 `work/verification/<UTC时间>/verification.json` 与分项日志。完整通过要求所有必需项实际执行，并保持研究证据和协议材料的原始摘要。
-
-## 真实捕获与性能
-
-`client/replay_ordered.py` 重放本机授权通道，用同一份输入比较事件字段、顺序、代际和身份。样例及操作见[使用说明](usage.md)。
-
-[性能检查](performance.md)记录投影字段与 GameRules 的采样方法、局部成本和总体回放耗时。实际制播负载按对应硬件、游戏与消费应用组合测量。
-
-## SDK 与在线层级
-
-`python tools/verify_sdk_drain.py --help` 提供 Windows 官方 SDK 本地 socket pair 检查，使用合法 Steam 上下文和本机游戏 DLL，覆盖连接关闭后的尾消息读取。
-
-授权 GOTV 验证记录实际 build/host、握手、FULL、连续事件、来源结束和清理。首个 FULL 恢复与远程 1038 尾队列的补验范围集中在[兼容性](compatibility.md#验证证据)。
-
-## 制品检查
-
-手动 Windows 打包流程从固定输入编译原生桥，生成独立包和 external-node 包。`tools/verify_package.py` 核对清单、摘要、文档链接、WASM 源码、合成回放、启动失败清理及执行后的文件状态。
-
-正式发布为源码和两类包固定同一提交，提供版本化资产、SHA256SUMS 与验证摘要。原始捕获保存在本机，公开样例采用合成输入。
-
-## 研究工具
-
-`tools/verification/verify.py` 提供 Linux Demo 增长文件、停止与截断对照，使用固定外部 fixture；来源和摘要见[历史客户端记录](../archive/docs/client-README.md)。`verify_channel.py`、`verify_password.py`、`verify_live.py` 的参数与 oracle 输入见各自 `--help`。
-
-原生函数模拟的模块、工具链与固定输入见[研究配方](../research/tools/TYPE-PROFILE-REPRODUCTION.md)。
+离线 CI 与 `MockPort` 不替代真实 Steam / GOTV 在线验证。授权 GOTV 实机连接、最新 CS2 build 兼容与长期性能基准持续在 Issue [#1](https://github.com/Starfie1d1272/cs2-headless-observer/issues/1) 与 [#52](https://github.com/Starfie1d1272/cs2-headless-observer/issues/52) 中跟进。

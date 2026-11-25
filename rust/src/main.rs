@@ -48,6 +48,7 @@ enum Commands {
 
 fn main() {
     let cli = Cli::parse();
+    let is_managed = cli.managed && cli.command.is_none();
     let result = match cli.command {
         Some(Commands::Replay {
             input,
@@ -88,7 +89,9 @@ fn main() {
     };
 
     if let Err(err) = result {
-        eprintln!("observer-error: {err}");
+        if !is_managed {
+            eprintln!("observer-error: {err}");
+        }
         std::process::exit(1);
     }
 }

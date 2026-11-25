@@ -1,22 +1,13 @@
 {
   "componentId": "cs2-headless-observer",
-  "componentVersion": "3.0.1",
+  "componentVersion": "4.0.0",
   "platform": "win32-x64",
   "nativeAbi": 4,
-  "parserIpc": 4,
   "managedProtocol": "cs2-observer-managed-json/2",
   "managedProtocols": ["cs2-observer-managed-json/2"],
   "managedFeatures": ["follow-source"],
   "validatedHostVersions": [
     14191,
     14192
-  ],
-  "nodeRequirement": {
-    "minimumMajor": 24,
-    "features": [
-      "WebAssembly",
-      "ReadableStream",
-      "structuredClone"
-    ]
-  }
+  ]
 }

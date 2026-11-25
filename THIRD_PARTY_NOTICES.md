@@ -1,21 +1,32 @@
 # 第三方来源与分发材料
 
-项目自有代码采用根目录的 AGPL-3.0，并附 [Steamworks SDK 链接例外](LICENSE-STEAMWORKS-EXCEPTION.txt)。迁自 Mizar 的代码保留来源，第三方组件适用各自许可证。
+项目自有代码采用根目录的 AGPL-3.0，并附 [Steamworks SDK 链接例外](LICENSE-STEAMWORKS-EXCEPTION.txt)。4.0.0 起以纯 Rust 单二进制（`cs2-headless-observer.exe`）与 C++ 原生桥（`cs2_observer.dll`）分发，不再包含 Node.js、Python、`cs2parser` 或 WASM 依赖；第三方组件适用各自许可证。
+
+## 原生桥与运行时外部输入
 
 | 组件 | 固定来源 | 随包材料与使用方式 |
 | --- | --- | --- |
-| cs2parser | 2.7.2，`deced963b86d3ec26b28a225824130fdf9fe3167` | MPL-2.0；修改源码、补丁、LICENSE、ACKNOWLEDGEMENTS |
-| @bufbuild/protobuf | `pnpm-lock.yaml` 的精确版本 | Apache-2.0、varint 内 BSD 通知及对应分发源码 |
-| Node.js | Windows 24.22.0 归档与固定摘要 | 独立包提供原始 LICENSE 及第三方声明 |
-| Python | Windows embeddable 3.14.8 归档与固定摘要 | 两类包提供原始 LICENSE.txt |
 | Steamworks SDK 头文件 | ValveSoftware/Proton `bc896217ffcd67f892f952b010f898fe7bd0f0a1` 的 `steamworks_sdk_165` | 外部编译输入；归档协议见 [Steamworks-SDK.txt](licenses/Steamworks-SDK.txt) |
-| Steam API | 使用者本机 CS2 安装 | 运行时从本机加载 |
-| ICE 独立对照 | `verify_password.py` 指定的外部来源 | 可选测试输入，按该输入原始许可使用 |
+| Steam API | 使用者本机 CS2 安装 | 运行时从本机加载 `steam_api64.dll` |
 
-`external-node` 使用调用方提供的 Node，其通知由运行时提供方保留。两个 Windows 包均提供项目、Python、解析器及其余实际分发组件的许可与对应源码材料。
+Steamworks SDK 链接例外适用于项目权利人有权授权的代码；Valve 材料的使用和分发遵循 SDK 协议。SDK 头文件仅作为构建前提准备，账号、票据和游戏模块保存在使用者本机。
 
-Steamworks SDK 链接例外适用于项目权利人有权授权的代码；Valve 材料的使用和分发遵循 SDK 协议。SDK 头文件作为构建前提准备，账号、票据和游戏模块保存在使用者本机。
+## Rust 静态链接依赖（`rust/Cargo.lock`）
 
-研究参考的版本和复用范围见[来源说明](research/references/REFERENCE-BASIS.md)。固定模块研究提供摘要和观察结果，公开示例采用合成输入。
+直接依赖及传递依赖的版本锁定于 [`rust/Cargo.lock`](rust/Cargo.lock)：
 
-发行材料按固定提交、构建输入和实际 bundle 核对，包含间接依赖的通知与重建资料。手动打包流程生成候选资产，正式 Release 使用版本化归档、摘要和验证记录。
+| Crate | 版本 | 许可证 | 用途 |
+| --- | --- | --- | --- |
+| `clap`（含 `clap_builder`、`clap_derive`、`clap_lex` 等） | `4.6.10` | MIT OR Apache-2.0 | 命令行参数解析 |
+| `libloading` | `0.8.9` | ISC | 动态加载 `cs2_observer.dll`（ABI 4） |
+| `lz4_flex` | `0.11.7` | MIT | GOTV 帧 LZ4 块解压 |
+| `prost`（含 `prost-derive`、`bytes`） | `0.13.5` | Apache-2.0 | Source 2 Protobuf 线格式编解码 |
+| `serde`（含 `serde_core`、`serde_derive`） | `1.0.229` | MIT OR Apache-2.0 | 结构体序列化与反序列化 |
+| `serde_json` | `1.0.154` | MIT OR Apache-2.0 | Managed JSON v2 输出与报告序列化 |
+| `snap` | `1.1.2` | BSD-3-Clause | StringTable Snappy 解压 |
+| `thiserror`（含 `thiserror-impl`） | `2.0.21` | MIT OR Apache-2.0 | 结构化错误类型定义 |
+| `uuid`（含 `getrandom`） | `1.29.3` | Apache-2.0 OR MIT | 默认 `source-id` UUIDv4 生成 |
+
+其余传递支撑 crate（如 `windows-sys`、`windows-link`、`libc`、`memchr`、`twox-hash`、`itoa`、`zmij`、`syn`、`quote`、`proc-macro2` 等）均采用 `MIT OR Apache-2.0`、`MIT`、`Apache-2.0` 或 `Unicode-3.0`（`unicode-ident`）等兼容许可，完整锁定清单见 [`rust/Cargo.lock`](rust/Cargo.lock)。
+
+对应完整源码通过 GitHub Release tag 与官方源码归档提供。

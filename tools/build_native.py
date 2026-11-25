@@ -3,12 +3,49 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
-from verify_all import native_environment
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def native_environment():
+    env = (
+        {key.upper(): value for key, value in os.environ.items()}
+        if os.name == "nt"
+        else dict(os.environ)
+    )
+    if os.name == "nt" and not shutil.which("cl"):
+        vswhere = (
+            Path(env.get("PROGRAMFILES(X86)", r"C:\Program Files (x86)"))
+            / "Microsoft Visual Studio/Installer/vswhere.exe"
+        )
+        if vswhere.is_file():
+            location = subprocess.check_output(
+                [
+                    str(vswhere),
+                    "-latest",
+                    "-products",
+                    "*",
+                    "-requires",
+                    "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+                    "-property",
+                    "installationPath",
+                ],
+                text=True,
+            ).strip()
+            script = Path(location) / "VC/Auxiliary/Build/vcvars64.bat"
+            if location and script.is_file():
+                output = subprocess.check_output(
+                    f'cmd.exe /d /s /c ""{script}" >nul && set"', text=True
+                )
+                for line in output.splitlines():
+                    key, sep, value = line.partition("=")
+                    if sep and key:
+                        env[key.upper()] = value
+    return env
 
 
 def main():

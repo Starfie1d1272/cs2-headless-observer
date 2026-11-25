@@ -1,6 +1,9 @@
 name: Observer Windows Package
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 permissions:
   contents: read
 concurrency:
@@ -9,6 +12,8 @@ concurrency:
 jobs:
   windows:
     runs-on: windows-2025
+    permissions:
+      contents: write
     timeout-minutes: 15
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -17,89 +22,102 @@ jobs:
         with:
           ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          runtime: node@24
-          cache: false
-          require-lockfile: true
-          install: true
-      - name: Fetch pinned parser source
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
         with:
-          repository: osztenkurden/cs2parser
-          ref: deced963b86d3ec26b28a225824130fdf9fe3167
-          path: work/parser
-          persist-credentials: false
-      - name: Build parser using the locked workspace toolchain
+          workspaces: rust
+      - name: Build and test Rust observer
+        working-directory: rust
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force work/package-build | Out-Null
-          node tools/build_parser.mjs work/parser work/package-build/parser_worker.mjs
+          cargo test
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Run required offline verification
-        shell: pwsh
-        run: |
-          python tools/verify_all.py --parser-source work/parser --worker work/package-build/parser_worker.mjs --output work/verification/package-ci
+          cargo build --release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Fetch pinned official SDK headers and portable runtimes
+      - name: Fetch pinned official SDK headers
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $root = 'work/package-build'
-          $files = @(
-            @('https://codeload.github.com/ValveSoftware/Proton/tar.gz/bc896217ffcd67f892f952b010f898fe7bd0f0a1', 'sdk.tar.gz', 'be18d77ae5f9e5ce21318d151c692648e5cb7c5ffa50dea2dcac6c408966b077'),
-            @('https://nodejs.org/dist/v24.22.0/node-v24.22.0-win-x64.zip', 'node-v24.22.0-win-x64.zip', 'f9683a19877e12a9b167305c8db71040d812876359de21f0d2e97c3f321f80c3'),
-            @('https://www.python.org/ftp/python/3.14.8/python-3.14.8-embed-amd64.zip', 'python-3.14.8-embed-amd64.zip', 'a93abe456ab01bd96d7a085b3cdb6566b3063f4241360d114142fbdb07f0a310')
-          )
-          foreach ($item in $files) {
-            $path = Join-Path $root $item[1]
-            Invoke-WebRequest -Uri $item[0] -OutFile $path -TimeoutSec 180
-            if ((Get-FileHash $path -Algorithm SHA256).Hash.ToLowerInvariant() -ne $item[2]) { throw 'Pinned input digest mismatch' }
-          }
+          New-Item -ItemType Directory -Force $root | Out-Null
+          $tar = Join-Path $root 'sdk.tar.gz'
+          Invoke-WebRequest -Uri 'https://codeload.github.com/ValveSoftware/Proton/tar.gz/bc896217ffcd67f892f952b010f898fe7bd0f0a1' -OutFile $tar -TimeoutSec 180
+          if ((Get-FileHash $tar -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'be18d77ae5f9e5ce21318d151c692648e5cb7c5ffa50dea2dcac6c408966b077') { throw 'Pinned SDK digest mismatch' }
           New-Item -ItemType Directory -Force "$root/sdk/steam" | Out-Null
-          tar -xzf "$root/sdk.tar.gz" -C "$root/sdk/steam" --strip-components=3 'Proton-bc896217ffcd67f892f952b010f898fe7bd0f0a1/lsteamclient/steamworks_sdk_165'
+          tar -xzf $tar -C "$root/sdk/steam" --strip-components=3 'Proton-bc896217ffcd67f892f952b010f898fe7bd0f0a1/lsteamclient/steamworks_sdk_165'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Compile the native bridge without loading Steam
         shell: pwsh
         run: |
           python tools/build_native.py --sdk work/package-build/sdk --output work/package-build/native
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Fetch a test-only external Node baseline
+      - name: Assemble and verify Rust Windows package
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $name = 'node-v24.0.0-win-x64'
-          $zip = 'work/package-build/external-node.zip'
-          $sums = (Invoke-WebRequest -Uri 'https://nodejs.org/dist/v24.0.0/SHASUMS256.txt').Content
-          $expected = (($sums -split "`n" | Where-Object { $_.Trim().EndsWith("$name.zip") }) -split '\s+')[0]
-          Invoke-WebRequest -Uri "https://nodejs.org/dist/v24.0.0/$name.zip" -OutFile $zip -TimeoutSec 180
-          if ((Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw 'External test Node digest mismatch' }
-          Expand-Archive -LiteralPath $zip -DestinationPath work/package-build/external-node
-          "OBSERVER_TEST_NODE=$env:GITHUB_WORKSPACE/work/package-build/external-node/$name/node.exe" >> $env:GITHUB_ENV
-      - name: Verify the full observer at minimum Node version
-        shell: pwsh
-        run: |
-          python tools/verify_all.py --parser-source work/parser --worker work/package-build/parser_worker.mjs --node $env:OBSERVER_TEST_NODE --output work/verification/minimum-node-ci
+          $dist = 'dist/observer'
+          New-Item -ItemType Directory -Force $dist, "$dist/licenses", "$dist/schemas", "$dist/examples" | Out-Null
+          Copy-Item 'rust/target/release/cs2-headless-observer.exe' "$dist/cs2-headless-observer.exe"
+          Copy-Item 'work/package-build/native/cs2_observer.dll' "$dist/cs2_observer.dll"
+          Copy-Item 'LICENSE' "$dist/licenses/cs2-headless-observer-AGPL-3.0.txt"
+          Copy-Item 'LICENSE-STEAMWORKS-EXCEPTION.txt' "$dist/licenses/LICENSE-STEAMWORKS-EXCEPTION.txt"
+          Copy-Item 'licenses/Steamworks-SDK.txt' "$dist/licenses/Steamworks-SDK.txt"
+          Copy-Item 'THIRD_PARTY_NOTICES.md' "$dist/licenses/THIRD_PARTY_NOTICES.md"
+          Copy-Item 'schemas/*' "$dist/schemas/" -Recurse
+          Copy-Item 'examples/*' "$dist/examples/" -Recurse
+          Copy-Item 'tests/fixtures/synthetic-channel.json' "$dist/examples/synthetic-channel.json"
+          & "$dist/cs2-headless-observer.exe" replay --input "$dist/examples/synthetic-channel.json" --host-version 14191 --output 'work/package-build/replay-verify'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Assemble and verify the portable package
-        shell: pwsh
-        run: |
-          python tools/package_windows.py --runtimes work/package-build --native work/package-build/native/cs2_observer.dll --parser-bundle work/package-build/parser_worker.mjs --parser-source work/parser --output dist/observer --source-sha $env:SOURCE_SHA
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/verify_package.py dist/observer
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/package_windows.py --kind external-node --runtimes work/package-build --native work/package-build/native/cs2_observer.dll --parser-bundle work/package-build/parser_worker.mjs --parser-source work/parser --output dist/observer-component --source-sha $env:SOURCE_SHA
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/verify_package.py dist/observer-component --node $env:OBSERVER_TEST_NODE
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          git diff --exit-code
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $contract = Get-Content 'packaging/component-contract.json' | ConvertFrom-Json
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $tagVer = $env:GITHUB_REF_NAME.Substring(1)
+            if ($tagVer -ne $contract.componentVersion) {
+              throw "Tag version '$tagVer' does not match componentVersion '$($contract.componentVersion)'"
+            }
+          }
+          $hashes = @{}
+          Get-ChildItem -Path $dist -Recurse -File | ForEach-Object {
+            $rel = $_.FullName.Substring((Resolve-Path $dist).Path.Length + 1).Replace('\', '/')
+            $hashes[$rel] = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          }
+          $manifest = @{
+            schema = 'cs2-headless-observer-package/5'
+            componentId = $contract.componentId
+            componentVersion = $contract.componentVersion
+            sourceSha = $env:SOURCE_SHA
+            platform = $contract.platform
+            nativeAbi = $contract.nativeAbi
+            managedProtocol = $contract.managedProtocol
+            managedProtocols = $contract.managedProtocols
+            managedFeatures = $contract.managedFeatures
+            validatedHostVersions = $contract.validatedHostVersions
+            entrypoints = @{
+              executable = 'cs2-headless-observer.exe'
+              native = 'cs2_observer.dll'
+            }
+            filesSha256 = $hashes
+          }
+          $manifest | ConvertTo-Json -Depth 6 | Set-Content -Path "$dist/manifest.json" -Encoding UTF8
+          $zipName = "cs2-headless-observer-$($contract.componentVersion)-windows-x64.zip"
+          Compress-Archive -Path "$dist/*" -DestinationPath "dist/$zipName" -Force
+          $zipHash = (Get-FileHash "dist/$zipName" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$zipHash  $zipName" | Set-Content -Path 'dist/SHA256SUMS.txt' -Encoding UTF8
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: cs2-headless-observer-windows-${{ env.SOURCE_SHA }}
           path: |
-            dist/observer.zip
-            dist/observer-component.zip
+            dist/cs2-headless-observer-*.zip
+            dist/SHA256SUMS.txt
           retention-days: 7
           if-no-files-found: error
-
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $files = @(Get-ChildItem -Path 'dist' -Filter 'cs2-headless-observer-*.zip' | ForEach-Object { $_.FullName })
+          $files += (Resolve-Path 'dist/SHA256SUMS.txt').Path
+          gh release create $env:GITHUB_REF_NAME @files --title $env:GITHUB_REF_NAME --generate-notes

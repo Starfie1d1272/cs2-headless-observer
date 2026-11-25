@@ -28,7 +28,7 @@ export class Consumer {
 async function main(){
  const args=process.argv.slice(2);
  const get=name=>{const i=args.indexOf(name);if(i<0)throw new Error('Required '+name);return args[i+1];};
- if(args.includes('--help')){console.log('node managed_consumer.mjs --package DIR --steam-api FILE --host-version NUMBER [--node FILE] [--follow-source]');return;}
+ if(args.includes('--help')){console.log('node managed_consumer.mjs --package DIR --steam-api FILE --host-version NUMBER [--follow-source]');return;}
  const root=path.resolve(get('--package')),manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.json'),'utf8'));
  const follow=args.includes('--follow-source');
  if(follow&&!manifest.managedFeatures?.includes('follow-source'))throw new Error('This package does not support --follow-source');
@@ -36,9 +36,8 @@ async function main(){
  if(process.env.SteamAppId&&process.env.SteamAppId!=='730')throw new Error('Steam-context');
  const id=randomUUID().replaceAll('-',''),state=new Consumer('ahead:'+id);
  const output=path.join(fs.mkdtempSync(path.join(os.tmpdir(),'observer-consumer-')),id);
- const supplied=args.indexOf('--node'),node=supplied>=0?args[supplied+1]:(fs.existsSync(path.join(root,'runtime/node.exe'))?path.join(root,'runtime/node.exe'):'node');
- const child=spawn(entry('python'),['-B',entry('driver'),'--managed','--native',entry('native'),'--steam-api',path.resolve(get('--steam-api')),
-  '--node',node,'--parser-worker',entry('worker'),'--host-version',get('--host-version'),'--source-role','ahead','--source-id',id,'--output',output,
+ const child=spawn(entry('executable'),['--managed','--native',entry('native'),'--steam-api',path.resolve(get('--steam-api')),
+  '--host-version',get('--host-version'),'--source-role','ahead','--source-id',id,'--output',output,
   ...(follow?['--follow-source']:[])],
   {env:{...process.env,SteamAppId:'730'},windowsHide:true,stdio:['pipe','pipe','ignore']});
  const closed=new Promise((resolve,reject)=>{child.once('error',reject);child.once('close',resolve);});
