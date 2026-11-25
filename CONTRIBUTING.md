@@ -1,19 +1,23 @@
 # 开发与贡献
 
-先读 [AGENTS.md](AGENTS.md)、[构建](docs/build.md)与[验证](docs/verification.md)，在现有职责边界内实现可复现的修改。
+先阅读 [AGENTS.md](AGENTS.md)、[构建指南](docs/build.md)与[验证说明](docs/verification.md)，在现有模块边界内进行可复现的修改。
 
 ## 源码组织
 
-- `client/`：会话控制、进程接口与离线回放。
-- `native/`：官方 Steamworks API 薄桥。
-- `parser/src/` 与 `patches/`：本项目解析模块与上游接缝。
-- `tests/`：负责当前行为的回归测试。
-- `research/` 与 `archive/`：按版本保留的知识、来源与历史证据。
+- `rust/`：单 Crate 核心实现（`wire`、`parser`、`native`、`session`）与单元/集成测试（`rust/tests/mock_port.rs`）。
+- `native/`：C++ Steamworks API 原生桥（ABI 4）及 `tools/build_native.py`。
+- `tests/native/` 与 `tests/fixtures/`：原生 ABI 测试与离线合成通道/密码对照 fixture。
+- `examples/` 与 `schemas/`：Managed v2 消费者示例与 JSON Schema。
+- `research/` 与 `archive/`：协议研究证据与历史版本归档（`v3.0.1` tag 可追溯旧 Python/TS 源码）。
 
-## 修改与验证
+## 提交前检查
 
-协议变更说明固定版本、消息顺序、来源代际、失败行为及验证范围。身份、快照与时间的有效性由对应证据决定。公开接口、运行行为和构建参数变化时同步其负责文档。
+协议或输出契约变更需同步更新对应文档与 Schema。提交前在 `rust/` 目录运行：
 
-构建与验证输出写入 `work/` 或 `dist/`。研究数据保持原始摘要，新增知识包含直接来源、复现方法和适用范围。提交前运行受影响检查并审查完整 diff，完整验证要求所有必需项实际执行。
+```bash
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+cargo test
+```
 
-公开示例使用合成输入；授权源地址、口令、票据、比赛捕获和游戏模块保存在本机。发行包提供对应源码和第三方材料，`package.json` 的 `private` 字段用于约束 npm 分发入口。
+公开示例与测试仅使用合成输入；授权源地址、口令、票据与真实比赛捕获均保留在本机。

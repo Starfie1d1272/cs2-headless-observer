@@ -4,43 +4,21 @@
 
 | 项目 | 当前范围 |
 | --- | --- |
-| 在线平台 | Windows x64，合法 Steam App730 普通观众上下文 |
-| 本机依赖 | 已登录的 Steam、已安装的 CS2、获授权的数字 IP:port 与观战密码 |
-| 真实接入环境 | CS2 build 10955、host 14192、Patch 1.41.9.2 |
-| 固定构建研究 | host 14191 / build 10924，各规则绑定模块摘要 |
-| 外部运行时 | Node.js 24.0.0 或更高，具备 WebAssembly、ReadableStream、structuredClone |
-| 接口 | 原生 ABI 4、有序 IPC 4、托管 JSON 契约 2（唯一公开托管协议，v1 已退役） |
-| 最新版本核对 | 2026-11-18，Steam build 26748068，CS2 1.41.9.8 / host 14198 |
-| 解析器 | cs2parser 2.7.2，固定上游提交与本项目解析源码 |
+| 运行平台 | Windows x64，合法 Steam App730 普通观众上下文 |
+| 本机依赖 | 已登录的 Steam、已安装的 CS2（提供 `steam_api64.dll`）、获授权的数字 `IP:port` 与观战密码 |
+| 分发形态 | 单一纯 Rust 制品（`cs2-headless-observer.exe` + `cs2_observer.dll`，无外部 Python/Node 依赖） |
+| 协议与 ABI | 原生 ABI `4`、托管 JSON 契约 `cs2-observer-managed-json/2`、包清单 `cs2-headless-observer-package/5` |
+| 已验证基线（历史 v1–v3 实测） | 真实授权 GOTV 实测覆盖 CS2 build 10955 / host 14192（Patch 1.41.9.2）；静态核对至 Steam build 26748068 / host 14198 |
 
-CLI 接受非零 uint32 host，`validatedHostVersions` 记录已验证的版本。实际兼容性由握手、初始化和所需解码能力共同确定；新增 host 的验证记录按版本补充。构建内的 `ordinaryViewerProtocol=2` 表示上游解析能力，版本含义见[构建](build.md)。
-
-2026-11-18 核对 Steam 本机清单和 `steam.inf`，构建 26748068 的 ClientVersion / ServerVersion 为 2000946，SourceRevision 为 11251667。检查本机 Windows `engine2.dll` 的 protobuf 描述符，确认 `net_Tick=4`、`net_SignonState=7`、`svc_ServerInfo=40`、`svc_ClearAllStringTables=51`、`svc_PacketEntities=55`、`svc_UserCmds=76`，且后者仍只有 repeated message 字段 `commands=1`。用该构建自带的 `steam_api64.dll` 通过本地 SDK socket pair 检查，正常 1038 后仍可读到队尾，且 SDK 接收时间戳可用。没有最新构建的授权 GOTV 连接数据。本次静态证据单独列出，manifest 的 `validatedHostVersions` 沿用已有已验证范围。
+CLI 接受非零 `uint32` `--host-version`，`manifest.json` 中的 `validatedHostVersions` 记录已验证范围。4.0.0 完整继承原生 ABI 4、Managed JSON v2 与协议解码语义，并已通过 `MockPort` 集成测试与合成通道回放；最新 CS2 构建的 4.0.0 真实在线复测持续在 [#1](https://github.com/Starfie1d1272/cs2-headless-observer/issues/1) 跟进。
 
 ## 身份、时间与来源切换
 
-控制器身份由当前世界 controller 与 userinfo 一致性证明，pawn 另行验证完整 serial。空 userinfo 撤销旧身份；证据缺失时保留未知。
-
-各来源按自身实际发出的事件提供数据。事件接收时间差随来源与热身过渡变化，消费应用根据同场证据建立节目时间映射。每次切换 GOTV 端点或独立启动新实例时分配新 GOTV 地址、新来源 UUID 和新输出目录；仅当托管 v2 启用 `--follow-source` 持续跟随同一授权 GOTV 端点时，可在同一实例内等待换场或换图后的下一次连接。
-
-托管 v2 由组件管理连接级重试，消费者仍拥有组件进程启停。完整字段与断点处理见[托管接口](managed-interface.md)。
+- 控制器身份由当前世界 controller 与 userinfo 一致性证明，pawn 另行验证完整 serial；世界重置或空 userinfo 撤销旧身份。
+- 切换 GOTV 端点或独立重启时，须使用新的 `--source-id` 与 `--output` 目录；仅在启用 `--follow-source` 时，同一实例可自动等待原地址恢复。
 
 ## 多路连接与游戏客户端共存
 
-观察器使用真实 Steam App730 上下文，Steam 会显示 CS2 运行状态。共用账号时先启动图形游戏，再启动观察器；重启游戏前先停止观察器并等待其进程退出。停止观察器释放它拥有的会话，已有游戏和 Steam 由各自 owner 管理。
+观察器使用真实 Steam App730 上下文。共用账号时先启动图形游戏再启动观察器；重启游戏前先停止观察器并等待进程退出。同一账号连接同一 `IP:port` 会替换已有连接（触发 `remote_end_reason=1000`），并行观战需为各客户端分配不同 GOTV 端点。
 
-2026-10-24 的 Windows 实测覆盖三场授权比赛、早源与延迟源共六个不同端点。同账号重复连接同一 IP:port 时，已有连接被替换，两场分别复现 `1000 / shutdown`。游戏客户端也占用连接端点。因此并行观战为各客户端选择不同端点；1000 的原因结合端点、操作时间和完整回执判断。
-
-该轮整体负载采样约 805 秒，六路同时存活的采样区间累计约 275 秒。全机 16 逻辑处理器口径下，观众与解析进程合计 CPU 中位约 20.0%、P95 约 23.4%，工作集内存中位约 2084 MiB、峰值约 2193 MiB。测量覆盖事件接收与解析；包含 OBS 编码的完整制播负载单独验收。
-
-## 验证证据
-
-历史实测覆盖普通观众握手、持续收流、开局与冻结期等来源事件、控制器身份和来源结束。详见[2026-10-24 记录](../archive/docs/LIVE-2026-10-24.md)。本机捕获保留用于确定性回放，公开样例使用合成输入。
-
-| 场景 | 当前证据与补验范围 |
-| --- | --- |
-| 首个 FULL 的恢复请求 | 合成完整驱动验证创建水位、恢复请求和后续完整快照；在线补验覆盖真实来源接受请求并恢复 FULL |
-| 正常 1038 的尾队列 | 官方 SDK 本地 socket pair 验证断开后的消息读取，实际 worker 验证尾事件顺序；在线补验覆盖远端结束到最终事件的完整链路 |
-| 新 CS2 host | 输入与能力检查支持有效版本值；每个新增兼容承诺以对应来源验证为依据 |
-
-原始比赛捕获、源地址和账号材料留在本机。发行包提供源码、合成自检、许可与验证摘要。
+> **历史实测参考（v1.x，2026-10-24）**：旧版 Python/Node 架构在 Windows 6 路并行（16 逻辑核）下实测 CPU 中位约 20.0%、工作集内存中位约 2084 MiB（详见[2026-10-24 记录](../archive/docs/LIVE-2026-10-24.md)）。4.0.0 已转为纯 Rust 单二进制并在离线真实回放中取得约 15× 解码提速，4.0.0 实机多路性能基准待在 [#52](https://github.com/Starfie1d1272/cs2-headless-observer/issues/52) 补充。
