@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::fmt;
 
 use super::bits::{encode_varint, scalar_varint, wire_fields, BitReader, WireError, MAX_BYTES};
@@ -129,7 +129,7 @@ impl fmt::Debug for NetMessage {
 pub fn decode_messages(
     data: &[u8],
     bit_count: Option<usize>,
-    discard_bodies: &HashSet<u32>,
+    discard_id: Option<u32>,
 ) -> Result<(Vec<NetMessage>, usize), WireError> {
     let mut reader = match bit_count {
         Some(bc) => BitReader::with_bit_count(data, bc)?,
@@ -142,7 +142,7 @@ pub fn decode_messages(
         }
         let message_id = reader.read_ubitvar()?;
         let size = reader.read_varuint32()? as usize;
-        let body = if discard_bodies.contains(&message_id) {
+        let body = if discard_id == Some(message_id) {
             reader.discard_bytes(size)?;
             Vec::new()
         } else {
@@ -422,14 +422,13 @@ mod tests {
             (4096, "304000000000", 42),
             (0xFFFF_FFFF, "ffffffff0300", 42),
         ];
-        let empty = HashSet::new();
         for (number, encoded, bits) in cases {
             let expected_bytes = hex(encoded);
             assert_eq!(
                 encode_message(number, b"").unwrap(),
                 (expected_bytes.clone(), bits)
             );
-            let (decoded, tail) = decode_messages(&expected_bytes, Some(bits), &empty).unwrap();
+            let (decoded, tail) = decode_messages(&expected_bytes, Some(bits), None).unwrap();
             assert_eq!(decoded.len(), 1);
             assert_eq!(decoded[0].message_id, number);
             assert!(decoded[0].body.is_empty());
@@ -449,16 +448,15 @@ mod tests {
         let total_bits = first.1 + second.1;
         let (data, joined_bits) = join_messages(&[first, second]).unwrap();
         assert_eq!(joined_bits, total_bits);
-        let empty = HashSet::new();
-        let (parsed, padding) = decode_messages(&data, None, &empty).unwrap();
+        let (parsed, padding) = decode_messages(&data, None, None).unwrap();
         assert_eq!(parsed.len(), 2);
         assert_eq!(parsed[0].message_id, 7);
         assert_eq!(parsed[0].body, b"\x08\x03");
         assert_eq!(parsed[1].message_id, 40);
         assert_eq!(parsed[1].body, b"\x08\x01");
         assert_eq!(padding, data.len() * 8 - total_bits);
-        assert!(decode_messages(&data, Some(total_bits - 1), &empty).is_err());
-        assert!(decode_messages(b"\x07", None, &empty).is_err());
+        assert!(decode_messages(&data, Some(total_bits - 1), None).is_err());
+        assert!(decode_messages(b"\x07", None, None).is_err());
     }
 
     #[test]

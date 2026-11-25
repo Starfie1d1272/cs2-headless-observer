@@ -10,9 +10,38 @@ const MAX_PATHS: usize = 65536;
 const MAX_ARRAY_LEN: usize = 65536;
 const MAX_RECORDS: usize = 262144;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct FieldPath {
+    pub len: u8,
+    pub parts: [u16; 10],
+}
+
+impl FieldPath {
+    #[inline]
+    pub fn from_slice(s: &[u16]) -> Self {
+        let mut parts = [0u16; 10];
+        let len = s.len().min(10);
+        parts[..len].copy_from_slice(&s[..len]);
+        Self {
+            len: len as u8,
+            parts,
+        }
+    }
+
+    #[inline]
+    pub fn as_slice(&self) -> &[u16] {
+        &self.parts[..self.len as usize]
+    }
+
+    #[inline]
+    pub fn starts_with(&self, prefix: &FieldPath) -> bool {
+        self.len >= prefix.len && self.as_slice()[..prefix.len as usize] == *prefix.as_slice()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct FieldRecord {
-    pub path: Vec<u16>,
+    pub path: FieldPath,
     pub field: Arc<SchemaField>,
     pub operation: PathOperation,
     pub value: FieldValue,
@@ -27,9 +56,9 @@ pub struct PointerState {
 #[derive(Debug, Clone)]
 pub struct EntityFields {
     pub class_id: usize,
-    pub values: HashMap<Vec<u16>, FieldRecord>,
-    pub metadata: HashMap<Vec<u16>, MetadataValue>,
-    pub pointers: HashMap<Vec<u16>, PointerState>,
+    pub values: HashMap<FieldPath, FieldRecord>,
+    pub metadata: HashMap<FieldPath, MetadataValue>,
+    pub pointers: HashMap<FieldPath, PointerState>,
 }
 
 impl EntityFields {
@@ -58,14 +87,15 @@ impl EntityFields {
         }
     }
 
-    fn remove_descendants(&mut self, prefix: &[u16], minimum_index: Option<u16>) {
-        let matches = |candidate: &[u16]| -> bool {
-            if candidate.len() <= prefix.len() || !candidate.starts_with(prefix) {
+    fn remove_descendants(&mut self, prefix: FieldPath, minimum_index: Option<u16>) {
+        let plen = prefix.len as usize;
+        let matches = |candidate: &FieldPath| -> bool {
+            if (candidate.len as usize) <= plen || !candidate.starts_with(&prefix) {
                 return false;
             }
             match minimum_index {
                 None => true,
-                Some(min_idx) => candidate[prefix.len()] >= min_idx,
+                Some(min_idx) => candidate.parts[plen] >= min_idx,
             }
         };
         self.values.retain(|k, _| !matches(k));
@@ -77,37 +107,38 @@ impl EntityFields {
             return Err("Entity schema identity mismatch".into());
         }
         let mut sorted: Vec<&FieldRecord> = self.values.values().collect();
-        sorted.sort_by(|a, b| a.path.cmp(&b.path));
+        sorted.sort_by(|a, b| a.path.as_slice().cmp(b.path.as_slice()));
 
         for record in sorted {
-            let resolved = schema.resolve(self.class_id, &record.path, |p| {
-                self.metadata.get(p).copied()
+            let resolved = schema.resolve(self.class_id, record.path.as_slice(), |p| {
+                self.metadata.get(&FieldPath::from_slice(p)).copied()
             })?;
             for ancestor in &resolved.ancestors {
                 if !ancestor.kind_is_pointer {
                     continue;
                 }
+                let ap = FieldPath::from_slice(&ancestor.path);
                 let next = self
                     .pointers
-                    .get(&ancestor.path)
+                    .get(&ap)
                     .copied()
                     .filter(|p| p.present)
                     .ok_or_else(|| "Stored field below absent pointer".to_string())?;
-                let old = target.pointers.get(&ancestor.path).copied();
+                let old = target.pointers.get(&ap).copied();
                 if old
                     .map(|o| !o.present || o.selector != next.selector)
                     .unwrap_or(true)
                 {
-                    target.remove_descendants(&ancestor.path, None);
+                    target.remove_descendants(ap, None);
                 }
-                target.pointers.insert(ancestor.path.clone(), next);
+                target.pointers.insert(ap, next);
                 if next.selector.is_none() {
-                    target.metadata.remove(&ancestor.path);
+                    target.metadata.remove(&ap);
                 }
             }
             if record.operation == PathOperation::Array {
                 if let FieldValue::ArrayLen(len) = record.value {
-                    target.remove_descendants(&record.path, Some(len as u16));
+                    target.remove_descendants(record.path, Some(len as u16));
                 }
             } else if record.operation == PathOperation::Pointer {
                 let next = self
@@ -121,17 +152,17 @@ impl EntityFields {
                         .map(|o| !o.present || o.selector != next.selector)
                         .unwrap_or(true)
                 {
-                    target.remove_descendants(&record.path, None);
+                    target.remove_descendants(record.path, None);
                 }
-                target.pointers.insert(record.path.clone(), next);
+                target.pointers.insert(record.path, next);
             }
-            target.values.insert(record.path.clone(), record.clone());
+            target.values.insert(record.path, record.clone());
         }
-        for (k, v) in &self.metadata {
-            target.metadata.insert(k.clone(), *v);
+        for (&k, &v) in &self.metadata {
+            target.metadata.insert(k, v);
         }
-        for (k, v) in &self.pointers {
-            target.pointers.entry(k.clone()).or_insert(*v);
+        for (&k, &v) in &self.pointers {
+            target.pointers.entry(k).or_insert(v);
         }
         if target.values.len() > MAX_RECORDS
             || target.metadata.len() > MAX_RECORDS
@@ -157,26 +188,25 @@ impl EntityFields {
         let budget = bit_length.unwrap_or(initial_bits);
         let paths = read_field_paths(reader, MAX_PATHS, budget)?;
 
-        for path in paths {
-            let resolved =
-                schema.resolve(self.class_id, &path, |p| self.metadata.get(p).copied())?;
+        for path_vec in paths {
+            let path = FieldPath::from_slice(&path_vec);
+            let resolved = schema.resolve(self.class_id, path.as_slice(), |p| {
+                self.metadata.get(&FieldPath::from_slice(p)).copied()
+            })?;
             for ancestor in &resolved.ancestors {
+                let ap = FieldPath::from_slice(&ancestor.path);
                 if ancestor.kind_is_pointer
-                    && self
-                        .pointers
-                        .get(&ancestor.path)
-                        .map(|p| !p.present)
-                        .unwrap_or(false)
+                    && self.pointers.get(&ap).map(|p| !p.present).unwrap_or(false)
                 {
                     return Err("Field below absent pointer".into());
                 }
             }
             let field = resolved.field.clone();
             let op = resolved.operation;
-            let ancestors_paths: Vec<(bool, Vec<u16>)> = resolved
+            let ancestors_paths: Vec<(bool, FieldPath)> = resolved
                 .ancestors
                 .iter()
-                .map(|a| (a.kind_is_pointer, a.path.clone()))
+                .map(|a| (a.kind_is_pointer, FieldPath::from_slice(&a.path)))
                 .collect();
 
             let value = match op {
@@ -193,9 +223,8 @@ impl EntityFields {
                     if (size as usize) > MAX_ARRAY_LEN {
                         return Err("Array length budget".into());
                     }
-                    self.remove_descendants(&path, Some(size as u16));
-                    self.metadata
-                        .insert(path.clone(), MetadataValue::ArrayLen(size));
+                    self.remove_descendants(path, Some(size as u16));
+                    self.metadata.insert(path, MetadataValue::ArrayLen(size));
                     FieldValue::ArrayLen(size)
                 }
                 PathOperation::Pointer => {
@@ -214,13 +243,12 @@ impl EntityFields {
                             .map(|o| !o.present || o.selector != selector)
                             .unwrap_or(true)
                     {
-                        self.remove_descendants(&path, None);
+                        self.remove_descendants(path, None);
                     }
                     self.pointers
-                        .insert(path.clone(), PointerState { present, selector });
+                        .insert(path, PointerState { present, selector });
                     if let Some(sel) = selector {
-                        self.metadata
-                            .insert(path.clone(), MetadataValue::Selector(sel));
+                        self.metadata.insert(path, MetadataValue::Selector(sel));
                     }
                     FieldValue::Pointer(present)
                 }
@@ -257,7 +285,7 @@ impl EntityFields {
             }
 
             self.values.insert(
-                path.clone(),
+                path,
                 FieldRecord {
                     path,
                     field,

@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::sync::Arc;
 
 use super::entity_fields::EntityFields;
@@ -18,11 +18,33 @@ pub struct Entity {
     pub fields: EntityFields,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
+struct EntityBitSet([u64; MAX_ENTITIES / 64]);
+
+impl EntityBitSet {
+    #[inline]
+    fn empty() -> Self {
+        Self([0u64; MAX_ENTITIES / 64])
+    }
+    #[inline]
+    fn insert(&mut self, id: usize) {
+        self.0[id >> 6] |= 1u64 << (id & 63);
+    }
+    #[inline]
+    fn remove(&mut self, id: usize) {
+        self.0[id >> 6] &= !(1u64 << (id & 63));
+    }
+    #[inline]
+    fn contains(&self, id: usize) -> bool {
+        (self.0[id >> 6] & (1u64 << (id & 63))) != 0
+    }
+}
+
+#[derive(Clone)]
 struct FrameMembership {
-    members: HashSet<usize>,
-    dormant: HashSet<usize>,
-    outside: HashSet<usize>,
+    members: EntityBitSet,
+    dormant: EntityBitSet,
+    outside: EntityBitSet,
 }
 
 #[derive(Debug, Clone)]
@@ -88,6 +110,7 @@ pub struct EntityTable {
     frame_order: Vec<i32>,
     banks: [HashMap<usize, BaselineEntry>; 2],
     class_baselines: ClassBaselineCache,
+    game_rules_id: Option<usize>,
     pub latest_tick: Option<i32>,
     pub epoch: u64,
     pub waiting_full: bool,
@@ -107,6 +130,7 @@ impl EntityTable {
             frame_order: Vec::new(),
             banks: [HashMap::new(), HashMap::new()],
             class_baselines: ClassBaselineCache::default(),
+            game_rules_id: None,
             latest_tick: None,
             epoch: 0,
             waiting_full: true,
@@ -117,14 +141,45 @@ impl EntityTable {
         self.entities.get(id).and_then(|o| o.as_ref())
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &Entity> {
-        self.entities.iter().filter_map(|o| o.as_ref())
+    pub fn game_rules(&mut self, schema: &Schema) -> Option<&Entity> {
+        if self.waiting_full {
+            return None;
+        }
+        if let Some(id) = self.game_rules_id {
+            if let Some(ent) = self.entities.get(id).and_then(|o| o.as_ref()) {
+                if schema
+                    .get_class(ent.class_id)
+                    .map(|c| c.name == "CCSGameRulesProxy")
+                    .unwrap_or(false)
+                {
+                    return self.entities[id].as_ref();
+                }
+            }
+            self.game_rules_id = None;
+        }
+        let found = self
+            .entities
+            .iter()
+            .filter_map(|o| o.as_ref())
+            .find(|e| {
+                schema
+                    .get_class(e.class_id)
+                    .map(|c| c.name == "CCSGameRulesProxy")
+                    .unwrap_or(false)
+            })
+            .map(|e| e.id);
+        self.game_rules_id = found;
+        found.and_then(|id| self.entities[id].as_ref())
     }
 
+    /// Clear entities on decode failure so a partially mutated packet cannot
+    /// pollute future FULL snapshots.
     pub fn recover(&mut self) {
         self.epoch += 1;
         self.latest_tick = None;
         self.waiting_full = true;
+        self.game_rules_id = None;
+        self.entities.fill(None);
         self.frames.clear();
         self.frame_order.clear();
         self.banks[0].clear();
@@ -133,7 +188,6 @@ impl EntityTable {
 
     pub fn reset(&mut self) {
         self.recover();
-        self.entities.fill(None);
         self.class_baselines.clear();
     }
 
@@ -187,13 +241,13 @@ impl EntityTable {
             FrameMembership {
                 members: src.members.clone(),
                 dormant: src.dormant.clone(),
-                outside: HashSet::new(),
+                outside: EntityBitSet::empty(),
             }
         } else {
             FrameMembership {
-                members: HashSet::new(),
-                dormant: HashSet::new(),
-                outside: HashSet::new(),
+                members: EntityBitSet::empty(),
+                dormant: EntityBitSet::empty(),
+                outside: EntityBitSet::empty(),
             }
         };
 
@@ -257,10 +311,13 @@ impl EntityTable {
             id = next_id as i32;
             let op_type = reader.read_bits(2).map_err(|e| e.to_string())?;
             if (op_type & 1) != 0 {
-                frame_state.members.remove(&next_id);
-                frame_state.dormant.remove(&next_id);
+                frame_state.members.remove(next_id);
+                frame_state.dormant.remove(next_id);
                 if op_type == 3 {
                     self.entities[next_id] = None;
+                    if self.game_rules_id == Some(next_id) {
+                        self.game_rules_id = None;
+                    }
                 }
             } else if op_type == 2 {
                 let blen = take_bit_length(&lengths, &mut length_idx)?;
@@ -342,16 +399,19 @@ impl EntityTable {
                 if is_dormant {
                     frame_state.dormant.insert(next_id);
                 } else {
-                    frame_state.dormant.remove(&next_id);
+                    frame_state.dormant.remove(next_id);
                 }
             }
             for (idx, slot) in self.entities.iter_mut().enumerate().take(MAX_ENTITIES) {
                 if slot.is_some()
-                    && !frame_state.members.contains(&idx)
-                    && !frame_state.dormant.contains(&idx)
-                    && !frame_state.outside.contains(&idx)
+                    && !frame_state.members.contains(idx)
+                    && !frame_state.dormant.contains(idx)
+                    && !frame_state.outside.contains(idx)
                 {
                     *slot = None;
+                    if self.game_rules_id == Some(idx) {
+                        self.game_rules_id = None;
+                    }
                 }
             }
         } else if is_delta {
@@ -367,9 +427,12 @@ impl EntityTable {
                 }
                 tid += step;
                 let uid = tid as usize;
-                frame_state.members.remove(&uid);
-                frame_state.dormant.remove(&uid);
+                frame_state.members.remove(uid);
+                frame_state.dormant.remove(uid);
                 self.entities[uid] = None;
+                if self.game_rules_id == Some(uid) {
+                    self.game_rules_id = None;
+                }
             }
         }
 
@@ -435,11 +498,16 @@ impl EntityTable {
             .map_err(|e| e.to_string())? as usize;
         let serial = r.read_bits(17).map_err(|e| e.to_string())?;
         let _token = r.read_varuint32().map_err(|e| e.to_string())?;
-        schema.get_class(class_id)?;
+        let cls = schema.get_class(class_id)?;
+        if cls.name == "CCSGameRulesProxy" {
+            self.game_rules_id = Some(id);
+        }
 
-        let mut target = match &self.entities[id] {
-            Some(old) if old.class_id == class_id && old.serial == serial => old.fields.clone(),
-            _ => EntityFields::empty(class_id),
+        let reuse_old = match &self.entities[id] {
+            Some(old) if old.class_id == class_id && old.serial == serial => {
+                Some(old.fields.clone())
+            }
+            _ => None,
         };
 
         let base: Arc<EntityFields> = match self.banks[bank].get(&id) {
@@ -449,10 +517,16 @@ impl EntityTable {
                 .get_or_decode(schema, tables, class_id)?,
         };
 
-        if let Some(nb) = next_bank {
+        let target = if let Some(nb) = next_bank {
             let mut merged = (*base).clone();
             merged.decode_in_place(schema, r, blen)?;
-            merged.apply_to(schema, &mut target)?;
+            let mut out = if let Some(old_fields) = reuse_old {
+                let mut t = old_fields;
+                merged.apply_to(schema, &mut t)?;
+                t
+            } else {
+                merged.clone()
+            };
             nb.insert(
                 id,
                 BaselineEntry {
@@ -460,10 +534,17 @@ impl EntityTable {
                     fields: Arc::new(merged),
                 },
             );
+            let _ = &mut out;
+            out
+        } else if let Some(mut old_fields) = reuse_old {
+            base.apply_to(schema, &mut old_fields)?;
+            old_fields.decode_in_place(schema, r, blen)?;
+            old_fields
         } else {
-            base.apply_to(schema, &mut target)?;
-            target.decode_in_place(schema, r, blen)?;
-        }
+            let mut fresh = (*base).clone();
+            fresh.decode_in_place(schema, r, blen)?;
+            fresh
+        };
 
         self.entities[id] = Some(Entity {
             id,
@@ -472,7 +553,7 @@ impl EntityTable {
             fields: target,
         });
         fs.members.insert(id);
-        fs.dormant.remove(&id);
+        fs.dormant.remove(id);
         Ok(())
     }
 
@@ -502,7 +583,7 @@ impl EntityTable {
         }
         ent.fields.decode_in_place(schema, r, blen)?;
         fs.members.insert(id);
-        fs.dormant.remove(&id);
+        fs.dormant.remove(id);
         Ok(())
     }
 }

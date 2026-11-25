@@ -1,13 +1,13 @@
 use std::collections::HashSet;
 
-use serde_json::Value;
-
-use super::control::{client_info, ControlDecoder, ObserverSettings};
 use super::reporting::unix_ms_now;
+use super::SessionError;
 use crate::native::password::{transform_password, SecretBytes};
 use crate::native::ObserverPort;
-use crate::parser::core::{CoreOutput, ObserverCore, SourceIdentity};
-use crate::wire::bits::{encode_pb_varint, scalar_varint, wire_fields};
+use crate::parser::core::{CoreOutput, CursorRecord, ObserverCore, RawEventRecord, SourceIdentity};
+use crate::wire::bits::{
+    encode_pb_bytes, encode_pb_varint, scalar_bytes, scalar_varint, wire_fields, WireError,
+};
 use crate::wire::channel::{
     decode_frame, decode_messages, encode_message, join_messages, reliable_frame,
     ReliableMessageFilter, UnreliableFeedback, UnreliableOrder,
@@ -20,6 +20,71 @@ use crate::wire::handshake::{
 pub const DRAIN_TIMEOUT_MS: u64 = 5000;
 pub const INITIALIZATION_TIMEOUT_MS: u64 = 30000;
 pub const CHANNEL_SILENCE_TIMEOUT_MS: u64 = 15000;
+
+pub struct ObserverSettings {
+    pub values: Vec<(&'static [u8], &'static [u8])>,
+}
+
+impl Default for ObserverSettings {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl ObserverSettings {
+    pub fn new() -> Self {
+        Self {
+            values: vec![
+                (b"name", b"CS2 Headless Observer"),
+                (b"tv_relay", b"0"),
+                (b"rate", b"786432"),
+            ],
+        }
+    }
+
+    pub fn userinfo(&self) -> Vec<u8> {
+        let mut entries = Vec::new();
+        for &(name, value) in &self.values {
+            let mut kv = Vec::new();
+            encode_pb_bytes(1, name, &mut kv);
+            encode_pb_bytes(2, value, &mut kv);
+            encode_pb_bytes(1, &kv, &mut entries);
+        }
+        let mut out = Vec::new();
+        encode_pb_bytes(1, &entries, &mut out);
+        out
+    }
+
+    pub fn query(&self, payload: &[u8]) -> Result<Vec<u8>, WireError> {
+        let values = wire_fields(payload, 4096)?;
+        let cookie = scalar_varint(&values, 1)?.unwrap_or(0) as u32;
+        let name = scalar_bytes(&values, 2)?.unwrap_or(&[]);
+        if name.len() > 256 || name.contains(&0) {
+            return Err(WireError::StringBudget);
+        }
+        let found = self
+            .values
+            .iter()
+            .find(|&&(k, _)| k == name)
+            .map(|&(_, v)| v);
+        let mut out = Vec::new();
+        encode_pb_varint(1, cookie as u64, &mut out);
+        encode_pb_varint(2, if found.is_none() { 1 } else { 0 }, &mut out);
+        encode_pb_bytes(3, name, &mut out);
+        encode_pb_bytes(4, found.unwrap_or(&[]), &mut out);
+        Ok(out)
+    }
+}
+
+pub fn client_info(server_count: u32, account_id: u32, send_table_crc: u32) -> Vec<u8> {
+    let mut out = Vec::with_capacity(32);
+    out.push(0x0d);
+    out.extend_from_slice(&send_table_crc.to_le_bytes());
+    encode_pb_varint(2, server_count as u64, &mut out);
+    encode_pb_varint(3, 0, &mut out);
+    encode_pb_varint(5, account_id as u64, &mut out);
+    out
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DriverPhase {
@@ -94,24 +159,14 @@ impl WorldSyncState {
 
 #[derive(Debug, Clone)]
 pub enum DriverEmit {
-    Cursor {
-        record: Value,
-        committed_tick: i32,
-        world: u64,
-        paused: bool,
-    },
-    RawEvent {
-        record: Value,
-        world: u64,
-    },
+    Cursor(Box<CursorRecord>),
+    RawEvent(Box<RawEventRecord>),
     Discontinuity {
         scope: &'static str,
         reason: String,
         world: u64,
     },
 }
-
-pub type CaptureCallback = Box<dyn FnMut(&[u8], bool, u64)>;
 
 pub struct ObserverDriver<P: ObserverPort> {
     pub port: P,
@@ -126,7 +181,6 @@ pub struct ObserverDriver<P: ObserverPort> {
     query_count: u32,
     pub world_sync: WorldSyncState,
     pub core: ObserverCore,
-    pub decoder: ControlDecoder,
     pub signon: SignonSequence,
     pub order: UnreliableOrder,
     pub feedback: UnreliableFeedback,
@@ -143,14 +197,13 @@ pub struct ObserverDriver<P: ObserverPort> {
     pub ever_full: bool,
     pub channel_frames: u64,
     pub received_messages: u64,
+    pub context_tick: Option<i32>,
     pub last_sdk_age_us: Option<i64>,
     pub max_sdk_age_us: Option<i64>,
-    pub last_sdk_sample_ms: Option<u64>,
     pub cursor_rate: Option<f64>,
     last_cursor_sample: Option<(u64, i32, u64, bool)>,
     pub gap: bool,
     pub emitted: Vec<DriverEmit>,
-    capture_cb: Option<CaptureCallback>,
 }
 
 impl<P: ObserverPort> ObserverDriver<P> {
@@ -161,9 +214,9 @@ impl<P: ObserverPort> ObserverDriver<P> {
         source: String,
         channel: u64,
         now_ms: u64,
-    ) -> Result<Self, String> {
+    ) -> Result<Self, SessionError> {
         if host_version == 0 || password.len() > 95 || password.as_slice().contains(&0) {
-            return Err("configuration-boundary".into());
+            return Err(SessionError::ConfigurationBoundary);
         }
         Ok(Self {
             port,
@@ -185,9 +238,8 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 channel,
                 world: 1,
             }),
-            decoder: ControlDecoder::new(),
             signon: SignonSequence::new(),
-            order: UnreliableOrder::new(Some(0)).map_err(|e| e.to_string())?,
+            order: UnreliableOrder::new(Some(0))?,
             feedback: UnreliableFeedback::new(),
             reliable_filter: ReliableMessageFilter::new(),
             last_feedback_ms: now_ms,
@@ -202,19 +254,14 @@ impl<P: ObserverPort> ObserverDriver<P> {
             ever_full: false,
             channel_frames: 0,
             received_messages: 0,
+            context_tick: None,
             last_sdk_age_us: None,
             max_sdk_age_us: None,
-            last_sdk_sample_ms: None,
             cursor_rate: None,
             last_cursor_sample: None,
             gap: false,
             emitted: Vec::new(),
-            capture_cb: None,
         })
-    }
-
-    pub fn set_capture_callback(&mut self, cb: CaptureCallback) {
-        self.capture_cb = Some(cb);
     }
 
     pub fn done(&self) -> bool {
@@ -226,25 +273,33 @@ impl<P: ObserverPort> ObserverDriver<P> {
         self.port.close();
     }
 
-    pub fn step(&mut self, now_ms: u64) -> Result<bool, String> {
+    pub fn step(&mut self, now_ms: u64) -> Result<bool, SessionError> {
+        self.step_with_clock(|| now_ms)
+    }
+
+    pub fn step_with_clock<F>(&mut self, mut clock_ms: F) -> Result<bool, SessionError>
+    where
+        F: FnMut() -> u64,
+    {
         if self.done() {
             return Ok(false);
         }
+        let mut now_ms = clock_ms();
         if now_ms < self.last_ms {
-            return Err("monotonic-clock-regressed".into());
+            return Err(SessionError::ClockRegressed);
         }
         self.last_ms = now_ms;
         if let Some(dd) = self.drain_deadline {
             if now_ms >= dd {
-                return Err("source-drain-timeout".into());
+                return Err(SessionError::SourceDrainTimeout);
             }
         } else if now_ms >= self.deadline {
-            return Err("phase-timeout".into());
+            return Err(SessionError::PhaseTimeout);
         }
 
         self.port.pump(now_ms);
         if self.drain_deadline.is_some() && self.port.failure() != 7 {
-            return Err("source-drain-native-failed".into());
+            return Err(SessionError::SourceDrainNativeFailed);
         }
         if self.port.state() == 6 && self.drain_deadline.is_none() {
             if self.port.remote_end_reason() == 1038
@@ -254,19 +309,19 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 self.phase = DriverPhase::Draining;
                 self.drain_deadline = Some(now_ms + DRAIN_TIMEOUT_MS);
             } else {
-                return Err("native-session-closed".into());
+                return Err(SessionError::NativeSessionClosed);
             }
         }
         if self.phase == DriverPhase::Channel
             && !self.world_sync.full_sent
             && now_ms >= self.initialization_deadline
         {
-            return Err("initialization-timeout".into());
+            return Err(SessionError::InitializationTimeout);
         }
 
         if self.phase == DriverPhase::Transport && self.port.state() == 3 {
             if self.port.remote_id() == 0 {
-                return Err("trusted-peer-missing".into());
+                return Err(SessionError::TrustedPeerMissing);
             }
             self.request_challenge(now_ms)?;
             self.phase = DriverPhase::Challenge;
@@ -285,50 +340,48 @@ impl<P: ObserverPort> ObserverDriver<P> {
             if self.done() {
                 return Ok(false);
             }
+            now_ms = clock_ms();
             if let Some(dd) = self.drain_deadline {
                 if now_ms >= dd {
-                    return Err("source-drain-timeout".into());
+                    return Err(SessionError::SourceDrainTimeout);
                 }
             }
-            let Some(pkt) = self.port.receive()? else {
+            let Some(pkt) = self.port.receive().map_err(SessionError::Native)? else {
                 got_empty = true;
                 break;
             };
             received += 1;
             self.received_messages += 1;
             pumped_bytes += pkt.data.len();
-            self.last_sdk_sample_ms = Some(now_ms);
             self.last_sdk_age_us = pkt.sdk_queue_age_us;
             if let Some(age) = pkt.sdk_queue_age_us {
                 self.max_sdk_age_us = Some(self.max_sdk_age_us.map_or(age, |m| m.max(age)));
             }
+            now_ms = clock_ms();
             self.receive_packet(&pkt.data, pkt.reliable, now_ms, pkt.sdk_queue_age_us)?;
         }
 
+        now_ms = clock_ms();
         if !self.done() {
             if self.drain_deadline.is_none() {
-                self.advance_initialization(now_ms)?;
+                self.advance_initialization()?;
                 self.send_processed_tick(now_ms)?;
             } else if got_empty {
                 self.drain_completed = true;
                 self.world_sync.processed_entity_tick = None;
                 self.phase = DriverPhase::Closed;
                 self.reason = Some("source-hltv-stop".into());
-                self.emitted.push(DriverEmit::Discontinuity {
-                    scope: "connection",
-                    reason: "source-hltv-stop".into(),
-                    world: self.core.identity.world,
-                });
             }
         }
 
-        if self.phase == DriverPhase::Channel && now_ms - self.last_feedback_ms >= 100 {
+        if self.phase == DriverPhase::Channel && now_ms.saturating_sub(self.last_feedback_ms) >= 100
+        {
             let mut encoded = Vec::new();
             if self.world_sync.full_sent && !self.world_sync.recovery_pending {
                 if let Some(t) = self.world_sync.processed_entity_tick {
                     let mut pb = Vec::new();
                     encode_pb_varint(1, t as u64, &mut pb);
-                    encoded = encode_message(4, &pb).map_err(|e| e.to_string())?.0;
+                    encoded = encode_message(4, &pb)?.0;
                     self.world_sync.ack_tick = Some(t);
                 }
             }
@@ -340,7 +393,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
             DriverPhase::Challenge | DriverPhase::Ticket | DriverPhase::Connection
         ) {
             if let Some(last_req) = self.last_challenge_request_ms {
-                if now_ms - last_req >= 500 {
+                if now_ms.saturating_sub(last_req) >= 500 {
                     self.request_challenge(now_ms)?;
                 }
             }
@@ -349,50 +402,54 @@ impl<P: ObserverPort> ObserverDriver<P> {
         Ok(!got_empty)
     }
 
-    fn request_challenge(&mut self, now_ms: u64) -> Result<(), String> {
+    fn request_challenge(&mut self, now_ms: u64) -> Result<(), SessionError> {
         let num = self.challenge.as_ref().map(|c| c.number).unwrap_or(0);
         let req = initial_challenge_request(num);
-        self.port.send(&req, 5)?;
+        self.port.send(&req, 5).map_err(SessionError::Native)?;
         self.challenge_contexts
             .insert(req[5..req.len() - 1].to_vec());
         self.last_challenge_request_ms = Some(now_ms);
         Ok(())
     }
 
-    fn send_connect_with_auth(&mut self) -> Result<(), String> {
-        let challenge = self.challenge.clone().ok_or("missing-challenge")?;
+    fn send_connect_with_auth(&mut self) -> Result<(), SessionError> {
+        let challenge = self
+            .challenge
+            .clone()
+            .ok_or(SessionError::UnexpectedChallengeMessage)?;
         let hv = self.host_version;
-        let pw_enc = transform_password(self.password.as_slice(), challenge.number)
-            .map_err(|e| e.to_string())?;
+        let pw_enc = transform_password(self.password.as_slice(), challenge.number)?;
         let mut acct_id = self.account_id;
         let msg = if challenge.auth_protocol == 3 {
             let mut out_msg = Vec::new();
-            self.port.with_auth(|auth| {
-                if auth.len() < 8 {
-                    return Err("local-account-id-missing".into());
-                }
-                let id = u64::from_le_bytes(auth[0..8].try_into().unwrap()) as u32;
-                if id == 0 {
-                    return Err("local-account-id-missing".into());
-                }
-                acct_id = Some(id);
-                let payload = connect_payload(
-                    hv,
-                    &challenge,
-                    auth,
-                    "CS2 Headless Observer",
-                    pw_enc.as_deref(),
-                    0,
-                    false,
-                )
-                .map_err(|e| e.to_string())?;
-                out_msg = connect_inner_message(&payload).map_err(|e| e.to_string())?;
-                Ok(())
-            })?;
+            self.port
+                .with_auth(|auth| {
+                    if auth.len() < 8 {
+                        return Err("local-account-id-missing".into());
+                    }
+                    let id = u64::from_le_bytes(auth[0..8].try_into().unwrap()) as u32;
+                    if id == 0 {
+                        return Err("local-account-id-missing".into());
+                    }
+                    acct_id = Some(id);
+                    let payload = connect_payload(
+                        hv,
+                        &challenge,
+                        auth,
+                        "CS2 Headless Observer",
+                        pw_enc.as_deref(),
+                        0,
+                        false,
+                    )
+                    .map_err(|e| e.to_string())?;
+                    out_msg = connect_inner_message(&payload).map_err(|e| e.to_string())?;
+                    Ok(())
+                })
+                .map_err(SessionError::Native)?;
             out_msg
         } else {
             if acct_id.unwrap_or(0) == 0 {
-                return Err("local-account-id-missing".into());
+                return Err(SessionError::LocalAccountIdMissing);
             }
             let payload = connect_payload(
                 hv,
@@ -402,12 +459,11 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 pw_enc.as_deref(),
                 0,
                 false,
-            )
-            .map_err(|e| e.to_string())?;
-            connect_inner_message(&payload).map_err(|e| e.to_string())?
+            )?;
+            connect_inner_message(&payload)?
         };
         self.account_id = acct_id;
-        self.port.send(&msg, 5)
+        self.port.send(&msg, 5).map_err(SessionError::Native)
     }
 
     pub fn receive_packet(
@@ -416,27 +472,27 @@ impl<P: ObserverPort> ObserverDriver<P> {
         reliable: bool,
         now_ms: u64,
         sdk_age_us: Option<i64>,
-    ) -> Result<(), String> {
+    ) -> Result<(), SessionError> {
         if matches!(
             self.phase,
             DriverPhase::Challenge | DriverPhase::Ticket | DriverPhase::Connection
         ) && (self.phase == DriverPhase::Challenge || data.starts_with(b"\xff\xff\xff\xffA"))
         {
             if reliable || !data.starts_with(b"\xff\xff\xff\xffA") {
-                return Err("unexpected-challenge-message".into());
+                return Err(SessionError::UnexpectedChallengeMessage);
             }
-            let challenge = parse_challenge_body(&data[5..]).map_err(|e| e.to_string())?;
+            let challenge = parse_challenge_body(&data[5..])?;
             let peer = self.port.remote_id();
             if peer == 0 || (challenge.server_steam_id != 0 && challenge.server_steam_id != peer) {
-                return Err("challenge-peer-mismatch".into());
+                return Err(SessionError::ChallengePeerMismatch);
             }
             if !self.challenge_contexts.contains(&challenge.context) {
-                return Err("challenge-context-mismatch".into());
+                return Err(SessionError::ChallengeContextMismatch);
             }
             if let Some(ref prev) = self.challenge {
                 if challenge.auth_protocol != prev.auth_protocol || challenge.secure != prev.secure
                 {
-                    return Err("challenge-auth-changed".into());
+                    return Err(SessionError::ChallengeAuthChanged);
                 }
                 self.challenge = Some(challenge);
                 if self.phase == DriverPhase::Connection {
@@ -449,15 +505,17 @@ impl<P: ObserverPort> ObserverDriver<P> {
             if auth_proto == 2 {
                 let own = self.port.local_id();
                 if own == 0 {
-                    return Err("local-account-id-missing".into());
+                    return Err(SessionError::LocalAccountIdMissing);
                 }
                 self.account_id = Some(own as u32);
-                self.port.accept_server_auth2()?;
+                self.port
+                    .accept_server_auth2()
+                    .map_err(SessionError::Native)?;
                 self.send_connect_with_auth()?;
                 self.phase = DriverPhase::Connection;
                 self.deadline = now_ms + CHANNEL_SILENCE_TIMEOUT_MS;
             } else {
-                self.port.request_ticket()?;
+                self.port.request_ticket().map_err(SessionError::Native)?;
                 self.phase = DriverPhase::Ticket;
                 self.deadline = now_ms + INITIALIZATION_TIMEOUT_MS;
             }
@@ -466,9 +524,9 @@ impl<P: ObserverPort> ObserverDriver<P> {
 
         if self.phase == DriverPhase::Connection {
             if reliable {
-                return Err("unexpected-connection-reliability".into());
+                return Err(SessionError::UnexpectedConnectionReliability);
             }
-            let response = parse_connection_inner(data).map_err(|e| e.to_string())?;
+            let response = parse_connection_inner(data)?;
             self.password.zeroize();
             if response.addon_name_bytes.unwrap_or(0) > 0 {
                 self.phase = DriverPhase::Blocked;
@@ -483,7 +541,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
         }
 
         if !matches!(self.phase, DriverPhase::Channel | DriverPhase::Draining) {
-            return Err("unexpected-protocol-phase".into());
+            return Err(SessionError::UnexpectedProtocolPhase);
         }
         if !reliable
             && (data.starts_with(b"\xff\xff\xff\xffA") || data.starts_with(b"\xff\xff\xff\xffB"))
@@ -491,15 +549,12 @@ impl<P: ObserverPort> ObserverDriver<P> {
             return Ok(());
         }
 
-        let frame = decode_frame(data, reliable).map_err(|e| e.to_string())?;
-        if let Some(ref mut cb) = self.capture_cb {
-            cb(data, reliable, now_ms - self.start_ms);
-        }
+        let frame = decode_frame(data, reliable)?;
         self.channel_frames += 1;
         self.deadline = now_ms + CHANNEL_SILENCE_TIMEOUT_MS;
-        self.feedback.observe(&frame).map_err(|e| e.to_string())?;
+        self.feedback.observe(&frame)?;
         if !frame.reliable {
-            let ord = self.order.accept(&frame).map_err(|e| e.to_string())?;
+            let ord = self.order.accept(&frame)?;
             if !ord.accepted {
                 return Ok(());
             }
@@ -510,9 +565,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
             }
         }
 
-        let mut discard = HashSet::new();
-        discard.insert(76u32);
-        let (msgs, _) = decode_messages(&frame.body, None, &discard).map_err(|e| e.to_string())?;
+        let (msgs, _) = decode_messages(&frame.body, None, Some(76))?;
         let mut context_tick: i32 = if frame.reliable {
             frame.reliable_tick_hint.unwrap_or(0) as i32
         } else {
@@ -531,67 +584,60 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     }
                 }
             }
-            if !self
-                .reliable_filter
-                .accept(msg.message_id, &msg.body)
-                .map_err(|e| e.to_string())?
-            {
+            self.context_tick = Some(context_tick);
+            if !self.reliable_filter.accept(msg.message_id, &msg.body)? {
                 continue;
             }
             if msg.message_id == 58 && self.drain_deadline.is_none() {
-                if now_ms - self.query_window_ms >= 1000 {
+                if now_ms.saturating_sub(self.query_window_ms) >= 1000 {
                     self.query_window_ms = now_ms;
                     self.query_count = 0;
                 }
                 self.query_count += 1;
                 if self.query_count > 32 {
-                    return Err("observer-cvar-query-rate-budget".into());
+                    return Err(SessionError::CvarQueryRateBudget);
                 }
-                let resp = self.settings.query(&msg.body).map_err(|e| e.to_string())?;
-                let (encoded, _) = encode_message(25, &resp).map_err(|e| e.to_string())?;
-                let rf = reliable_frame(&encoded, 0).map_err(|e| e.to_string())?;
-                self.port.send(&rf, 8)?;
+                let resp = self.settings.query(&msg.body)?;
+                let (encoded, _) = encode_message(25, &resp)?;
+                let rf = reliable_frame(&encoded, 0)?;
+                self.port.send(&rf, 8).map_err(SessionError::Native)?;
             }
 
             if msg.message_id == 7 {
-                let fields = wire_fields(&msg.body, 65535).map_err(|e| e.to_string())?;
-                let state = scalar_varint(&fields, 1).map_err(|e| e.to_string())?;
+                let fields = wire_fields(&msg.body, 65535)?;
+                let state = scalar_varint(&fields, 1)?;
                 if state == Some(2) {
-                    self.reset_world_protocol(now_ms, false);
+                    self.core.reset_world(self.core.identity.world + 1);
+                    self.reset_driver_world(now_ms, false);
                 }
-                self.signon.receive(&msg.body).map_err(|e| e.to_string())?;
+                self.signon.receive(&msg.body)?;
                 if state == Some(7) {
-                    self.reset_world_protocol(now_ms, true);
+                    self.core.reset_world(self.core.identity.world + 1);
+                    self.reset_driver_world(now_ms, true);
                 }
                 if matches!(state, Some(2) | Some(7)) && self.drain_deadline.is_none() {
                     self.send_connected_ack()?;
                 }
-            } else {
-                self.decoder.consume(msg.message_id, &msg.body)?;
+            } else if msg.message_id != 76 {
+                let obs_ms = unix_ms_now();
+                let outputs = self.core.consume(
+                    msg.message_id,
+                    &msg.body,
+                    Some(context_tick),
+                    sdk_age_us,
+                    obs_ms,
+                );
                 if msg.message_id == 40 {
-                    if let Some(ref srv) = self.decoder.server {
-                        self.signon
-                            .server_info(srv.server_count)
-                            .map_err(|e| e.to_string())?;
+                    if let Some(ref srv) = self.core.server {
+                        self.signon.server_info(srv.server_count)?;
                     }
-                } else if msg.message_id == 8 || msg.message_id == 11 {
-                    self.core
-                        .admit_creation_sequence(self.decoder.max_creation_sequence)?;
-                } else if msg.message_id == 51 {
-                    self.reset_world_protocol(now_ms, false);
                 }
-
-                if msg.message_id != 76 {
-                    let outputs = self
-                        .core
-                        .consume(msg.message_id, &msg.body, Some(context_tick));
-                    self.process_core_outputs(outputs, now_ms, sdk_age_us)?;
-                }
+                self.process_core_outputs(outputs, now_ms)?;
             }
         }
 
         if self.drain_deadline.is_none() {
-            self.advance_initialization(now_ms)?;
+            self.advance_initialization()?;
             self.send_processed_tick(now_ms)?;
         }
         Ok(())
@@ -601,9 +647,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
         &mut self,
         outputs: Vec<CoreOutput>,
         now_ms: u64,
-        sdk_age_us: Option<i64>,
-    ) -> Result<(), String> {
-        let obs_ms = unix_ms_now();
+    ) -> Result<(), SessionError> {
         for out in outputs {
             match out {
                 CoreOutput::Receipt {
@@ -617,10 +661,10 @@ impl<P: ObserverPort> ObserverDriver<P> {
                         let mut pb = Vec::new();
                         encode_pb_varint(1, t as u64, &mut pb);
                         encode_pb_varint(2, bank as u64, &mut pb);
-                        let (encoded, _) = encode_message(23, &pb).map_err(|e| e.to_string())?;
-                        let rf = reliable_frame(&encoded, 0).map_err(|e| e.to_string())?;
+                        let (encoded, _) = encode_message(23, &pb)?;
+                        let rf = reliable_frame(&encoded, 0)?;
                         if self.drain_deadline.is_none() {
-                            self.port.send(&rf, 8)?;
+                            self.port.send(&rf, 8).map_err(SessionError::Native)?;
                         }
                     }
                 }
@@ -644,37 +688,10 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     }
                     self.last_cursor_sample = Some((world, committed, now_ms, paused));
                     self.gap = false;
-
-                    let mut val = serde_json::to_value(&c).map_err(|e| e.to_string())?;
-                    if let Some(obj) = val.as_object_mut() {
-                        obj.insert("contextTick".into(), Value::from(c.tick));
-                        obj.insert(
-                            "sdkQueueAgeUs".into(),
-                            sdk_age_us.map(Value::from).unwrap_or(Value::Null),
-                        );
-                        obj.insert("observedAt".into(), Value::from(obs_ms));
-                    }
-                    self.emitted.push(DriverEmit::Cursor {
-                        record: val,
-                        committed_tick: committed,
-                        world,
-                        paused,
-                    });
+                    self.emitted.push(DriverEmit::Cursor(Box::new(c)));
                 }
                 CoreOutput::RawEvent(e) => {
-                    let world = e.world;
-                    let ctx = e.tick;
-                    let mut val = serde_json::to_value(&e).map_err(|e| e.to_string())?;
-                    if let Some(obj) = val.as_object_mut() {
-                        obj.insert("contextTick".into(), Value::from(ctx));
-                        obj.insert(
-                            "sdkQueueAgeUs".into(),
-                            sdk_age_us.map(Value::from).unwrap_or(Value::Null),
-                        );
-                        obj.insert("observedAt".into(), Value::from(obs_ms));
-                    }
-                    self.emitted
-                        .push(DriverEmit::RawEvent { record: val, world });
+                    self.emitted.push(DriverEmit::RawEvent(Box::new(e)));
                 }
                 CoreOutput::EventSubscriptions { ids, .. } => {
                     self.world_sync.event_subscription_pending = Some(ids);
@@ -699,7 +716,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     self.gap = true;
                     self.world_sync.apply_recovery();
                     if world_reinitialization {
-                        return Err(format!("world-reinitialization-required: {reason}"));
+                        return Err(SessionError::WorldReinitializationRequired(reason));
                     }
                     self.emitted.push(DriverEmit::Discontinuity {
                         scope: "snapshot",
@@ -708,9 +725,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     });
                 }
                 CoreOutput::WorldReset { reason } => {
-                    self.last_cursor_sample = None;
-                    self.cursor_rate = None;
-                    self.gap = true;
+                    self.reset_driver_world(now_ms, false);
                     self.emitted.push(DriverEmit::Discontinuity {
                         scope: "world",
                         reason,
@@ -718,7 +733,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     });
                 }
                 CoreOutput::Blocked { reason } => {
-                    return Err(reason);
+                    return Err(SessionError::Protocol(reason));
                 }
                 CoreOutput::Diagnostic { .. } => {}
             }
@@ -726,10 +741,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
         Ok(())
     }
 
-    fn reset_world_protocol(&mut self, now_ms: u64, replace_client: bool) {
-        self.decoder.reset_world();
-        let next_world = self.core.identity.world + 1;
-        self.core.reset_world(next_world);
+    fn reset_driver_world(&mut self, now_ms: u64, replace_client: bool) {
         self.last_cursor_sample = None;
         self.cursor_rate = None;
         self.gap = true;
@@ -741,23 +753,23 @@ impl<P: ObserverPort> ObserverDriver<P> {
         }
     }
 
-    fn send_connected_ack(&mut self) -> Result<(), String> {
-        let (msg_id, payload) = self.signon.acknowledgement().map_err(|e| e.to_string())?;
-        let m1 = encode_message(6, &self.settings.userinfo()).map_err(|e| e.to_string())?;
-        let m2 = encode_message(msg_id, &payload).map_err(|e| e.to_string())?;
-        let (joined, _) = join_messages(&[m1, m2]).map_err(|e| e.to_string())?;
-        let rf = reliable_frame(&joined, 0).map_err(|e| e.to_string())?;
-        self.port.send(&rf, 8)
+    fn send_connected_ack(&mut self) -> Result<(), SessionError> {
+        let (msg_id, payload) = self.signon.acknowledgement()?;
+        let m1 = encode_message(6, &self.settings.userinfo())?;
+        let m2 = encode_message(msg_id, &payload)?;
+        let (joined, _) = join_messages(&[m1, m2])?;
+        let rf = reliable_frame(&joined, 0)?;
+        self.port.send(&rf, 8).map_err(SessionError::Native)
     }
 
-    pub fn advance_initialization(&mut self, _now_ms: u64) -> Result<(), String> {
+    pub fn advance_initialization(&mut self) -> Result<(), SessionError> {
         if self.signon.state > 3 {
             if let Some(ids) = self.world_sync.event_subscription_pending.take() {
-                if let Some(ref srv) = self.decoder.server {
+                if let Some(ref srv) = self.core.server {
                     let mut words = [0u32; 16];
                     for eid in ids {
                         if !(0..512).contains(&eid) {
-                            return Err("event-subscription-id".into());
+                            return Err(SessionError::EventSubscriptionId);
                         }
                         let uid = eid as usize;
                         words[uid / 32] |= 1u32 << (uid % 32);
@@ -767,28 +779,31 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     for w in words {
                         encode_pb_varint(2, w as u64, &mut payload);
                     }
-                    let (encoded, _) = encode_message(206, &payload).map_err(|e| e.to_string())?;
-                    let rf = reliable_frame(&encoded, 0).map_err(|e| e.to_string())?;
-                    self.port.send(&rf, 8)?;
+                    let (encoded, _) = encode_message(206, &payload)?;
+                    let rf = reliable_frame(&encoded, 0)?;
+                    self.port.send(&rf, 8).map_err(SessionError::Native)?;
                 }
             }
         }
 
         if self.signon.state == 3 && !self.world_sync.new_sent {
-            if self.decoder.server.is_none() {
-                return Err("new-before-serverinfo".into());
+            if self.core.server.is_none() {
+                return Err(SessionError::NewBeforeServerInfo);
             }
-            let sc = self.signon.spawn_count.ok_or("serverinfo-missing")?;
+            let sc = self
+                .signon
+                .spawn_count
+                .ok_or(SessionError::ServerInfoMissing)?;
             let acct = self.account_id.unwrap_or(1);
             let info = client_info(sc, acct, 0);
-            let (enc_info, _) = encode_message(20, &info).map_err(|e| e.to_string())?;
-            let rf1 = reliable_frame(&enc_info, 0).map_err(|e| e.to_string())?;
-            self.port.send(&rf1, 8)?;
-            self.signon.finish_new().map_err(|e| e.to_string())?;
-            let (mid, payload) = self.signon.acknowledgement().map_err(|e| e.to_string())?;
-            let (enc_ack, _) = encode_message(mid, &payload).map_err(|e| e.to_string())?;
-            let rf2 = reliable_frame(&enc_ack, 0).map_err(|e| e.to_string())?;
-            self.port.send(&rf2, 8)?;
+            let (enc_info, _) = encode_message(20, &info)?;
+            let rf1 = reliable_frame(&enc_info, 0)?;
+            self.port.send(&rf1, 8).map_err(SessionError::Native)?;
+            self.signon.finish_new()?;
+            let (mid, payload) = self.signon.acknowledgement()?;
+            let (enc_ack, _) = encode_message(mid, &payload)?;
+            let rf2 = reliable_frame(&enc_ack, 0)?;
+            self.port.send(&rf2, 8).map_err(SessionError::Native)?;
             self.world_sync.new_sent = true;
         } else if self.signon.state == 4 && !self.world_sync.prespawn_sent {
             if !self.core.ready() || self.core.class_count() == 0 {
@@ -796,68 +811,70 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 self.reason = Some("prespawn-initialization-required".into());
                 return Ok(());
             }
-            let (mid, payload) = self.signon.acknowledgement().map_err(|e| e.to_string())?;
-            let (enc_ack, _) = encode_message(mid, &payload).map_err(|e| e.to_string())?;
-            let rf = reliable_frame(&enc_ack, 0).map_err(|e| e.to_string())?;
-            self.port.send(&rf, 8)?;
+            let (mid, payload) = self.signon.acknowledgement()?;
+            let (enc_ack, _) = encode_message(mid, &payload)?;
+            let rf = reliable_frame(&enc_ack, 0)?;
+            self.port.send(&rf, 8).map_err(SessionError::Native)?;
             self.world_sync.prespawn_sent = true;
         }
 
         if matches!(self.signon.state, 4..=6) && self.core.ready() {
-            for handle in self.decoder.ready_world_groups()? {
+            let ready = self
+                .core
+                .ready_world_groups()
+                .map_err(SessionError::Protocol)?;
+            for handle in ready {
                 let mut pb = Vec::new();
                 encode_pb_varint(1, handle as u64, &mut pb);
-                let (encoded, _) = encode_message(13, &pb).map_err(|e| e.to_string())?;
-                let rf = reliable_frame(&encoded, 0).map_err(|e| e.to_string())?;
-                self.port.send(&rf, 8)?;
+                let (encoded, _) = encode_message(13, &pb)?;
+                let rf = reliable_frame(&encoded, 0)?;
+                self.port.send(&rf, 8).map_err(SessionError::Native)?;
             }
         }
 
         if self.signon.state == 5 && !self.world_sync.spawn_sent {
             if !self.core.ready() || !self.world_sync.prespawn_sent {
-                return Err("spawn-before-parser-initialization".into());
+                return Err(SessionError::SpawnBeforeParserInit);
             }
-            if self.decoder.spawn_groups.len() != self.decoder.ready_spawn_groups.len() {
+            if self.core.spawn_groups.len() != self.core.ready_spawn_groups.len() {
                 return Ok(());
             }
-            self.signon.finish_spawn().map_err(|e| e.to_string())?;
-            let (mid, payload) = self.signon.acknowledgement().map_err(|e| e.to_string())?;
-            let (enc_ack, _) = encode_message(mid, &payload).map_err(|e| e.to_string())?;
-            let rf = reliable_frame(&enc_ack, 0).map_err(|e| e.to_string())?;
-            self.port.send(&rf, 8)?;
+            self.signon.finish_spawn()?;
+            let (mid, payload) = self.signon.acknowledgement()?;
+            let (enc_ack, _) = encode_message(mid, &payload)?;
+            let rf = reliable_frame(&enc_ack, 0)?;
+            self.port.send(&rf, 8).map_err(SessionError::Native)?;
             self.world_sync.spawn_sent = true;
         }
 
         self.acknowledge_full()
     }
 
-    fn acknowledge_full(&mut self) -> Result<(), String> {
+    fn acknowledge_full(&mut self) -> Result<(), SessionError> {
         if self.signon.state == 6
             && !self.world_sync.full_sent
             && self.world_sync.full_snapshot_processed
         {
             if !self.world_sync.spawn_sent {
-                return Err("full-before-spawn-acknowledgement".into());
+                return Err(SessionError::FullBeforeSpawnAck);
             }
-            let (mid, payload) = self.signon.acknowledgement().map_err(|e| e.to_string())?;
-            let (enc_ack, _) = encode_message(mid, &payload).map_err(|e| e.to_string())?;
-            let rf = reliable_frame(&enc_ack, 0).map_err(|e| e.to_string())?;
-            self.port.send(&rf, 8)?;
+            let (mid, payload) = self.signon.acknowledgement()?;
+            let (enc_ack, _) = encode_message(mid, &payload)?;
+            let rf = reliable_frame(&enc_ack, 0)?;
+            self.port.send(&rf, 8).map_err(SessionError::Native)?;
             self.world_sync.full_sent = true;
             self.ever_full = true;
         }
         Ok(())
     }
 
-    pub fn send_processed_tick(&mut self, now_ms: u64) -> Result<(), String> {
+    pub fn send_processed_tick(&mut self, now_ms: u64) -> Result<(), SessionError> {
         if !self.world_sync.full_sent && !self.world_sync.spawn_sent {
             return Ok(());
         }
         if self.world_sync.full_snapshot_processed && !self.world_sync.full_sent {
             if self.signon.state == 5 {
-                self.signon
-                    .finish_full_snapshot()
-                    .map_err(|e| e.to_string())?;
+                self.signon.finish_full_snapshot()?;
             }
             self.acknowledge_full()?;
         }
@@ -865,9 +882,9 @@ impl<P: ObserverPort> ObserverDriver<P> {
             if self.world_sync.request_full_update && !self.world_sync.full_update_outstanding {
                 let mut pb = Vec::new();
                 encode_pb_varint(1, 0xFFFF_FFFF, &mut pb);
-                let (encoded, _) = encode_message(4, &pb).map_err(|e| e.to_string())?;
-                let rf = reliable_frame(&encoded, 0).map_err(|e| e.to_string())?;
-                self.port.send(&rf, 8)?;
+                let (encoded, _) = encode_message(4, &pb)?;
+                let rf = reliable_frame(&encoded, 0)?;
+                self.port.send(&rf, 8).map_err(SessionError::Native)?;
                 self.world_sync.ack_tick = Some(-1);
                 self.world_sync.full_update_outstanding = true;
             }
@@ -886,16 +903,16 @@ impl<P: ObserverPort> ObserverDriver<P> {
         }
         let mut pb = Vec::new();
         encode_pb_varint(1, tick as u64, &mut pb);
-        let (encoded, _) = encode_message(4, &pb).map_err(|e| e.to_string())?;
+        let (encoded, _) = encode_message(4, &pb)?;
         self.send_channel_feedback(&encoded, now_ms)?;
         self.world_sync.ack_tick = Some(tick);
         self.world_sync.last_receipt_ms = now_ms;
         Ok(())
     }
 
-    fn send_channel_feedback(&mut self, encoded: &[u8], now_ms: u64) -> Result<(), String> {
-        let pkt = self.feedback.frame(encoded).map_err(|e| e.to_string())?;
-        self.port.send(&pkt, 1)?;
+    fn send_channel_feedback(&mut self, encoded: &[u8], now_ms: u64) -> Result<(), SessionError> {
+        let pkt = self.feedback.frame(encoded)?;
+        self.port.send(&pkt, 1).map_err(SessionError::Native)?;
         self.last_feedback_ms = now_ms;
         self.world_sync.last_receipt_ms = now_ms;
         Ok(())

@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use prost::Message;
 use serde::Serialize;
@@ -10,6 +10,8 @@ use super::projection::{
 };
 use super::schema::Schema;
 use super::string_tables::StringTables;
+use crate::wire::bits::{scalar_bytes, scalar_varint, wire_fields, BitReader, MAX_BYTES};
+use crate::wire::compression::expand_lzss;
 use crate::wire::proto::{
     CMsgSource1LegacyGameEvent, CMsgSource1LegacyGameEventList, CNetMsgTick, CSvcMsgClassInfo,
     CSvcMsgCreateStringTable, CSvcMsgFlattenedSerializer, CSvcMsgPacketEntities, CSvcMsgServerInfo,
@@ -26,11 +28,21 @@ pub struct SourceIdentity {
 #[derive(Debug, Clone)]
 pub struct ServerInfoState {
     pub protocol: i32,
-    pub server_count: i32,
+    pub server_count: u32,
     pub max_classes: usize,
-    pub player_slot: Option<i32>,
+    pub player_slot: i32,
     pub tick_interval: f32,
     pub map_name: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct SpawnGroup {
+    pub flags: u32,
+    pub owner: u32,
+    pub parent: u32,
+    pub savegame: bool,
+    pub manifest_incomplete: bool,
+    pub fragment_count: usize,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -53,6 +65,9 @@ pub struct CursorRecord {
     pub descriptor_generation: Option<u64>,
     pub event_server_tick: Option<i32>,
     pub network_tick: i32,
+    pub context_tick: i32,
+    pub sdk_queue_age_us: Option<i64>,
+    pub observed_at: u64,
     pub identity_resolved: bool,
     pub round_clock: RoundClock,
 }
@@ -82,6 +97,9 @@ pub struct RawEventRecord {
     pub descriptor_generation: u64,
     pub event_server_tick: Option<i32>,
     pub network_tick: i32,
+    pub context_tick: i32,
+    pub sdk_queue_age_us: Option<i64>,
+    pub observed_at: u64,
     pub identity_resolved: bool,
 }
 
@@ -120,6 +138,72 @@ pub enum CoreOutput {
     },
 }
 
+fn read_manifest_string(r: &mut BitReader<'_>) -> Result<String, String> {
+    let bytes = r.read_string_nul(4096).map_err(|e| e.to_string())?;
+    String::from_utf8(bytes).map_err(|_| "manifest-string-encoding".to_string())
+}
+
+fn decode_resource_manifest_stats(data: &[u8]) -> Result<(usize, usize), String> {
+    if data.len() > 128 * 1024 {
+        return Err("manifest-wire-budget".into());
+    }
+    if data.is_empty() {
+        return Ok((0, 0));
+    }
+    let mut env = BitReader::new(data).map_err(|e| e.to_string())?;
+    let compressed = env.read_bits(1).map_err(|e| e.to_string())?;
+    let size = env.read_bits(24).map_err(|e| e.to_string())? as usize;
+    let raw_payload = env.read_bytes(size).map_err(|e| e.to_string())?;
+    if env.remaining_bits() >= 8 {
+        return Err("manifest-trailing-bytes".into());
+    }
+    let owned_payload;
+    let payload = if compressed != 0 {
+        owned_payload = expand_lzss(&raw_payload).map_err(|e| e.to_string())?;
+        owned_payload.as_slice()
+    } else {
+        &raw_payload
+    };
+
+    let mut r = BitReader::new(payload).map_err(|e| e.to_string())?;
+    let ext_count = r.read_bits(16).map_err(|e| e.to_string())? as usize;
+    let dir_count = r.read_bits(16).map_err(|e| e.to_string())? as usize;
+    let res_count = r.read_bits(16).map_err(|e| e.to_string())? as usize;
+    if res_count > 16384 {
+        return Err("manifest-resource-count-budget".into());
+    }
+    let mut name_bytes = 0usize;
+    for _ in 0..ext_count {
+        name_bytes += read_manifest_string(&mut r)?.len();
+    }
+    for _ in 0..dir_count {
+        name_bytes += read_manifest_string(&mut r)?.len();
+    }
+    let dir_bits = if dir_count <= 1 {
+        1
+    } else {
+        (32 - ((dir_count - 1) as u32).leading_zeros()) as u8
+    };
+    let ext_bits = if ext_count <= 1 {
+        1
+    } else {
+        (32 - ((ext_count - 1) as u32).leading_zeros()) as u8
+    };
+    for _ in 0..res_count {
+        let d = r.read_bits(dir_bits).map_err(|e| e.to_string())? as usize;
+        let name = read_manifest_string(&mut r)?;
+        let e = r.read_bits(ext_bits).map_err(|e| e.to_string())? as usize;
+        if d >= dir_count || e >= ext_count {
+            return Err("manifest-symbol-index".into());
+        }
+        name_bytes += name.len();
+    }
+    if r.remaining_bits() >= 8 {
+        return Err("manifest-payload-trailing-bytes".into());
+    }
+    Ok((name_bytes, res_count))
+}
+
 pub struct ObserverCore {
     pub identity: SourceIdentity,
     pub network_tick: i32,
@@ -132,7 +216,11 @@ pub struct ObserverCore {
     pub schema: Option<Schema>,
     descriptors: HashMap<i32, GameEventDescriptor>,
     pub descriptor_generation: u64,
-    pub known_creation_sequence: i64,
+    pub known_creation_sequence: u32,
+    pub spawn_groups: BTreeMap<u32, SpawnGroup>,
+    pub ready_spawn_groups: HashSet<u32>,
+    manifest_name_bytes: usize,
+    manifest_resources: usize,
     pub halted: bool,
 }
 
@@ -150,7 +238,11 @@ impl ObserverCore {
             schema: None,
             descriptors: HashMap::new(),
             descriptor_generation: 0,
-            known_creation_sequence: -1,
+            known_creation_sequence: 0,
+            spawn_groups: BTreeMap::new(),
+            ready_spawn_groups: HashSet::new(),
+            manifest_name_bytes: 0,
+            manifest_resources: 0,
             halted: false,
         }
     }
@@ -163,28 +255,68 @@ impl ObserverCore {
         self.classes.as_ref().map(|c| c.classes.len()).unwrap_or(0)
     }
 
-    pub fn schema_field_count(&self) -> usize {
-        if self.ready() {
-            self.serializers
-                .as_ref()
-                .map(|s| s.fields.len())
-                .unwrap_or(0)
-        } else {
-            0
-        }
-    }
-
     pub fn committed_tick(&self) -> Option<i32> {
         self.entities.latest_tick
     }
 
     pub fn admit_creation_sequence(&mut self, seq: u32) -> Result<(), String> {
-        let s = seq as i64;
-        if s < self.known_creation_sequence {
+        if seq < self.known_creation_sequence {
             return Err("Invalid admitted creation sequence".into());
         }
-        self.known_creation_sequence = s;
+        self.known_creation_sequence = seq;
         Ok(())
+    }
+
+    fn admit_manifest(&mut self, payload: &[u8]) -> Result<(), String> {
+        let (names, count) = decode_resource_manifest_stats(payload)?;
+        if self.manifest_name_bytes + names > MAX_BYTES || self.manifest_resources + count > 16384 {
+            return Err("spawn-group-session-manifest-budget".into());
+        }
+        self.manifest_name_bytes += names;
+        self.manifest_resources += count;
+        Ok(())
+    }
+
+    pub fn ready_world_groups(&mut self) -> Result<Vec<u32>, String> {
+        if self.server.is_none() {
+            return Ok(Vec::new());
+        }
+        let mut ready = Vec::new();
+        let mut pending: Vec<u32> = self
+            .spawn_groups
+            .keys()
+            .copied()
+            .filter(|h| !self.ready_spawn_groups.contains(h))
+            .collect();
+        while !pending.is_empty() {
+            let mut advanced = false;
+            let mut next_pending = Vec::new();
+            for handle in pending {
+                let group = &self.spawn_groups[&handle];
+                if group.manifest_incomplete {
+                    next_pending.push(handle);
+                    continue;
+                }
+                if (group.flags & 1) != 0 || group.savegame {
+                    return Err("savegame-world-not-supported".into());
+                }
+                let owner_ok = group.owner == 0 || self.ready_spawn_groups.contains(&group.owner);
+                let parent_ok =
+                    group.parent == 0 || self.ready_spawn_groups.contains(&group.parent);
+                if !owner_ok || !parent_ok {
+                    next_pending.push(handle);
+                    continue;
+                }
+                self.ready_spawn_groups.insert(handle);
+                ready.push(handle);
+                advanced = true;
+            }
+            pending = next_pending;
+            if !advanced {
+                break;
+            }
+        }
+        Ok(ready)
     }
 
     pub fn reset_world(&mut self, next_world: u64) {
@@ -199,7 +331,11 @@ impl ObserverCore {
         self.schema = None;
         self.descriptors.clear();
         self.descriptor_generation += 1;
-        self.known_creation_sequence = -1;
+        self.known_creation_sequence = 0;
+        self.spawn_groups.clear();
+        self.ready_spawn_groups.clear();
+        self.manifest_name_bytes = 0;
+        self.manifest_resources = 0;
         self.halted = false;
     }
 
@@ -235,6 +371,8 @@ impl ObserverCore {
         message_id: u32,
         body: &[u8],
         context_tick: Option<i32>,
+        sdk_queue_age_us: Option<i64>,
+        observed_at: u64,
     ) -> Vec<CoreOutput> {
         let mut out = Vec::new();
         if self.halted && message_id != 51 {
@@ -243,7 +381,14 @@ impl ObserverCore {
             });
             return out;
         }
-        let res = self.consume_inner(message_id, body, context_tick, &mut out);
+        let res = self.consume_inner(
+            message_id,
+            body,
+            context_tick,
+            sdk_queue_age_us,
+            observed_at,
+            &mut out,
+        );
         if let Err(reason) = res {
             if message_id == 207 {
                 out.push(CoreOutput::Gap { reason });
@@ -268,6 +413,8 @@ impl ObserverCore {
         message_id: u32,
         body: &[u8],
         context_tick: Option<i32>,
+        sdk_queue_age_us: Option<i64>,
+        observed_at: u64,
         out: &mut Vec<CoreOutput>,
     ) -> Result<(), String> {
         match message_id {
@@ -278,6 +425,99 @@ impl ObserverCore {
                     .filter(|&t| t <= i32::MAX as u32)
                     .ok_or_else(|| "Invalid network clock".to_string())?;
                 self.network_tick = tick as i32;
+            }
+            8 => {
+                let f = wire_fields(body, MAX_BYTES).map_err(|e| e.to_string())?;
+                let handle = scalar_varint(&f, 4)
+                    .map_err(|e| e.to_string())?
+                    .filter(|&h| h > 0 && h <= u32::MAX as u64)
+                    .ok_or_else(|| "spawn-group-handle".to_string())?
+                    as u32;
+                if self.spawn_groups.contains_key(&handle) {
+                    return Ok(());
+                }
+                if self.spawn_groups.len() >= 1024 {
+                    return Err("spawn-group-count-budget".into());
+                }
+                let manifest_bytes = scalar_bytes(&f, 8)
+                    .map_err(|e| e.to_string())?
+                    .unwrap_or(&[]);
+                self.admit_manifest(manifest_bytes)?;
+                let seq = scalar_varint(&f, 16)
+                    .map_err(|e| e.to_string())?
+                    .unwrap_or(0) as u32;
+                self.admit_creation_sequence(seq)?;
+                let savegame = scalar_bytes(&f, 17)
+                    .map_err(|e| e.to_string())?
+                    .map(|b| !b.is_empty())
+                    .unwrap_or(false);
+                self.spawn_groups.insert(
+                    handle,
+                    SpawnGroup {
+                        flags: scalar_varint(&f, 9)
+                            .map_err(|e| e.to_string())?
+                            .unwrap_or(0) as u32,
+                        owner: scalar_varint(&f, 5)
+                            .map_err(|e| e.to_string())?
+                            .unwrap_or(0) as u32,
+                        parent: scalar_varint(&f, 18)
+                            .map_err(|e| e.to_string())?
+                            .unwrap_or(0) as u32,
+                        savegame,
+                        manifest_incomplete: scalar_varint(&f, 11)
+                            .map_err(|e| e.to_string())?
+                            .unwrap_or(0)
+                            != 0,
+                        fragment_count: 1,
+                    },
+                );
+            }
+            9 => {
+                let f = wire_fields(body, MAX_BYTES).map_err(|e| e.to_string())?;
+                let Some(handle) = scalar_varint(&f, 1).map_err(|e| e.to_string())? else {
+                    return Ok(());
+                };
+                let handle = handle as u32;
+                let Some(incomplete) = self
+                    .spawn_groups
+                    .get(&handle)
+                    .map(|g| g.manifest_incomplete)
+                else {
+                    return Ok(());
+                };
+                if !incomplete {
+                    return Ok(());
+                }
+                if self.spawn_groups[&handle].fragment_count >= 1024 {
+                    return Err("spawn-group-fragment-budget".into());
+                }
+                let frag = scalar_bytes(&f, 2)
+                    .map_err(|e| e.to_string())?
+                    .unwrap_or(&[]);
+                self.admit_manifest(frag)?;
+                let next_incomplete = scalar_varint(&f, 3)
+                    .map_err(|e| e.to_string())?
+                    .unwrap_or(0)
+                    != 0;
+                if let Some(g) = self.spawn_groups.get_mut(&handle) {
+                    g.fragment_count += 1;
+                    g.manifest_incomplete = next_incomplete;
+                }
+            }
+            11 => {
+                let f = wire_fields(body, MAX_BYTES).map_err(|e| e.to_string())?;
+                let seq = scalar_varint(&f, 3)
+                    .map_err(|e| e.to_string())?
+                    .unwrap_or(0) as u32;
+                self.admit_creation_sequence(seq)?;
+            }
+            12 => {
+                let f = wire_fields(body, MAX_BYTES).map_err(|e| e.to_string())?;
+                if let Some(handle) = scalar_varint(&f, 1).map_err(|e| e.to_string())? {
+                    let h = handle as u32;
+                    self.spawn_groups.remove(&h);
+                    self.ready_spawn_groups.remove(&h);
+                }
             }
             40 => {
                 let msg = CSvcMsgServerInfo::decode(body).map_err(|e| e.to_string())?;
@@ -294,9 +534,9 @@ impl ObserverCore {
                     as usize;
                 let next_srv = ServerInfoState {
                     protocol: msg.protocol.unwrap_or(0),
-                    server_count: msg.server_count.unwrap_or(0),
+                    server_count: msg.server_count.unwrap_or(0) as u32,
                     max_classes,
-                    player_slot: msg.player_slot,
+                    player_slot: msg.player_slot.unwrap_or(-1),
                     tick_interval: interval,
                     map_name,
                 };
@@ -309,6 +549,8 @@ impl ObserverCore {
                     {
                         return Err("ServerInfo changed without world boundary".into());
                     }
+                } else if let Some(ref manifest) = msg.game_session_manifest {
+                    self.admit_manifest(manifest)?;
                 }
                 self.server = Some(next_srv);
                 self.try_build_schema()?;
@@ -356,7 +598,7 @@ impl ObserverCore {
                     .ok_or_else(|| "Entities before schema readiness".to_string())?;
                 let msg = CSvcMsgPacketEntities::decode(body).map_err(|e| e.to_string())?;
                 if let Some(seq) = msg.max_spawngroup_creationsequence {
-                    if (seq as i64) > self.known_creation_sequence {
+                    if seq > self.known_creation_sequence {
                         return Err("Snapshot exceeds admitted world creation sequence".into());
                     }
                 }
@@ -387,14 +629,14 @@ impl ObserverCore {
                             self.last_cursor = Some(receipt.tick);
                             let round_clock = project_round_clock(
                                 self.schema.as_ref(),
-                                &self.entities,
+                                &mut self.entities,
                                 receipt.tick,
                             );
                             let empty_fields = BTreeMap::new();
                             let empty_types = BTreeMap::new();
                             let proj = project_native_event(
                                 self.schema.as_ref(),
-                                &self.entities,
+                                &mut self.entities,
                                 &self.tables,
                                 "cursor",
                                 &empty_fields,
@@ -418,6 +660,9 @@ impl ObserverCore {
                                 descriptor_generation: None,
                                 event_server_tick: None,
                                 network_tick: self.network_tick,
+                                context_tick: receipt.tick,
+                                sdk_queue_age_us,
+                                observed_at,
                                 identity_resolved: proj.identity_resolved,
                                 round_clock,
                             }));
@@ -445,7 +690,7 @@ impl ObserverCore {
                     {
                         return Err("Invalid event descriptor".into());
                     }
-                    let mut names = std::collections::HashSet::new();
+                    let mut names = HashSet::new();
                     for k in &d.keys {
                         let kname = k.name.as_deref().unwrap_or("");
                         let ktype = k.r#type.unwrap_or(-1);
@@ -465,7 +710,7 @@ impl ObserverCore {
                 out.push(CoreOutput::EventSubscriptions {
                     descriptor_generation: self.descriptor_generation,
                     ids,
-                    player_slot: self.server.as_ref().and_then(|s| s.player_slot),
+                    player_slot: self.server.as_ref().map(|s| s.player_slot),
                 });
             }
             207 => {
@@ -515,7 +760,7 @@ impl ObserverCore {
                 let ename = d.name.clone().unwrap_or_default();
                 let proj = project_native_event(
                     self.schema.as_ref(),
-                    &self.entities,
+                    &mut self.entities,
                     &self.tables,
                     &ename,
                     &fields,
@@ -545,6 +790,9 @@ impl ObserverCore {
                     descriptor_generation: self.descriptor_generation,
                     event_server_tick: msg.server_tick,
                     network_tick: self.network_tick,
+                    context_tick: tick,
+                    sdk_queue_age_us,
+                    observed_at,
                     identity_resolved: proj.identity_resolved,
                 }));
             }
@@ -559,7 +807,6 @@ mod tests {
     use super::*;
     use crate::wire::bits::{encode_pb_bytes, encode_pb_varint};
     use crate::wire::channel::{decode_frame, decode_messages};
-    use std::collections::HashSet;
 
     fn decode_b64(input: &str) -> Vec<u8> {
         let table = |c: u8| -> Option<u8> {
@@ -604,9 +851,7 @@ mod tests {
             channel: 1,
             world: 1,
         });
-        core.admit_creation_sequence(0).unwrap();
 
-        let empty_discard = HashSet::new();
         let mut cursors = Vec::new();
         let mut events = Vec::new();
 
@@ -614,7 +859,7 @@ mod tests {
             let reliable = f["reliable"].as_bool().unwrap();
             let body = decode_b64(f["bodyBase64"].as_str().unwrap());
             let frame = decode_frame(&body, reliable).unwrap();
-            let (msgs, _) = decode_messages(&frame.body, None, &empty_discard).unwrap();
+            let (msgs, _) = decode_messages(&frame.body, None, None).unwrap();
             let mut ctx_tick = if frame.reliable {
                 frame.reliable_tick_hint.unwrap_or(0) as i32
             } else {
@@ -638,7 +883,7 @@ mod tests {
                         }
                     }
                 }
-                for out in core.consume(m.message_id, &m.body, Some(ctx_tick)) {
+                for out in core.consume(m.message_id, &m.body, Some(ctx_tick), None, 0) {
                     match out {
                         CoreOutput::Cursor(c) => cursors.push(c),
                         CoreOutput::RawEvent(e) => events.push(e),
@@ -673,19 +918,16 @@ mod tests {
             channel: 1,
             world: 2,
         });
-        core.admit_creation_sequence(0).unwrap();
 
-        // 40: ServerInfo
         let mut srv = Vec::new();
         encode_pb_varint(1, 14191, &mut srv);
         encode_pb_varint(2, 7, &mut srv);
         encode_pb_varint(11, 1, &mut srv);
-        srv.push(0x6d); // tag 13, wire 5 (fixed32)
+        srv.push(0x6d);
         srv.extend_from_slice(&(1.0f32 / 64.0f32).to_le_bytes());
         encode_pb_bytes(15, b"de_test", &mut srv);
-        core.consume(40, &srv, Some(99));
+        core.consume(40, &srv, Some(99), None, 0);
 
-        // 41: FlattenedSerializer (CCSPlayerController with m_steamID)
         let mut ser_msg = Vec::new();
         let mut s = Vec::new();
         encode_pb_varint(1, 0, &mut s);
@@ -700,17 +942,15 @@ mod tests {
         encode_pb_varint(2, 1, &mut fld);
         encode_pb_varint(10, 3, &mut fld);
         encode_pb_bytes(3, &fld, &mut ser_msg);
-        core.consume(41, &ser_msg, Some(99));
+        core.consume(41, &ser_msg, Some(99), None, 0);
 
-        // 42: ClassInfo
         let mut cls = Vec::new();
         let mut c0 = Vec::new();
         encode_pb_varint(1, 0, &mut c0);
         encode_pb_bytes(3, b"CCSPlayerController", &mut c0);
         encode_pb_bytes(2, &c0, &mut cls);
-        core.consume(42, &cls, Some(99));
+        core.consume(42, &cls, Some(99), None, 0);
 
-        // Helper to pack bits LSB-first
         let pack_bits = |bits: &[u8]| -> Vec<u8> {
             let mut out = vec![0u8; bits.len().div_ceil(8)];
             for (i, &b) in bits.iter().enumerate() {
@@ -726,14 +966,12 @@ mod tests {
             }
         };
 
-        // field_wire for m_steamID at path [0]: op=0 (plusOne: huffman '0'), stop=39 (huffman '10'), + 64-bit steam
         let mut fw = vec![0u8, 1, 0];
         push_bits(&mut fw, steam, 64);
         let fw_bytes = pack_bits(&fw);
 
-        // 44: instancebaseline stringtable
         let mut st_bits = vec![1u8, 1, 0];
-        push_bits(&mut st_bits, 48, 8); // '0'
+        push_bits(&mut st_bits, 48, 8);
         push_bits(&mut st_bits, 0, 8);
         st_bits.push(1);
         push_bits(&mut st_bits, fw_bytes.len() as u64, 17);
@@ -744,9 +982,8 @@ mod tests {
         encode_pb_bytes(1, b"instancebaseline", &mut st_ib);
         encode_pb_varint(2, 1, &mut st_ib);
         encode_pb_bytes(7, &pack_bits(&st_bits), &mut st_ib);
-        core.consume(44, &st_ib, Some(99));
+        core.consume(44, &st_ib, Some(99), None, 0);
 
-        // 44: userinfo stringtable
         let mut uinfo_val = vec![0x11u8];
         uinfo_val.extend_from_slice(&steam.to_le_bytes());
         encode_pb_varint(3, 42, &mut uinfo_val);
@@ -762,15 +999,14 @@ mod tests {
         encode_pb_bytes(1, b"userinfo", &mut st_ui);
         encode_pb_varint(2, 1, &mut st_ui);
         encode_pb_bytes(7, &pack_bits(&ui_bits), &mut st_ui);
-        core.consume(44, &st_ui, Some(99));
+        core.consume(44, &st_ui, Some(99), None, 0);
 
-        // 55: PacketEntities full snapshot for entity 1 (slot 0 + 1)
         let mut pe_bits = Vec::new();
-        push_bits(&mut pe_bits, 1, 6); // delta id = 1 => entity 1
-        push_bits(&mut pe_bits, 2, 2); // create
-        pe_bits.push(0); // classId (1 bit since max_classes=1 -> class_id_bits=1)
-        push_bits(&mut pe_bits, 1, 17); // serial = 1
-        push_bits(&mut pe_bits, 0, 8); // token = 0 (ubitvar/varuint32)
+        push_bits(&mut pe_bits, 1, 6);
+        push_bits(&mut pe_bits, 2, 2);
+        pe_bits.push(0);
+        push_bits(&mut pe_bits, 1, 17);
+        push_bits(&mut pe_bits, 0, 8);
         pe_bits.extend_from_slice(&fw);
         let mut pe = Vec::new();
         encode_pb_varint(2, 1, &mut pe);
@@ -778,9 +1014,8 @@ mod tests {
         encode_pb_varint(12, 99, &mut pe);
         encode_pb_bytes(7, &pack_bits(&pe_bits), &mut pe);
         encode_pb_bytes(19, &[], &mut pe);
-        core.consume(55, &pe, Some(99));
+        core.consume(55, &pe, Some(99), None, 0);
 
-        // 205: GameEventList
         let mut desc = Vec::new();
         encode_pb_varint(1, 17, &mut desc);
         encode_pb_bytes(2, b"weapon_fire", &mut desc);
@@ -792,9 +1027,8 @@ mod tests {
         }
         let mut ev_list = Vec::new();
         encode_pb_bytes(1, &desc, &mut ev_list);
-        core.consume(205, &ev_list, Some(99));
+        core.consume(205, &ev_list, Some(99), None, 0);
 
-        // 207: GameEvent
         let mut ev = Vec::new();
         encode_pb_varint(2, 17, &mut ev);
         let mut k0 = Vec::new();
@@ -810,7 +1044,7 @@ mod tests {
         encode_pb_varint(7, 0, &mut k2);
         encode_pb_bytes(3, &k2, &mut ev);
 
-        let outs = core.consume(207, &ev, Some(100));
+        let outs = core.consume(207, &ev, Some(100), None, 0);
         let raw_ev = outs
             .into_iter()
             .find_map(|o| match o {

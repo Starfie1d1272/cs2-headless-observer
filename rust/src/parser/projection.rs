@@ -5,7 +5,7 @@ use serde::Serialize;
 use serde_json::Value;
 
 use super::field_codec::FieldValue;
-use super::packet_entities::{Entity, EntityTable};
+use super::packet_entities::EntityTable;
 use super::schema::Schema;
 use super::string_tables::StringTables;
 use crate::wire::proto::CMsgPlayerInfo;
@@ -121,24 +121,12 @@ fn f32_val(v: Option<&FieldValue>) -> Option<f32> {
     }
 }
 
-fn find_game_rules<'a>(schema: &Schema, entities: &'a EntityTable) -> Option<&'a Entity> {
-    if entities.waiting_full {
-        return None;
-    }
-    entities.iter().find(|e| {
-        schema
-            .get_class(e.class_id)
-            .map(|c| c.name == "CCSGameRulesProxy")
-            .unwrap_or(false)
-    })
-}
-
 pub fn project_round_clock(
     schema: Option<&Schema>,
-    entities: &EntityTable,
+    entities: &mut EntityTable,
     committed_tick: i32,
 ) -> RoundClock {
-    let rules = schema.and_then(|s| find_game_rules(s, entities));
+    let rules = schema.and_then(|s| entities.game_rules(s));
     let get = |name: &str| rules.and_then(|r| r.fields.field_by_name(name));
     let get_nonneg_i32 = |name: &str| int32_val(get(name)).filter(|&v| v >= 0);
 
@@ -164,7 +152,6 @@ pub fn project_round_clock(
         "unknown"
     };
 
-    let mut present_count = 0usize;
     let flags = [
         total_rounds_played.is_some(),
         start_time.is_some(),
@@ -177,11 +164,7 @@ pub fn project_round_clock(
         start_tick.is_some(),
         technical.is_some(),
     ];
-    for f in flags {
-        if f {
-            present_count += 1;
-        }
-    }
+    let present_count = flags.iter().filter(|&&f| f).count();
     let status = if present_count == 0 {
         "unavailable"
     } else if present_count == 10 {
@@ -214,7 +197,7 @@ pub fn project_round_clock(
 
 pub fn project_native_event(
     schema: Option<&Schema>,
-    entities: &EntityTable,
+    entities: &mut EntityTable,
     tables: &StringTables,
     name: &str,
     fields: &BTreeMap<String, Value>,
@@ -315,7 +298,7 @@ pub fn project_native_event(
 
     let mut warmup = None;
     let mut round = None;
-    if let Some(rules) = schema.and_then(|s| find_game_rules(s, entities)) {
+    if let Some(rules) = schema.and_then(|s| entities.game_rules(s)) {
         warmup = bool_val(rules.fields.field_by_name("m_bWarmupPeriod"));
         round = uint32_val(rules.fields.field_by_name("m_totalRoundsPlayed"));
     }

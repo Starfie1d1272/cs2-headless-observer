@@ -63,9 +63,31 @@ type FnReceiveMany = unsafe extern "C" fn(*mut c_void, *mut CReceived, c_int) ->
 type FnReleaseReceived = unsafe extern "C" fn(*mut c_void);
 type FnClose = unsafe extern "C" fn(*mut c_void);
 
+struct NativeFns {
+    state: FnState,
+    failure: FnFailure,
+    remote_end_reason: FnRemoteEndReason,
+    pump: FnPump,
+    remote_id: FnRemoteId,
+    local_id: FnLocalId,
+    accept_server_auth2: FnAcceptAuth2,
+    request_ticket: FnRequestTicket,
+    auth: FnAuth,
+    send: FnSend,
+    receive_many: FnReceiveMany,
+    release_received: FnReleaseReceived,
+    close: FnClose,
+}
+
+unsafe fn load_fn<T: Copy>(lib: &Library, name: &[u8]) -> Result<T, libloading::Error> {
+    let sym: Symbol<T> = lib.get(name)?;
+    Ok(*sym)
+}
+
 pub struct NativePort {
     _steam_lib: Option<Library>,
-    lib: Library,
+    _lib: Library,
+    fns: NativeFns,
     handle: *mut c_void,
     batch: [CReceived; 8],
     batch_count: usize,
@@ -92,26 +114,46 @@ impl NativePort {
         let abs_lib = library_path.canonicalize()?;
         let lib = unsafe { Library::new(&abs_lib)? };
 
-        let abi_ver: Symbol<FnAbiVersion> = unsafe { lib.get(b"observer_abi_version")? };
+        let abi_ver: FnAbiVersion = unsafe { load_fn(&lib, b"observer_abi_version\0")? };
         if unsafe { abi_ver() } != 4 {
             return Err("native-abi-version".into());
         }
 
-        let create: Symbol<FnCreate> = unsafe { lib.get(b"observer_create")? };
+        let create: FnCreate = unsafe { load_fn(&lib, b"observer_create\0")? };
+        let boot_failure_fn: FnBootFailure = unsafe { load_fn(&lib, b"observer_boot_failure\0")? };
+        let init_result_fn: FnInitResult = unsafe { load_fn(&lib, b"observer_init_result\0")? };
+
+        let fns = unsafe {
+            NativeFns {
+                state: load_fn(&lib, b"observer_state\0")?,
+                failure: load_fn(&lib, b"observer_failure\0")?,
+                remote_end_reason: load_fn(&lib, b"observer_remote_end_reason\0")?,
+                pump: load_fn(&lib, b"observer_pump\0")?,
+                remote_id: load_fn(&lib, b"observer_remote_id\0")?,
+                local_id: load_fn(&lib, b"observer_local_id\0")?,
+                accept_server_auth2: load_fn(&lib, b"observer_accept_server_auth2\0")?,
+                request_ticket: load_fn(&lib, b"observer_request_ticket\0")?,
+                auth: load_fn(&lib, b"observer_auth\0")?,
+                send: load_fn(&lib, b"observer_send\0")?,
+                receive_many: load_fn(&lib, b"observer_receive_many\0")?,
+                release_received: load_fn(&lib, b"observer_release_received\0")?,
+                close: load_fn(&lib, b"observer_close\0")?,
+            }
+        };
+
         let c_endpoint = CString::new(endpoint)?;
         let handle = unsafe { create(c_endpoint.as_ptr(), now_ms) };
         if handle.is_null() {
-            let boot_f: Symbol<FnBootFailure> = unsafe { lib.get(b"observer_boot_failure")? };
-            let init_r: Symbol<FnInitResult> = unsafe { lib.get(b"observer_init_result")? };
             return Err(Box::new(NativeStartError {
-                boot_code: unsafe { boot_f() },
-                init_result: unsafe { init_r() },
+                boot_code: unsafe { boot_failure_fn() },
+                init_result: unsafe { init_result_fn() },
             }));
         }
 
         Ok(Self {
             _steam_lib: steam_lib,
-            lib,
+            _lib: lib,
+            fns,
             handle,
             batch: [CReceived::default(); 8],
             batch_count: 0,
@@ -127,39 +169,26 @@ impl ObserverPort for NativePort {
         if self.handle.is_null() {
             return 6;
         }
-        unsafe {
-            let f: Symbol<FnState> = self.lib.get(b"observer_state").unwrap();
-            f(self.handle)
-        }
+        unsafe { (self.fns.state)(self.handle) }
     }
 
     fn failure(&self) -> i32 {
         if self.handle.is_null() {
             return 0;
         }
-        unsafe {
-            let f: Symbol<FnFailure> = self.lib.get(b"observer_failure").unwrap();
-            f(self.handle)
-        }
+        unsafe { (self.fns.failure)(self.handle) }
     }
 
     fn remote_end_reason(&self) -> i32 {
         if self.handle.is_null() {
             return 0;
         }
-        unsafe {
-            let f: Symbol<FnRemoteEndReason> = self.lib.get(b"observer_remote_end_reason").unwrap();
-            f(self.handle)
-        }
+        unsafe { (self.fns.remote_end_reason)(self.handle) }
     }
 
     fn pump(&mut self, now_ms: u64) {
-        if self.handle.is_null() {
-            return;
-        }
-        unsafe {
-            let f: Symbol<FnPump> = self.lib.get(b"observer_pump").unwrap();
-            f(self.handle, now_ms);
+        if !self.handle.is_null() {
+            unsafe { (self.fns.pump)(self.handle, now_ms) };
         }
     }
 
@@ -167,45 +196,25 @@ impl ObserverPort for NativePort {
         if self.handle.is_null() {
             return 0;
         }
-        unsafe {
-            let f: Symbol<FnRemoteId> = self.lib.get(b"observer_remote_id").unwrap();
-            f(self.handle)
-        }
+        unsafe { (self.fns.remote_id)(self.handle) }
     }
 
     fn local_id(&self) -> u64 {
         if self.handle.is_null() {
             return 0;
         }
-        unsafe {
-            let f: Symbol<FnLocalId> = self.lib.get(b"observer_local_id").unwrap();
-            f(self.handle)
-        }
+        unsafe { (self.fns.local_id)(self.handle) }
     }
 
     fn accept_server_auth2(&mut self) -> Result<(), String> {
-        let ok = unsafe {
-            let f: Symbol<FnAcceptAuth2> = self
-                .lib
-                .get(b"observer_accept_server_auth2")
-                .map_err(|e| e.to_string())?;
-            f(self.handle)
-        };
-        if ok != 1 {
+        if unsafe { (self.fns.accept_server_auth2)(self.handle) } != 1 {
             return Err("native-auth2-phase-invalid".into());
         }
         Ok(())
     }
 
     fn request_ticket(&mut self) -> Result<(), String> {
-        let ok = unsafe {
-            let f: Symbol<FnRequestTicket> = self
-                .lib
-                .get(b"observer_request_ticket")
-                .map_err(|e| e.to_string())?;
-            f(self.handle)
-        };
-        if ok != 1 {
+        if unsafe { (self.fns.request_ticket)(self.handle) } != 1 {
             return Err("native-ticket-request-failed".into());
         }
         Ok(())
@@ -216,10 +225,7 @@ impl ObserverPort for NativePort {
         F: FnOnce(&[u8]) -> Result<R, String>,
     {
         let mut size: u32 = 0;
-        let ptr = unsafe {
-            let f: Symbol<FnAuth> = self.lib.get(b"observer_auth").map_err(|e| e.to_string())?;
-            f(self.handle, &mut size)
-        };
+        let ptr = unsafe { (self.fns.auth)(self.handle, &mut size) };
         if ptr.is_null() || size <= 8 || size > 2048 {
             return Err("native-ticket-not-ready".into());
         }
@@ -231,11 +237,7 @@ impl ObserverPort for NativePort {
         if data.is_empty() || data.len() > 512 * 1024 || !matches!(flags, 1 | 5 | 8) {
             return Err("native-send-boundary".into());
         }
-        let ok = unsafe {
-            let f: Symbol<FnSend> = self.lib.get(b"observer_send").map_err(|e| e.to_string())?;
-            f(self.handle, data.as_ptr(), data.len() as u32, flags)
-        };
-        if ok != 1 {
+        if unsafe { (self.fns.send)(self.handle, data.as_ptr(), data.len() as u32, flags) } != 1 {
             return Err("native-send-failed".into());
         }
         Ok(())
@@ -244,11 +246,7 @@ impl ObserverPort for NativePort {
     fn receive(&mut self) -> Result<Option<ReceivedPacket>, String> {
         if self.batch_index == self.batch_count {
             let count = unsafe {
-                let f: Symbol<FnReceiveMany> = self
-                    .lib
-                    .get(b"observer_receive_many")
-                    .map_err(|e| e.to_string())?;
-                f(
+                (self.fns.receive_many)(
                     self.handle,
                     self.batch.as_mut_ptr(),
                     self.batch.len() as c_int,
@@ -275,13 +273,7 @@ impl ObserverPort for NativePort {
         let data = unsafe { std::slice::from_raw_parts(item.data, item.size as usize) }.to_vec();
         self.batch_index += 1;
         if self.batch_index == self.batch_count {
-            unsafe {
-                let f: Symbol<FnReleaseReceived> = self
-                    .lib
-                    .get(b"observer_release_received")
-                    .map_err(|e| e.to_string())?;
-                f(self.handle);
-            }
+            unsafe { (self.fns.release_received)(self.handle) };
         }
         Ok(Some(ReceivedPacket {
             data,
@@ -297,9 +289,7 @@ impl ObserverPort for NativePort {
 
     fn close(&mut self) {
         if !self.handle.is_null() {
-            if let Ok(f) = unsafe { self.lib.get::<FnClose>(b"observer_close") } {
-                unsafe { f(self.handle) };
-            }
+            unsafe { (self.fns.close)(self.handle) };
             self.handle = std::ptr::null_mut();
         }
     }

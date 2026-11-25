@@ -6,7 +6,7 @@ use std::path::Path;
 use serde_json::Value;
 
 use super::driver::{DriverEmit, DriverPhase, ObserverDriver};
-use super::reporting::PublicJsonlSink;
+use super::reporting::{DiscontinuityRecord, RecordSink, SyncJsonlSink};
 use crate::native::password::SecretBytes;
 use crate::native::{ObserverPort, ReceivedPacket};
 
@@ -62,7 +62,7 @@ pub fn run_replay(input: &Path, host_version: u32, output_dir: &Path) -> Result<
     std::fs::create_dir_all(output_dir).map_err(|e| e.to_string())?;
 
     let events_file = File::create(output_dir.join("events.jsonl")).map_err(|e| e.to_string())?;
-    let mut sink = PublicJsonlSink::new(BufWriter::new(events_file));
+    let mut sink = SyncJsonlSink::new(BufWriter::new(events_file));
     let mut driver = ObserverDriver::new(
         OfflinePort,
         host_version,
@@ -70,9 +70,9 @@ pub fn run_replay(input: &Path, host_version: u32, output_dir: &Path) -> Result<
         "offline:channel-replay".into(),
         1,
         0,
-    )?;
+    )
+    .map_err(|e| e.to_string())?;
     driver.phase = DriverPhase::Channel;
-    driver.core.admit_creation_sequence(0)?;
 
     let mut counts: BTreeMap<String, u64> = BTreeMap::new();
     let mut frames = 0u64;
@@ -97,7 +97,9 @@ pub fn run_replay(input: &Path, host_version: u32, output_dir: &Path) -> Result<
             }
             let body = &raw_bytes[pos..pos + size];
             pos += size;
-            driver.receive_packet(body, reliable_byte != 0, elapsed, None)?;
+            driver
+                .receive_packet(body, reliable_byte != 0, elapsed, None)
+                .map_err(|e| e.to_string())?;
             flush_emitted(&mut driver, &mut sink, &mut counts)?;
             frames += 1;
             last_ms = elapsed;
@@ -115,7 +117,9 @@ pub fn run_replay(input: &Path, host_version: u32, output_dir: &Path) -> Result<
             if elapsed < last_ms {
                 return Err("sample-record-boundary".into());
             }
-            driver.receive_packet(&body, reliable, elapsed, None)?;
+            driver
+                .receive_packet(&body, reliable, elapsed, None)
+                .map_err(|e| e.to_string())?;
             flush_emitted(&mut driver, &mut sink, &mut counts)?;
             frames += 1;
             last_ms = elapsed;
@@ -140,28 +144,39 @@ pub fn run_replay(input: &Path, host_version: u32, output_dir: &Path) -> Result<
 
 fn flush_emitted<P: ObserverPort, W: Write>(
     driver: &mut ObserverDriver<P>,
-    sink: &mut PublicJsonlSink<W>,
+    sink: &mut SyncJsonlSink<W>,
     counts: &mut BTreeMap<String, u64>,
 ) -> Result<(), String> {
     for ev in driver.emitted.drain(..) {
-        let val = match ev {
-            DriverEmit::Cursor { record, .. } | DriverEmit::RawEvent { record, .. } => record,
+        match ev {
+            DriverEmit::Cursor(mut c) => {
+                c.sequence = sink.next_sequence();
+                *counts.entry("cursor".into()).or_insert(0) += 1;
+                sink.emit(&c).map_err(|e| e.to_string())?;
+            }
+            DriverEmit::RawEvent(mut e) => {
+                e.sequence = sink.next_sequence();
+                *counts.entry(e.kind.clone()).or_insert(0) += 1;
+                sink.emit(&e).map_err(|e| e.to_string())?;
+            }
             DriverEmit::Discontinuity {
                 scope,
                 reason,
                 world,
-            } => serde_json::json!({
-                "kind": "discontinuity",
-                "scope": scope,
-                "reason": reason,
-                "source": driver.core.identity.source,
-                "channel": driver.core.identity.channel,
-                "world": world,
-            }),
-        };
-        let kind = val["kind"].as_str().unwrap_or("unknown").to_string();
-        *counts.entry(kind).or_insert(0) += 1;
-        sink.emit_value(val)?;
+            } => {
+                let rec = DiscontinuityRecord {
+                    kind: "discontinuity",
+                    scope,
+                    reason,
+                    source: driver.core.identity.source.clone(),
+                    channel: driver.core.identity.channel,
+                    world,
+                    sequence: sink.next_sequence(),
+                };
+                *counts.entry("discontinuity".into()).or_insert(0) += 1;
+                sink.emit(&rec).map_err(|e| e.to_string())?;
+            }
+        }
     }
     Ok(())
 }
