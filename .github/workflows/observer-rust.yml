@@ -2,7 +2,7 @@ name: observer-rust
 
 on:
   push:
-    branches: [main, "feat/**"]
+    branches: [main, "feat/**", "release/**"]
   pull_request:
 
 jobs:
