@@ -113,6 +113,14 @@ impl DriverPhase {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum RecoveryState {
+    #[default]
+    Normal,
+    NeedFullUpdate,
+    WaitingFull,
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct WorldSyncState {
     pub last_receipt_ms: u64,
@@ -121,9 +129,7 @@ pub struct WorldSyncState {
     pub spawn_sent: bool,
     pub full_snapshot_processed: bool,
     pub full_sent: bool,
-    pub recovery_pending: bool,
-    pub request_full_update: bool,
-    pub full_update_outstanding: bool,
+    pub recovery: RecoveryState,
     pub event_subscription_pending: Option<Vec<i32>>,
     pub processed_entity_tick: Option<i32>,
     pub ack_tick: Option<i32>,
@@ -144,15 +150,14 @@ impl WorldSyncState {
         if full {
             self.full_snapshot_processed = true;
         }
-        self.recovery_pending = false;
-        self.full_update_outstanding = false;
+        self.recovery = RecoveryState::Normal;
         self.processed_entity_tick = Some(tick);
         baseline_ack.map(|b| (tick, b))
     }
 
     pub fn apply_recovery(&mut self) {
-        self.recovery_pending = true;
-        self.request_full_update = true;
+        self.recovery = RecoveryState::NeedFullUpdate;
+        self.full_snapshot_processed = false;
         self.processed_entity_tick = None;
     }
 }
@@ -200,6 +205,7 @@ pub struct ObserverDriver<P: ObserverPort> {
     pub context_tick: Option<i32>,
     pub last_sdk_age_us: Option<i64>,
     pub max_sdk_age_us: Option<i64>,
+    pub last_decode_us: Option<u64>,
     pub cursor_rate: Option<f64>,
     last_cursor_sample: Option<(u64, i32, u64, bool)>,
     pub gap: bool,
@@ -257,11 +263,16 @@ impl<P: ObserverPort> ObserverDriver<P> {
             context_tick: None,
             last_sdk_age_us: None,
             max_sdk_age_us: None,
+            last_decode_us: None,
             cursor_rate: None,
             last_cursor_sample: None,
             gap: false,
             emitted: Vec::new(),
         })
+    }
+
+    pub fn set_offline_account_id(&mut self, id: u32) {
+        self.account_id = Some(id);
     }
 
     pub fn done(&self) -> bool {
@@ -377,7 +388,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
         if self.phase == DriverPhase::Channel && now_ms.saturating_sub(self.last_feedback_ms) >= 100
         {
             let mut encoded = Vec::new();
-            if self.world_sync.full_sent && !self.world_sync.recovery_pending {
+            if self.world_sync.full_sent && self.world_sync.recovery == RecoveryState::Normal {
                 if let Some(t) = self.world_sync.processed_entity_tick {
                     let mut pb = Vec::new();
                     encode_pb_varint(1, t as u64, &mut pb);
@@ -607,19 +618,18 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 let fields = wire_fields(&msg.body, 65535)?;
                 let state = scalar_varint(&fields, 1)?;
                 if state == Some(2) {
-                    self.core.reset_world(self.core.identity.world + 1);
-                    self.reset_driver_world(now_ms, false);
+                    self.enter_new_world(now_ms, "signon-connected", false, true);
                 }
                 self.signon.receive(&msg.body)?;
                 if state == Some(7) {
-                    self.core.reset_world(self.core.identity.world + 1);
-                    self.reset_driver_world(now_ms, true);
+                    self.enter_new_world(now_ms, "signon-changelevel", true, true);
                 }
                 if matches!(state, Some(2) | Some(7)) && self.drain_deadline.is_none() {
                     self.send_connected_ack()?;
                 }
             } else if msg.message_id != 76 {
                 let obs_ms = unix_ms_now();
+                let t0 = std::time::Instant::now();
                 let outputs = self.core.consume(
                     msg.message_id,
                     &msg.body,
@@ -627,6 +637,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     sdk_age_us,
                     obs_ms,
                 );
+                self.last_decode_us = Some(t0.elapsed().as_micros() as u64);
                 if msg.message_id == 40 {
                     if let Some(ref srv) = self.core.server {
                         self.signon.server_info(srv.server_count)?;
@@ -725,12 +736,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     });
                 }
                 CoreOutput::WorldReset { reason } => {
-                    self.reset_driver_world(now_ms, false);
-                    self.emitted.push(DriverEmit::Discontinuity {
-                        scope: "world",
-                        reason,
-                        world: self.core.identity.world,
-                    });
+                    self.enter_new_world(now_ms, &reason, false, false);
                 }
                 CoreOutput::Blocked { reason } => {
                     return Err(SessionError::Protocol(reason));
@@ -741,7 +747,16 @@ impl<P: ObserverPort> ObserverDriver<P> {
         Ok(())
     }
 
-    fn reset_driver_world(&mut self, now_ms: u64, replace_client: bool) {
+    fn enter_new_world(
+        &mut self,
+        now_ms: u64,
+        reason: &str,
+        replace_client: bool,
+        reset_core: bool,
+    ) {
+        if reset_core {
+            self.core.reset_world(self.core.identity.world + 1);
+        }
         self.last_cursor_sample = None;
         self.cursor_rate = None;
         self.gap = true;
@@ -751,6 +766,11 @@ impl<P: ObserverPort> ObserverDriver<P> {
         if replace_client {
             self.reliable_filter.replace_client_owner();
         }
+        self.emitted.push(DriverEmit::Discontinuity {
+            scope: "world",
+            reason: reason.to_string(),
+            world: self.core.identity.world,
+        });
     }
 
     fn send_connected_ack(&mut self) -> Result<(), SessionError> {
@@ -794,7 +814,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 .signon
                 .spawn_count
                 .ok_or(SessionError::ServerInfoMissing)?;
-            let acct = self.account_id.unwrap_or(1);
+            let acct = self.account_id.ok_or(SessionError::LocalAccountIdMissing)?;
             let info = client_info(sc, acct, 0);
             let (enc_info, _) = encode_message(20, &info)?;
             let rf1 = reliable_frame(&enc_info, 0)?;
@@ -878,17 +898,19 @@ impl<P: ObserverPort> ObserverDriver<P> {
             }
             self.acknowledge_full()?;
         }
-        if self.world_sync.recovery_pending {
-            if self.world_sync.request_full_update && !self.world_sync.full_update_outstanding {
+        match self.world_sync.recovery {
+            RecoveryState::NeedFullUpdate => {
                 let mut pb = Vec::new();
                 encode_pb_varint(1, 0xFFFF_FFFF, &mut pb);
                 let (encoded, _) = encode_message(4, &pb)?;
                 let rf = reliable_frame(&encoded, 0)?;
                 self.port.send(&rf, 8).map_err(SessionError::Native)?;
                 self.world_sync.ack_tick = Some(-1);
-                self.world_sync.full_update_outstanding = true;
+                self.world_sync.recovery = RecoveryState::WaitingFull;
+                return Ok(());
             }
-            return Ok(());
+            RecoveryState::WaitingFull => return Ok(()),
+            RecoveryState::Normal => {}
         }
         if !self.world_sync.full_sent {
             return Ok(());

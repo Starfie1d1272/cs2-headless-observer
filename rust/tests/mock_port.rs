@@ -5,7 +5,9 @@ use std::time::Instant;
 
 use cs2_headless_observer::native::password::SecretBytes;
 use cs2_headless_observer::native::{ObserverPort, ReceivedPacket};
-use cs2_headless_observer::session::driver::{DriverEmit, DriverPhase, ObserverDriver};
+use cs2_headless_observer::session::driver::{
+    DriverEmit, DriverPhase, ObserverDriver, RecoveryState,
+};
 use cs2_headless_observer::session::reporting::{HealthV2, ReportV2, SyncJsonlSink};
 use cs2_headless_observer::session::supervisor::{
     decide_recovery, read_managed_config, run_single_attempt, AttemptCategory, AttemptExit,
@@ -15,6 +17,8 @@ use cs2_headless_observer::wire::bits::{encode_pb_bytes, encode_pb_varint, encod
 use cs2_headless_observer::wire::channel::{
     decode_frame, decode_messages, encode_message, join_messages, reliable_frame,
 };
+use cs2_headless_observer::wire::proto::CNetMsgTick;
+use prost::Message;
 
 struct MockPort {
     pub state: i32,
@@ -318,19 +322,25 @@ fn test_full_end_to_end_lifecycle_world_reset_recovery_and_1038_drain() {
     assert!(driver.ever_full);
     assert_eq!(driver.core.entities.get(1).unwrap().id, 1);
 
-    // Verify Tick ACK was sent in unreliable feedback frame
+    // Verify Tick ACK in unreliable feedback frame carries tick == 100
     let has_ack_100 = driver.port.sent.iter().any(|(pkt, flags)| {
         if *flags != 1 {
             return false;
         }
         if let Ok(frame) = decode_frame(pkt, false) {
             if let Ok((msgs, _)) = decode_messages(&frame.body, None, None) {
-                return msgs.iter().any(|m| m.message_id == 4);
+                return msgs.iter().any(|m| {
+                    m.message_id == 4
+                        && CNetMsgTick::decode(m.body.as_slice())
+                            .ok()
+                            .and_then(|t| t.tick)
+                            == Some(100)
+                });
             }
         }
         false
     });
-    assert!(has_ack_100, "expected tick ACK in feedback frame");
+    assert!(has_ack_100, "expected tick ACK == 100 in feedback frame");
 
     // 3. Emit weapon_fire event
     let mut desc = Vec::new();
@@ -408,15 +418,31 @@ fn test_full_end_to_end_lifecycle_world_reset_recovery_and_1038_drain() {
     assert!(driver.world_sync.full_sent);
     assert!(driver.core.entities.get(1).is_some());
 
-    // 5. Malformed PacketEntities triggers recover(): entities cleared & recovery requested
+    // 5. Mid-packet PacketEntities failure (entity 1 succeeds, entity 2 fails) triggers recover()
+    // and clears entity 1 so no half-updated state survives.
+    let mut partial_bits = Vec::new();
+    push_bits(&mut partial_bits, 1, 6); // delta=1 -> entity 1
+    push_bits(&mut partial_bits, 2, 2); // create
+    partial_bits.push(0); // class_id = 0
+    push_bits(&mut partial_bits, 2, 17); // serial = 2
+    push_bits(&mut partial_bits, 0, 8); // token = 0
+    partial_bits.extend_from_slice(&fw);
+    // Entity 2: delta=1 -> entity 2, op=0 (update unknown entity -> fails mid-packet!)
+    push_bits(&mut partial_bits, 1, 6);
+    push_bits(&mut partial_bits, 0, 2);
+
     let mut bad_pe = Vec::new();
-    encode_pb_varint(2, 5, &mut bad_pe); // updated_entries=5, missing server_tick!
+    encode_pb_varint(2, 2, &mut bad_pe); // updated_entries = 2
+    encode_pb_varint(10, 0, &mut bad_pe);
+    encode_pb_varint(12, 201, &mut bad_pe);
+    encode_pb_bytes(7, &pack_bits(&partial_bits), &mut bad_pe);
+    encode_pb_bytes(19, &[], &mut bad_pe);
     driver
         .port
         .push_packet(pack_reliable_msgs(&[(55, bad_pe)], 201), true);
     driver.step(310).unwrap();
-    assert!(driver.world_sync.recovery_pending);
-    assert!(driver.world_sync.full_update_outstanding);
+    assert_eq!(driver.world_sync.recovery, RecoveryState::WaitingFull);
+    assert!(!driver.world_sync.full_snapshot_processed);
     assert!(driver.core.entities.get(1).is_none());
 
     // Recover from a new FULL snapshot at tick 205
@@ -427,14 +453,80 @@ fn test_full_end_to_end_lifecycle_world_reset_recovery_and_1038_drain() {
         true,
     );
     driver.step(320).unwrap();
-    assert!(!driver.world_sync.recovery_pending);
+    assert_eq!(driver.world_sync.recovery, RecoveryState::Normal);
     assert!(driver.core.entities.get(1).is_some());
+
+    // Verify Signon 2 and Signon 7 world resets emit discontinuity(scope="world")
+    driver.emitted.clear();
+    driver
+        .port
+        .push_packet(pack_reliable_msgs(&[(7, make_signon(2, 7))], 206), true);
+    driver.step(325).unwrap();
+    assert!(driver.emitted.iter().any(|e| matches!(
+        e,
+        DriverEmit::Discontinuity { scope: "world", reason, world: 3 } if reason == "signon-connected"
+    )));
+
+    // Advance world 3 to Signon 3 -> 4 -> 5, then test Signon 7 (changelevel)
+    let mut w3_init = build_world_init_messages(steam).0;
+    w3_init.push((7, make_signon(3, 7)));
+    driver
+        .port
+        .push_packet(pack_reliable_msgs(&w3_init, 207), true);
+    driver.step(326).unwrap();
+    driver
+        .port
+        .push_packet(pack_reliable_msgs(&[(7, make_signon(4, 7))], 207), true);
+    driver.step(327).unwrap();
+    driver
+        .port
+        .push_packet(pack_reliable_msgs(&[(7, make_signon(5, 7))], 207), true);
+    driver.step(328).unwrap();
+    let mut tick208 = Vec::new();
+    encode_pb_varint(1, 208, &mut tick208);
+    driver.port.push_packet(
+        pack_reliable_msgs(&[(4, tick208), (55, make_full_snapshot(208, &fw))], 208),
+        true,
+    );
+    driver.step(329).unwrap();
+    driver.emitted.clear();
+    driver
+        .port
+        .push_packet(pack_reliable_msgs(&[(7, make_signon(7, 7))], 209), true);
+    driver.step(330).unwrap();
+    assert!(driver.emitted.iter().any(|e| matches!(
+        e,
+        DriverEmit::Discontinuity { scope: "world", reason, world: 4 } if reason == "signon-changelevel"
+    )));
+    // Re-establish world 4 FULL for 1038 drain test
+    let mut w4_init = build_world_init_messages(steam).0;
+    w4_init.push((7, make_signon(3, 7)));
+    driver
+        .port
+        .push_packet(pack_reliable_msgs(&w4_init, 210), true);
+    driver.step(331).unwrap();
+    driver
+        .port
+        .push_packet(pack_reliable_msgs(&[(7, make_signon(4, 7))], 210), true);
+    driver.step(332).unwrap();
+    driver
+        .port
+        .push_packet(pack_reliable_msgs(&[(7, make_signon(5, 7))], 210), true);
+    driver.step(333).unwrap();
+    let mut tick210 = Vec::new();
+    encode_pb_varint(1, 210, &mut tick210);
+    driver.port.push_packet(
+        pack_reliable_msgs(&[(4, tick210), (55, make_full_snapshot(210, &fw))], 210),
+        true,
+    );
+    driver.step(334).unwrap();
+    assert!(driver.world_sync.full_sent);
 
     // 6. 1038 clean drain without manual full_sent hack!
     driver.port.state = 6;
     driver.port.remote_end_reason = 1038;
     driver.port.failure = 7;
-    driver.step(330).unwrap();
+    driver.step(335).unwrap();
     assert!(driver.done());
     assert!(driver.drain_completed);
     assert_eq!(driver.reason.as_deref(), Some("source-hltv-stop"));
@@ -528,6 +620,7 @@ fn test_mizar_health_and_report_v2_contract() {
         wait_reason: None,
         sdk_queue_age_us: Some(500),
         sdk_max_age_us: Some(500),
+        decode_us: Some(42),
         context_tick: Some(100),
         network_tick: Some(100),
         committed_tick: Some(100),

@@ -3,41 +3,13 @@ use std::sync::Arc;
 
 use super::field_codec::FieldValue;
 use super::field_paths::read_field_paths;
+pub use super::field_paths::FieldPath;
 use super::schema::{MetadataValue, PathOperation, Schema, SchemaField};
 use crate::wire::bits::BitReader;
 
 const MAX_PATHS: usize = 65536;
 const MAX_ARRAY_LEN: usize = 65536;
 const MAX_RECORDS: usize = 262144;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct FieldPath {
-    pub len: u8,
-    pub parts: [u16; 10],
-}
-
-impl FieldPath {
-    #[inline]
-    pub fn from_slice(s: &[u16]) -> Self {
-        let mut parts = [0u16; 10];
-        let len = s.len().min(10);
-        parts[..len].copy_from_slice(&s[..len]);
-        Self {
-            len: len as u8,
-            parts,
-        }
-    }
-
-    #[inline]
-    pub fn as_slice(&self) -> &[u16] {
-        &self.parts[..self.len as usize]
-    }
-
-    #[inline]
-    pub fn starts_with(&self, prefix: &FieldPath) -> bool {
-        self.len >= prefix.len && self.as_slice()[..prefix.len as usize] == *prefix.as_slice()
-    }
-}
 
 #[derive(Debug, Clone)]
 pub struct FieldRecord {
@@ -188,8 +160,7 @@ impl EntityFields {
         let budget = bit_length.unwrap_or(initial_bits);
         let paths = read_field_paths(reader, MAX_PATHS, budget)?;
 
-        for path_vec in paths {
-            let path = FieldPath::from_slice(&path_vec);
+        for path in paths {
             let resolved = schema.resolve(self.class_id, path.as_slice(), |p| {
                 self.metadata.get(&FieldPath::from_slice(p)).copied()
             })?;

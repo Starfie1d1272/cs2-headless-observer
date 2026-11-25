@@ -1,6 +1,8 @@
 use std::io::Write;
 use std::path::Path;
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{sync_channel, SyncSender, TrySendError};
+use std::sync::Arc;
 use std::thread::JoinHandle;
 
 use serde::Serialize;
@@ -72,6 +74,7 @@ pub struct HealthV2 {
     pub wait_reason: Option<&'static str>,
     pub sdk_queue_age_us: Option<i64>,
     pub sdk_max_age_us: Option<i64>,
+    pub decode_us: Option<u64>,
     pub context_tick: Option<i32>,
     pub network_tick: Option<i32>,
     pub committed_tick: Option<i32>,
@@ -120,7 +123,8 @@ pub fn unix_ms_now() -> u64 {
 pub trait RecordSink {
     fn next_sequence(&mut self) -> u64;
     fn current_sequence(&self) -> u64;
-    fn emit<T: Serialize>(&mut self, val: &T) -> Result<(), SessionError>;
+    fn delivered_sequence(&self) -> u64;
+    fn emit_with_seq<T: Serialize>(&mut self, seq: u64, val: &T) -> Result<(), SessionError>;
 }
 
 pub struct SyncJsonlSink<W: Write> {
@@ -147,7 +151,11 @@ impl<W: Write> RecordSink for SyncJsonlSink<W> {
         self.sequence
     }
 
-    fn emit<T: Serialize>(&mut self, val: &T) -> Result<(), SessionError> {
+    fn delivered_sequence(&self) -> u64 {
+        self.sequence
+    }
+
+    fn emit_with_seq<T: Serialize>(&mut self, _seq: u64, val: &T) -> Result<(), SessionError> {
         let line = encode_jsonl_line(val)?;
         self.writer
             .write_all(&line)
@@ -161,40 +169,57 @@ impl<W: Write> RecordSink for SyncJsonlSink<W> {
 
 /// Non-blocking stdout JSONL writer backed by a bounded sync_channel + worker thread.
 pub struct AsyncStdoutSink {
-    tx: Option<SyncSender<Vec<u8>>>,
+    tx: Option<SyncSender<(u64, Vec<u8>)>>,
     handle: Option<JoinHandle<()>>,
     pub sequence: u64,
+    delivered: Arc<AtomicU64>,
+    write_failed: Arc<AtomicBool>,
 }
 
 impl AsyncStdoutSink {
     pub fn spawn() -> Self {
-        let (tx, rx) = sync_channel::<Vec<u8>>(512);
+        let (tx, rx) = sync_channel::<(u64, Vec<u8>)>(512);
+        let delivered = Arc::new(AtomicU64::new(0));
+        let write_failed = Arc::new(AtomicBool::new(false));
+        let del_clone = delivered.clone();
+        let fail_clone = write_failed.clone();
         let handle = std::thread::spawn(move || {
             let mut out = std::io::BufWriter::new(std::io::stdout().lock());
-            while let Ok(line) = rx.recv() {
+            while let Ok((seq, line)) = rx.recv() {
                 if out.write_all(&line).is_err() || out.flush().is_err() {
+                    fail_clone.store(true, Ordering::Release);
                     break;
                 }
+                del_clone.store(seq, Ordering::Release);
             }
         });
         Self {
             tx: Some(tx),
             handle: Some(handle),
             sequence: 0,
+            delivered,
+            write_failed,
         }
     }
 
-    pub fn close(&mut self) {
+    pub fn close(&mut self, drain: bool) -> bool {
         self.tx.take();
-        if let Some(h) = self.handle.take() {
-            let _ = h.join();
+        if drain && !self.write_failed.load(Ordering::Acquire) {
+            if let Some(h) = self.handle.take() {
+                let _ = h.join();
+            }
+            !self.write_failed.load(Ordering::Acquire)
+        } else {
+            self.handle.take();
+            !self.write_failed.load(Ordering::Acquire)
         }
     }
 }
 
 impl Drop for AsyncStdoutSink {
     fn drop(&mut self) {
-        self.close();
+        self.tx.take();
+        self.handle.take();
     }
 }
 
@@ -208,12 +233,19 @@ impl RecordSink for AsyncStdoutSink {
         self.sequence
     }
 
-    fn emit<T: Serialize>(&mut self, val: &T) -> Result<(), SessionError> {
+    fn delivered_sequence(&self) -> u64 {
+        self.delivered.load(Ordering::Acquire)
+    }
+
+    fn emit_with_seq<T: Serialize>(&mut self, seq: u64, val: &T) -> Result<(), SessionError> {
+        if self.write_failed.load(Ordering::Acquire) {
+            return Err(SessionError::OutputClosed);
+        }
         let line = encode_jsonl_line(val)?;
         let Some(tx) = &self.tx else {
             return Err(SessionError::OutputClosed);
         };
-        match tx.try_send(line) {
+        match tx.try_send((seq, line)) {
             Ok(()) => Ok(()),
             Err(TrySendError::Full(_)) => Err(SessionError::OutputBackpressure),
             Err(TrySendError::Disconnected(_)) => Err(SessionError::OutputClosed),
@@ -260,9 +292,7 @@ impl AsyncStderrLogger {
 
     pub fn close(&mut self) {
         self.tx.take();
-        if let Some(h) = self.handle.take() {
-            let _ = h.join();
-        }
+        self.handle.take();
     }
 }
 

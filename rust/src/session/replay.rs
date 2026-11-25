@@ -73,6 +73,7 @@ pub fn run_replay(input: &Path, host_version: u32, output_dir: &Path) -> Result<
     )
     .map_err(|e| e.to_string())?;
     driver.phase = DriverPhase::Channel;
+    driver.set_offline_account_id(1);
 
     let mut counts: BTreeMap<String, u64> = BTreeMap::new();
     let mut frames = 0u64;
@@ -150,20 +151,23 @@ fn flush_emitted<P: ObserverPort, W: Write>(
     for ev in driver.emitted.drain(..) {
         match ev {
             DriverEmit::Cursor(mut c) => {
-                c.sequence = sink.next_sequence();
+                let seq = sink.next_sequence();
+                c.sequence = seq;
                 *counts.entry("cursor".into()).or_insert(0) += 1;
-                sink.emit(&c).map_err(|e| e.to_string())?;
+                sink.emit_with_seq(seq, &c).map_err(|e| e.to_string())?;
             }
             DriverEmit::RawEvent(mut e) => {
-                e.sequence = sink.next_sequence();
+                let seq = sink.next_sequence();
+                e.sequence = seq;
                 *counts.entry(e.kind.clone()).or_insert(0) += 1;
-                sink.emit(&e).map_err(|e| e.to_string())?;
+                sink.emit_with_seq(seq, &e).map_err(|e| e.to_string())?;
             }
             DriverEmit::Discontinuity {
                 scope,
                 reason,
                 world,
             } => {
+                let seq = sink.next_sequence();
                 let rec = DiscontinuityRecord {
                     kind: "discontinuity",
                     scope,
@@ -171,10 +175,10 @@ fn flush_emitted<P: ObserverPort, W: Write>(
                     source: driver.core.identity.source.clone(),
                     channel: driver.core.identity.channel,
                     world,
-                    sequence: sink.next_sequence(),
+                    sequence: seq,
                 };
                 *counts.entry("discontinuity".into()).or_insert(0) += 1;
-                sink.emit(&rec).map_err(|e| e.to_string())?;
+                sink.emit_with_seq(seq, &rec).map_err(|e| e.to_string())?;
             }
         }
     }

@@ -4,6 +4,35 @@ use std::sync::OnceLock;
 const MAX_DEPTH: usize = 10;
 const STOP_SYMBOL: u8 = 39;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct FieldPath {
+    pub len: u8,
+    pub parts: [u16; MAX_DEPTH],
+}
+
+impl FieldPath {
+    #[inline]
+    pub fn from_slice(s: &[u16]) -> Self {
+        let mut parts = [0u16; MAX_DEPTH];
+        let len = s.len().min(MAX_DEPTH);
+        parts[..len].copy_from_slice(&s[..len]);
+        Self {
+            len: len as u8,
+            parts,
+        }
+    }
+
+    #[inline]
+    pub fn as_slice(&self) -> &[u16] {
+        &self.parts[..self.len as usize]
+    }
+
+    #[inline]
+    pub fn starts_with(&self, prefix: &FieldPath) -> bool {
+        self.len >= prefix.len && self.as_slice()[..prefix.len as usize] == *prefix.as_slice()
+    }
+}
+
 const FIELD_PATH_WEIGHTS: [u32; 40] = [
     36271, 10334, 1375, 646, 4128, 35, 3, 521, 2942, 560, 471, 10530, 251, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 310, 2, 0, 1837, 149, 300, 634, 0, 0, 1, 76, 271, 99, 25474,
@@ -401,7 +430,7 @@ pub fn read_field_paths(
     reader: &mut BitReader<'_>,
     max_paths: usize,
     bit_budget: usize,
-) -> Result<Vec<Vec<u16>>, String> {
+) -> Result<Vec<FieldPath>, String> {
     let initial_bits = reader.remaining_bits();
     if bit_budget > initial_bits {
         return Err("Invalid field-list bit boundary".into());
@@ -432,16 +461,19 @@ pub fn read_field_paths(
         if state.path[0] == 32767 {
             return Ok(result);
         }
-        let mut path = Vec::with_capacity(state.last + 1);
-        for &v in state.path.iter().take(state.last + 1) {
+        let mut parts = [0u16; MAX_DEPTH];
+        for (dst, &v) in parts.iter_mut().zip(state.path.iter()).take(state.last + 1) {
             if !(0..=32767).contains(&v) {
                 return Err("Invalid resolved field path".into());
             }
-            path.push(v as u16);
+            *dst = v as u16;
         }
         if result.len() >= max_paths {
             return Err("Field-list budget exceeded".into());
         }
-        result.push(path);
+        result.push(FieldPath {
+            len: (state.last + 1) as u8,
+            parts,
+        });
     }
 }

@@ -380,6 +380,7 @@ impl EntityTable {
                         &mut frame_state,
                     )?;
                 }
+                frame_state.members.remove(next_id);
                 frame_state.outside.insert(next_id);
             }
         }

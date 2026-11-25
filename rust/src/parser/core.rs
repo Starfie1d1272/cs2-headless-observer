@@ -259,12 +259,8 @@ impl ObserverCore {
         self.entities.latest_tick
     }
 
-    pub fn admit_creation_sequence(&mut self, seq: u32) -> Result<(), String> {
-        if seq < self.known_creation_sequence {
-            return Err("Invalid admitted creation sequence".into());
-        }
-        self.known_creation_sequence = seq;
-        Ok(())
+    pub fn admit_creation_sequence(&mut self, seq: u32) {
+        self.known_creation_sequence = self.known_creation_sequence.max(seq);
     }
 
     fn admit_manifest(&mut self, payload: &[u8]) -> Result<(), String> {
@@ -446,7 +442,7 @@ impl ObserverCore {
                 let seq = scalar_varint(&f, 16)
                     .map_err(|e| e.to_string())?
                     .unwrap_or(0) as u32;
-                self.admit_creation_sequence(seq)?;
+                self.admit_creation_sequence(seq);
                 let savegame = scalar_bytes(&f, 17)
                     .map_err(|e| e.to_string())?
                     .map(|b| !b.is_empty())
@@ -509,7 +505,7 @@ impl ObserverCore {
                 let seq = scalar_varint(&f, 3)
                     .map_err(|e| e.to_string())?
                     .unwrap_or(0) as u32;
-                self.admit_creation_sequence(seq)?;
+                self.admit_creation_sequence(seq);
             }
             12 => {
                 let f = wire_fields(body, MAX_BYTES).map_err(|e| e.to_string())?;

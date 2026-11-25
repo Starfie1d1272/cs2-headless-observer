@@ -7,7 +7,7 @@ use std::time::{Duration, Instant};
 
 use serde::Deserialize;
 
-use super::driver::{DriverEmit, DriverPhase, ObserverDriver};
+use super::driver::{DriverEmit, DriverPhase, ObserverDriver, RecoveryState};
 use super::reporting::{
     write_report_file, AsyncStderrLogger, AsyncStdoutSink, AttemptEndSummary, DiscontinuityRecord,
     HealthV2, LastDeliveredCursor, RecordSink, ReportV2, SessionStartRecord,
@@ -284,15 +284,16 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
         }
 
         channel += 1;
+        let start_seq = sink.next_sequence();
         let start_rec = SessionStartRecord {
             kind: "session-start",
             protocol: 2,
             source: source.clone(),
             channel,
             world: 1,
-            sequence: sink.next_sequence(),
+            sequence: start_seq,
         };
-        if let Err(e) = sink.emit(&start_rec) {
+        if let Err(e) = sink.emit_with_seq(start_seq, &start_rec) {
             break ("failed", e.to_string());
         }
 
@@ -433,6 +434,7 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
 
                 // Supervisor owns connection-level discontinuity & clears last_cursor.
                 last_cursor = None;
+                let disc_seq = sink.next_sequence();
                 let conn_disc = DiscontinuityRecord {
                     kind: "discontinuity",
                     scope: "connection",
@@ -440,9 +442,9 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
                     source: source.clone(),
                     channel,
                     world: driver.core.identity.world,
-                    sequence: sink.next_sequence(),
+                    sequence: disc_seq,
                 };
-                if let Err(e) = sink.emit(&conn_disc) {
+                if let Err(e) = sink.emit_with_seq(disc_seq, &conn_disc) {
                     break ("failed", e.to_string());
                 }
 
@@ -453,7 +455,7 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
                     phase,
                     native_failure: nf,
                     remote_end_reason: rer,
-                    last_delivered_sequence: sink.current_sequence(),
+                    last_delivered_sequence: sink.delivered_sequence(),
                 };
                 last_attempt_end = Some(summary.clone());
 
@@ -480,30 +482,17 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
                             channel ^ epoch.elapsed().as_nanos() as u64,
                         );
                         follow_delay_ms = (follow_delay_ms * 2).min(FOLLOW_MAX_MS);
-                        let h = HealthV2 {
-                            r#type: "cs2-observer-health/2",
-                            source: source.clone(),
+                        let h = backoff_health(
+                            &source,
                             channel,
-                            world: 1,
-                            state: "backoff",
-                            reason: "follow-source".into(),
-                            upstream_freshness: "unknown",
-                            ready: false,
+                            "follow-source",
+                            delay,
                             reconnects,
                             source_ends,
                             follow_attempts,
-                            retry_in_ms: Some(delay),
-                            wait_reason: Some("follow-source"),
-                            sdk_queue_age_us: None,
-                            sdk_max_age_us: None,
-                            context_tick: None,
-                            network_tick: None,
-                            committed_tick: None,
-                            committed_ticks_per_second: None,
-                            last_delivered_cursor: None,
-                            last_attempt_end: last_attempt_end.clone(),
-                            last_fault: faults.last().cloned(),
-                        };
+                            &last_attempt_end,
+                            faults.last(),
+                        );
                         stderr_log.emit_health(&h);
                         last_health = Some(h);
                         if !wait_backoff(delay, &stop_flag, deadline) {
@@ -524,30 +513,17 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
                         retry_streak += 1;
                         reconnects += 1;
                         let delay = jittered_ms(base, channel ^ epoch.elapsed().as_nanos() as u64);
-                        let h = HealthV2 {
-                            r#type: "cs2-observer-health/2",
-                            source: source.clone(),
+                        let h = backoff_health(
+                            &source,
                             channel,
-                            world: 1,
-                            state: "backoff",
-                            reason: "fault-retry".into(),
-                            upstream_freshness: "unknown",
-                            ready: false,
+                            "fault-retry",
+                            delay,
                             reconnects,
                             source_ends,
                             follow_attempts,
-                            retry_in_ms: Some(delay),
-                            wait_reason: Some("fault-retry"),
-                            sdk_queue_age_us: None,
-                            sdk_max_age_us: None,
-                            context_tick: None,
-                            network_tick: None,
-                            committed_tick: None,
-                            committed_ticks_per_second: None,
-                            last_delivered_cursor: None,
-                            last_attempt_end: last_attempt_end.clone(),
-                            last_fault: faults.last().cloned(),
-                        };
+                            &last_attempt_end,
+                            faults.last(),
+                        );
                         stderr_log.emit_health(&h);
                         last_health = Some(h);
                         if !wait_backoff(delay, &stop_flag, deadline) {
@@ -574,15 +550,16 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
         stderr_log.emit_health(h);
     }
 
-    let final_seq = sink.current_sequence();
-    sink.close();
+    let drain_stdout = outcome == "closed";
+    let stdout_clean = sink.close(drain_stdout);
+    let final_seq = sink.delivered_sequence();
     stderr_log.close();
 
-    let mut report = ReportV2 {
+    let report = ReportV2 {
         schema: "cs2-observer-report/2",
         outcome,
         reason: reason.clone(),
-        cleanup_completed: true,
+        cleanup_completed: stdout_clean,
         report_written: true,
         source,
         channel: channel.max(1),
@@ -595,9 +572,7 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
         faults,
         health: last_health,
     };
-    if write_report_file(Path::new(&args.output), &report).is_err() {
-        report.report_written = false;
-    }
+    write_report_file(Path::new(&args.output), &report)?;
     if outcome == "failed" {
         Err(reason)
     } else {
@@ -651,7 +626,7 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                     c.sequence = seq;
                     let committed = c.committed_tick;
                     let world = c.world;
-                    sink.emit(&c)?;
+                    sink.emit_with_seq(seq, &c)?;
                     *last_cursor = Some(LastDeliveredCursor {
                         channel: driver.core.identity.channel,
                         world,
@@ -663,8 +638,9 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                     }
                 }
                 DriverEmit::RawEvent(mut e) => {
-                    e.sequence = sink.next_sequence();
-                    sink.emit(&e)?;
+                    let seq = sink.next_sequence();
+                    e.sequence = seq;
+                    sink.emit_with_seq(seq, &e)?;
                 }
                 DriverEmit::Discontinuity {
                     scope,
@@ -673,6 +649,7 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                 } => {
                     ready_since = None;
                     *last_cursor = None;
+                    let seq = sink.next_sequence();
                     let rec = DiscontinuityRecord {
                         kind: "discontinuity",
                         scope,
@@ -680,9 +657,9 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                         source: driver.core.identity.source.clone(),
                         channel: driver.core.identity.channel,
                         world,
-                        sequence: sink.next_sequence(),
+                        sequence: seq,
                     };
-                    sink.emit(&rec)?;
+                    sink.emit_with_seq(seq, &rec)?;
                 }
             }
         }
@@ -693,7 +670,7 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
             let state = if driver.drain_deadline.is_some() {
                 "retiring"
             } else if ready_since.is_some() {
-                if driver.gap || driver.world_sync.recovery_pending {
+                if driver.gap || driver.world_sync.recovery != RecoveryState::Normal {
                     "catching-up"
                 } else {
                     "connected"
@@ -717,6 +694,7 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                 wait_reason: None,
                 sdk_queue_age_us: driver.last_sdk_age_us,
                 sdk_max_age_us: driver.max_sdk_age_us,
+                decode_us: driver.last_decode_us,
                 context_tick: driver.context_tick,
                 network_tick: Some(driver.core.network_tick).filter(|&t| t >= 0),
                 committed_tick: driver.core.committed_tick(),
@@ -781,6 +759,45 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                 });
             }
         }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn backoff_health(
+    source: &str,
+    channel: u64,
+    wait_reason: &'static str,
+    delay_ms: u64,
+    reconnects: u64,
+    source_ends: u64,
+    follow_attempts: u64,
+    last_attempt_end: &Option<AttemptEndSummary>,
+    last_fault: Option<&AttemptEndSummary>,
+) -> HealthV2 {
+    HealthV2 {
+        r#type: "cs2-observer-health/2",
+        source: source.to_string(),
+        channel,
+        world: 1,
+        state: "backoff",
+        reason: wait_reason.into(),
+        upstream_freshness: "unknown",
+        ready: false,
+        reconnects,
+        source_ends,
+        follow_attempts,
+        retry_in_ms: Some(delay_ms),
+        wait_reason: Some(wait_reason),
+        sdk_queue_age_us: None,
+        sdk_max_age_us: None,
+        decode_us: None,
+        context_tick: None,
+        network_tick: None,
+        committed_tick: None,
+        committed_ticks_per_second: None,
+        last_delivered_cursor: None,
+        last_attempt_end: last_attempt_end.clone(),
+        last_fault: last_fault.cloned(),
     }
 }
 
