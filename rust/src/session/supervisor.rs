@@ -678,6 +678,7 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
             } else {
                 "initializing"
             };
+            let (decode_us, decode_max_us) = driver.take_decode_window();
             let h = HealthV2 {
                 r#type: "cs2-observer-health/2",
                 source: driver.core.identity.source.clone(),
@@ -694,7 +695,8 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                 wait_reason: None,
                 sdk_queue_age_us: driver.last_sdk_age_us,
                 sdk_max_age_us: driver.max_sdk_age_us,
-                decode_us: driver.last_decode_us,
+                decode_us,
+                decode_max_us,
                 context_tick: driver.context_tick,
                 network_tick: Some(driver.core.network_tick).filter(|&t| t >= 0),
                 committed_tick: driver.core.committed_tick(),
@@ -791,6 +793,7 @@ fn backoff_health(
         sdk_queue_age_us: None,
         sdk_max_age_us: None,
         decode_us: None,
+        decode_max_us: None,
         context_tick: None,
         network_tick: None,
         committed_tick: None,

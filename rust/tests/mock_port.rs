@@ -621,6 +621,7 @@ fn test_mizar_health_and_report_v2_contract() {
         sdk_queue_age_us: Some(500),
         sdk_max_age_us: Some(500),
         decode_us: Some(42),
+        decode_max_us: Some(20),
         context_tick: Some(100),
         network_tick: Some(100),
         committed_tick: Some(100),

@@ -312,7 +312,6 @@ impl EntityTable {
             let op_type = reader.read_bits(2).map_err(|e| e.to_string())?;
             if (op_type & 1) != 0 {
                 frame_state.members.remove(next_id);
-                frame_state.dormant.remove(next_id);
                 if op_type == 3 {
                     self.entities[next_id] = None;
                     if self.game_rules_id == Some(next_id) {
@@ -407,7 +406,6 @@ impl EntityTable {
                 if slot.is_some()
                     && !frame_state.members.contains(idx)
                     && !frame_state.dormant.contains(idx)
-                    && !frame_state.outside.contains(idx)
                 {
                     *slot = None;
                     if self.game_rules_id == Some(idx) {
@@ -429,7 +427,6 @@ impl EntityTable {
                 tid += step;
                 let uid = tid as usize;
                 frame_state.members.remove(uid);
-                frame_state.dormant.remove(uid);
                 self.entities[uid] = None;
                 if self.game_rules_id == Some(uid) {
                     self.game_rules_id = None;
@@ -554,7 +551,6 @@ impl EntityTable {
             fields: target,
         });
         fs.members.insert(id);
-        fs.dormant.remove(id);
         Ok(())
     }
 
@@ -584,7 +580,6 @@ impl EntityTable {
         }
         ent.fields.decode_in_place(schema, r, blen)?;
         fs.members.insert(id);
-        fs.dormant.remove(id);
         Ok(())
     }
 }

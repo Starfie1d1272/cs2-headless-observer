@@ -75,6 +75,7 @@ pub struct HealthV2 {
     pub sdk_queue_age_us: Option<i64>,
     pub sdk_max_age_us: Option<i64>,
     pub decode_us: Option<u64>,
+    pub decode_max_us: Option<u64>,
     pub context_tick: Option<i32>,
     pub network_tick: Option<i32>,
     pub committed_tick: Option<i32>,
@@ -204,15 +205,21 @@ impl AsyncStdoutSink {
 
     pub fn close(&mut self, drain: bool) -> bool {
         self.tx.take();
+        let Some(h) = self.handle.take() else {
+            return !self.write_failed.load(Ordering::Acquire);
+        };
         if drain && !self.write_failed.load(Ordering::Acquire) {
-            if let Some(h) = self.handle.take() {
-                let _ = h.join();
+            let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+            while !h.is_finished() && std::time::Instant::now() < deadline {
+                std::thread::sleep(std::time::Duration::from_millis(5));
             }
-            !self.write_failed.load(Ordering::Acquire)
-        } else {
-            self.handle.take();
-            !self.write_failed.load(Ordering::Acquire)
+            if h.is_finished() {
+                let _ = h.join();
+                return !self.write_failed.load(Ordering::Acquire);
+            }
+            return false;
         }
+        !self.write_failed.load(Ordering::Acquire)
     }
 }
 
@@ -292,7 +299,15 @@ impl AsyncStderrLogger {
 
     pub fn close(&mut self) {
         self.tx.take();
-        self.handle.take();
+        if let Some(h) = self.handle.take() {
+            let deadline = std::time::Instant::now() + std::time::Duration::from_millis(200);
+            while !h.is_finished() && std::time::Instant::now() < deadline {
+                std::thread::sleep(std::time::Duration::from_millis(5));
+            }
+            if h.is_finished() {
+                let _ = h.join();
+            }
+        }
     }
 }
 

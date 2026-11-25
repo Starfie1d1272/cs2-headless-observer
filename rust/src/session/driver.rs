@@ -205,7 +205,8 @@ pub struct ObserverDriver<P: ObserverPort> {
     pub context_tick: Option<i32>,
     pub last_sdk_age_us: Option<i64>,
     pub max_sdk_age_us: Option<i64>,
-    pub last_decode_us: Option<u64>,
+    pub window_decode_us: u64,
+    pub window_max_decode_us: Option<u64>,
     pub cursor_rate: Option<f64>,
     last_cursor_sample: Option<(u64, i32, u64, bool)>,
     pub gap: bool,
@@ -263,7 +264,8 @@ impl<P: ObserverPort> ObserverDriver<P> {
             context_tick: None,
             last_sdk_age_us: None,
             max_sdk_age_us: None,
-            last_decode_us: None,
+            window_decode_us: 0,
+            window_max_decode_us: None,
             cursor_rate: None,
             last_cursor_sample: None,
             gap: false,
@@ -273,6 +275,17 @@ impl<P: ObserverPort> ObserverDriver<P> {
 
     pub fn set_offline_account_id(&mut self, id: u32) {
         self.account_id = Some(id);
+    }
+
+    pub fn take_decode_window(&mut self) -> (Option<u64>, Option<u64>) {
+        let max = self.window_max_decode_us.take();
+        let sum = if max.is_some() {
+            Some(self.window_decode_us)
+        } else {
+            None
+        };
+        self.window_decode_us = 0;
+        (sum, max)
     }
 
     pub fn done(&self) -> bool {
@@ -637,7 +650,12 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     sdk_age_us,
                     obs_ms,
                 );
-                self.last_decode_us = Some(t0.elapsed().as_micros() as u64);
+                let elapsed_us = t0.elapsed().as_micros() as u64;
+                self.window_decode_us = self.window_decode_us.saturating_add(elapsed_us);
+                self.window_max_decode_us = Some(
+                    self.window_max_decode_us
+                        .map_or(elapsed_us, |m| m.max(elapsed_us)),
+                );
                 if msg.message_id == 40 {
                     if let Some(ref srv) = self.core.server {
                         self.signon.server_info(srv.server_count)?;
