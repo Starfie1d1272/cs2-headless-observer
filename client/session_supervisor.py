@@ -30,7 +30,6 @@ from process_io import (
     PublicRecords,
     cancel_io,
     emit_terminal_report,
-    source_age_us,
     write_report_file,
 )
 from process_job import ProcessJob
@@ -319,21 +318,12 @@ class SessionSupervisor:
 
     def _write(self, row, data):
         cursor = None
-        age = None
-        if "supervisorForwardUs" in row:
-            age = source_age_us(row)
-            if age is not None:
-                age += row["supervisorForwardUs"]
-        if self.output.age_limit_us != HARD_AGE_US:
-            age = None  # Normal source tail has its own drain deadline.
         if row["kind"] == "cursor":
             cursor = {
                 key: row[key]
                 for key in ("channel", "world", "committedTick", "sequence")
             }
-        self.output.emit_encoded(
-            data, cursor=cursor, source_age_us=age, sequence=row["sequence"]
-        )
+        self.output.emit_encoded(data, cursor=cursor, sequence=row["sequence"])
 
     def _stop_reason(self):
         if self.owner.is_set():
@@ -472,12 +462,8 @@ class SessionSupervisor:
             or type(draining) is not bool
         ):
             raise ProbeError("attempt-record-identity")
-        age = source_age_us(row)
         forward_us = (now - emitted_ns) // 1000
-        if not draining and (
-            forward_us >= HARD_AGE_US
-            or (age is not None and age + forward_us >= HARD_AGE_US)
-        ):
+        if not draining and forward_us >= HARD_AGE_US:
             return False
         if draining and forward_us >= DRAIN_TIMEOUT_MS * 1000:
             raise ProbeError("output-drain-timeout")
