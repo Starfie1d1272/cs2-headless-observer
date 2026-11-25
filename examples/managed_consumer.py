@@ -1,4 +1,4 @@
-"""Minimal private process consumer. Importing this module never launches an observer."""
+"""Minimal private process consumer for cs2-observer-managed-json/3."""
 import argparse
 import getpass
 import json
@@ -10,19 +10,17 @@ import uuid
 
 
 class Consumer:
-    def __init__(self, source):
-        self.source, self.sequence, self.channel, self.world = source, 0, 0, 1
+    def __init__(self):
+        self.sequence, self.channel, self.world = 0, 0, 1
         self.ready = self.bound = False
 
     def accept(self, row):
         sequence = row.get('sequence')
-        if row.get('source') != self.source:
-            raise ValueError('source-owner-mismatch')
         if type(sequence) is not int or not sequence == self.sequence + 1 <= 9007199254740991:
             raise ValueError('record-order')
         self.sequence = sequence
         if row.get('kind') == 'session-start':
-            if self.bound or row.get('channel') != self.channel + 1 or row.get('world') != 1 or row.get('protocol') != 2:
+            if self.bound or row.get('channel') != self.channel + 1 or row.get('world') != 1 or row.get('protocol') != 3:
                 raise ValueError('invalid-session-boundary')
             self.channel, self.world, self.bound, self.ready = row['channel'], 1, True, False
             return None
@@ -35,10 +33,10 @@ class Consumer:
             if row.get('scope') == 'connection':
                 self.bound = False
         elif row.get('kind') == 'cursor' and row['world'] == self.world:
-            self.ready = (type(row.get('tick')) is int and row['tick'] > 0
+            self.ready = (type(row.get('committedTick')) is int and row['committedTick'] > 0
                 and isinstance(row.get('map'), str) and bool(row.get('map'))
                 and type(row.get('tickInterval')) in (int, float) and 0 < row['tickInterval'] <= 1)
-        elif row.get('type') == 'raw-event' and self.ready and row['world'] == self.world:
+        elif row.get('kind') == 'event' and self.ready and row['world'] == self.world:
             return row
         return None
 
@@ -48,12 +46,9 @@ def main():
     ap.add_argument('--package', type=Path, required=True)
     ap.add_argument('--steam-api', type=Path, required=True)
     ap.add_argument('--host-version', type=int, required=True)
-    ap.add_argument('--follow-source', action='store_true', help='Follow the same authorized GOTV endpoint')
     args = ap.parse_args()
     root = args.package.resolve(strict=True)
     manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
-    if args.follow_source and 'follow-source' not in manifest.get('managedFeatures', []):
-        ap.error('This package does not support --follow-source')
 
     def entry(name):
         value = (root / manifest['entrypoints'][name]).resolve(strict=True)
@@ -63,21 +58,16 @@ def main():
 
     if os.environ.get('SteamAppId', '730') != '730':
         ap.error('Run outside another Steam application context')
-    identity = uuid.uuid4().hex
-    state = Consumer('ahead:' + identity)
-    output = Path(tempfile.mkdtemp(prefix='observer-consumer-')) / identity
+    state = Consumer()
+    output = Path(tempfile.mkdtemp(prefix='observer-consumer-')) / uuid.uuid4().hex
     command = [
         entry('executable'),
         '--managed',
         '--native', entry('native'),
         '--steam-api', str(args.steam_api.resolve(strict=True)),
-        '--source-role', 'ahead',
-        '--source-id', identity,
         '--host-version', str(args.host_version),
         '--output', str(output),
     ]
-    if args.follow_source:
-        command.append('--follow-source')
     connection = {'endpoint': getpass.getpass('Authorized GOTV IP:port: '), 'password': getpass.getpass('Password: ')}
     child = subprocess.Popen(
         command,
@@ -96,7 +86,7 @@ def main():
                 raise ValueError('invalid-record-budget-or-ending')
             event = state.accept(json.loads(line.decode('utf-8')))
             if event:
-                print(json.dumps({'kind': event['kind'], 'eventServerTick': event.get('eventServerTick')}, ensure_ascii=False))
+                print(json.dumps({'name': event['name'], 'eventTick': event.get('eventTick')}, ensure_ascii=False))
     except KeyboardInterrupt:
         pass
     finally:

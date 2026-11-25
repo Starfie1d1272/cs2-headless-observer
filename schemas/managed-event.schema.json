@@ -1,87 +1,90 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Starfie1d1272/cs2-headless-observer/schemas/managed-event.schema.json",
-  "title": "CS2 observer managed JSON record, contracts 1 and 2",
-  "description": "A v2 source identifies one component run. Each connection attempt starts a new channel, including attempts made while following the same endpoint. A new channel does not identify a new map.",
+  "title": "CS2 observer managed JSON record, contract 3",
+  "description": "cs2-observer-managed-json/3 stdout JSONL record schema. Each connection attempt increments channel; each world reset within a channel increments world; sequence is strictly contiguous from 1.",
   "type": "object",
   "required": [
     "kind",
-    "source",
     "channel",
     "world",
     "sequence"
   ],
   "properties": {
     "kind": {
-      "type": "string",
-      "minLength": 1
-    },
-    "source": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 128
+      "enum": [
+        "session-start",
+        "discontinuity",
+        "cursor",
+        "event"
+      ]
     },
     "channel": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 1
     },
     "world": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 1
     },
     "sequence": {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
-    },
-    "sdkQueueAgeUs": {
-      "type": [
-        "integer",
-        "null"
-      ],
-      "minimum": 0
-    },
-    "dequeueToSubmitUs": {
-      "type": [
-        "integer",
-        "null"
-      ],
-      "minimum": 0
-    },
-    "submitToObservedUs": {
-      "type": [
-        "integer",
-        "null"
-      ],
-      "minimum": 0
-    },
-    "resultQueueUs": {
-      "type": [
-        "integer",
-        "null"
-      ],
-      "minimum": 0
-    },
-    "observedAt": {
-      "type": [
-        "integer",
-        "null"
-      ],
-      "minimum": 0
-    },
-    "contextTick": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "supervisorForwardUs": {
-      "type": "integer",
-      "minimum": 0
     }
   },
   "additionalProperties": true,
   "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "session-start"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "protocol"
+        ],
+        "properties": {
+          "protocol": {
+            "const": 3
+          },
+          "world": {
+            "const": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "discontinuity"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "scope",
+          "reason"
+        ],
+        "properties": {
+          "scope": {
+            "enum": [
+              "connection",
+              "world",
+              "snapshot"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
     {
       "if": {
         "properties": {
@@ -92,12 +95,13 @@
       },
       "then": {
         "required": [
-          "tick",
+          "committedTick",
           "tickInterval",
-          "map"
+          "map",
+          "roundClock"
         ],
         "properties": {
-          "tick": {
+          "committedTick": {
             "type": "integer",
             "minimum": 1
           },
@@ -109,6 +113,19 @@
           "map": {
             "type": "string",
             "minLength": 1
+          },
+          "warmup": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "round": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
           },
           "roundClock": {
             "type": "object",
@@ -246,10 +263,6 @@
                 "maximum": 2147483647
               }
             }
-          },
-          "committedTick": {
-            "type": "integer",
-            "minimum": 1
           }
         }
       }
@@ -258,62 +271,71 @@
       "if": {
         "properties": {
           "kind": {
-            "const": "discontinuity"
+            "const": "event"
           }
         }
-      },
-      "then": {
-        "required": [
-          "reason"
-        ],
-        "properties": {
-          "reason": {
-            "type": "string",
-            "minLength": 1
-          },
-          "scope": {
-            "enum": [
-              "connection",
-              "world",
-              "snapshot"
-            ]
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "type": {
-            "const": "raw-event"
-          }
-        },
-        "required": [
-          "type"
-        ]
       },
       "then": {
         "required": [
           "name",
-          "fields",
-          "players",
-          "pawns",
+          "eventTick",
           "committedTick",
-          "eventServerTick",
-          "identityResolved"
+          "fields",
+          "players"
         ],
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
+          },
+          "eventTick": {
+            "type": "integer"
+          },
+          "committedTick": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "tickInterval": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "map": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "warmup": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "round": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "residenceUs": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
           },
           "fields": {
             "type": "object"
           },
           "players": {
-            "type": [
-              "object",
-              "null"
-            ],
+            "type": "object",
             "additionalProperties": {
               "anyOf": [
                 {
@@ -324,62 +346,6 @@
                 }
               ]
             }
-          },
-          "pawns": {
-            "type": [
-              "object",
-              "null"
-            ],
-            "additionalProperties": {
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/entityHandle"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            }
-          },
-          "committedTick": {
-            "type": [
-              "integer",
-              "null"
-            ]
-          },
-          "eventServerTick": {
-            "type": [
-              "integer",
-              "null"
-            ]
-          },
-          "identityResolved": {
-            "type": "boolean"
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "kind": {
-            "const": "session-start"
-          }
-        }
-      },
-      "then": {
-        "required": [
-          "protocol"
-        ],
-        "properties": {
-          "protocol": {
-            "const": 2
-          },
-          "channel": {
-            "minimum": 1
-          },
-          "world": {
-            "const": 1
           }
         }
       }

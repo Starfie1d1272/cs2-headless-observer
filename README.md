@@ -3,8 +3,8 @@
 > 🎮 轻量级 CS2 GOTV 无图形后台观战与结构化事件接收组件（Rust 单二进制版）
 
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6)](#快速开始)
-[![Protocol](https://img.shields.io/badge/managed%20protocol-v2-2EA44F)](docs/managed-interface.md)
-[![Rust](https://img.shields.io/badge/Rust-4.0.0-orange)](rust/Cargo.toml)
+[![Protocol](https://img.shields.io/badge/managed%20protocol-v3-2EA44F)](docs/managed-interface.md)
+[![Rust](https://img.shields.io/badge/Rust-4.1.0-orange)](rust/Cargo.toml)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE-STEAMWORKS-EXCEPTION.txt)
 
 **CS2 Headless Observer** 使用合法的普通 Steam 观众身份连接获授权的 CS2 GOTV 服务器，在不启动完整游戏客户端的情况下实时接收并解码 Source 2 网络帧，向消费应用持续交付有序、可信的 JSONL 比赛事件与时间游标。
@@ -18,7 +18,7 @@
 - 🔇 **无图形后台观战**：通过原生 Steamworks 桥接（`cs2_observer.dll`，ABI 4）建立授权 GOTV 连接，无需渲染画面或启动 CS2 窗口。
 - ⚡ **单二进制高性能解码**：4.0.0 起以纯 Rust 单二进制（`cs2-headless-observer.exe`）统一承担传输、协议解码、实体快照与托管监督，无 Python/Node.js 运行时依赖与跨进程 IPC 开销。
 - 📡 **结构化实时事件流**：输出回合时钟（`cursor`）、击杀、伤害、投掷物、炸弹事件与实体身份证明（Steam64 / Controller / Pawn）。
-- 🔄 **连接恢复与来源跟随**：内置 `Supervisor` 管理断线退避重连、跨连接连续序号与 `--follow-source` 自动跟随换图/换场。
+- 🔄 **连接恢复与连续序号**：内置 `Supervisor` 管理断线指数退避重连、首次连接快速失败与跨连接严格连续序号。
 - 🛡️ **可控资源边界与离线自检**：支持有界异步 stdout/stderr 排空、窗口解析耗时观测（`decodeUs` / `decodeMaxUs`）与 `replay` 本地合成回放自检。
 
 ---
@@ -46,12 +46,12 @@
 
 ## 🧾 输出示例与集成方式
 
-组件通过 `stdout` 逐行输出 JSONL 记录（`cs2-observer-managed-json/2`），`stderr` 输出周期性健康快照，并在输出目录写入终态报告 `report.json`。以下是[合成自检输出](examples/managed-events.json)的典型片段（完整字段定义见 [JSON Schema](schemas/managed-event.schema.json)）：
+组件通过 `stdout` 逐行输出 JSONL 记录（`cs2-observer-managed-json/3`），`stderr` 输出周期性健康快照，并在输出目录写入终态报告 `report.json`。以下是[合成自检输出](examples/managed-events.json)的典型片段（完整字段定义见 [JSON Schema](schemas/managed-event.schema.json)）：
 
 ```jsonl
-{"kind":"session-start","source":"ahead:...","channel":1,"world":1,"sequence":1,"protocol":2}
-{"kind":"cursor","source":"ahead:...","channel":1,"world":1,"sequence":2,"tick":100,"committedTick":100,"map":"de_test"}
-{"kind":"round_freeze_end","source":"ahead:...","channel":1,"world":1,"sequence":3,"committedTick":100,"players":{},"identityResolved":false}
+{"kind":"session-start","protocol":3,"channel":1,"world":1,"sequence":1}
+{"kind":"cursor","channel":1,"world":1,"sequence":2,"committedTick":100,"tickInterval":0.015625,"map":"de_test"}
+{"kind":"event","name":"round_freeze_end","channel":1,"world":1,"sequence":3,"eventTick":100,"committedTick":100,"fields":{},"players":{}}
 ```
 
 宿主应用按[托管接口契约](docs/managed-interface.md)接入，可参考完整调用示例：[Python 消费者](examples/managed_consumer.py) · [Node.js 消费者](examples/managed_consumer.mjs)。
@@ -61,7 +61,7 @@
 ## 🧱 架构概览
 
 ```text
-GOTV 服务器 ──▶ C++ Steam Bridge (cs2_observer.dll, ABI 4) ──▶ cs2-headless-observer.exe (Rust, Managed v2) ──▶ JSONL 输出 ──▶ Mizar / 消费应用
+GOTV 服务器 ──▶ C++ Steam Bridge (cs2_observer.dll, ABI 4) ──▶ cs2-headless-observer.exe (Rust, Managed v3) ──▶ JSONL 输出 ──▶ Mizar / 消费应用
                                                                      ├─ wire: 位流 / LZ4 / Snappy / LZSS / Channel / Handshake
                                                                      ├─ parser: Schema / FieldPath / StringTable / Entities / Projection
                                                                      ├─ native: ABI 4 FFI / ICE 密码加密

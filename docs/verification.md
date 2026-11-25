@@ -15,14 +15,14 @@ cargo build --release
 
 测试覆盖：
 - **9 个单元测试**：线格式编解码与可靠序（`wire::channel`）、合成通道全量回放与 `weapon_fire` 身份投影（`parser::core`）、ICE 密码加密与内存零化（`native::password`）。
-- **5 个集成测试**（`rust/tests/mock_port.rs`）：基于 `MockPort` 覆盖完整 E2E 生命周期（Auth3 → Signon → FULL → ACK=100 → 事件输出 → ID 51/Signon 世界重置 → 实体恢复 → 1038 排空）、Auth2 握手、`--follow-source` 下 `stdin` EOF 退出、`HealthV2`/`ReportV2` 契约与 `decide_recovery` 状态机。
+- **集成测试**（`rust/tests/mock_port.rs` 与 `rust/tests/managed_cli.rs`）：基于 `MockPort` 覆盖完整 E2E 生命周期（Auth3 → Signon → FULL → ACK=100 → 事件输出 → ID 51/Signon 世界重置 → 实体恢复 → 1038 排空）、Auth2 握手、`stdin` EOF 停止、首次连接超时快速失败 vs 断线重连、`HealthV3`/`ReportV3` 契约及 CLI 边界退出码。
 
 ## 2. Windows 制品编译与自检
 
 [`.github/workflows/observer-research.yml`](../.github/workflows/observer-research.yml) 在 `windows-2025` 上执行：
 1. 构建并测试 Rust Release 二进制（`cs2-headless-observer.exe`）；
 2. 拉取固定摘要的 Proton `steamworks_sdk_165` 头文件并用 `tools/build_native.py` 编译 `cs2_observer.dll`（校验 ABI 4 全部导出符号）；
-3. 组装 `dist/observer` 后运行 `cs2-headless-observer.exe replay --input examples/synthetic-channel.json --host-version 14191 --output ...` 完成离线自检并生成 `manifest.json`（`cs2-headless-observer-package/5`）。
+3. 组装 `dist/observer` 后运行 `cs2-headless-observer.exe replay --input examples/synthetic-channel.json --host-version 14191 --output ...` 完成离线自检并生成 `manifest.json`（`cs2-headless-observer-package/6`）。
 
 ## 3. 在线与实机验证
 

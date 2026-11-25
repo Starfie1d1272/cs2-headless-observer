@@ -16,7 +16,6 @@ pub const MAX_RECORD_BYTES: usize = 65536;
 pub struct SessionStartRecord {
     pub kind: &'static str,
     pub protocol: u32,
-    pub source: String,
     pub channel: u64,
     pub world: u64,
     pub sequence: u64,
@@ -28,7 +27,6 @@ pub struct DiscontinuityRecord {
     pub kind: &'static str,
     pub scope: &'static str,
     pub reason: String,
-    pub source: String,
     pub channel: u64,
     pub world: u64,
     pub sequence: u64,
@@ -36,73 +34,61 @@ pub struct DiscontinuityRecord {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct LastDeliveredCursor {
+pub struct FaultSummary {
     pub channel: u64,
-    pub world: u64,
-    pub committed_tick: i32,
-    pub sequence: u64,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AttemptEndSummary {
-    pub channel: u64,
-    pub category: String,
     pub reason: String,
     pub phase: String,
     pub native_failure: Option<i32>,
     pub remote_end_reason: Option<i32>,
-    pub last_delivered_sequence: u64,
 }
 
-/// Mizar v2 health states: initializing | connected | catching-up | retiring | backoff | stopped
+/// v3 health states: connecting | receiving | ended | failed
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct HealthV2 {
+pub struct HealthV3 {
     pub r#type: &'static str,
-    pub source: String,
     pub channel: u64,
     pub world: u64,
     pub state: &'static str,
     pub reason: String,
-    pub upstream_freshness: &'static str,
-    pub ready: bool,
     pub reconnects: u64,
-    pub source_ends: u64,
-    pub follow_attempts: u64,
     pub retry_in_ms: Option<u64>,
-    pub wait_reason: Option<&'static str>,
     pub sdk_queue_age_us: Option<i64>,
     pub sdk_max_age_us: Option<i64>,
     pub decode_us: Option<u64>,
     pub decode_max_us: Option<u64>,
-    pub context_tick: Option<i32>,
-    pub network_tick: Option<i32>,
     pub committed_tick: Option<i32>,
-    pub committed_ticks_per_second: Option<f64>,
-    pub last_delivered_cursor: Option<LastDeliveredCursor>,
-    pub last_attempt_end: Option<AttemptEndSummary>,
-    pub last_fault: Option<AttemptEndSummary>,
+    pub last_fault: Option<FaultSummary>,
 }
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportV2 {
+pub struct DiagnosticRecord<'a> {
+    pub r#type: &'static str,
+    pub channel: u64,
+    pub reason: &'a str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_id: Option<i32>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReportV3 {
     pub schema: &'static str,
     pub outcome: &'static str,
     pub reason: String,
-    pub cleanup_completed: bool,
-    pub report_written: bool,
-    pub source: String,
     pub channel: u64,
     pub world: u64,
     pub last_output_sequence: u64,
     pub reconnects: u64,
-    pub source_ends: u64,
-    pub follow_attempts: u64,
-    pub last_attempt_end: Option<AttemptEndSummary>,
-    pub faults: Vec<AttemptEndSummary>,
-    pub health: Option<HealthV2>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub native_boot_code: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub steam_init_result: Option<i32>,
+    pub phase: Option<String>,
+    pub last_fault: Option<FaultSummary>,
+    pub faults: Vec<FaultSummary>,
+    pub health: Option<HealthV3>,
 }
 
 pub fn encode_jsonl_line<T: Serialize>(value: &T) -> Result<Vec<u8>, SessionError> {
@@ -112,13 +98,6 @@ pub fn encode_jsonl_line<T: Serialize>(value: &T) -> Result<Vec<u8>, SessionErro
         return Err(SessionError::OutputRecordBudget);
     }
     Ok(line)
-}
-
-pub fn unix_ms_now() -> u64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_millis() as u64)
-        .unwrap_or(0)
 }
 
 pub trait RecordSink {
@@ -260,7 +239,7 @@ impl RecordSink for AsyncStdoutSink {
     }
 }
 
-/// Non-blocking stderr health logger; drops diagnostic lines if pipe is full.
+/// Non-blocking stderr health & diagnostic logger; drops lines if pipe is full.
 pub struct AsyncStderrLogger {
     tx: Option<SyncSender<Vec<u8>>>,
     handle: Option<JoinHandle<()>>,
@@ -276,8 +255,8 @@ impl AsyncStderrLogger {
     pub fn spawn() -> Self {
         let (tx, rx) = sync_channel::<Vec<u8>>(64);
         let handle = std::thread::spawn(move || {
-            let mut err = std::io::stderr().lock();
             while let Ok(line) = rx.recv() {
+                let mut err = std::io::stderr().lock();
                 if err.write_all(&line).is_err() {
                     break;
                 }
@@ -289,9 +268,23 @@ impl AsyncStderrLogger {
         }
     }
 
-    pub fn emit_health(&self, h: &HealthV2) {
+    pub fn emit_health(&self, h: &HealthV3) {
         if let Some(tx) = &self.tx {
             if let Ok(line) = encode_jsonl_line(h) {
+                let _ = tx.try_send(line);
+            }
+        }
+    }
+
+    pub fn emit_diagnostic(&self, channel: u64, reason: &str, event_id: Option<i32>) {
+        if let Some(tx) = &self.tx {
+            let rec = DiagnosticRecord {
+                r#type: "cs2-observer-diagnostic/3",
+                channel,
+                reason,
+                event_id,
+            };
+            if let Ok(line) = encode_jsonl_line(&rec) {
                 let _ = tx.try_send(line);
             }
         }
@@ -317,7 +310,7 @@ impl Drop for AsyncStderrLogger {
     }
 }
 
-pub fn write_report_file(dir: &Path, report: &ReportV2) -> Result<(), String> {
+pub fn write_report_file(dir: &Path, report: &ReportV3) -> Result<(), String> {
     let path = dir.join("report.json");
     let data = serde_json::to_vec_pretty(report).map_err(|e| e.to_string())?;
     std::fs::write(&path, data).map_err(|e| format!("report-write: {e}"))

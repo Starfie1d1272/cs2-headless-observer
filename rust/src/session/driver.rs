@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-use super::reporting::unix_ms_now;
 use super::SessionError;
 use crate::native::password::{transform_password, SecretBytes};
 use crate::native::ObserverPort;
@@ -171,6 +170,10 @@ pub enum DriverEmit {
         reason: String,
         world: u64,
     },
+    Diagnostic {
+        reason: String,
+        event_id: Option<i32>,
+    },
 }
 
 pub struct ObserverDriver<P: ObserverPort> {
@@ -207,9 +210,6 @@ pub struct ObserverDriver<P: ObserverPort> {
     pub max_sdk_age_us: Option<i64>,
     pub window_decode_us: u64,
     pub window_max_decode_us: Option<u64>,
-    pub cursor_rate: Option<f64>,
-    last_cursor_sample: Option<(u64, i32, u64, bool)>,
-    pub gap: bool,
     pub emitted: Vec<DriverEmit>,
 }
 
@@ -218,7 +218,6 @@ impl<P: ObserverPort> ObserverDriver<P> {
         port: P,
         host_version: u32,
         password: SecretBytes,
-        source: String,
         channel: u64,
         now_ms: u64,
     ) -> Result<Self, SessionError> {
@@ -240,11 +239,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 last_receipt_ms: now_ms,
                 ..Default::default()
             },
-            core: ObserverCore::new(SourceIdentity {
-                source,
-                channel,
-                world: 1,
-            }),
+            core: ObserverCore::new(SourceIdentity { channel, world: 1 }),
             signon: SignonSequence::new(),
             order: UnreliableOrder::new(Some(0))?,
             feedback: UnreliableFeedback::new(),
@@ -266,9 +261,6 @@ impl<P: ObserverPort> ObserverDriver<P> {
             max_sdk_age_us: None,
             window_decode_us: 0,
             window_max_decode_us: None,
-            cursor_rate: None,
-            last_cursor_sample: None,
-            gap: false,
             emitted: Vec::new(),
         })
     }
@@ -582,11 +574,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
             if !ord.accepted {
                 return Ok(());
             }
-            if ord.gap > 0 {
-                self.last_cursor_sample = None;
-                self.cursor_rate = None;
-                self.gap = true;
-            }
+            let _ = ord.gap;
         }
 
         let (msgs, _) = decode_messages(&frame.body, None, Some(76))?;
@@ -641,15 +629,10 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     self.send_connected_ack()?;
                 }
             } else if msg.message_id != 76 {
-                let obs_ms = unix_ms_now();
                 let t0 = std::time::Instant::now();
-                let outputs = self.core.consume(
-                    msg.message_id,
-                    &msg.body,
-                    Some(context_tick),
-                    sdk_age_us,
-                    obs_ms,
-                );
+                let outputs =
+                    self.core
+                        .consume(msg.message_id, &msg.body, Some(context_tick), sdk_age_us);
                 let elapsed_us = t0.elapsed().as_micros() as u64;
                 self.window_decode_us = self.window_decode_us.saturating_add(elapsed_us);
                 self.window_max_decode_us = Some(
@@ -698,25 +681,6 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     }
                 }
                 CoreOutput::Cursor(c) => {
-                    let paused = c.round_clock.pause.active.unwrap_or(false);
-                    let world = c.world;
-                    let committed = c.committed_tick;
-                    self.cursor_rate = None;
-                    if let Some((lw, lt, lms, lp)) = self.last_cursor_sample {
-                        let elapsed = now_ms.saturating_sub(lms);
-                        if world == lw
-                            && committed > lt
-                            && elapsed > 0
-                            && elapsed <= 3000
-                            && !lp
-                            && !paused
-                        {
-                            self.cursor_rate =
-                                Some(((committed - lt) as f64) * 1000.0 / (elapsed as f64));
-                        }
-                    }
-                    self.last_cursor_sample = Some((world, committed, now_ms, paused));
-                    self.gap = false;
                     self.emitted.push(DriverEmit::Cursor(Box::new(c)));
                 }
                 CoreOutput::RawEvent(e) => {
@@ -726,9 +690,6 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     self.world_sync.event_subscription_pending = Some(ids);
                 }
                 CoreOutput::Gap { reason } => {
-                    self.last_cursor_sample = None;
-                    self.cursor_rate = None;
-                    self.gap = true;
                     self.emitted.push(DriverEmit::Discontinuity {
                         scope: "snapshot",
                         reason,
@@ -740,9 +701,6 @@ impl<P: ObserverPort> ObserverDriver<P> {
                     world_reinitialization,
                     ..
                 } => {
-                    self.last_cursor_sample = None;
-                    self.cursor_rate = None;
-                    self.gap = true;
                     self.world_sync.apply_recovery();
                     if world_reinitialization {
                         return Err(SessionError::WorldReinitializationRequired(reason));
@@ -759,7 +717,10 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 CoreOutput::Blocked { reason } => {
                     return Err(SessionError::Protocol(reason));
                 }
-                CoreOutput::Diagnostic { .. } => {}
+                CoreOutput::Diagnostic { reason, event_id } => {
+                    self.emitted
+                        .push(DriverEmit::Diagnostic { reason, event_id });
+                }
             }
         }
         Ok(())
@@ -775,9 +736,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
         if reset_core {
             self.core.reset_world(self.core.identity.world + 1);
         }
-        self.last_cursor_sample = None;
-        self.cursor_rate = None;
-        self.gap = true;
+
         self.initialization_deadline = now_ms + INITIALIZATION_TIMEOUT_MS;
         self.signon = SignonSequence::new();
         self.world_sync.reset(now_ms);

@@ -63,15 +63,8 @@ pub fn run_replay(input: &Path, host_version: u32, output_dir: &Path) -> Result<
 
     let events_file = File::create(output_dir.join("events.jsonl")).map_err(|e| e.to_string())?;
     let mut sink = SyncJsonlSink::new(BufWriter::new(events_file));
-    let mut driver = ObserverDriver::new(
-        OfflinePort,
-        host_version,
-        SecretBytes::default(),
-        "offline:channel-replay".into(),
-        1,
-        0,
-    )
-    .map_err(|e| e.to_string())?;
+    let mut driver = ObserverDriver::new(OfflinePort, host_version, SecretBytes::default(), 1, 0)
+        .map_err(|e| e.to_string())?;
     driver.phase = DriverPhase::Channel;
     driver.set_offline_account_id(1);
 
@@ -159,7 +152,7 @@ fn flush_emitted<P: ObserverPort, W: Write>(
             DriverEmit::RawEvent(mut e) => {
                 let seq = sink.next_sequence();
                 e.sequence = seq;
-                *counts.entry(e.kind.clone()).or_insert(0) += 1;
+                *counts.entry(e.name.clone()).or_insert(0) += 1;
                 sink.emit_with_seq(seq, &e).map_err(|e| e.to_string())?;
             }
             DriverEmit::Discontinuity {
@@ -172,7 +165,6 @@ fn flush_emitted<P: ObserverPort, W: Write>(
                     kind: "discontinuity",
                     scope,
                     reason,
-                    source: driver.core.identity.source.clone(),
                     channel: driver.core.identity.channel,
                     world,
                     sequence: seq,
@@ -180,6 +172,7 @@ fn flush_emitted<P: ObserverPort, W: Write>(
                 *counts.entry("discontinuity".into()).or_insert(0) += 1;
                 sink.emit_with_seq(seq, &rec).map_err(|e| e.to_string())?;
             }
+            DriverEmit::Diagnostic { .. } => {}
         }
     }
     Ok(())

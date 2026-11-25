@@ -20,19 +20,19 @@
 
 | 退出码 | 含义 |
 | --- | --- |
-| `0` | 正常结束（包括来源 1038 结束或 `stdin` EOF / `--seconds` 请求的完整收尾） |
-| `1` | 参数错误、初始化/传输终止性故障或报告写入失败 |
-| `2` | 命令行参数解析失败（`clap`） |
+| `0` | 正常结束（`closed`：1038 正常停播并排空完成；`stopped`：`stdin` EOF 或 `--seconds` 到期） |
+| `1` | 终止性故障（启动失败、排空超时、配置边界或不可恢复错误） |
+| `2` | 命令行参数解析失败（`clap` 或缺少必需参数） |
 
-终态报告保存为 `<output>/report.json`（`cs2-observer-report/2`），包含 `outcome`（`closed | incomplete | failed`）、`reason`、`cleanupCompleted`、`reportWritten`、`lastOutputSequence`、`reconnects`、`sourceEnds`、`followAttempts`、`lastAttemptEnd`、`faults` 与最后一条 `health`。
+终态报告保存为 `<output>/report.json`（`cs2-observer-report/3`），包含 `outcome`（`closed | stopped | failed`）、`reason`、`channel`、`world`、`lastOutputSequence`、`reconnects`、`phase`、`lastFault`、`faults` 与最后一条 `health`。
 
 ## 常见问题
 
 | 现象或 `reason` | 处理方式 |
 | --- | --- |
-| `output directory already exists` | 为 `--output` 指定尚未存在的新目录。 |
-| `native-start-failed` | 核对本机 Steam 登录状态、`--steam-api` 路径与 `SteamAppId=730` 上下文。 |
-| `phase-timeout` / `initialization-timeout` | 核对来源是否开放观战、`--host-version` 与密码；分配新 `--source-id` 与 `--output` 重试。 |
+| `output-directory-unavailable` | 为 `--output` 指定尚未存在的新目录。 |
+| `native-start-failed` | 核对本机 Steam 登录状态、`--steam-api` 路径与 `SteamAppId=730` 上下文（可查看 `nativeBootCode` / `steamInitResult`）。 |
+| `connection-timeout` / `phase-timeout` | 核对来源是否开放观战、`--host-version` 与密码；使用新 `--output` 重试。 |
 | `output-backpressure` / `output-closed` | 检查消费端是否持续读取 `stdout`；处理任意流分块并保持消费队列有界。 |
 | `remote_end_reason=1000` | 同账号多路观战须使用不同 GOTV 端点；参见[兼容性](compatibility.md#多路连接与游戏客户端共存)。 |
-| `source-hltv-stop`（1038） | 来源正常结束；启用 `--follow-source` 时自动等待重连，否则安全排空后退出。 |
+| `source-hltv-stop`（1038） | 来源正常结束；安全排空后以退出码 `0` 退出。 |

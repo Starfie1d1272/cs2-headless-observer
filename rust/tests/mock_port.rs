@@ -3,16 +3,18 @@ use std::io::Cursor;
 use std::sync::atomic::AtomicBool;
 use std::time::Instant;
 
+use cs2_headless_observer::native::abi::NativeStartError;
 use cs2_headless_observer::native::password::SecretBytes;
 use cs2_headless_observer::native::{ObserverPort, ReceivedPacket};
 use cs2_headless_observer::session::driver::{
     DriverEmit, DriverPhase, ObserverDriver, RecoveryState,
 };
-use cs2_headless_observer::session::reporting::{HealthV2, ReportV2, SyncJsonlSink};
+use cs2_headless_observer::session::reporting::{FaultSummary, HealthV3, ReportV3, SyncJsonlSink};
 use cs2_headless_observer::session::supervisor::{
-    decide_recovery, read_managed_config, run_single_attempt, AttemptCategory, AttemptExit,
-    RecoveryAction,
+    classify_session_error, decide_recovery, read_managed_config, run_single_attempt,
+    spawn_stop_watcher, AttemptCategory, AttemptExit, RecoveryAction,
 };
+use cs2_headless_observer::session::SessionError;
 use cs2_headless_observer::wire::bits::{encode_pb_bytes, encode_pb_varint, encode_varint};
 use cs2_headless_observer::wire::channel::{
     decode_frame, decode_messages, encode_message, join_messages, reliable_frame,
@@ -264,15 +266,8 @@ fn pack_reliable_msgs(msgs: &[(u32, Vec<u8>)], tick_hint: u32) -> Vec<u8> {
 fn test_full_end_to_end_lifecycle_world_reset_recovery_and_1038_drain() {
     let steam: u64 = 76561198000000123;
     let port = MockPort::new();
-    let mut driver = ObserverDriver::new(
-        port,
-        14191,
-        SecretBytes::new(b"pw123".to_vec()),
-        "ahead:e2e".into(),
-        1,
-        0,
-    )
-    .unwrap();
+    let mut driver =
+        ObserverDriver::new(port, 14191, SecretBytes::new(b"pw123".to_vec()), 1, 0).unwrap();
 
     // 1. Auth3 handshake -> ticket -> connect -> channel
     driver.step(10).unwrap();
@@ -374,7 +369,7 @@ fn test_full_end_to_end_lifecycle_world_reset_recovery_and_1038_drain() {
         .push_packet(pack_reliable_msgs(&[(205, ev_list), (207, ev)], 101), true);
     driver.step(250).unwrap();
     assert!(driver.emitted.iter().any(
-        |e| matches!(e, DriverEmit::RawEvent(r) if r.name == "weapon_fire" && r.identity_resolved)
+        |e| matches!(e, DriverEmit::RawEvent(r) if r.name == "weapon_fire" && r.players.get("userid").and_then(|p| p.as_ref()).is_some())
     ));
 
     // 4. ID 51 World Reset: verify world increments STRICTLY ONCE (1 -> 2)
@@ -535,15 +530,8 @@ fn test_full_end_to_end_lifecycle_world_reset_recovery_and_1038_drain() {
 #[test]
 fn test_auth2_handshake() {
     let port = MockPort::new();
-    let mut driver = ObserverDriver::new(
-        port,
-        14191,
-        SecretBytes::new(b"pw123".to_vec()),
-        "ahead:test".into(),
-        1,
-        0,
-    )
-    .unwrap();
+    let mut driver =
+        ObserverDriver::new(port, 14191, SecretBytes::new(b"pw123".to_vec()), 1, 0).unwrap();
 
     driver.step(10).unwrap();
     let ch = make_challenge(2, 0x11223344, 90071996842377217, b"connect0x00000000");
@@ -558,7 +546,7 @@ fn test_auth2_handshake() {
 }
 
 #[test]
-fn test_stdin_eof_stop_under_follow_source_exits_incomplete_without_source_ends() {
+fn test_stdin_eof_stop_exits_stopped() {
     let input = b"{\"endpoint\":\"127.0.0.1:27020\",\"password\":\"secret\"}\n";
     let mut cur = Cursor::new(&input[..]);
     let mut cfg = read_managed_config(&mut cur).unwrap();
@@ -566,18 +554,9 @@ fn test_stdin_eof_stop_under_follow_source_exits_incomplete_without_source_ends(
     cfg.password.zeroize();
 
     let port = MockPort::new();
-    let mut driver = ObserverDriver::new(
-        port,
-        14191,
-        SecretBytes::default(),
-        "ahead:eof".into(),
-        1,
-        0,
-    )
-    .unwrap();
+    let mut driver = ObserverDriver::new(port, 14191, SecretBytes::default(), 1, 0).unwrap();
     let stop_flag = AtomicBool::new(true);
     let mut sink = SyncJsonlSink::new(Vec::<u8>::new());
-    let mut last_cursor = None;
     let mut last_health = None;
     let exit = run_single_attempt(
         &mut driver,
@@ -586,98 +565,81 @@ fn test_stdin_eof_stop_under_follow_source_exits_incomplete_without_source_ends(
         &stop_flag,
         None,
         &Instant::now(),
-        &mut last_cursor,
         &mut last_health,
         0,
-        0,
-        0,
-        &None,
+        false,
         None,
     )
     .unwrap();
     assert!(matches!(exit, AttemptExit::OwnerStopped { .. }));
     assert_eq!(
-        decide_recovery(&exit, false, true, 0),
-        RecoveryAction::Incomplete("owner-stopped".into())
+        decide_recovery(&exit),
+        RecoveryAction::Stopped("owner-stopped".into())
     );
 }
 
 #[test]
-fn test_mizar_health_and_report_v2_contract() {
-    let h = HealthV2 {
-        r#type: "cs2-observer-health/2",
-        source: "ahead:test".into(),
+fn test_health_and_report_v3_contract() {
+    let h = HealthV3 {
+        r#type: "cs2-observer-health/3",
         channel: 1,
         world: 1,
-        state: "connected",
-        reason: "connected".into(),
-        upstream_freshness: "unknown",
-        ready: true,
+        state: "receiving",
+        reason: "receiving".into(),
         reconnects: 0,
-        source_ends: 0,
-        follow_attempts: 0,
         retry_in_ms: None,
-        wait_reason: None,
         sdk_queue_age_us: Some(500),
         sdk_max_age_us: Some(500),
         decode_us: Some(42),
         decode_max_us: Some(20),
-        context_tick: Some(100),
-        network_tick: Some(100),
         committed_tick: Some(100),
-        committed_ticks_per_second: Some(64.0),
-        last_delivered_cursor: None,
-        last_attempt_end: None,
         last_fault: None,
     };
     let h_json = serde_json::to_value(&h).unwrap();
-    assert_eq!(h_json["state"], "connected");
+    assert_eq!(h_json["type"], "cs2-observer-health/3");
+    assert_eq!(h_json["state"], "receiving");
+    assert!(h_json.get("source").is_none());
+    assert!(h_json.get("ready").is_none());
+    assert!(h_json.get("waitReason").is_none());
 
-    let r = ReportV2 {
-        schema: "cs2-observer-report/2",
+    let r = ReportV3 {
+        schema: "cs2-observer-report/3",
         outcome: "closed",
         reason: "source-hltv-stop".into(),
-        cleanup_completed: true,
-        report_written: true,
-        source: "ahead:test".into(),
         channel: 1,
         world: 1,
         last_output_sequence: 10,
         reconnects: 0,
-        source_ends: 1,
-        follow_attempts: 0,
-        last_attempt_end: None,
+        native_boot_code: None,
+        steam_init_result: None,
+        phase: Some("closed".into()),
+        last_fault: None,
         faults: Vec::new(),
         health: Some(h),
     };
     let r_json = serde_json::to_value(&r).unwrap();
-    assert_eq!(r_json["schema"], "cs2-observer-report/2");
+    assert_eq!(r_json["schema"], "cs2-observer-report/3");
     assert_eq!(r_json["outcome"], "closed");
-    assert_eq!(r_json["cleanupCompleted"], true);
-    assert_eq!(r_json["reportWritten"], true);
-    assert!(r_json.get("ok").is_none());
+    assert!(r_json.get("source").is_none());
+    assert!(r_json.get("cleanupCompleted").is_none());
+    assert!(r_json.get("reportWritten").is_none());
+    assert!(r_json.get("nativeBootCode").is_none());
+    assert!(r_json.get("steamInitResult").is_none());
 }
 
 #[test]
-fn test_follow_source_and_retry_decisions() {
+fn test_recovery_decisions_v3() {
     let clean = AttemptExit::CleanSourceStop {
-        phase: "draining".into(),
+        phase: "closed".into(),
         native_failure: Some(7),
         remote_end_reason: Some(1038),
         reached_full: true,
         ready_duration_ms: 5000,
     };
-    assert_eq!(
-        decide_recovery(&clean, false, false, 0),
-        RecoveryAction::Close
-    );
-    assert_eq!(
-        decide_recovery(&clean, false, true, 0),
-        RecoveryAction::Follow
-    );
+    assert_eq!(decide_recovery(&clean), RecoveryAction::Close);
 
-    let unavail = AttemptExit::Fault {
-        category: AttemptCategory::SourceUnavailable,
+    let transient = AttemptExit::Fault {
+        category: AttemptCategory::TransientFault,
         reason: "phase-timeout".into(),
         phase: "challenge".into(),
         native_failure: Some(7),
@@ -685,16 +647,165 @@ fn test_follow_source_and_retry_decisions() {
         reached_full: false,
         ready_duration_ms: 0,
     };
+    assert_eq!(decide_recovery(&transient), RecoveryAction::Retry);
+
+    let terminal = AttemptExit::Fault {
+        category: AttemptCategory::TerminalFault,
+        reason: "connection-timeout".into(),
+        phase: "connection".into(),
+        native_failure: Some(7),
+        remote_end_reason: Some(0),
+        reached_full: false,
+        ready_duration_ms: 0,
+    };
     assert_eq!(
-        decide_recovery(&unavail, true, true, 0),
-        RecoveryAction::Follow
+        decide_recovery(&terminal),
+        RecoveryAction::Fail("connection-timeout".into())
+    );
+}
+
+#[test]
+fn test_classify_session_error_first_connection_timeout_vs_reconnect() {
+    // First connection (!has_ever_full) timeout in Connection phase -> TerminalFault (fast fail)
+    assert_eq!(
+        classify_session_error(
+            &SessionError::PhaseTimeout,
+            DriverPhase::Connection,
+            7,
+            false
+        ),
+        AttemptCategory::TerminalFault
+    );
+    // After ever_full (has_ever_full = true), Connection timeout -> TransientFault (reconnect)
+    assert_eq!(
+        classify_session_error(
+            &SessionError::PhaseTimeout,
+            DriverPhase::Connection,
+            7,
+            true
+        ),
+        AttemptCategory::TransientFault
+    );
+    // Transport/Challenge/Ticket timeouts and NativeSessionClosed -> TransientFault
+    assert_eq!(
+        classify_session_error(
+            &SessionError::PhaseTimeout,
+            DriverPhase::Transport,
+            7,
+            false
+        ),
+        AttemptCategory::TransientFault
     );
     assert_eq!(
-        decide_recovery(&unavail, false, false, 0),
-        RecoveryAction::Retry
+        classify_session_error(
+            &SessionError::PhaseTimeout,
+            DriverPhase::Challenge,
+            7,
+            false
+        ),
+        AttemptCategory::TransientFault
     );
     assert_eq!(
-        decide_recovery(&unavail, false, false, 5),
-        RecoveryAction::Fail("reconnect-budget-exhausted".into())
+        classify_session_error(
+            &SessionError::NativeSessionClosed,
+            DriverPhase::Transport,
+            7,
+            false
+        ),
+        AttemptCategory::TransientFault
     );
+    assert_eq!(
+        classify_session_error(
+            &SessionError::Native("native-receive-failed".into()),
+            DriverPhase::Channel,
+            0,
+            false
+        ),
+        AttemptCategory::TransientFault
+    );
+    assert_eq!(
+        classify_session_error(
+            &SessionError::Native("other-native".into()),
+            DriverPhase::Channel,
+            0,
+            false
+        ),
+        AttemptCategory::TerminalFault
+    );
+}
+
+#[test]
+fn test_native_start_error_report_v3_fields() {
+    let err = NativeStartError {
+        boot_code: 12,
+        init_result: 34,
+    };
+    let reason = err.to_string();
+    assert_eq!(reason, "native-start-failed");
+
+    let summary = FaultSummary {
+        channel: 1,
+        reason: reason.clone(),
+        phase: "transport".into(),
+        native_failure: None,
+        remote_end_reason: None,
+    };
+    let report = ReportV3 {
+        schema: "cs2-observer-report/3",
+        outcome: "failed",
+        reason,
+        channel: 1,
+        world: 1,
+        last_output_sequence: 1,
+        reconnects: 0,
+        native_boot_code: Some(err.boot_code),
+        steam_init_result: Some(err.init_result),
+        phase: Some("transport".into()),
+        last_fault: Some(summary.clone()),
+        faults: vec![summary],
+        health: None,
+    };
+    let json = serde_json::to_value(&report).unwrap();
+    assert_eq!(json["reason"], "native-start-failed");
+    assert_eq!(json["nativeBootCode"], 12);
+    assert_eq!(json["steamInitResult"], 34);
+    assert_eq!(json["lastFault"]["reason"], "native-start-failed");
+}
+
+#[test]
+fn test_spawn_stop_watcher_waits_for_eof_not_single_byte() {
+    use std::io::Read;
+    use std::sync::{mpsc, Arc};
+
+    struct ChannelReader {
+        rx: mpsc::Receiver<u8>,
+    }
+    impl Read for ChannelReader {
+        fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+            if buf.is_empty() {
+                return Ok(0);
+            }
+            match self.rx.recv() {
+                Ok(b) => {
+                    buf[0] = b;
+                    Ok(1)
+                }
+                Err(_) => Ok(0),
+            }
+        }
+    }
+
+    let (tx, rx) = mpsc::channel();
+    let stop_flag = Arc::new(AtomicBool::new(false));
+    let handle = spawn_stop_watcher(ChannelReader { rx }, stop_flag.clone());
+
+    // Extra bytes without EOF must NOT trigger stop
+    tx.send(b'x').unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(30));
+    assert!(!stop_flag.load(std::sync::atomic::Ordering::SeqCst));
+
+    // Closing sender (EOF) triggers stop
+    drop(tx);
+    handle.join().unwrap();
+    assert!(stop_flag.load(std::sync::atomic::Ordering::SeqCst));
 }
