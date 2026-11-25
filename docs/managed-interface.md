@@ -17,7 +17,8 @@
 - 运行环境需设置 `SteamAppId=730` 且本机 Steam 已登录有效普通账号；每次启动使用新 UUID，`--output` 指向尚不存在的目录（由组件创建）。
 - `--managed` 固定使用 `cs2-observer-managed-json/2`。`source-role` 可选 `ahead` 或 `delayed`。
 - 当 `manifest.json` 的 `managedFeatures` 包含 `follow-source` 时，可追加 `--follow-source`，在来源正常 1038 结束后低频重连同一授权地址。切换地址时需关闭旧实例 `stdin` 并等待退出，再以新 UUID 与输出目录启动新实例。
-- 启动后向 `stdin` 写入一行 UTF-8 JSON（`{"endpoint":"IP:port","password":"..."}`，以 `\n` 结尾，不超过 4096 字节；密码支持至多 95 字节 ASCII，可为空字符串），随后保持 `stdin` 开放；关闭 `stdin`（EOF）或发送额外输入即请求安全停止。
+- 启动后向 `stdin` 写入一行 UTF-8 JSON（`{"endpoint":"IP:port","password":"..."}`，以 `\n` 结尾，不超过 4096 字节；密码支持至多 95 字节 ASCII，可为空字符串），随后保持 `stdin` 开放；关闭 `stdin`（EOF）或发送任意额外字节（无需换行）即请求安全停止。
+- 若在写出 `report.json` 之前发生边界错误（例如输出目录已存在/不可创建，或 `stdin` 配置无效），进程会向 `stderr` 输出单行固定原因码（`output-directory-unavailable` 或 `configuration-boundary`）并以非 0 退出。
 
 完整调用参见 [Python 示例](../examples/managed_consumer.py) 与 [Node.js 示例](../examples/managed_consumer.mjs)。
 
@@ -47,7 +48,7 @@
 
 - **纯观测不触发硬杀**：`sdkQueueAgeUs`、`sdkMaxAgeUs`、`decodeUs`（窗口累计解析微秒）与 `decodeMaxUs`（窗口单包最大解析微秒）**仅用于健康观测与诊断**，不会因单包或窗口解析超过固定时长而主动断连重连。
 - **就绪与退避**：接纳匹配当前 `source/channel/world` 的有效 `cursor` 后 `ready=true`；断线重连采用指数退避（`state="backoff"`，`waitReason="fault-retry"` 或 `"follow-source"`，附 `retryInMs`），`sourceEnds`、`followAttempts`、`reconnects` 分别计数。
-- **有界退出与报告**：正常 1038 排空后发送 `discontinuity(scope="connection", reason="source-hltv-stop")`；异步 `stdout` 排空上限 2 秒、`stderr` 上限 200 ms。终态写入 `report.json`（`schema="cs2-observer-report/2"`），含 `outcome`、`reason`、`cleanupCompleted`、`reportWritten`、`lastOutputSequence`、`lastAttemptEnd`、最近最多 8 条 `faults` 及最后一次 `health`。
+- **有界退出与报告**：正常 1038 排空后发送 `discontinuity(scope="connection", reason="source-hltv-stop")`；异步 `stdout` 排空上限 2 秒、`stderr` 上限 200 ms。若 `closed` 终态排空超时导致 `cleanupCompleted=false`，则 `outcome` 置为 `"failed"` 并返回非 0 退出码。终态写入 `report.json`（`schema="cs2-observer-report/2"`），含 `outcome`、`reason`、`cleanupCompleted`、`reportWritten`、`lastOutputSequence`、可选 `nativeBootCode` / `steamInitResult`（`native-start-failed` 时提供）、`lastAttemptEnd`、最近最多 8 条 `faults` 及最后一次 `health`。
 
 ### 回合时钟快照（`roundClock`）
 

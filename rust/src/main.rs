@@ -48,13 +48,17 @@ enum Commands {
 
 fn main() {
     let cli = Cli::parse();
-    let is_managed = cli.managed && cli.command.is_none();
-    let result = match cli.command {
+    match cli.command {
         Some(Commands::Replay {
             input,
             host_version,
             output,
-        }) => run_replay(&input, host_version, &output),
+        }) => {
+            if let Err(err) = run_replay(&input, host_version, &output) {
+                eprintln!("observer-error: {err}");
+                std::process::exit(1);
+            }
+        }
         None => {
             if !cli.managed {
                 eprintln!("Use --managed or replay subcommand");
@@ -75,7 +79,7 @@ fn main() {
             let source_id = cli
                 .source_id
                 .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
-            run_managed(ManagedArgs {
+            if let Err(err) = run_managed(ManagedArgs {
                 native,
                 steam_api: cli.steam_api,
                 source_role: cli.source_role,
@@ -84,14 +88,12 @@ fn main() {
                 output,
                 follow_source: cli.follow_source,
                 seconds: cli.seconds,
-            })
+            }) {
+                if !err.report_written {
+                    eprintln!("{}", err.reason);
+                }
+                std::process::exit(1);
+            }
         }
-    };
-
-    if let Err(err) = result {
-        if !is_managed {
-            eprintln!("observer-error: {err}");
-        }
-        std::process::exit(1);
     }
 }

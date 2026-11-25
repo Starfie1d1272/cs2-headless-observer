@@ -3,16 +3,20 @@ use std::io::Cursor;
 use std::sync::atomic::AtomicBool;
 use std::time::Instant;
 
+use cs2_headless_observer::native::abi::NativeStartError;
 use cs2_headless_observer::native::password::SecretBytes;
 use cs2_headless_observer::native::{ObserverPort, ReceivedPacket};
 use cs2_headless_observer::session::driver::{
     DriverEmit, DriverPhase, ObserverDriver, RecoveryState,
 };
-use cs2_headless_observer::session::reporting::{HealthV2, ReportV2, SyncJsonlSink};
-use cs2_headless_observer::session::supervisor::{
-    decide_recovery, read_managed_config, run_single_attempt, AttemptCategory, AttemptExit,
-    RecoveryAction,
+use cs2_headless_observer::session::reporting::{
+    AttemptEndSummary, HealthV2, ReportV2, SyncJsonlSink,
 };
+use cs2_headless_observer::session::supervisor::{
+    classify_session_error, decide_recovery, read_managed_config, run_single_attempt,
+    spawn_stop_watcher, AttemptCategory, AttemptExit, RecoveryAction,
+};
+use cs2_headless_observer::session::SessionError;
 use cs2_headless_observer::wire::bits::{encode_pb_bytes, encode_pb_varint, encode_varint};
 use cs2_headless_observer::wire::channel::{
     decode_frame, decode_messages, encode_message, join_messages, reliable_frame,
@@ -646,6 +650,8 @@ fn test_mizar_health_and_report_v2_contract() {
         reconnects: 0,
         source_ends: 1,
         follow_attempts: 0,
+        native_boot_code: None,
+        steam_init_result: None,
         last_attempt_end: None,
         faults: Vec::new(),
         health: Some(h),
@@ -655,6 +661,8 @@ fn test_mizar_health_and_report_v2_contract() {
     assert_eq!(r_json["outcome"], "closed");
     assert_eq!(r_json["cleanupCompleted"], true);
     assert_eq!(r_json["reportWritten"], true);
+    assert!(r_json.get("nativeBootCode").is_none());
+    assert!(r_json.get("steamInitResult").is_none());
     assert!(r_json.get("ok").is_none());
 }
 
@@ -697,4 +705,181 @@ fn test_follow_source_and_retry_decisions() {
         decide_recovery(&unavail, false, false, 5),
         RecoveryAction::Fail("reconnect-budget-exhausted".into())
     );
+}
+
+#[test]
+fn test_classify_session_error_source_unavailable_native_and_timeouts() {
+    // Transport / Challenge NativeSessionClosed with timeout/unavailable end reason -> SourceUnavailable
+    assert_eq!(
+        classify_session_error(
+            &SessionError::NativeSessionClosed,
+            DriverPhase::Transport,
+            7,
+            4001
+        ),
+        AttemptCategory::SourceUnavailable
+    );
+    assert_eq!(
+        classify_session_error(
+            &SessionError::NativeSessionClosed,
+            DriverPhase::Challenge,
+            7,
+            5003
+        ),
+        AttemptCategory::SourceUnavailable
+    );
+    // Other phases or non-timeout end reasons -> TransientFault
+    assert_eq!(
+        classify_session_error(
+            &SessionError::NativeSessionClosed,
+            DriverPhase::Channel,
+            7,
+            4001
+        ),
+        AttemptCategory::TransientFault
+    );
+    assert_eq!(
+        classify_session_error(
+            &SessionError::NativeSessionClosed,
+            DriverPhase::Transport,
+            7,
+            0
+        ),
+        AttemptCategory::TransientFault
+    );
+
+    // Recoverable native send/receive errors and native_failure == 7 -> TransientFault
+    assert_eq!(
+        classify_session_error(
+            &SessionError::Native("native-receive-failed".into()),
+            DriverPhase::Channel,
+            0,
+            0
+        ),
+        AttemptCategory::TransientFault
+    );
+    assert_eq!(
+        classify_session_error(
+            &SessionError::Native("native-send-failed".into()),
+            DriverPhase::Channel,
+            0,
+            0
+        ),
+        AttemptCategory::TransientFault
+    );
+    assert_eq!(
+        classify_session_error(
+            &SessionError::Native("other-native".into()),
+            DriverPhase::Channel,
+            7,
+            0
+        ),
+        AttemptCategory::TransientFault
+    );
+    assert_eq!(
+        classify_session_error(
+            &SessionError::Native("other-native".into()),
+            DriverPhase::Channel,
+            0,
+            0
+        ),
+        AttemptCategory::TerminalFault
+    );
+
+    // PhaseTimeout: SourceUnavailable only in Transport / Challenge; TransientFault in Ticket / Connection
+    assert_eq!(
+        classify_session_error(&SessionError::PhaseTimeout, DriverPhase::Transport, 7, 0),
+        AttemptCategory::SourceUnavailable
+    );
+    assert_eq!(
+        classify_session_error(&SessionError::PhaseTimeout, DriverPhase::Challenge, 7, 0),
+        AttemptCategory::SourceUnavailable
+    );
+    assert_eq!(
+        classify_session_error(&SessionError::PhaseTimeout, DriverPhase::Ticket, 7, 0),
+        AttemptCategory::TransientFault
+    );
+    assert_eq!(
+        classify_session_error(&SessionError::PhaseTimeout, DriverPhase::Connection, 7, 0),
+        AttemptCategory::TransientFault
+    );
+}
+
+#[test]
+fn test_native_start_error_report_v2_fields() {
+    let err = NativeStartError {
+        boot_code: 12,
+        init_result: 34,
+    };
+    let reason = err.to_string();
+    assert_eq!(reason, "native-start-failed");
+
+    let summary = AttemptEndSummary {
+        channel: 1,
+        category: AttemptCategory::TerminalFault.as_str().into(),
+        reason: reason.clone(),
+        phase: "transport".into(),
+        native_failure: None,
+        remote_end_reason: None,
+        last_delivered_sequence: 1,
+    };
+    let report = ReportV2 {
+        schema: "cs2-observer-report/2",
+        outcome: "failed",
+        reason,
+        cleanup_completed: true,
+        report_written: true,
+        source: "ahead:test".into(),
+        channel: 1,
+        world: 1,
+        last_output_sequence: 1,
+        reconnects: 0,
+        source_ends: 0,
+        follow_attempts: 0,
+        native_boot_code: Some(err.boot_code),
+        steam_init_result: Some(err.init_result),
+        last_attempt_end: Some(summary.clone()),
+        faults: vec![summary],
+        health: None,
+    };
+    let json = serde_json::to_value(&report).unwrap();
+    assert_eq!(json["reason"], "native-start-failed");
+    assert_eq!(json["nativeBootCode"], 12);
+    assert_eq!(json["steamInitResult"], 34);
+    assert_eq!(json["lastAttemptEnd"]["reason"], "native-start-failed");
+}
+
+#[test]
+fn test_spawn_stop_watcher_single_byte_without_newline() {
+    use std::io::Read;
+    use std::sync::{mpsc, Arc};
+
+    struct ChannelReader {
+        rx: mpsc::Receiver<u8>,
+    }
+    impl Read for ChannelReader {
+        fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+            if buf.is_empty() {
+                return Ok(0);
+            }
+            match self.rx.recv() {
+                Ok(b) => {
+                    buf[0] = b;
+                    Ok(1)
+                }
+                Err(_) => Ok(0),
+            }
+        }
+    }
+
+    let (tx, rx) = mpsc::channel();
+    let stop_flag = Arc::new(AtomicBool::new(false));
+    let handle = spawn_stop_watcher(ChannelReader { rx }, stop_flag.clone());
+    assert!(!stop_flag.load(std::sync::atomic::Ordering::SeqCst));
+
+    // Send a single byte without newline and keep sender alive (no EOF)
+    tx.send(b'x').unwrap();
+    handle.join().unwrap();
+    assert!(stop_flag.load(std::sync::atomic::Ordering::SeqCst));
+    drop(tx);
 }

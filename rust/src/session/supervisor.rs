@@ -1,4 +1,4 @@
-use std::io::{BufRead, BufReader, Read};
+use std::io::Read;
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -209,14 +209,37 @@ fn jittered_ms(base_ms: u64, seed: u64) -> u64 {
     adjusted.max(50) as u64
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ManagedError {
+    pub reason: String,
+    pub report_written: bool,
+}
+
+impl std::fmt::Display for ManagedError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.reason)
+    }
+}
+
+impl std::error::Error for ManagedError {}
+
 pub fn classify_session_error(
     err: &SessionError,
     phase: DriverPhase,
     native_failure: i32,
+    remote_end_reason: i32,
 ) -> AttemptCategory {
     match err {
+        SessionError::NativeSessionClosed => {
+            if matches!(phase, DriverPhase::Transport | DriverPhase::Challenge)
+                && is_timeout_end_reason(Some(remote_end_reason))
+            {
+                AttemptCategory::SourceUnavailable
+            } else {
+                AttemptCategory::TransientFault
+            }
+        }
         SessionError::InitializationTimeout
-        | SessionError::NativeSessionClosed
         | SessionError::SourceDrainTimeout
         | SessionError::SourceDrainNativeFailed => AttemptCategory::TransientFault,
         SessionError::PhaseTimeout => {
@@ -226,32 +249,49 @@ pub fn classify_session_error(
                 AttemptCategory::TransientFault
             }
         }
-        SessionError::Native(_) if native_failure == 7 => AttemptCategory::TransientFault,
+        SessionError::Native(msg)
+            if native_failure == 7
+                || msg == "native-receive-failed"
+                || msg == "native-send-failed" =>
+        {
+            AttemptCategory::TransientFault
+        }
         _ => AttemptCategory::TerminalFault,
     }
 }
 
-pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
+pub fn spawn_stop_watcher<R: Read + Send + 'static>(
+    mut reader: R,
+    stop_flag: Arc<AtomicBool>,
+) -> std::thread::JoinHandle<()> {
+    std::thread::spawn(move || {
+        let mut buf = [0u8; 1];
+        let _ = reader.read(&mut buf);
+        stop_flag.store(true, Ordering::SeqCst);
+    })
+}
+
+pub fn run_managed(args: ManagedArgs) -> Result<(), ManagedError> {
     if args.output.exists() {
-        return Err(format!(
-            "output directory already exists: {}",
-            args.output.display()
-        ));
+        return Err(ManagedError {
+            reason: "output-directory-unavailable".into(),
+            report_written: false,
+        });
     }
-    std::fs::create_dir_all(&args.output).map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&args.output).map_err(|_| ManagedError {
+        reason: "output-directory-unavailable".into(),
+        report_written: false,
+    })?;
 
     let mut stdin_lock = std::io::stdin().lock();
-    let mut cfg = read_managed_config(&mut stdin_lock)?;
+    let mut cfg = read_managed_config(&mut stdin_lock).map_err(|_| ManagedError {
+        reason: "configuration-boundary".into(),
+        report_written: false,
+    })?;
     drop(stdin_lock);
 
     let stop_flag = Arc::new(AtomicBool::new(false));
-    let stop_clone = stop_flag.clone();
-    std::thread::spawn(move || {
-        let mut reader = BufReader::new(std::io::stdin());
-        let mut line = String::new();
-        let _ = reader.read_line(&mut line);
-        stop_clone.store(true, Ordering::SeqCst);
-    });
+    let _stop_watcher = spawn_stop_watcher(std::io::stdin(), stop_flag.clone());
 
     let source = format!("{}:{}", args.source_role, args.source_id);
     let epoch = Instant::now();
@@ -272,6 +312,8 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
     let mut faults: Vec<AttemptEndSummary> = Vec::new();
     let mut last_health: Option<HealthV2> = None;
     let mut last_cursor: Option<LastDeliveredCursor> = None;
+    let mut native_boot_code: Option<i32> = None;
+    let mut steam_init_result: Option<i32> = None;
 
     let (outcome, reason) = loop {
         if stop_flag.load(Ordering::SeqCst) {
@@ -307,8 +349,15 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
         ) {
             Ok(p) => p,
             Err(e) => {
-                let is_start_err = e.downcast_ref::<NativeStartError>().is_some();
-                let reason = e.to_string();
+                let start_err = e.downcast_ref::<NativeStartError>();
+                let is_start_err = start_err.is_some();
+                let reason = if let Some(se) = start_err {
+                    native_boot_code = Some(se.boot_code);
+                    steam_init_result = Some(se.init_result);
+                    "native-start-failed".to_string()
+                } else {
+                    e.to_string()
+                };
                 let cat = if is_start_err {
                     AttemptCategory::TerminalFault
                 } else {
@@ -511,7 +560,6 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
                         }
                         let base = FAULT_INITIAL_MS * (1u64 << retry_streak.min(10));
                         retry_streak += 1;
-                        reconnects += 1;
                         let delay = jittered_ms(base, channel ^ epoch.elapsed().as_nanos() as u64);
                         let h = backoff_health(
                             &source,
@@ -534,6 +582,7 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
                             };
                             break ("incomplete", r.into());
                         }
+                        reconnects += 1;
                     }
                     RecoveryAction::Incomplete(_) => unreachable!(),
                 }
@@ -552,6 +601,11 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
 
     let drain_stdout = outcome == "closed";
     let stdout_clean = sink.close(drain_stdout);
+    let outcome = if outcome == "closed" && !stdout_clean {
+        "failed"
+    } else {
+        outcome
+    };
     let final_seq = sink.delivered_sequence();
     stderr_log.close();
 
@@ -568,13 +622,21 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
         reconnects,
         source_ends,
         follow_attempts,
+        native_boot_code,
+        steam_init_result,
         last_attempt_end,
         faults,
         health: last_health,
     };
-    write_report_file(Path::new(&args.output), &report)?;
+    write_report_file(Path::new(&args.output), &report).map_err(|e| ManagedError {
+        reason: e,
+        report_written: false,
+    })?;
     if outcome == "failed" {
-        Err(reason)
+        Err(ManagedError {
+            reason,
+            report_written: true,
+        })
     } else {
         Ok(())
     }
@@ -746,7 +808,12 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                 }
             }
             Err(err) => {
-                let cat = classify_session_error(&err, driver.phase, driver.port.failure());
+                let cat = classify_session_error(
+                    &err,
+                    driver.phase,
+                    driver.port.failure(),
+                    driver.port.remote_end_reason(),
+                );
                 let ready_ms = ready_since
                     .map(|t| t.elapsed().as_millis() as u64)
                     .unwrap_or(0);

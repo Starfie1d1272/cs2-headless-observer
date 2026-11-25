@@ -100,6 +100,10 @@ pub struct ReportV2 {
     pub reconnects: u64,
     pub source_ends: u64,
     pub follow_attempts: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub native_boot_code: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub steam_init_result: Option<i32>,
     pub last_attempt_end: Option<AttemptEndSummary>,
     pub faults: Vec<AttemptEndSummary>,
     pub health: Option<HealthV2>,
