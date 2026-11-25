@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## 4.0.0 — 2026-11-26
+
+### 架构重写与简化
+
+- **纯 Rust 单二进制重写**：使用 `rust/`（`cs2-headless-observer`）全面替代原 Python + Node.js 双运行时架构，整合 `wire`、`parser`、`native` 与 `session` 四大模块，真实回放解析提速约 15×。
+- **移除外部运行时与内部 IPC**：删除 `client/`、`parser/` 与旧 Python/Node 打包脚本（历史源码可通过 `v3.0.1` tag 追溯），彻底消除跨进程 `ordered IPC`、`CreditLedger` 与子进程树回收复杂度。
+- **保留公开契约与原生桥**：保持 `cs2-observer-managed-json/2` 公开输出契约、`--follow-source` 语义及 C++ Steamworks 原生桥（`cs2_observer.dll`，ABI 4）完全兼容。
+- **窗口解析观测与有界退出**：在保持移除 2 秒驻留硬杀重连的基础上，新增每个健康窗口的 `decodeUs` / `decodeMaxUs` 观测指标；`AsyncStdoutSink` 与 `AsyncStderrLogger` 退出排空分别有界限制为 2s / 200ms，`--managed` 失败退出不再触发 `stderr` 锁竞争。
+- **精简 Windows 发行包**：Windows 制品收敛为 `cs2-headless-observer.exe` + `cs2_observer.dll` + `manifest.json`（`cs2-headless-observer-package/5`），移除 `Start.cmd`、`external-node` 与嵌入式 Python/Node 运行时。
+
 ## 3.0.1 — 2026-11-26
 
 ### 修复

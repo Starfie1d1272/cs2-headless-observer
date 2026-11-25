@@ -1,48 +1,30 @@
 # 组件分发
 
-同一份运行代码生成两种 Windows x64 包：
-
-| 包类型 | 运行方式 |
-| --- | --- |
-| `standalone` | 提供 Python、Node 与交互入口，运行 `Start.cmd`；`Replay.cmd` 执行合成自检 |
-| `external-node` | 提供 Python、原生桥和 worker，由应用托管，使用调用方或 PATH 中的 Node |
-
-最低外部运行要求为 Node.js 24.0.0，具备 WebAssembly、ReadableStream、structuredClone。启动检查版本与能力，制品验证执行实际 worker 自检。独立包固定内置运行时归档与摘要，以支持复现构建。
-
-## 构建与验证
-
-完成[源码构建](build.md)后，可组装外部 Node 包：
-
-```powershell
-python tools/package_windows.py --kind external-node --runtimes <python-runtime-directory> --native work/native/cs2_observer.dll --parser-bundle work/build/parser_worker.mjs --parser-source work/parser --output dist/observer-external-node --source-sha <40-character-source-commit>
-python tools/verify_package.py dist/observer-external-node --node <node.exe> --report work/external-verification.json
-```
-
-`--kind` 默认选择 `standalone`。两种包保留 Python、项目及修改解析器源码、生成脚本、第三方材料和许可。SDK 头文件属于外部构建输入，Steam API DLL 由本机 CS2 提供。
-
-## 文件与版本
+4.0.0 起，Windows x64 统一分发单一精简发行包，不再区分 `standalone` 与 `external-node`，也不再依赖 Python 或 Node.js 运行时：
 
 ```text
-client/driver.py、cs2_observer.dll、parser_worker.mjs
-runtime/python/
-runtime/node.exe                    standalone
-examples/、schemas/、tools/replay_example.py
-docs/、licenses/、source/
+cs2-headless-observer.exe
+cs2_observer.dll
+examples/、schemas/、licenses/
 manifest.json
 ```
 
-manifest 记录组件版本、源码提交、平台、原生 ABI、有序 IPC、托管 JSON 契约、已验证 host、Node 要求与文件摘要。`validatedHostVersions` 表达验证范围，实际兼容性由来源协议能力决定。
+## 清单与入口
 
-托管应用将输出目录安排在安装目录之外；独立交互入口默认写入包内 `runs/`，因此使用可写解压目录。Python 启动时保持源码文件状态，包验证在执行后再次核对文件与摘要。
+`manifest.json`（schema `cs2-headless-observer-package/5`）记录组件版本、源码提交、平台、原生 ABI（`4`）、托管 JSON 契约（`cs2-observer-managed-json/2`）、支持特性（`follow-source`）、已验证 host 版本与所有分发文件的 SHA-256 摘要：
 
-当前使用原生 ABI 4 与有序 IPC 4。`--managed` 仅支持 `cs2-observer-managed-json/2`，包含 Supervisor 和连接级恢复（v1 已退役，传入 `--managed-protocol 1` 会被显式拒绝）。manifest 的 `managedProtocols` 仅列出 `cs2-observer-managed-json/2`。整包替换 Python、DLL 和 worker，并由 ABI、IPC 握手及制品自检核对一致性。来源与主机版本证据按[兼容性](compatibility.md)分开记录。
+- `entrypoints.executable`：`cs2-headless-observer.exe`
+- `entrypoints.native`：`cs2_observer.dll`
 
-2.1.0 及 3.0.0 的 manifest 在 `managedFeatures` 中声明 `follow-source`。持续观战宿主检查该能力后，为托管 v2 传入 `--follow-source`。缺少该字段的旧包继续支持原有 v2 启动方式。原生 ABI（`4`）、解析 IPC（`4`）与托管 JSON 协议（`cs2-observer-managed-json/2`）保持稳定；3.0.0 正式退役旧版 `--managed-protocol 1`。
+对应完整源码通过 GitHub Release tag 与源码归档提供（历史 v3.x 源码可通过 `v3.0.1` tag 追溯）。
+
+## 托管启动与生命周期
+
+- 宿主应用按 `manifest.json` 定位 `entrypoints.executable` 与 `entrypoints.native`，直接启动 `cs2-headless-observer.exe --managed --native <dll> --steam-api <steam_api64.dll> --host-version <ver> --source-role <role> --source-id <id> --output <dir> [--follow-source]`。
+- 托管应用将 `--output` 目录安排在安装目录之外（且每次启动前确保该目录尚不存在）。
+- `--managed` 仅支持 `cs2-observer-managed-json/2`，内置 `Supervisor` 与连接级恢复；`managedFeatures` 声明 `follow-source`。
+- 通过 `stdin` 写入单行配置 JSON（`endpoint` / `password`）并保持 `stdin` 开放；关闭 `stdin`（EOF）请求安全停止并等待进程退出后读取 `report.json`。
 
 ## 应用安装与升级
 
-应用可随安装包分发 `external-node`，复用已有 Node。按来源、归档摘要、manifest 和运行时能力验证组件，再定位入口并执行合成自检。
-
-独立更新采用新目录安装：验证来源与文件，运行本地自检，等待当前会话收尾，再切换版本并创建新来源 UUID。保留上一验证版本用于恢复。消费应用管理下载、互斥、切换、回滚和用户提示。
-
-本体以子进程接口提供观战数据，应用侧更新服务按自身发布渠道组织。CS2 编码、初始化或身份语义变化时，适配对应层并补充验证记录。
+应用可随安装包直接分发 `cs2-headless-observer.exe` 与 `cs2_observer.dll`。升级时建议安装到新版本目录：校验文件 SHA-256、运行 `cs2-headless-observer.exe replay --input examples/synthetic-channel.json --host-version 14191 --output <tmp>` 完成离线自检、等待当前会话完全退出后再切换版本并分配新的 `source-id`。
