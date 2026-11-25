@@ -49,7 +49,6 @@ from attempt_reporting import (
 )
 from process_io import (
     DRAIN_TIMEOUT_MS,
-    HARD_AGE_US,
     HEALTH_INTERVAL_NS,
     PublicRecords,
 )
@@ -61,8 +60,6 @@ class DriverError(Exception):
         super().__init__(code)
 
 
-# Local residence protections, independent of protocol feedback and GOTV delay.
-STARTUP_AGE_US = 10_000_000
 WORK_NS = 2_000_000
 PARSER_NO_PAYLOAD = frozenset({76})  # Fixed-profile CSVCMsg_UserCommands.
 PARSER_CONTROL_BARRIERS = frozenset({7, 8, 9, 11, 12, 40, 51, 58, 205})
@@ -309,12 +306,7 @@ class ObserverDriver:
                 if sdk_age is not None:
                     self._max_sdk_age_us = max(self._max_sdk_age_us or 0, sdk_age)
                     self._window_sdk_age_us = max(self._window_sdk_age_us or 0, sdk_age)
-                if self._drain_deadline is None:
-                    limit = HARD_AGE_US if self.world_sync.full_sent else STARTUP_AGE_US
-                    if sdk_age is not None and sdk_age >= limit:
-                        raise DriverError("sdk-receive-overload")
-                    if (time.monotonic_ns() - dequeued) // 1000 >= limit:
-                        raise DriverError("receive-staging-overload")
+
                 staged = self.receive(
                     data,
                     reliable,
@@ -411,14 +403,6 @@ class ObserverDriver:
         oldest = self.parser.oldest_age_us(now_ns) if self.parser else None
         if oldest is not None:
             self._max_parser_age_us = max(self._max_parser_age_us or 0, oldest)
-        if self._drain_deadline is not None:
-            return
-        limit = HARD_AGE_US if self.world_sync.full_sent else STARTUP_AGE_US
-        pending = getattr(self.port, "pending_receive_age_ns", None)
-        if pending and (pending(now_ns) or 0) // 1000 >= limit:
-            raise DriverError("receive-staging-overload")
-        if oldest is not None and oldest >= limit:
-            raise DriverError("parser-residence-overload")
 
     def _poll_parser(self, cancelled):
         if self.parser is None:
@@ -437,13 +421,6 @@ class ObserverDriver:
             self._last_cursor = self._cursor_rate = None
             self._gap = True
         if "submitToObservedUs" in row:
-            age = row["dequeueToSubmitUs"] + row["submitToObservedUs"]
-            sdk_age = row["sdkQueueAgeUs"]
-            if self._drain_deadline is None:
-                if age >= HARD_AGE_US:
-                    raise DriverError("parser-residence-overload")
-                if sdk_age is not None and sdk_age + age >= HARD_AGE_US:
-                    raise DriverError("source-residence-overload")
             row["observedAt"] = time.time_ns() // 1_000_000
         if row["kind"] == "cursor":
             now = time.monotonic_ns()

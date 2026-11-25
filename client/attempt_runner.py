@@ -25,7 +25,6 @@ from process_io import (
     emit_terminal_report,
     private_file,
     read_managed_connection,
-    source_age_us,
     write_report_file,
 )
 import sdk
@@ -157,10 +156,7 @@ def run_attempt(args, owner, endpoint, password):
             )
             if driver._drain_deadline is not None:
                 writer.age_limit_us = DRAIN_TIMEOUT_MS * 1000
-            age = source_age_us(event) if driver._drain_deadline is None else None
-            writer.emit_encoded(
-                data, cursor=cursor, source_age_us=age, sequence=event["sequence"]
-            )
+            writer.emit_encoded(data, cursor=cursor, sequence=event["sequence"])
             if capture:
                 capture.emit(events, data)
 

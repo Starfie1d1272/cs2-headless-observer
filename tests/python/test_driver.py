@@ -748,6 +748,37 @@ class DriverTest(unittest.TestCase):
         self.assertIsNone(sync.ack_tick)
         self.assertEqual(sync.last_receipt_ms, 999)
 
+    def test_high_parser_and_sdk_residence_does_not_abort_connection(self):
+        for full_sent in (False, True):
+            with self.subTest(full_sent=full_sent):
+                port, output = Port(), []
+                driver = ObserverDriver(
+                    port, host_version=14191, password=bytearray(), emit=output.append
+                )
+
+                class SlowParser:
+                    def oldest_age_us(self, _):
+                        return 12_000_000
+
+                driver.parser = SlowParser()
+                driver.world_sync.full_sent = full_sent
+                driver._check_residence()
+                self.assertEqual(driver._max_parser_age_us, 12_000_000)
+                driver._emit_parser(
+                    {
+                        "kind": "raw-event",
+                        "source": "ahead:test",
+                        "channel": 1,
+                        "world": 1,
+                        "sdkQueueAgeUs": 3_000_000,
+                        "dequeueToSubmitUs": 500_000,
+                        "submitToObservedUs": 2_500_000,
+                    }
+                )
+                self.assertEqual(len(output), 1)
+                self.assertIn("observedAt", output[0])
+                driver.close()
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

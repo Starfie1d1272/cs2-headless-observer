@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## 3.0.1 — 2026-11-26
+
+### 修复
+
+- **移除激进的 2 秒驻留硬杀重连**：取消 `driver.py`、`session_supervisor.py` 与 `attempt_runner.py` 中因 SDK 排队或 Parser 解析耗时超过 2 秒而主动断连重连的限制，避免初始化快照或短暂解析积压触发反复重连直至 `reconnect-budget-exhausted`。继续保留驻留时间健康指标上报、初始化/阶段超时及 stdout 阻塞背压保护。
+
 ## 3.0.0 — 2026-11-20
 
 ### 破坏性变更
