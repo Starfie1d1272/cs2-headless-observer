@@ -72,6 +72,10 @@ pub struct RawEventRecord {
     pub warmup: Option<bool>,
     pub round: Option<u32>,
     pub residence_us: Option<u64>,
+    #[serde(skip)]
+    pub sdk_queue_age_us: Option<i64>,
+    #[serde(skip)]
+    pub dequeue_ns: Option<u64>,
     pub fields: BTreeMap<String, Value>,
     pub players: BTreeMap<String, Option<PlayerIdentity>>,
 }
@@ -342,7 +346,6 @@ impl ObserverCore {
         context_tick: Option<i32>,
         sdk_queue_age_us: Option<i64>,
     ) -> Vec<CoreOutput> {
-        let t0 = std::time::Instant::now();
         let mut out = Vec::new();
         if self.halted && message_id != 51 {
             out.push(CoreOutput::Blocked {
@@ -350,15 +353,7 @@ impl ObserverCore {
             });
             return out;
         }
-        let res = self.consume_inner(message_id, body, context_tick, &mut out);
-        if let Some(age) = sdk_queue_age_us.filter(|&a| a >= 0) {
-            let residence = (age as u64).saturating_add(t0.elapsed().as_micros() as u64);
-            for item in &mut out {
-                if let CoreOutput::RawEvent(ref mut ev) = item {
-                    ev.residence_us = Some(residence);
-                }
-            }
-        }
+        let res = self.consume_inner(message_id, body, context_tick, sdk_queue_age_us, &mut out);
         if let Err(reason) = res {
             if message_id == 207 {
                 out.push(CoreOutput::Gap { reason });
@@ -383,6 +378,7 @@ impl ObserverCore {
         message_id: u32,
         body: &[u8],
         context_tick: Option<i32>,
+        sdk_queue_age_us: Option<i64>,
         out: &mut Vec<CoreOutput>,
     ) -> Result<(), String> {
         match message_id {
@@ -738,6 +734,8 @@ impl ObserverCore {
                     warmup: proj.warmup,
                     round: proj.round,
                     residence_us: None,
+                    sdk_queue_age_us,
+                    dequeue_ns: None,
                     fields,
                     players: proj.players,
                 }));
@@ -999,7 +997,8 @@ mod tests {
         assert_eq!(raw_ev.kind, "event");
         assert_eq!(raw_ev.name, "weapon_fire");
         assert_eq!(raw_ev.event_tick, 100);
-        assert!(raw_ev.residence_us.is_some_and(|u| u >= 1200));
+        assert_eq!(raw_ev.sdk_queue_age_us, Some(1200));
+        assert_eq!(raw_ev.residence_us, None);
         assert_eq!(
             raw_ev.fields.get("weapon").and_then(|v| v.as_str()),
             Some("ak47")

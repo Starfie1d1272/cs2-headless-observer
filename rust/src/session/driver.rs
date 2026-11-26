@@ -374,7 +374,13 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 self.max_sdk_age_us = Some(self.max_sdk_age_us.map_or(age, |m| m.max(age)));
             }
             now_ms = clock_ms();
-            self.receive_packet(&pkt.data, pkt.reliable, now_ms, pkt.sdk_queue_age_us)?;
+            self.receive_packet(
+                &pkt.data,
+                pkt.reliable,
+                now_ms,
+                pkt.sdk_queue_age_us,
+                Some(pkt.dequeue_ns),
+            )?;
         }
 
         now_ms = clock_ms();
@@ -488,6 +494,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
         reliable: bool,
         now_ms: u64,
         sdk_age_us: Option<i64>,
+        dequeue_ns: Option<u64>,
     ) -> Result<(), SessionError> {
         if matches!(
             self.phase,
@@ -644,7 +651,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
                         self.signon.server_info(srv.server_count)?;
                     }
                 }
-                self.process_core_outputs(outputs, now_ms)?;
+                self.process_core_outputs(outputs, now_ms, dequeue_ns)?;
             }
         }
 
@@ -659,6 +666,7 @@ impl<P: ObserverPort> ObserverDriver<P> {
         &mut self,
         outputs: Vec<CoreOutput>,
         now_ms: u64,
+        dequeue_ns: Option<u64>,
     ) -> Result<(), SessionError> {
         for out in outputs {
             match out {
@@ -683,7 +691,8 @@ impl<P: ObserverPort> ObserverDriver<P> {
                 CoreOutput::Cursor(c) => {
                     self.emitted.push(DriverEmit::Cursor(Box::new(c)));
                 }
-                CoreOutput::RawEvent(e) => {
+                CoreOutput::RawEvent(mut e) => {
+                    e.dequeue_ns = dequeue_ns;
                     self.emitted.push(DriverEmit::RawEvent(Box::new(e)));
                 }
                 CoreOutput::EventSubscriptions { ids, .. } => {

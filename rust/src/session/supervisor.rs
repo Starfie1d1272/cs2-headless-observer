@@ -22,6 +22,12 @@ const FAULT_INITIAL_MS: u64 = 500;
 const FAULT_MAX_MS: u64 = 30_000;
 const HEALTH_INTERVAL_MS: u64 = 1_000;
 
+const NATIVE_FAILURE_AUTHENTICATION: i32 = 2;
+const NATIVE_FAILURE_UNTRUSTED_PEER: i32 = 4;
+const NATIVE_FAILURE_TICKET: i32 = 5;
+const NATIVE_FAILURE_TIMEOUT: i32 = 6;
+const NATIVE_FAILURE_DISCONNECTED: i32 = 7;
+
 #[derive(Debug, Clone)]
 pub struct ManagedArgs {
     pub native: PathBuf,
@@ -86,7 +92,6 @@ pub fn validate_endpoint(endpoint: &str) -> Result<(), String> {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AttemptCategory {
-    CleanSourceStop,
     TransientFault,
     TerminalFault,
 }
@@ -133,7 +138,6 @@ pub fn decide_recovery(exit: &AttemptExit) -> RecoveryAction {
         AttemptExit::Fault {
             category, reason, ..
         } => match category {
-            AttemptCategory::CleanSourceStop => RecoveryAction::Close,
             AttemptCategory::TransientFault => RecoveryAction::Retry,
             AttemptCategory::TerminalFault => RecoveryAction::Fail(reason.clone()),
         },
@@ -169,6 +173,15 @@ pub fn classify_session_error(
     native_failure: i32,
     has_ever_full: bool,
 ) -> AttemptCategory {
+    if matches!(
+        native_failure,
+        NATIVE_FAILURE_AUTHENTICATION | NATIVE_FAILURE_UNTRUSTED_PEER | NATIVE_FAILURE_TICKET
+    ) && matches!(
+        err,
+        SessionError::NativeSessionClosed | SessionError::Native(_)
+    ) {
+        return AttemptCategory::TerminalFault;
+    }
     match err {
         SessionError::NativeSessionClosed
         | SessionError::InitializationTimeout
@@ -182,14 +195,42 @@ pub fn classify_session_error(
             }
         }
         SessionError::Native(msg)
-            if native_failure == 7
-                || msg == "native-receive-failed"
+            if matches!(
+                native_failure,
+                NATIVE_FAILURE_TIMEOUT | NATIVE_FAILURE_DISCONNECTED
+            ) || msg == "native-receive-failed"
                 || msg == "native-send-failed" =>
         {
             AttemptCategory::TransientFault
         }
         _ => AttemptCategory::TerminalFault,
     }
+}
+
+pub fn session_error_reason(
+    err: &SessionError,
+    phase: DriverPhase,
+    native_failure: i32,
+    has_ever_full: bool,
+) -> String {
+    if !has_ever_full
+        && phase == DriverPhase::Connection
+        && matches!(err, SessionError::PhaseTimeout)
+    {
+        return "connection-timeout".to_string();
+    }
+    if matches!(
+        err,
+        SessionError::NativeSessionClosed | SessionError::Native(_)
+    ) {
+        match native_failure {
+            NATIVE_FAILURE_AUTHENTICATION => return "native-authentication-failed".to_string(),
+            NATIVE_FAILURE_UNTRUSTED_PEER => return "native-untrusted-peer".to_string(),
+            NATIVE_FAILURE_TICKET => return "native-ticket-failed".to_string(),
+            _ => {}
+        }
+    }
+    err.to_string()
 }
 
 pub fn spawn_stop_watcher<R: Read + Send + 'static>(
@@ -506,18 +547,21 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), ManagedError> {
         faults,
         health: last_health,
     };
-    write_report_file(Path::new(&args.output), &report).map_err(|e| ManagedError {
-        reason: e,
-        report_written: false,
-    })?;
-    if outcome == "failed" {
-        Err(ManagedError {
-            reason,
-            report_written: true,
-        })
-    } else {
-        Ok(())
+    finalize_managed_exit(Path::new(&args.output), &report)
+}
+
+pub fn finalize_managed_exit(output: &Path, report: &ReportV3) -> Result<(), ManagedError> {
+    let write_res = write_report_file(output, report);
+    if report.outcome == "failed" {
+        return Err(ManagedError {
+            reason: report.reason.clone(),
+            report_written: write_res.is_ok(),
+        });
     }
+    if let Err(e) = write_res {
+        eprintln!("{e}");
+    }
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -563,6 +607,12 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                     }
                 }
                 DriverEmit::RawEvent(mut e) => {
+                    if let Some(deq_ns) = e.dequeue_ns {
+                        let enqueue_ns = epoch.elapsed().as_nanos() as u64;
+                        let local_us = enqueue_ns.saturating_sub(deq_ns) / 1000;
+                        let sdk_us = e.sdk_queue_age_us.unwrap_or(0).max(0) as u64;
+                        e.residence_us = Some(sdk_us.saturating_add(local_us));
+                    }
                     let seq = sink.next_sequence();
                     e.sequence = seq;
                     sink.emit_with_seq(seq, &e)?;
@@ -653,23 +703,12 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                 }
             }
             Err(err) => {
-                let cat = classify_session_error(
-                    &err,
-                    driver.phase,
-                    driver.port.failure(),
-                    has_ever_full,
-                );
+                let nf = driver.port.failure();
+                let cat = classify_session_error(&err, driver.phase, nf, has_ever_full);
                 let ready_ms = ready_since
                     .map(|t| t.elapsed().as_millis() as u64)
                     .unwrap_or(0);
-                let reason = if !has_ever_full
-                    && driver.phase == DriverPhase::Connection
-                    && matches!(err, SessionError::PhaseTimeout)
-                {
-                    "connection-timeout".to_string()
-                } else {
-                    err.to_string()
-                };
+                let reason = session_error_reason(&err, driver.phase, nf, has_ever_full);
                 return Ok(AttemptExit::Fault {
                     category: cat,
                     reason,

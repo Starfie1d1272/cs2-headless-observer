@@ -11,8 +11,9 @@ use cs2_headless_observer::session::driver::{
 };
 use cs2_headless_observer::session::reporting::{FaultSummary, HealthV3, ReportV3, SyncJsonlSink};
 use cs2_headless_observer::session::supervisor::{
-    classify_session_error, decide_recovery, read_managed_config, run_single_attempt,
-    spawn_stop_watcher, AttemptCategory, AttemptExit, RecoveryAction,
+    classify_session_error, decide_recovery, finalize_managed_exit, read_managed_config,
+    run_single_attempt, session_error_reason, spawn_stop_watcher, AttemptCategory, AttemptExit,
+    RecoveryAction,
 };
 use cs2_headless_observer::session::SessionError;
 use cs2_headless_observer::wire::bits::{encode_pb_bytes, encode_pb_varint, encode_varint};
@@ -808,4 +809,163 @@ fn test_spawn_stop_watcher_waits_for_eof_not_single_byte() {
     drop(tx);
     handle.join().unwrap();
     assert!(stop_flag.load(std::sync::atomic::Ordering::SeqCst));
+}
+
+#[test]
+fn test_native_auth_security_failures_are_terminal_with_clear_reason() {
+    for (code, expected_reason) in [
+        (2, "native-authentication-failed"),
+        (4, "native-untrusted-peer"),
+        (5, "native-ticket-failed"),
+    ] {
+        assert_eq!(
+            classify_session_error(
+                &SessionError::NativeSessionClosed,
+                DriverPhase::Transport,
+                code,
+                false
+            ),
+            AttemptCategory::TerminalFault
+        );
+        assert_eq!(
+            classify_session_error(
+                &SessionError::Native("native-receive-failed".into()),
+                DriverPhase::Channel,
+                code,
+                true
+            ),
+            AttemptCategory::TerminalFault
+        );
+        assert_eq!(
+            session_error_reason(
+                &SessionError::NativeSessionClosed,
+                DriverPhase::Transport,
+                code,
+                false
+            ),
+            expected_reason
+        );
+    }
+
+    // Timeout (6) and disconnected (7) remain transient
+    for code in [6, 7] {
+        assert_eq!(
+            classify_session_error(
+                &SessionError::NativeSessionClosed,
+                DriverPhase::Transport,
+                code,
+                false
+            ),
+            AttemptCategory::TransientFault
+        );
+    }
+}
+
+#[test]
+fn test_finalize_managed_exit_decouples_report_write_from_exit_code() {
+    let missing_dir = std::env::temp_dir().join(format!(
+        "cs2_obs_nonexistent_report_dir_{}",
+        std::process::id()
+    ));
+    let _ = std::fs::remove_dir_all(&missing_dir);
+
+    for outcome in ["closed", "stopped"] {
+        let report = ReportV3 {
+            schema: "cs2-observer-report/3",
+            outcome,
+            reason: "ok".into(),
+            channel: 1,
+            world: 1,
+            last_output_sequence: 0,
+            reconnects: 0,
+            native_boot_code: None,
+            steam_init_result: None,
+            phase: Some("closed".into()),
+            last_fault: None,
+            faults: Vec::new(),
+            health: None,
+        };
+        assert!(
+            finalize_managed_exit(&missing_dir, &report).is_ok(),
+            "outcome={outcome} must still return Ok(()) when report.json cannot be written"
+        );
+    }
+
+    let failed_report = ReportV3 {
+        schema: "cs2-observer-report/3",
+        outcome: "failed",
+        reason: "native-authentication-failed".into(),
+        channel: 1,
+        world: 1,
+        last_output_sequence: 0,
+        reconnects: 0,
+        native_boot_code: None,
+        steam_init_result: None,
+        phase: Some("transport".into()),
+        last_fault: None,
+        faults: Vec::new(),
+        health: None,
+    };
+    let err = finalize_managed_exit(&missing_dir, &failed_report).unwrap_err();
+    assert_eq!(err.reason, "native-authentication-failed");
+    assert!(!err.report_written);
+}
+
+#[test]
+fn test_residence_us_includes_post_dequeue_to_sink_elapsed_time() {
+    let mut port = MockPort::new();
+    let mut desc = Vec::new();
+    encode_pb_varint(1, 17, &mut desc);
+    encode_pb_bytes(2, b"round_start", &mut desc);
+    let mut ev_list = Vec::new();
+    encode_pb_bytes(1, &desc, &mut ev_list);
+
+    let mut ev = Vec::new();
+    encode_pb_varint(2, 17, &mut ev);
+
+    port.inbound.push_back(ReceivedPacket {
+        data: pack_reliable_msgs(&[(205, ev_list), (207, ev)], 10),
+        reliable: true,
+        dequeue_ns: 0,
+        sdk_queue_age_us: Some(500),
+    });
+
+    let mut driver = ObserverDriver::new(port, 14191, SecretBytes::default(), 1, 0).unwrap();
+    driver.phase = DriverPhase::Channel;
+    // Simulate 5ms elapsed since epoch (dequeue_ns = 0) before sink write
+    let epoch = Instant::now();
+    std::thread::sleep(std::time::Duration::from_millis(5));
+
+    // Set stop_flag after receiving the packet by closing port to 1038 after first step,
+    // or use a short deadline that triggers right after the first loop iteration.
+    let stop_flag = AtomicBool::new(false);
+    let deadline = Some(Instant::now() + std::time::Duration::from_millis(10));
+    let mut out_buf = Vec::<u8>::new();
+    let mut sink = SyncJsonlSink::new(&mut out_buf);
+    let mut last_health = None;
+
+    let exit = run_single_attempt(
+        &mut driver,
+        &mut sink,
+        None,
+        &stop_flag,
+        deadline,
+        &epoch,
+        &mut last_health,
+        0,
+        false,
+        None,
+    )
+    .unwrap();
+    assert!(matches!(exit, AttemptExit::DurationLimit { .. }));
+
+    let line = String::from_utf8(out_buf).unwrap();
+    let parsed: serde_json::Value = serde_json::from_str(line.lines().next().unwrap()).unwrap();
+    assert_eq!(parsed["kind"], "event");
+    assert_eq!(parsed["name"], "round_start");
+    let res_us = parsed["residenceUs"].as_u64().unwrap();
+    assert!(
+        res_us >= 4500,
+        "residenceUs ({res_us}) should include sdk_queue_age_us (500) + post-dequeue wait (>= 4000us)"
+    );
 }

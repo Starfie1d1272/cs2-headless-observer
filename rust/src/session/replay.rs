@@ -92,7 +92,7 @@ pub fn run_replay(input: &Path, host_version: u32, output_dir: &Path) -> Result<
             let body = &raw_bytes[pos..pos + size];
             pos += size;
             driver
-                .receive_packet(body, reliable_byte != 0, elapsed, None)
+                .receive_packet(body, reliable_byte != 0, elapsed, None, None)
                 .map_err(|e| e.to_string())?;
             flush_emitted(&mut driver, &mut sink, &mut counts)?;
             frames += 1;
@@ -112,7 +112,7 @@ pub fn run_replay(input: &Path, host_version: u32, output_dir: &Path) -> Result<
                 return Err("sample-record-boundary".into());
             }
             driver
-                .receive_packet(&body, reliable, elapsed, None)
+                .receive_packet(&body, reliable, elapsed, None, None)
                 .map_err(|e| e.to_string())?;
             flush_emitted(&mut driver, &mut sink, &mut counts)?;
             frames += 1;
