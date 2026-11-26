@@ -1,4 +1,4 @@
-use std::io::{BufRead, BufReader, Read};
+use std::io::Read;
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -7,32 +7,33 @@ use std::time::{Duration, Instant};
 
 use serde::Deserialize;
 
-use super::driver::{DriverEmit, DriverPhase, ObserverDriver, RecoveryState};
+use super::driver::{DriverEmit, DriverPhase, ObserverDriver};
 use super::reporting::{
-    write_report_file, AsyncStderrLogger, AsyncStdoutSink, AttemptEndSummary, DiscontinuityRecord,
-    HealthV2, LastDeliveredCursor, RecordSink, ReportV2, SessionStartRecord,
+    write_report_file, AsyncStderrLogger, AsyncStdoutSink, DiscontinuityRecord, FaultSummary,
+    HealthV3, RecordSink, ReportV3, SessionStartRecord,
 };
 use super::SessionError;
 use crate::native::abi::{NativePort, NativeStartError};
 use crate::native::password::SecretBytes;
 use crate::native::ObserverPort;
 
-const RETRY_LIMIT: u32 = 5;
 const STABLE_MS: u64 = 30_000;
-const FOLLOW_INITIAL_MS: u64 = 5_000;
-const FOLLOW_MAX_MS: u64 = 45_000;
 const FAULT_INITIAL_MS: u64 = 500;
+const FAULT_MAX_MS: u64 = 30_000;
 const HEALTH_INTERVAL_MS: u64 = 1_000;
+
+const NATIVE_FAILURE_AUTHENTICATION: i32 = 2;
+const NATIVE_FAILURE_UNTRUSTED_PEER: i32 = 4;
+const NATIVE_FAILURE_TICKET: i32 = 5;
+const NATIVE_FAILURE_TIMEOUT: i32 = 6;
+const NATIVE_FAILURE_DISCONNECTED: i32 = 7;
 
 #[derive(Debug, Clone)]
 pub struct ManagedArgs {
     pub native: PathBuf,
     pub steam_api: Option<PathBuf>,
-    pub source_role: String,
-    pub source_id: String,
     pub host_version: u32,
     pub output: PathBuf,
-    pub follow_source: bool,
     pub seconds: Option<f64>,
 }
 
@@ -91,34 +92,17 @@ pub fn validate_endpoint(endpoint: &str) -> Result<(), String> {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AttemptCategory {
-    CleanSourceStop,
-    SourceUnavailable,
     TransientFault,
     TerminalFault,
-}
-
-impl AttemptCategory {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            AttemptCategory::CleanSourceStop => "clean-source-stop",
-            AttemptCategory::SourceUnavailable => "source-unavailable",
-            AttemptCategory::TransientFault => "transient-fault",
-            AttemptCategory::TerminalFault => "terminal-fault",
-        }
-    }
 }
 
 #[derive(Debug, Clone)]
 pub enum AttemptExit {
     OwnerStopped {
         phase: String,
-        native_failure: Option<i32>,
-        remote_end_reason: Option<i32>,
     },
     DurationLimit {
         phase: String,
-        native_failure: Option<i32>,
-        remote_end_reason: Option<i32>,
     },
     CleanSourceStop {
         phase: String,
@@ -141,63 +125,23 @@ pub enum AttemptExit {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RecoveryAction {
     Close,
-    Follow,
     Retry,
-    Incomplete(String),
+    Stopped(String),
     Fail(String),
 }
 
-pub fn decide_recovery(
-    exit: &AttemptExit,
-    following: bool,
-    follow_source: bool,
-    retry_streak: u32,
-) -> RecoveryAction {
+pub fn decide_recovery(exit: &AttemptExit) -> RecoveryAction {
     match exit {
-        AttemptExit::OwnerStopped { .. } => RecoveryAction::Incomplete("owner-stopped".into()),
-        AttemptExit::DurationLimit { .. } => {
-            RecoveryAction::Incomplete("duration-limit-incomplete".into())
-        }
-        AttemptExit::CleanSourceStop { .. } => {
-            if follow_source {
-                RecoveryAction::Follow
-            } else {
-                RecoveryAction::Close
-            }
-        }
+        AttemptExit::OwnerStopped { .. } => RecoveryAction::Stopped("owner-stopped".into()),
+        AttemptExit::DurationLimit { .. } => RecoveryAction::Stopped("duration-limit".into()),
+        AttemptExit::CleanSourceStop { .. } => RecoveryAction::Close,
         AttemptExit::Fault {
-            category,
-            reason,
-            native_failure,
-            remote_end_reason,
-            ..
-        } => {
-            if following && *category == AttemptCategory::SourceUnavailable {
-                return RecoveryAction::Follow;
-            }
-            if following
-                && *native_failure == Some(7)
-                && *category == AttemptCategory::TransientFault
-                && !is_timeout_end_reason(*remote_end_reason)
-            {
-                return RecoveryAction::Fail(reason.clone());
-            }
-            if matches!(
-                category,
-                AttemptCategory::SourceUnavailable | AttemptCategory::TransientFault
-            ) {
-                if retry_streak >= RETRY_LIMIT {
-                    return RecoveryAction::Fail("reconnect-budget-exhausted".into());
-                }
-                return RecoveryAction::Retry;
-            }
-            RecoveryAction::Fail(reason.clone())
-        }
+            category, reason, ..
+        } => match category {
+            AttemptCategory::TransientFault => RecoveryAction::Retry,
+            AttemptCategory::TerminalFault => RecoveryAction::Fail(reason.clone()),
+        },
     }
-}
-
-fn is_timeout_end_reason(code: Option<i32>) -> bool {
-    matches!(code, Some(3001..=3005 | 4001..=4005 | 5001..=5005))
 }
 
 fn jittered_ms(base_ms: u64, seed: u64) -> u64 {
@@ -209,51 +153,124 @@ fn jittered_ms(base_ms: u64, seed: u64) -> u64 {
     adjusted.max(50) as u64
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ManagedError {
+    pub reason: String,
+    pub report_written: bool,
+}
+
+impl std::fmt::Display for ManagedError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.reason)
+    }
+}
+
+impl std::error::Error for ManagedError {}
+
 pub fn classify_session_error(
     err: &SessionError,
     phase: DriverPhase,
     native_failure: i32,
+    has_ever_full: bool,
 ) -> AttemptCategory {
+    if matches!(
+        native_failure,
+        NATIVE_FAILURE_AUTHENTICATION | NATIVE_FAILURE_UNTRUSTED_PEER | NATIVE_FAILURE_TICKET
+    ) && matches!(
+        err,
+        SessionError::NativeSessionClosed | SessionError::Native(_)
+    ) {
+        return AttemptCategory::TerminalFault;
+    }
     match err {
-        SessionError::InitializationTimeout
-        | SessionError::NativeSessionClosed
+        SessionError::NativeSessionClosed
+        | SessionError::InitializationTimeout
         | SessionError::SourceDrainTimeout
         | SessionError::SourceDrainNativeFailed => AttemptCategory::TransientFault,
         SessionError::PhaseTimeout => {
-            if matches!(phase, DriverPhase::Transport | DriverPhase::Challenge) {
-                AttemptCategory::SourceUnavailable
+            if !has_ever_full && phase == DriverPhase::Connection {
+                AttemptCategory::TerminalFault
             } else {
                 AttemptCategory::TransientFault
             }
         }
-        SessionError::Native(_) if native_failure == 7 => AttemptCategory::TransientFault,
+        SessionError::Native(msg)
+            if matches!(
+                native_failure,
+                NATIVE_FAILURE_TIMEOUT | NATIVE_FAILURE_DISCONNECTED
+            ) || msg == "native-receive-failed"
+                || msg == "native-send-failed" =>
+        {
+            AttemptCategory::TransientFault
+        }
         _ => AttemptCategory::TerminalFault,
     }
 }
 
-pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
-    if args.output.exists() {
-        return Err(format!(
-            "output directory already exists: {}",
-            args.output.display()
-        ));
+pub fn session_error_reason(
+    err: &SessionError,
+    phase: DriverPhase,
+    native_failure: i32,
+    has_ever_full: bool,
+) -> String {
+    if !has_ever_full
+        && phase == DriverPhase::Connection
+        && matches!(err, SessionError::PhaseTimeout)
+    {
+        return "connection-timeout".to_string();
     }
-    std::fs::create_dir_all(&args.output).map_err(|e| e.to_string())?;
+    if matches!(
+        err,
+        SessionError::NativeSessionClosed | SessionError::Native(_)
+    ) {
+        match native_failure {
+            NATIVE_FAILURE_AUTHENTICATION => return "native-authentication-failed".to_string(),
+            NATIVE_FAILURE_UNTRUSTED_PEER => return "native-untrusted-peer".to_string(),
+            NATIVE_FAILURE_TICKET => return "native-ticket-failed".to_string(),
+            _ => {}
+        }
+    }
+    err.to_string()
+}
+
+pub fn spawn_stop_watcher<R: Read + Send + 'static>(
+    mut reader: R,
+    stop_flag: Arc<AtomicBool>,
+) -> std::thread::JoinHandle<()> {
+    std::thread::spawn(move || {
+        let mut buf = [0u8; 64];
+        loop {
+            match reader.read(&mut buf) {
+                Ok(0) | Err(_) => break,
+                Ok(_) => {}
+            }
+        }
+        stop_flag.store(true, Ordering::SeqCst);
+    })
+}
+
+pub fn run_managed(args: ManagedArgs) -> Result<(), ManagedError> {
+    if args.output.exists() {
+        return Err(ManagedError {
+            reason: "output-directory-unavailable".into(),
+            report_written: false,
+        });
+    }
+    std::fs::create_dir_all(&args.output).map_err(|_| ManagedError {
+        reason: "output-directory-unavailable".into(),
+        report_written: false,
+    })?;
 
     let mut stdin_lock = std::io::stdin().lock();
-    let mut cfg = read_managed_config(&mut stdin_lock)?;
+    let mut cfg = read_managed_config(&mut stdin_lock).map_err(|_| ManagedError {
+        reason: "configuration-boundary".into(),
+        report_written: false,
+    })?;
     drop(stdin_lock);
 
     let stop_flag = Arc::new(AtomicBool::new(false));
-    let stop_clone = stop_flag.clone();
-    std::thread::spawn(move || {
-        let mut reader = BufReader::new(std::io::stdin());
-        let mut line = String::new();
-        let _ = reader.read_line(&mut line);
-        stop_clone.store(true, Ordering::SeqCst);
-    });
+    let _stop_watcher = spawn_stop_watcher(std::io::stdin(), stop_flag.clone());
 
-    let source = format!("{}:{}", args.source_role, args.source_id);
     let epoch = Instant::now();
     let deadline = args
         .seconds
@@ -262,35 +279,34 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
     let mut sink = AsyncStdoutSink::spawn();
     let mut stderr_log = AsyncStderrLogger::spawn();
     let mut channel: u64 = 0;
+    let mut world: u64 = 1;
     let mut reconnects: u64 = 0;
-    let mut source_ends: u64 = 0;
-    let mut follow_attempts: u64 = 0;
     let mut retry_streak: u32 = 0;
-    let mut following = false;
-    let mut follow_delay_ms = FOLLOW_INITIAL_MS;
-    let mut last_attempt_end: Option<AttemptEndSummary> = None;
-    let mut faults: Vec<AttemptEndSummary> = Vec::new();
-    let mut last_health: Option<HealthV2> = None;
-    let mut last_cursor: Option<LastDeliveredCursor> = None;
+    let mut has_ever_full = false;
+    let mut faults: Vec<FaultSummary> = Vec::new();
+    let mut last_health: Option<HealthV3> = None;
+    let mut last_phase: Option<String> = None;
+    let mut native_boot_code: Option<i32> = None;
+    let mut steam_init_result: Option<i32> = None;
 
-    let (outcome, reason) = loop {
+    let (mut outcome, mut reason) = loop {
         if stop_flag.load(Ordering::SeqCst) {
-            break ("incomplete", "owner-stopped".to_string());
+            break ("stopped", "owner-stopped".to_string());
         }
         if let Some(dl) = deadline {
             if Instant::now() >= dl {
-                break ("incomplete", "duration-limit-incomplete".to_string());
+                break ("stopped", "duration-limit".to_string());
             }
         }
 
         channel += 1;
+        world = 1;
         let start_seq = sink.next_sequence();
         let start_rec = SessionStartRecord {
             kind: "session-start",
-            protocol: 2,
-            source: source.clone(),
+            protocol: 3,
             channel,
-            world: 1,
+            world,
             sequence: start_seq,
         };
         if let Err(e) = sink.emit_with_seq(start_seq, &start_rec) {
@@ -307,23 +323,22 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
         ) {
             Ok(p) => p,
             Err(e) => {
-                let is_start_err = e.downcast_ref::<NativeStartError>().is_some();
-                let reason = e.to_string();
-                let cat = if is_start_err {
-                    AttemptCategory::TerminalFault
+                let start_err = e.downcast_ref::<NativeStartError>();
+                let reason = if let Some(se) = start_err {
+                    native_boot_code = Some(se.boot_code);
+                    steam_init_result = Some(se.init_result);
+                    "native-start-failed".to_string()
                 } else {
-                    AttemptCategory::TransientFault
+                    e.to_string()
                 };
-                let summary = AttemptEndSummary {
+                last_phase = Some("transport".into());
+                let summary = FaultSummary {
                     channel,
-                    category: cat.as_str().into(),
                     reason: reason.clone(),
                     phase: "transport".into(),
                     native_failure: None,
                     remote_end_reason: None,
-                    last_delivered_sequence: sink.current_sequence(),
                 };
-                last_attempt_end = Some(summary.clone());
                 faults.push(summary);
                 if faults.len() > 8 {
                     faults.remove(0);
@@ -336,7 +351,6 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
             port,
             args.host_version,
             cfg.password.clone(),
-            source.clone(),
             channel,
             now_ms,
         ) {
@@ -351,14 +365,12 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
             &stop_flag,
             deadline,
             &epoch,
-            &mut last_cursor,
             &mut last_health,
             reconnects,
-            source_ends,
-            follow_attempts,
-            &last_attempt_end,
+            has_ever_full,
             faults.last(),
         );
+        world = driver.core.identity.world;
         driver.close();
 
         let (exit_val, reached_full, ready_ms) = match exit {
@@ -387,43 +399,44 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
             Err(e) => break ("failed", e.to_string()),
         };
 
-        if reached_full && ready_ms >= STABLE_MS {
-            retry_streak = 0;
-            follow_delay_ms = FOLLOW_INITIAL_MS;
-            following = false;
+        if reached_full {
+            has_ever_full = true;
+            if ready_ms >= STABLE_MS {
+                retry_streak = 0;
+            }
         }
 
-        let decision = decide_recovery(&exit_val, following, args.follow_source, retry_streak);
+        let decision = decide_recovery(&exit_val);
         match &decision {
-            RecoveryAction::Incomplete(r) => {
-                break ("incomplete", r.clone());
+            RecoveryAction::Stopped(r) => {
+                last_phase = match &exit_val {
+                    AttemptExit::OwnerStopped { phase } | AttemptExit::DurationLimit { phase } => {
+                        Some(phase.clone())
+                    }
+                    _ => last_phase,
+                };
+                break ("stopped", r.clone());
             }
-            RecoveryAction::Close
-            | RecoveryAction::Follow
-            | RecoveryAction::Retry
-            | RecoveryAction::Fail(_) => {
-                let (cat, reason, phase, nf, rer) = match &exit_val {
+            RecoveryAction::Close | RecoveryAction::Retry | RecoveryAction::Fail(_) => {
+                let (reason, phase, nf, rer) = match &exit_val {
                     AttemptExit::CleanSourceStop {
                         phase,
                         native_failure,
                         remote_end_reason,
                         ..
                     } => (
-                        AttemptCategory::CleanSourceStop,
                         "source-hltv-stop".to_string(),
                         phase.clone(),
                         *native_failure,
                         *remote_end_reason,
                     ),
                     AttemptExit::Fault {
-                        category,
                         reason,
                         phase,
                         native_failure,
                         remote_end_reason,
                         ..
                     } => (
-                        *category,
                         reason.clone(),
                         phase.clone(),
                         *native_failure,
@@ -431,37 +444,31 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
                     ),
                     _ => unreachable!(),
                 };
+                last_phase = Some(phase.clone());
 
-                // Supervisor owns connection-level discontinuity & clears last_cursor.
-                last_cursor = None;
                 let disc_seq = sink.next_sequence();
                 let conn_disc = DiscontinuityRecord {
                     kind: "discontinuity",
                     scope: "connection",
                     reason: reason.clone(),
-                    source: source.clone(),
                     channel,
-                    world: driver.core.identity.world,
+                    world,
                     sequence: disc_seq,
                 };
                 if let Err(e) = sink.emit_with_seq(disc_seq, &conn_disc) {
                     break ("failed", e.to_string());
                 }
 
-                let summary = AttemptEndSummary {
+                let summary = FaultSummary {
                     channel,
-                    category: cat.as_str().into(),
                     reason: reason.clone(),
                     phase,
                     native_failure: nf,
                     remote_end_reason: rer,
-                    last_delivered_sequence: sink.delivered_sequence(),
                 };
-                last_attempt_end = Some(summary.clone());
 
                 match decision {
                     RecoveryAction::Close => {
-                        source_ends += 1;
                         break ("closed", reason);
                     }
                     RecoveryAction::Fail(terminal_reason) => {
@@ -471,71 +478,31 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
                         }
                         break ("failed", terminal_reason);
                     }
-                    RecoveryAction::Follow => {
-                        if cat == AttemptCategory::CleanSourceStop {
-                            source_ends += 1;
-                            following = true;
-                        }
-                        follow_attempts += 1;
-                        let delay = jittered_ms(
-                            follow_delay_ms,
-                            channel ^ epoch.elapsed().as_nanos() as u64,
-                        );
-                        follow_delay_ms = (follow_delay_ms * 2).min(FOLLOW_MAX_MS);
-                        let h = backoff_health(
-                            &source,
-                            channel,
-                            "follow-source",
-                            delay,
-                            reconnects,
-                            source_ends,
-                            follow_attempts,
-                            &last_attempt_end,
-                            faults.last(),
-                        );
-                        stderr_log.emit_health(&h);
-                        last_health = Some(h);
-                        if !wait_backoff(delay, &stop_flag, deadline) {
-                            let r = if stop_flag.load(Ordering::SeqCst) {
-                                "owner-stopped"
-                            } else {
-                                "duration-limit-incomplete"
-                            };
-                            break ("incomplete", r.into());
-                        }
-                    }
                     RecoveryAction::Retry => {
                         faults.push(summary);
                         if faults.len() > 8 {
                             faults.remove(0);
                         }
-                        let base = FAULT_INITIAL_MS * (1u64 << retry_streak.min(10));
+                        let base = FAULT_INITIAL_MS
+                            .saturating_mul(1u64 << retry_streak.min(6))
+                            .min(FAULT_MAX_MS);
                         retry_streak += 1;
-                        reconnects += 1;
-                        let delay = jittered_ms(base, channel ^ epoch.elapsed().as_nanos() as u64);
-                        let h = backoff_health(
-                            &source,
-                            channel,
-                            "fault-retry",
-                            delay,
-                            reconnects,
-                            source_ends,
-                            follow_attempts,
-                            &last_attempt_end,
-                            faults.last(),
-                        );
+                        let delay = jittered_ms(base, channel ^ epoch.elapsed().as_nanos() as u64)
+                            .min(FAULT_MAX_MS);
+                        let h = backoff_health(channel, delay, reconnects, faults.last());
                         stderr_log.emit_health(&h);
                         last_health = Some(h);
                         if !wait_backoff(delay, &stop_flag, deadline) {
                             let r = if stop_flag.load(Ordering::SeqCst) {
                                 "owner-stopped"
                             } else {
-                                "duration-limit-incomplete"
+                                "duration-limit"
                             };
-                            break ("incomplete", r.into());
+                            break ("stopped", r.into());
                         }
+                        reconnects += 1;
                     }
-                    RecoveryAction::Incomplete(_) => unreachable!(),
+                    RecoveryAction::Stopped(_) => unreachable!(),
                 }
             }
         }
@@ -543,41 +510,58 @@ pub fn run_managed(args: ManagedArgs) -> Result<(), String> {
 
     cfg.password.zeroize();
 
+    let drain_stdout = outcome == "closed";
+    let stdout_clean = sink.close(drain_stdout);
+    if outcome == "closed" && !stdout_clean {
+        outcome = "failed";
+        reason = "output-drain-timeout".to_string();
+    }
+
     if let Some(ref mut h) = last_health {
-        h.state = "stopped";
-        h.ready = false;
+        h.state = if outcome == "failed" {
+            "failed"
+        } else {
+            "ended"
+        };
+        h.retry_in_ms = None;
         h.reason = reason.clone();
         stderr_log.emit_health(h);
     }
 
-    let drain_stdout = outcome == "closed";
-    let stdout_clean = sink.close(drain_stdout);
     let final_seq = sink.delivered_sequence();
     stderr_log.close();
 
-    let report = ReportV2 {
-        schema: "cs2-observer-report/2",
+    let last_fault = faults.last().cloned();
+    let report = ReportV3 {
+        schema: "cs2-observer-report/3",
         outcome,
         reason: reason.clone(),
-        cleanup_completed: stdout_clean,
-        report_written: true,
-        source,
         channel: channel.max(1),
-        world: last_health.as_ref().map(|h| h.world).unwrap_or(1),
+        world,
         last_output_sequence: final_seq,
         reconnects,
-        source_ends,
-        follow_attempts,
-        last_attempt_end,
+        native_boot_code,
+        steam_init_result,
+        phase: last_phase,
+        last_fault,
         faults,
         health: last_health,
     };
-    write_report_file(Path::new(&args.output), &report)?;
-    if outcome == "failed" {
-        Err(reason)
-    } else {
-        Ok(())
+    finalize_managed_exit(Path::new(&args.output), &report)
+}
+
+pub fn finalize_managed_exit(output: &Path, report: &ReportV3) -> Result<(), ManagedError> {
+    let write_res = write_report_file(output, report);
+    if report.outcome == "failed" {
+        return Err(ManagedError {
+            reason: report.reason.clone(),
+            report_written: write_res.is_ok(),
+        });
     }
+    if let Err(e) = write_res {
+        eprintln!("{e}");
+    }
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -588,13 +572,10 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
     stop_flag: &AtomicBool,
     deadline: Option<Instant>,
     epoch: &Instant,
-    last_cursor: &mut Option<LastDeliveredCursor>,
-    last_health: &mut Option<HealthV2>,
+    last_health: &mut Option<HealthV3>,
     reconnects: u64,
-    source_ends: u64,
-    follow_attempts: u64,
-    last_attempt_end: &Option<AttemptEndSummary>,
-    last_fault: Option<&AttemptEndSummary>,
+    has_ever_full: bool,
+    last_fault: Option<&FaultSummary>,
 ) -> Result<AttemptExit, SessionError> {
     let mut ready_since: Option<Instant> = None;
     let mut next_health_ms = 0u64;
@@ -603,16 +584,12 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
         if stop_flag.load(Ordering::SeqCst) {
             return Ok(AttemptExit::OwnerStopped {
                 phase: driver.phase.as_str().into(),
-                native_failure: Some(driver.port.failure()),
-                remote_end_reason: Some(driver.port.remote_end_reason()),
             });
         }
         if let Some(dl) = deadline {
             if Instant::now() >= dl {
                 return Ok(AttemptExit::DurationLimit {
                     phase: driver.phase.as_str().into(),
-                    native_failure: Some(driver.port.failure()),
-                    remote_end_reason: Some(driver.port.remote_end_reason()),
                 });
             }
         }
@@ -624,20 +601,18 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                 DriverEmit::Cursor(mut c) => {
                     let seq = sink.next_sequence();
                     c.sequence = seq;
-                    let committed = c.committed_tick;
-                    let world = c.world;
                     sink.emit_with_seq(seq, &c)?;
-                    *last_cursor = Some(LastDeliveredCursor {
-                        channel: driver.core.identity.channel,
-                        world,
-                        committed_tick: committed,
-                        sequence: seq,
-                    });
                     if ready_since.is_none() {
                         ready_since = Some(Instant::now());
                     }
                 }
                 DriverEmit::RawEvent(mut e) => {
+                    if let Some(deq_ns) = e.dequeue_ns {
+                        let enqueue_ns = epoch.elapsed().as_nanos() as u64;
+                        let local_us = enqueue_ns.saturating_sub(deq_ns) / 1000;
+                        let sdk_us = e.sdk_queue_age_us.unwrap_or(0).max(0) as u64;
+                        e.residence_us = Some(sdk_us.saturating_add(local_us));
+                    }
                     let seq = sink.next_sequence();
                     e.sequence = seq;
                     sink.emit_with_seq(seq, &e)?;
@@ -648,18 +623,21 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                     world,
                 } => {
                     ready_since = None;
-                    *last_cursor = None;
                     let seq = sink.next_sequence();
                     let rec = DiscontinuityRecord {
                         kind: "discontinuity",
                         scope,
                         reason,
-                        source: driver.core.identity.source.clone(),
                         channel: driver.core.identity.channel,
                         world,
                         sequence: seq,
                     };
                     sink.emit_with_seq(seq, &rec)?;
+                }
+                DriverEmit::Diagnostic { reason, event_id } => {
+                    if let Some(logger) = stderr_log {
+                        logger.emit_diagnostic(driver.core.identity.channel, &reason, event_id);
+                    }
                 }
             }
         }
@@ -667,46 +645,25 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
         let now_ms = epoch.elapsed().as_millis() as u64;
         if now_ms >= next_health_ms {
             next_health_ms = now_ms + HEALTH_INTERVAL_MS;
-            let state = if driver.drain_deadline.is_some() {
-                "retiring"
-            } else if ready_since.is_some() {
-                if driver.gap || driver.world_sync.recovery != RecoveryState::Normal {
-                    "catching-up"
-                } else {
-                    "connected"
-                }
+            let state = if ready_since.is_some() {
+                "receiving"
             } else {
-                "initializing"
+                "connecting"
             };
             let (decode_us, decode_max_us) = driver.take_decode_window();
-            let h = HealthV2 {
-                r#type: "cs2-observer-health/2",
-                source: driver.core.identity.source.clone(),
+            let h = HealthV3 {
+                r#type: "cs2-observer-health/3",
                 channel: driver.core.identity.channel,
                 world: driver.core.identity.world,
                 state,
                 reason: driver.reason.clone().unwrap_or_else(|| state.into()),
-                upstream_freshness: "unknown",
-                ready: ready_since.is_some(),
                 reconnects,
-                source_ends,
-                follow_attempts,
                 retry_in_ms: None,
-                wait_reason: None,
                 sdk_queue_age_us: driver.last_sdk_age_us,
                 sdk_max_age_us: driver.max_sdk_age_us,
                 decode_us,
                 decode_max_us,
-                context_tick: driver.context_tick,
-                network_tick: Some(driver.core.network_tick).filter(|&t| t >= 0),
                 committed_tick: driver.core.committed_tick(),
-                committed_ticks_per_second: if state == "connected" {
-                    driver.cursor_rate
-                } else {
-                    None
-                },
-                last_delivered_cursor: last_cursor.clone(),
-                last_attempt_end: last_attempt_end.clone(),
                 last_fault: last_fault.cloned(),
             };
             if let Some(logger) = stderr_log {
@@ -746,13 +703,15 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
                 }
             }
             Err(err) => {
-                let cat = classify_session_error(&err, driver.phase, driver.port.failure());
+                let nf = driver.port.failure();
+                let cat = classify_session_error(&err, driver.phase, nf, has_ever_full);
                 let ready_ms = ready_since
                     .map(|t| t.elapsed().as_millis() as u64)
                     .unwrap_or(0);
+                let reason = session_error_reason(&err, driver.phase, nf, has_ever_full);
                 return Ok(AttemptExit::Fault {
                     category: cat,
-                    reason: err.to_string(),
+                    reason,
                     phase: driver.phase.as_str().into(),
                     native_failure: Some(driver.port.failure()),
                     remote_end_reason: Some(driver.port.remote_end_reason()),
@@ -764,42 +723,25 @@ pub fn run_single_attempt<P: ObserverPort, S: RecordSink>(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 fn backoff_health(
-    source: &str,
     channel: u64,
-    wait_reason: &'static str,
     delay_ms: u64,
     reconnects: u64,
-    source_ends: u64,
-    follow_attempts: u64,
-    last_attempt_end: &Option<AttemptEndSummary>,
-    last_fault: Option<&AttemptEndSummary>,
-) -> HealthV2 {
-    HealthV2 {
-        r#type: "cs2-observer-health/2",
-        source: source.to_string(),
+    last_fault: Option<&FaultSummary>,
+) -> HealthV3 {
+    HealthV3 {
+        r#type: "cs2-observer-health/3",
         channel,
         world: 1,
-        state: "backoff",
-        reason: wait_reason.into(),
-        upstream_freshness: "unknown",
-        ready: false,
+        state: "connecting",
+        reason: "fault-retry".into(),
         reconnects,
-        source_ends,
-        follow_attempts,
         retry_in_ms: Some(delay_ms),
-        wait_reason: Some(wait_reason),
         sdk_queue_age_us: None,
         sdk_max_age_us: None,
         decode_us: None,
         decode_max_us: None,
-        context_tick: None,
-        network_tick: None,
         committed_tick: None,
-        committed_ticks_per_second: None,
-        last_delivered_cursor: None,
-        last_attempt_end: last_attempt_end.clone(),
         last_fault: last_fault.cloned(),
     }
 }

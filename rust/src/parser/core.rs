@@ -5,9 +5,7 @@ use serde::Serialize;
 use serde_json::Value;
 
 use super::packet_entities::EntityTable;
-use super::projection::{
-    project_native_event, project_round_clock, EntityHandle, PlayerIdentity, RoundClock,
-};
+use super::projection::{project_native_event, project_round_clock, PlayerIdentity, RoundClock};
 use super::schema::Schema;
 use super::string_tables::StringTables;
 use crate::wire::bits::{scalar_bytes, scalar_varint, wire_fields, BitReader, MAX_BYTES};
@@ -20,7 +18,6 @@ use crate::wire::proto::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SourceIdentity {
-    pub source: String,
     pub channel: u64,
     pub world: u64,
 }
@@ -49,58 +46,38 @@ pub struct SpawnGroup {
 #[serde(rename_all = "camelCase")]
 pub struct CursorRecord {
     pub kind: &'static str,
-    pub tick: i32,
+    pub channel: u64,
+    pub world: u64,
+    pub sequence: u64,
     pub committed_tick: i32,
     pub tick_interval: f32,
     pub map: String,
     pub warmup: Option<bool>,
     pub round: Option<u32>,
-    pub weapon: Option<String>,
-    pub actor: Option<String>,
-    pub target: Option<String>,
-    pub source: String,
-    pub channel: u64,
-    pub world: u64,
-    pub sequence: u64,
-    pub descriptor_generation: Option<u64>,
-    pub event_server_tick: Option<i32>,
-    pub network_tick: i32,
-    pub context_tick: i32,
-    pub sdk_queue_age_us: Option<i64>,
-    pub observed_at: u64,
-    pub identity_resolved: bool,
     pub round_clock: RoundClock,
 }
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RawEventRecord {
-    pub kind: String,
-    pub r#type: &'static str,
+    pub kind: &'static str,
     pub name: String,
-    pub fields: BTreeMap<String, Value>,
-    pub players: BTreeMap<String, Option<PlayerIdentity>>,
-    pub pawns: BTreeMap<String, Option<EntityHandle>>,
+    pub channel: u64,
+    pub world: u64,
+    pub sequence: u64,
+    pub event_tick: i32,
     pub committed_tick: Option<i32>,
-    pub tick: i32,
     pub tick_interval: Option<f32>,
     pub map: Option<String>,
     pub warmup: Option<bool>,
     pub round: Option<u32>,
-    pub weapon: Option<String>,
-    pub actor: Option<String>,
-    pub target: Option<String>,
-    pub source: String,
-    pub channel: u64,
-    pub world: u64,
-    pub sequence: u64,
-    pub descriptor_generation: u64,
-    pub event_server_tick: Option<i32>,
-    pub network_tick: i32,
-    pub context_tick: i32,
+    pub residence_us: Option<u64>,
+    #[serde(skip)]
     pub sdk_queue_age_us: Option<i64>,
-    pub observed_at: u64,
-    pub identity_resolved: bool,
+    #[serde(skip)]
+    pub dequeue_ns: Option<u64>,
+    pub fields: BTreeMap<String, Value>,
+    pub players: BTreeMap<String, Option<PlayerIdentity>>,
 }
 
 #[derive(Debug, Clone)]
@@ -368,7 +345,6 @@ impl ObserverCore {
         body: &[u8],
         context_tick: Option<i32>,
         sdk_queue_age_us: Option<i64>,
-        observed_at: u64,
     ) -> Vec<CoreOutput> {
         let mut out = Vec::new();
         if self.halted && message_id != 51 {
@@ -377,14 +353,7 @@ impl ObserverCore {
             });
             return out;
         }
-        let res = self.consume_inner(
-            message_id,
-            body,
-            context_tick,
-            sdk_queue_age_us,
-            observed_at,
-            &mut out,
-        );
+        let res = self.consume_inner(message_id, body, context_tick, sdk_queue_age_us, &mut out);
         if let Err(reason) = res {
             if message_id == 207 {
                 out.push(CoreOutput::Gap { reason });
@@ -410,7 +379,6 @@ impl ObserverCore {
         body: &[u8],
         context_tick: Option<i32>,
         sdk_queue_age_us: Option<i64>,
-        observed_at: u64,
         out: &mut Vec<CoreOutput>,
     ) -> Result<(), String> {
         match message_id {
@@ -640,26 +608,14 @@ impl ObserverCore {
                             );
                             out.push(CoreOutput::Cursor(CursorRecord {
                                 kind: "cursor",
-                                tick: receipt.tick,
+                                channel: self.identity.channel,
+                                world: self.identity.world,
+                                sequence: 0,
                                 committed_tick: receipt.tick,
                                 tick_interval: srv.tick_interval,
                                 map: srv.map_name.clone(),
                                 warmup: proj.warmup,
                                 round: proj.round,
-                                weapon: proj.weapon,
-                                actor: proj.actor,
-                                target: proj.target,
-                                source: self.identity.source.clone(),
-                                channel: self.identity.channel,
-                                world: self.identity.world,
-                                sequence: 0,
-                                descriptor_generation: None,
-                                event_server_tick: None,
-                                network_tick: self.network_tick,
-                                context_tick: receipt.tick,
-                                sdk_queue_age_us,
-                                observed_at,
-                                identity_resolved: proj.identity_resolved,
                                 round_clock,
                             }));
                         }
@@ -762,34 +718,26 @@ impl ObserverCore {
                     &fields,
                     &types,
                 );
-                let tick = context_tick.unwrap_or(self.network_tick);
+                let event_tick = msg
+                    .server_tick
+                    .unwrap_or_else(|| context_tick.unwrap_or(self.network_tick));
                 out.push(CoreOutput::RawEvent(RawEventRecord {
-                    kind: ename.clone(),
-                    r#type: "raw-event",
+                    kind: "event",
                     name: ename,
-                    fields,
-                    players: proj.players,
-                    pawns: proj.pawns,
+                    channel: self.identity.channel,
+                    world: self.identity.world,
+                    sequence: 0,
+                    event_tick,
                     committed_tick: self.entities.latest_tick,
-                    tick,
                     tick_interval: self.server.as_ref().map(|s| s.tick_interval),
                     map: self.server.as_ref().map(|s| s.map_name.clone()),
                     warmup: proj.warmup,
                     round: proj.round,
-                    weapon: proj.weapon,
-                    actor: proj.actor,
-                    target: proj.target,
-                    source: self.identity.source.clone(),
-                    channel: self.identity.channel,
-                    world: self.identity.world,
-                    sequence: 0,
-                    descriptor_generation: self.descriptor_generation,
-                    event_server_tick: msg.server_tick,
-                    network_tick: self.network_tick,
-                    context_tick: tick,
+                    residence_us: None,
                     sdk_queue_age_us,
-                    observed_at,
-                    identity_resolved: proj.identity_resolved,
+                    dequeue_ns: None,
+                    fields,
+                    players: proj.players,
                 }));
             }
             _ => {}
@@ -843,7 +791,6 @@ mod tests {
         let frames = val["frames"].as_array().unwrap();
 
         let mut core = ObserverCore::new(SourceIdentity {
-            source: "offline:channel-replay".into(),
             channel: 1,
             world: 1,
         });
@@ -879,7 +826,7 @@ mod tests {
                         }
                     }
                 }
-                for out in core.consume(m.message_id, &m.body, Some(ctx_tick), None, 0) {
+                for out in core.consume(m.message_id, &m.body, Some(ctx_tick), None) {
                     match out {
                         CoreOutput::Cursor(c) => cursors.push(c),
                         CoreOutput::RawEvent(e) => events.push(e),
@@ -893,24 +840,23 @@ mod tests {
         }
 
         assert_eq!(cursors.len(), 1);
-        assert_eq!(cursors[0].tick, 100);
+        assert_eq!(cursors[0].kind, "cursor");
         assert_eq!(cursors[0].committed_tick, 100);
         assert_eq!(cursors[0].map, "de_test");
         assert_eq!(cursors[0].round_clock.status, "unavailable");
 
         assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, "event");
         assert_eq!(events[0].name, "round_freeze_end");
-        assert_eq!(events[0].r#type, "raw-event");
+        assert_eq!(events[0].event_tick, 100);
         assert_eq!(events[0].committed_tick, Some(100));
-        assert_eq!(events[0].descriptor_generation, 1);
-        assert!(!events[0].identity_resolved);
+        assert_eq!(events[0].residence_us, None);
     }
 
     #[test]
     fn test_weapon_fire_player_identity_projection() {
         let steam: u64 = 76561198000000123;
         let mut core = ObserverCore::new(SourceIdentity {
-            source: "ahead:fixture".into(),
             channel: 1,
             world: 2,
         });
@@ -922,7 +868,7 @@ mod tests {
         srv.push(0x6d);
         srv.extend_from_slice(&(1.0f32 / 64.0f32).to_le_bytes());
         encode_pb_bytes(15, b"de_test", &mut srv);
-        core.consume(40, &srv, Some(99), None, 0);
+        core.consume(40, &srv, Some(99), None);
 
         let mut ser_msg = Vec::new();
         let mut s = Vec::new();
@@ -938,14 +884,14 @@ mod tests {
         encode_pb_varint(2, 1, &mut fld);
         encode_pb_varint(10, 3, &mut fld);
         encode_pb_bytes(3, &fld, &mut ser_msg);
-        core.consume(41, &ser_msg, Some(99), None, 0);
+        core.consume(41, &ser_msg, Some(99), None);
 
         let mut cls = Vec::new();
         let mut c0 = Vec::new();
         encode_pb_varint(1, 0, &mut c0);
         encode_pb_bytes(3, b"CCSPlayerController", &mut c0);
         encode_pb_bytes(2, &c0, &mut cls);
-        core.consume(42, &cls, Some(99), None, 0);
+        core.consume(42, &cls, Some(99), None);
 
         let pack_bits = |bits: &[u8]| -> Vec<u8> {
             let mut out = vec![0u8; bits.len().div_ceil(8)];
@@ -978,7 +924,7 @@ mod tests {
         encode_pb_bytes(1, b"instancebaseline", &mut st_ib);
         encode_pb_varint(2, 1, &mut st_ib);
         encode_pb_bytes(7, &pack_bits(&st_bits), &mut st_ib);
-        core.consume(44, &st_ib, Some(99), None, 0);
+        core.consume(44, &st_ib, Some(99), None);
 
         let mut uinfo_val = vec![0x11u8];
         uinfo_val.extend_from_slice(&steam.to_le_bytes());
@@ -995,7 +941,7 @@ mod tests {
         encode_pb_bytes(1, b"userinfo", &mut st_ui);
         encode_pb_varint(2, 1, &mut st_ui);
         encode_pb_bytes(7, &pack_bits(&ui_bits), &mut st_ui);
-        core.consume(44, &st_ui, Some(99), None, 0);
+        core.consume(44, &st_ui, Some(99), None);
 
         let mut pe_bits = Vec::new();
         push_bits(&mut pe_bits, 1, 6);
@@ -1010,7 +956,7 @@ mod tests {
         encode_pb_varint(12, 99, &mut pe);
         encode_pb_bytes(7, &pack_bits(&pe_bits), &mut pe);
         encode_pb_bytes(19, &[], &mut pe);
-        core.consume(55, &pe, Some(99), None, 0);
+        core.consume(55, &pe, Some(99), None);
 
         let mut desc = Vec::new();
         encode_pb_varint(1, 17, &mut desc);
@@ -1023,7 +969,7 @@ mod tests {
         }
         let mut ev_list = Vec::new();
         encode_pb_bytes(1, &desc, &mut ev_list);
-        core.consume(205, &ev_list, Some(99), None, 0);
+        core.consume(205, &ev_list, Some(99), None);
 
         let mut ev = Vec::new();
         encode_pb_varint(2, 17, &mut ev);
@@ -1040,7 +986,7 @@ mod tests {
         encode_pb_varint(7, 0, &mut k2);
         encode_pb_bytes(3, &k2, &mut ev);
 
-        let outs = core.consume(207, &ev, Some(100), None, 0);
+        let outs = core.consume(207, &ev, Some(100), Some(1200));
         let raw_ev = outs
             .into_iter()
             .find_map(|o| match o {
@@ -1048,10 +994,15 @@ mod tests {
                 _ => None,
             })
             .unwrap();
+        assert_eq!(raw_ev.kind, "event");
         assert_eq!(raw_ev.name, "weapon_fire");
-        assert!(raw_ev.identity_resolved);
-        assert_eq!(raw_ev.actor.as_deref(), Some("76561198000000123"));
-        assert_eq!(raw_ev.weapon.as_deref(), Some("ak47"));
+        assert_eq!(raw_ev.event_tick, 100);
+        assert_eq!(raw_ev.sdk_queue_age_us, Some(1200));
+        assert_eq!(raw_ev.residence_us, None);
+        assert_eq!(
+            raw_ev.fields.get("weapon").and_then(|v| v.as_str()),
+            Some("ak47")
+        );
         let p = raw_ev.players.get("userid").unwrap().as_ref().unwrap();
         assert_eq!(p.user_id, Some(42));
         assert_eq!(p.slot, 0);

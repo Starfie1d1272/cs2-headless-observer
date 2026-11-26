@@ -35,11 +35,7 @@ pub struct NativeStartError {
 
 impl std::fmt::Display for NativeStartError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "native-start-failed (boot={}, init={})",
-            self.boot_code, self.init_result
-        )
+        f.write_str("native-start-failed")
     }
 }
 

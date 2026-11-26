@@ -12,7 +12,7 @@
    - **`rust/src/wire/`**：位流读取、LZ4/Snappy/Valve LZSS 解压、Protobuf 解码、GOTV 帧通道（`channel.rs`）与 Auth2/Auth3 握手（`handshake.rs`）。
    - **`rust/src/parser/`**：Source 2 schema（`schema.rs` / `schema_profile.rs`）、字段路径（`field_paths.rs`）、字符串表（`string_tables.rs`）、实体快照状态（`packet_entities.rs` / `entity_fields.rs`）、事件投影（`projection.rs`）与解码核心（`core.rs`）。
    - **`rust/src/native/`**：Native ABI 4 动态加载与生命周期管理（`abi.rs`，对接 `native/sdk_host.cpp`）及 GOTV ICE 密码加密（`password.rs`）。
-   - **`rust/src/session/`**：`Supervisor`（`supervisor.rs`，公开 `cs2-observer-managed-json/2`、`source` / `channel` / `public sequence`、退避重连与 `--follow-source`）、单次连接 `ObserverDriver`（`driver.rs`，握手、Signon、控制流、ACK 与 Native 调度）、异步 stdout/stderr 报告（`reporting.rs`）与离线合成回放（`replay.rs`）。
+   - **`rust/src/session/`**：`Supervisor`（`supervisor.rs`，公开 `cs2-observer-managed-json/3`、`channel` / `world` / `sequence` 与退避重连）、单次连接 `ObserverDriver`（`driver.rs`，握手、Signon、控制流、ACK 与 Native 调度）、异步 stdout/stderr 报告（`reporting.rs`）与离线合成回放（`replay.rs`）。
 3. **诊断文本不决定控制**：`reason`、`health`、stderr 诊断仅用于观测与报告；恢复、重试和清理决策必须依据显式结构化字段或枚举（`AttemptCategory` / `RecoveryAction`）。
 4. **时间域不得隐式混用**：严禁将 `contextTick`、`networkTick`、`committedTick`、`eventServerTick`、SDK 单调排队年龄（`sdkQueueAgeUs`）、单调时钟和墙钟 `observedAt` 混算。
 5. **协议行为修改有证据**：改动协议/解码语义前先核对 `docs/protocol/`、`research/knowledge/` 或固定回归向量；不将离线 CI 通过等同于真实在线验证通过。
@@ -30,9 +30,9 @@
 
 ## 版本标识
 
-- **`managed protocol`**：`cs2-observer-managed-json/2`
+- **`managed protocol`**：`cs2-observer-managed-json/3`
 - **`native ABI`**：`4`
-- **`package schema`**：`cs2-headless-observer-package/5`
+- **`package schema`**：`cs2-headless-observer-package/6`
 
 ## 本地与 CI 验证
 

@@ -28,7 +28,7 @@ python tools/build_native.py --sdk <sdk-root> --output work/native
 
 ## Windows 发行包组装
 
-Windows 发行包由 `cs2-headless-observer.exe`、`cs2_observer.dll`、`manifest.json`（`cs2-headless-observer-package/5`）、`examples/`、`schemas/` 与 `licenses/` 组成，无内置 Python/Node 运行时或 `source/project/` 冗余副本；对应源码通过 GitHub Release tag 与官方源码归档提供。
+Windows 发行包由 `cs2-headless-observer.exe`、`cs2_observer.dll`、`manifest.json`（`cs2-headless-observer-package/6`）、`examples/`、`schemas/` 与 `licenses/` 组成，无内置 Python/Node 运行时或 `source/project/` 冗余副本；对应源码通过 GitHub Release tag 与官方源码归档提供。
 
 自动化组装与自检定义在 [`.github/workflows/observer-research.yml`](../.github/workflows/observer-research.yml) 中，包含 Rust Release 构建、原生桥编译、`replay` 合成通道自检与产物哈希清单生成。
 

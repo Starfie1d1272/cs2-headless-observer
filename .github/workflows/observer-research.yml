@@ -83,15 +83,13 @@ jobs:
             $hashes[$rel] = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
           }
           $manifest = @{
-            schema = 'cs2-headless-observer-package/5'
+            schema = 'cs2-headless-observer-package/6'
             componentId = $contract.componentId
             componentVersion = $contract.componentVersion
             sourceSha = $env:SOURCE_SHA
             platform = $contract.platform
             nativeAbi = $contract.nativeAbi
             managedProtocol = $contract.managedProtocol
-            managedProtocols = $contract.managedProtocols
-            managedFeatures = $contract.managedFeatures
             validatedHostVersions = $contract.validatedHostVersions
             entrypoints = @{
               executable = 'cs2-headless-observer.exe'

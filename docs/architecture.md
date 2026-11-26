@@ -4,7 +4,7 @@
 
 ```text
 消费应用（Mizar 等）
-  ⇄ stdin / stdout / stderr (cs2-observer-managed-json/2, cs2-observer-health/2)
+  ⇄ stdin / stdout / stderr (cs2-observer-managed-json/3, cs2-observer-health/3)
   └─ session::Supervisor ──▶ session::ObserverDriver
                                ├─ native::NativePort (FFI ABI 4 ──▶ cs2_observer.dll)
                                ├─ wire::Channel / Handshake (LZ4 / Snappy / LZSS / Protobuf)
@@ -18,7 +18,7 @@
 - **`native`**：一次性缓存 ABI 4 函数指针（`NativeFns`），管理 Steam 认证句柄、GNS 批量收发与 `SecretBytes` 密码零化清理（`ice1_encrypt`）。
 - **`session`**：
   - `ObserverDriver` 管理单次连接状态机（Signon 2..=7、`WorldSyncState` 恢复、100 ms ACK 节拍与正常 1038 排空）。
-  - `Supervisor` 拥有公开 `source` / `channel` / `public sequence`、故障退避与 `--follow-source` 重连，并将解析耗时（`decodeUs` / `decodeMaxUs`）仅作健康观测上报，不设 2 秒硬杀。
-  - `AsyncStdoutSink`（有界队列 512，退出排空上限 2 秒）与 `AsyncStderrLogger`（有界队列 64，退出上限 200 ms）保证退出不无限阻塞，终态写入 `report.json`（`cs2-observer-report/2`）。
+  - `Supervisor` 拥有 `channel` / `world` / `sequence` 与故障退避重连，并将解析耗时（`decodeUs` / `decodeMaxUs`）仅作健康观测上报，不设 2 秒硬杀。
+  - `AsyncStdoutSink`（有界队列 512，退出排空上限 2 秒）与 `AsyncStderrLogger`（有界队列 64，退出上限 200 ms）保证退出不无限阻塞，终态写入 `report.json`（`cs2-observer-report/3`）。
 
 公开进程接口见[托管接口](managed-interface.md)，协议依据见[协议契约](protocol/README.md)，构建与分发见[构建指南](build.md)。

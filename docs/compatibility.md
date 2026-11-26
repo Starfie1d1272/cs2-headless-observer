@@ -7,7 +7,7 @@
 | 运行平台 | Windows x64，合法 Steam App730 普通观众上下文 |
 | 本机依赖 | 已登录的 Steam、已安装的 CS2（提供 `steam_api64.dll`）、获授权的数字 `IP:port` 与观战密码 |
 | 分发形态 | 单一纯 Rust 制品（`cs2-headless-observer.exe` + `cs2_observer.dll`，无外部 Python/Node 依赖） |
-| 协议与 ABI | 原生 ABI `4`、托管 JSON 契约 `cs2-observer-managed-json/2`、包清单 `cs2-headless-observer-package/5` |
+| 协议与 ABI | 原生 ABI `4`、托管 JSON 契约 `cs2-observer-managed-json/3`、包清单 `cs2-headless-observer-package/6` |
 | 已验证基线（历史 v1–v3 实测） | 真实授权 GOTV 实测覆盖 CS2 build 10955 / host 14192（Patch 1.41.9.2）；静态核对至 Steam build 26748068 / host 14198 |
 
 CLI 接受非零 `uint32` `--host-version`，`manifest.json` 中的 `validatedHostVersions` 记录已验证范围。4.0.0 完整继承原生 ABI 4、Managed JSON v2 与协议解码语义，并已通过 `MockPort` 集成测试与合成通道回放；最新 CS2 构建的 4.0.0 真实在线复测持续在 [#1](https://github.com/Starfie1d1272/cs2-headless-observer/issues/1) 跟进。
@@ -15,7 +15,7 @@ CLI 接受非零 `uint32` `--host-version`，`manifest.json` 中的 `validatedHo
 ## 身份、时间与来源切换
 
 - 控制器身份由当前世界 controller 与 userinfo 一致性证明，pawn 另行验证完整 serial；世界重置或空 userinfo 撤销旧身份。
-- 切换 GOTV 端点或独立重启时，须使用新的 `--source-id` 与 `--output` 目录；仅在启用 `--follow-source` 时，同一实例可自动等待原地址恢复。
+- 切换 GOTV 端点或独立重启时，须使用新的 `--output` 目录启动新实例。
 
 ## 多路连接与游戏客户端共存
 
