@@ -2,8 +2,12 @@ name: observer-rust
 
 on:
   push:
-    branches: [main, "feat/**", "release/**"]
+    branches: [main, "release/**"]
   pull_request:
+
+concurrency:
+  group: observer-rust-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   rust:
@@ -16,7 +20,9 @@ jobs:
       run:
         working-directory: rust
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
@@ -26,8 +32,8 @@ jobs:
       - name: Check formatting
         run: cargo fmt --check
       - name: Run clippy
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --locked --all-targets -- -D warnings
       - name: Run tests
-        run: cargo test
+        run: cargo test --locked
       - name: Build release
-        run: cargo build --release
+        run: cargo build --locked --release
